@@ -1,0 +1,6 @@
+/build/
+/dist/
+/hwpx.egg-info/
+/venv/
+/__init__.py
+/setup.py
