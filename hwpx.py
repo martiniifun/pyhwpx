@@ -818,10 +818,62 @@ class Hwp:
         :param format:
             문서형식. **빈 문자열을 지정하면 자동으로 선택한다.**
             생략하면 빈 문자열이 지정된다.
+            아래에 쓰여 있는 대로 대문자로만 써야 한다.
+            "HWPX": 한/글 hwpx format
+            "HWP": 한/글 native format
+            "HWP30": 한/글 3.X/96/97
+            "HTML": 인터넷 문서
+            "TEXT": 아스키 텍스트 문서
+            "UNICODE": 유니코드 텍스트 문서
+            "HWP20": 한글 2.0
+            "HWP21": 한글 2.1/2.5
+            "HWP15": 한글 1.X
+            "HWPML1X": HWPML 1.X 문서 (Open만 가능)
+            "HWPML2X": HWPML 2.X 문서 (Open / SaveAs 가능)
+            "RTF": 서식 있는 텍스트 문서
+            "DBF": DBASE II/III 문서
+            "HUNMIN": 훈민정음 3.0/2000
+            "MSWORD": 마이크로소프트 워드 문서
+            "DOCRTF": MS 워드 문서 (doc)
+            "OOXML": MS 워드 문서 (docx)
+            "HANA": 하나워드 문서
+            "ARIRANG": 아리랑 문서
+            "ICHITARO": 一太郞 문서 (일본 워드프로세서)
+            "WPS": WPS 문서
+            "DOCIMG": 인터넷 프레젠테이션 문서(SaveAs만 가능)
+            "SWF": Macromedia Flash 문서(SaveAs만 가능)
 
         :param arg:
             세부옵션. 의미는 format에 지정한 파일형식에 따라 다르다.
-            생략하면 빈 문자열이 지정된다.
+            조합 가능하며, 생략하면 빈 문자열이 지정된다.
+            <공통>
+            "setcurdir:FALSE;" :로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
+            <HWP/HWPX>
+            "lock:TRUE;": 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
+            "notext:FALSE;": 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
+            "template:FALSE;": 새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다. 이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
+            "suspendpassword:FALSE;": TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
+            "forceopen:FALSE;": TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
+            "versionwarning:FALSE;": TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
+            <HTML>
+            "code"(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
+            (코드페이지 종류는 아래와 같다.)
+            ("utf8" : UTF8)
+            ("unicode": 유니코드)
+            ("ks":  한글 KS 완성형)
+            ("acp" : Active Codepage 현재 시스템의 코드 페이지)
+            ("kssm": 한글 조합형)
+            ("sjis" : 일본)
+            ("gb" : 중국 간체)
+            ("big5" : 중국 번체)
+            "textunit:(string, pixel);": Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
+            "formatunit:(string, pixel);": Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+            <DOCIMG>
+            "asimg:FALSE;": 저장할 때 페이지를 image로 저장
+            "ashtml:FALSE;": 저장할 때 페이지를 html로 저장
+            <TEXT>
+            "code:(string, codepage);": 문서 변환 시 사용되는 코드 페이지를 지정할 수 있으며
+            code키가 존재할 경우 필터 사용 시 사용자 다이얼로그를  띄우지 않는다.
 
         :return:
             성공하면 True, 실패하면 False
