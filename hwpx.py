@@ -476,7 +476,7 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         examples:
-            >>> hwp.create_page_image(r"c:/users/user/desktop/a.bmp")
+            >>> hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
             True
         """
         return self.CreatePageImage(Path=path, pgno=pgno, resolution=resolution, depth=depth, Format=format)
@@ -562,7 +562,7 @@ class Hwp:
             성공시 True, 실패시 False
 
         :Examples
-            >>> hwp.export_style(r"C:\Users\User\Desktop\new_style.sty")
+            >>> hwp.export_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
         style_set = self.HParameterSet.HStyleTemplate
@@ -727,7 +727,7 @@ class Hwp:
             성공시 True, 실패시 False
 
         :Examples
-            >>> hwp.import_style("C:\\Users\\User\\Desktop\\new_style.sty")
+            >>> hwp.import_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
         style_set = self.HParameterSet.HStyleTemplate
@@ -889,7 +889,7 @@ class Hwp:
             성공했을 경우 True, 실패했을 경우 False
 
         Examples:
-            >>> hwp.insert_background_picture(path=r"C:\Users\User\Desktop\KakaoTalk_20230709_023118549.jpg")
+            >>> hwp.insert_background_picture(path="C:/Users/User/Desktop/KakaoTalk_20230709_023118549.jpg")
             True
         """
         return self.InsertBackgroundPicture(Path=path, BorderType=border_type,
