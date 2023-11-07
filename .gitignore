@@ -4,3 +4,10 @@
 /venv/
 /__init__.py
 /setup.py
+/.idea/.gitignore
+/.idea/hwpx.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml
