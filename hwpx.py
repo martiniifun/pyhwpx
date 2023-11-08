@@ -941,8 +941,42 @@ class Hwp:
         """
         return self.GetPosBySet()
 
-    def get_script_source(self, filename):
-        pass
+    def get_script_source(self, filename: str) -> str:
+        """
+        문서에 포함된 매크로(스크립트매크로 제외) 소스코드를 가져온다.
+        문서포함 매크로는 기본적으로
+        ```
+        function OnDocument_New() {
+        }
+        function OnDocument_Open() {
+        }
+        ```
+        형태로 비어있는 상태이며,
+        OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
+        코드를 추가하고 실행할 수 있다.
+
+        :param filename:
+            매크로 소스를 가져올 한/글 문서의 전체경로
+
+        :return:
+            (문서에 포함된) 스크립트의 소스코드
+
+        Examples:
+            >>> print(hwp.get_script_source("C:/Users/User/Desktop/script.hwp"))
+            function OnDocument_New()
+            {
+                HAction.GetDefault("InsertText", HParameterSet.HInsertText.HSet);
+                HParameterSet.HInsertText.Text = "ㅁㄴㅇㄹㅁㄴㅇㄹ";
+                HAction.Execute("InsertText", HParameterSet.HInsertText.HSet);
+            }
+            function OnDocument_Open()
+            {
+                HAction.GetDefault("InsertText", HParameterSet.HInsertText.HSet);
+                HParameterSet.HInsertText.Text = "ㅋㅌㅊㅍㅋㅌㅊㅍ";
+                HAction.Execute("InsertText", HParameterSet.HInsertText.HSet);
+            }
+        """
+        return self.GetScriptSource(filename=filename)
 
     def get_selected_pos(self, slist, spara, spos, elist, epara, epos):
         pass
@@ -1393,8 +1427,38 @@ class Hwp:
     def run(self, act_id):
         pass
 
-    def run_script_macro(self, function_name, u_macro_type, u_script_type):
-        pass
+    def run_script_macro(self, function_name, u_macro_type=0, u_script_type=0):
+        """
+        한/글 문서 내에 존재하는 매크로를 실행한다.
+        문서매크로, 스크립트매크로 모두 실행 가능하다.
+        재미있는 점은 한/글 내에서 문서매크로 실행시
+        New, Open 두 개의 함수 밖에 선택할 수 없으므로
+        별도의 함수를 정의하더라도 이 두 함수 중 하나에서 호출해야 하지만,
+        (진입점이 되어야 함)
+        hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 있다.
+
+        :param function_name:
+            실행할 매크로 함수이름(전체이름)
+
+        :param u_macro_type:
+            매크로의 유형. 밑의 값 중 하나이다.
+            0: 스크립트 매크로(전역 매크로-HWP_GLOBAL_MACRO_TYPE, 기본값)
+            1: 문서 매크로(해당문서에만 저장/적용되는 매크로-HWP_DOCUMENT_MACRO_TYPE)
+
+        :param u_script_type:
+            스크립트의 유형. 현재는 javascript만을 유일하게 지원한다.
+            아무 정수나 입력하면 된다. (기본값: 0)
+
+        :return:
+            무조건 True를 반환(매크로의 실행여부와 상관없음)
+
+        Examples:
+            >>> hwp.run_script_macro("OnDocument_New", u_macro_type=1)
+            True
+            >>> hwp.run_script_macro("OnScriptMacro_중국어1성")
+            True
+        """
+        return self.RunScriptMacro(FunctionName=function_name, uMacroType=u_macro_type, uScriptType=u_script_type)
 
     def save(self, save_if_dirty):
         pass
