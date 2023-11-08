@@ -570,6 +570,15 @@ class Hwp:
         return self.ExportStyle(param=style_set.HSet)
 
     def field_exist(self, field):
+        """
+        문서에 지정된 데이터 필드가 존재하는지 검사한다.
+
+        :param field:
+            필드이름
+
+        :return:
+            필드가 존재하면 True, 존재하지 않으면 False
+        """
         return self.FieldExist(Field=field)
 
     def file_translate(self, cur_lang, trans_lang):
