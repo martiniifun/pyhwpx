@@ -600,17 +600,17 @@ class Hwp:
 
         :param private_type:
             보호할 개인정보 유형. 다음의 값을 하나이상 조합한다.
-			0x0001: 전화번호
-			0x0002: 주민등록번호
-			0x0004: 외국인등록번호
-			0x0008: 전자우편
-			0x0010: 계좌번호
-			0x0020: 신용카드번호
-			0x0040: IP 주소
-			0x0080: 생년월일
-			0x0100: 주소
-			0x0200: 사용자 정의
-			0x0400: 기타
+: 0x0001: 전화번호
+: 0x0002: 주민등록번호
+: 0x0004: 외국인등록번호
+: 0x0008: 전자우편
+: 0x0010: 계좌번호
+: 0x0020: 신용카드번호
+: 0x0040: IP 주소
+: 0x0080: 생년월일
+: 0x0100: 주소
+: 0x0200: 사용자 정의
+: 0x0400: 기타
 
         :param private_string:
             기타 문자열. 예: "신한카드"
@@ -791,6 +791,41 @@ class Hwp:
         return self.GetHeadingString()
 
     def get_message_box_mode(self):
+        """
+        현재 메시지 박스의 Mode를 int로 얻어온다.
+        set_message_box_mode와 함께 쓰인다.
+        6개의 대화상자에서 각각 확인/취소/종료/재시도/무시/예/아니오 버튼을
+        자동으로 선택할 수 있게 설정할 수 있으며 조합 가능하다.
+
+        :return:
+            // 메시지 박스의 종류
+            MB_MASK: 0x00FFFFFF
+            // 1. 확인(MB_OK) : IDOK(1)
+            MB_OK_IDOK: 0x00000001
+            MB_OK_MASK: 0x0000000F
+            // 2. 확인/취소(MB_OKCANCEL) : IDOK(1), IDCANCEL(2)
+            MB_OKCANCEL_IDOK: 0x00000010
+            MB_OKCANCEL_IDCANCEL: 0x00000020
+            MB_OKCANCEL_MASK: 0x000000F0
+            // 3. 종료/재시도/무시(MB_ABORTRETRYIGNORE) : IDABORT(3), IDRETRY(4), IDIGNORE(5)
+            MB_ABORTRETRYIGNORE_IDABORT: 0x00000100
+            MB_ABORTRETRYIGNORE_IDRETRY: 0x00000200
+            MB_ABORTRETRYIGNORE_IDIGNORE: 0x00000400
+            MB_ABORTRETRYIGNORE_MASK: 0x00000F00
+            // 4. 예/아니오/취소(MB_YESNOCANCEL) : IDYES(6), IDNO(7), IDCANCEL(2)
+            MB_YESNOCANCEL_IDYES: 0x00001000
+            MB_YESNOCANCEL_IDNO: 0x00002000
+            MB_YESNOCANCEL_IDCANCEL: 0x00004000
+            MB_YESNOCANCEL_MASK: 0x0000F000
+            // 5. 예/아니오(MB_YESNO) : IDYES(6), IDNO(7)
+            MB_YESNO_IDYES: 0x00010000
+            MB_YESNO_IDNO: 0x00020000
+            MB_YESNO_MASK: 0x000F0000
+            // 6. 재시도/취소(MB_RETRYCANCEL) : IDRETRY(4), IDCANCEL(2)
+            MB_RETRYCANCEL_IDRETRY: 0x00100000
+            MB_RETRYCANCEL_IDCANCEL: 0x00200000
+            MB_RETRYCANCEL_MASK: 0x00F00000
+        """
         return self.GetMessageBoxMode()
 
     def get_metatag_list(self, number, option):
