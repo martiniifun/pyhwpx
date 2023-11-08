@@ -1489,7 +1489,7 @@ class Hwp:
             생성된 컨트롤 object.
 
         Examples:
-            >>> ctrl = hwp.insert_picture(r"C:\Users\Administrator\Desktop\KakaoTalk_20230709_023118549.jpg")
+            >>> ctrl = hwp.insert_picture("C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg")
             >>> pset = ctrl.Properties  # == hwp.create_set("ShapeObject")
             >>> pset.SetItem("TreatAsChar", False)  # 글자처럼취급 해제
             >>> pset.SetItem("TextWrap", 2)  # 그림을 글 뒤로
@@ -1596,11 +1596,93 @@ class Hwp:
     def modify_metatag_properties(self, tag, remove, add):
         pass
 
-    def move_pos(self, move_id, para, pos):
-        pass
+    def move_pos(self, move_id=1, para=0, pos=0):
+        """
+        캐럿의 위치를 옮긴다.
+        move_id를 200(moveScrPos)으로 지정한 경우에는
+        스크린 좌표로 마우스 커서의 (x,y)좌표를 그대로 넘겨주면 된다.
+        201(moveScanPos)는 문서를 검색하는 중 캐럿을 이동시키려 할 경우에만 사용이 가능하다.
+        (솔직히 200 사용법은 잘 모르겠다;)
 
-    def move_to_field(self, field, text, start, select):
-        pass
+        :param move_id:
+            아래와 같은 값을 지정할 수 있다. 생략하면 1(moveCurList)이 지정된다.
+            0: 루트 리스트의 특정 위치.(para pos로 위치 지정) moveMain
+            1: 현재 리스트의 특정 위치.(para pos로 위치 지정) moveCurList
+            2: 문서의 시작으로 이동. moveTopOfFile
+            3: 문서의 끝으로 이동. moveBottomOfFile
+            4: 현재 리스트의 시작으로 이동 moveTopOfList
+            5: 현재 리스트의 끝으로 이동 moveBottomOfList
+            6: 현재 위치한 문단의 시작으로 이동 moveStartOfPara
+            7: 현재 위치한 문단의 끝으로 이동 moveEndOfPara
+            8: 현재 위치한 단어의 시작으로 이동.(현재 리스트만을 대상으로 동작한다.) moveStartOfWord
+            9: 현재 위치한 단어의 끝으로 이동.(현재 리스트만을 대상으로 동작한다.) moveEndOfWord
+            10: 다음 문단의 시작으로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextPara
+            11: 앞 문단의 끝으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevPara
+            12: 한 글자 뒤로 이동.(서브 리스트를 옮겨 다닐 수 있다.) moveNextPos
+            13: 한 글자 앞으로 이동.(서브 리스트를 옮겨 다닐 수 있다.) movePrevPos
+            14: 한 글자 뒤로 이동.(서브 리스트를 옮겨 다닐 수 있다. 머리말/꼬리말, 각주/미주, 글상자 포함.) moveNextPosEx
+            15: 한 글자 앞으로 이동.(서브 리스트를 옮겨 다닐 수 있다. 머리말/꼬리말, 각주/미주, 글상자 포함.) movePrevPosEx
+            16: 한 글자 뒤로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextChar
+            17: 한 글자 앞으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevChar
+            18: 한 단어 뒤로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextWord
+            19: 한 단어 앞으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevWord
+            20: 한 줄 아래로 이동. moveNextLine
+            21: 한 줄 위로 이동. movePrevLine
+            22: 현재 위치한 줄의 시작으로 이동. moveStartOfLine
+            23: 현재 위치한 줄의 끝으로 이동. moveEndOfLine
+            24: 한 레벨 상위로 이동한다. moveParentList
+            25: 탑레벨 리스트로 이동한다. moveTopLevelList
+            26: 루트 리스트로 이동한다. 현재 루트 리스트에 위치해 있어 더 이상 상위 리스트가 없을 때는 위치 이동 없이 반환한다. 이동한 후의 위치는 상위 리스트에서 서브리스트가 속한 컨트롤 코드가 위치한 곳이다. 위치 이동시 셀렉션은 무조건 풀린다. moveRootList
+            27: 현재 캐럿이 위치한 곳으로 이동한다. (캐럿 위치가 뷰의 맨 위쪽으로 올라간다.) moveCurrentCaret
+            100: 현재 캐럿이 위치한 셀의 왼쪽 moveLeftOfCell
+            101: 현재 캐럿이 위치한 셀의 오른쪽 moveRightOfCell
+            102: 현재 캐럿이 위치한 셀의 위쪽 moveUpOfCell
+            103: 현재 캐럿이 위치한 셀의 아래쪽 moveDownOfCell
+            104: 현재 캐럿이 위치한 셀에서 행(row)의 시작 moveStartOfCell
+            105: 현재 캐럿이 위치한 셀에서 행(row)의 끝 moveEndOfCell
+            106: 현재 캐럿이 위치한 셀에서 열(column)의 시작 moveTopOfCell
+            107: 현재 캐럿이 위치한 셀에서 열(column)의 끝 moveBottomOfCell
+            200: 한/글 문서창에서의 screen 좌표로서 위치를 설정 한다. moveScrPos
+            201: GetText() 실행 후 위치로 이동한다. moveScanPos
+
+        :param para:
+            이동할 문단의 번호.
+            0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다.
+            200(moveScrPos)가 지정되었을 때는 문단번호가 아닌 스크린 좌표로 해석된다.
+            (스크린 좌표 : LOWORD = x좌표, HIWORD = y좌표)
+
+        :param pos:
+            이동할 문단 중에서 문자의 위치.
+            0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다.
+
+        :return:
+            성공하면 True, 실패하면 False
+        """
+        return self.MovePos(moveID=move_id, Para=para, Pos=pos)
+
+    def move_to_field(self, field, text=True, start=True, select=False):
+        """
+        지정한 필드로 캐럿을 이동한다.
+
+        :param field:
+            필드이름. GetFieldText()/PutFieldText()와 같은 형식으로
+            이름 뒤에 ‘{{#}}’로 번호를 지정할 수 있다.
+
+        :param text:
+            필드가 누름틀일 경우 누름틀 내부의 텍스트로 이동할지(True)
+            누름틀 코드로 이동할지(False)를 지정한다.
+            누름틀이 아닌 필드일 경우 무시된다. 생략하면 True가 지정된다.
+
+        :param start:
+            필드의 처음(True)으로 이동할지 끝(False)으로 이동할지 지정한다.
+            select를 True로 지정하면 무시된다. 생략하면 True가 지정된다.
+
+        :param select:
+            필드 내용을 블록으로 선택할지(True), 캐럿만 이동할지(False) 지정한다.
+            생략하면 False가 지정된다.
+        :return:
+        """
+        return self.move_to_field(Field=field, Text=text, start=start, Select=select)
 
     def move_to_metatag(self, tag, text, start, select):
         pass
