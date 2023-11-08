@@ -638,6 +638,20 @@ class Hwp:
         return self.FontType(FontType=font_type)
 
     def get_bin_data_path(self, binid):
+        """
+        Binary Data(Temp Image 등)의 경로를 가져온다.
+
+        :param binid:
+            바이너리 데이터의 ID 값 (1부터 시작)
+
+        :return:
+            바이너리 데이터의 경로
+
+        Examples:
+            >>> path = hwp.GetBinDataPath(2)
+            >>> print(path)
+            C:/Users/User/AppData/Local/Temp/Hnc/BinData/EMB00004dd86171.jpg
+        """
         return self.GetBinDataPath(binid=binid)
 
     def get_cur_field_name(self, option):
