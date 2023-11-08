@@ -1503,11 +1503,39 @@ class Hwp:
         pass
 
     def is_command_lock(self, action_id):
+        """
+        해당 액션이 잠겨있는지 확인한다.
 
-        pass
+        :param action_id: 액션 ID. (ActionIDTable.Hwp 참조)
 
-    def key_indicator(self, seccnt, secno, prnpageno, colno, line, pos, over, ctrlname):
-        pass
+        :return:
+            잠겨있으면 True, 잠겨있지 않으면 False를 반환한다.
+        """
+        return self.IsCommandLock(actionID=action_id)
+
+    def key_indicator(self) -> tuple:
+        """
+        상태 바의 정보를 얻어온다.
+        (캐럿이 표 안에 있을 때 셀의 주소를 얻어오는 거의 유일한 방법이다.)
+
+        :return:
+            튜플(succ, seccnt, secno, prnpageno, colno, line, pos, over, ctrlname)
+            succ: 성공하면 True, 실패하면 False (항상 True임..)
+            seccnt: 총 구역
+            secno: 현재 구역
+            prnpageno: 쪽
+            colno: 단
+            line: 줄
+            pos: 칸
+            over: 삽입모드 (True: 수정, False: 삽입)
+            ctrlname: 캐럿이 위치한 곳의 컨트롤이름
+
+        Examples:
+            >>> # 현재 셀 주소(표 안에 있을 때)
+            >>> hwp.KeyIndicator()[-1][1:].split(")")[0]
+            "A1"
+        """
+        return self.KeyIndicator()
 
     def line_spacing_method(self, line_spacing):
         pass
@@ -1516,7 +1544,22 @@ class Hwp:
         pass
 
     def lock_command(self, act_id, is_lock):
-        pass
+        """
+        특정 액션이 실행되지 않도록 잠근다.
+
+        :param act_id: 액션 ID. (ActionIDTable.Hwp 참조)
+
+        :param is_lock:
+            True이면 액션의 실행을 잠그고, False이면 액션이 실행되도록 한다.
+
+        :return: None
+
+        Examples:
+            >>> # Undo와 Redo 잠그기
+            >>> hwp.LockCommand("Undo", True)
+            >>> hwp.LockCommand("Redo", True)
+        """
+        return self.LockCommand(ActID=act_id, isLock=is_lock)
 
     def lunar_to_solar(self, l_year, l_month, l_day, l_leap, s_year, s_month, s_day):
         pass
