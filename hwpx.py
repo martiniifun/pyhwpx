@@ -1488,6 +1488,12 @@ class Hwp:
         :return:
             생성된 컨트롤 object.
 
+        Examples:
+            >>> ctrl = hwp.insert_picture(r"C:\Users\Administrator\Desktop\KakaoTalk_20230709_023118549.jpg")
+            >>> pset = ctrl.Properties  # == hwp.create_set("ShapeObject")
+            >>> pset.SetItem("TreatAsChar", False)  # 글자처럼취급 해제
+            >>> pset.SetItem("TextWrap", 2)  # 그림을 글 뒤로
+            >>> ctrl.Properties = pset  # 설정한 값 적용(간단!)
         """
         return self.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption,
                                   Reverse=reverse, watermark=watermark, Effect=effect,
@@ -1497,6 +1503,7 @@ class Hwp:
         pass
 
     def is_command_lock(self, action_id):
+
         pass
 
     def key_indicator(self, seccnt, secno, prnpageno, colno, line, pos, over, ctrlname):
