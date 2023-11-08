@@ -834,11 +834,67 @@ class Hwp:
     def get_metatag_name_text(self, tag):
         return self.GetMetatagNameText(tag=tag)
 
-    def get_mouse_pos(self, x_rel_to, y_rel_to):
-        pass
+    def get_mouse_pos(self, x_rel_to=1, y_rel_to=1):
+        """
+        마우스의 현재 위치를 얻어온다.
+        단위가 HWPUNIT임을 주의해야 한다.
+        (1 inch = 7200 HWPUNIT, 1mm = 283.465 HWPUNIT)
 
-    def get_page_text(self, pgno, option):
-        pass
+        :param x_rel_to:
+            X좌표계의 기준 위치(기본값은 1:쪽기준)
+            0: 종이 기준으로 좌표를 가져온다.
+            1: 쪽 기준으로 좌표를 가져온다.
+
+        :param y_rel_to:
+            Y좌표계의 기준 위치(기본값은 1:쪽기준)
+            0: 종이 기준으로 좌표를 가져온다.
+            1: 쪽 기준으로 좌표를 가져온다.
+
+        :return:
+            "MousePos" ParameterSet이 반환된다.
+            아이템ID는 아래와 같다.
+            XRelTo(unsigned long): 가로 상대적 기준(0: 종이, 1: 쪽)
+            YRelTo(unsigned long): 세로 상대적 기준(0: 종이, 1: 쪽)
+            Page(unsigned long): 페이지 번호(0-based)
+            X(long): 가로 클릭한 위치(HWPUNIT)
+            Y(long): 세로 클릭한 위치(HWPUNIT)
+
+        Examples:
+            >>> pset = hwp.GetMousePos(1, 1)
+            >>> print("X축 기준:", "쪽" if pset.Item("XRelTo") else "종이")
+            >>> print("Y축 기준:", "쪽" if pset.Item("YRelTo") else "종이")
+            >>> print("현재", pset.Item("Page")+1, "페이지에 커서 위치")
+            >>> print("좌상단 기준 우측으로", int(pset.Item("X") / 283.465), "mm에 위치")
+            >>> print("좌상단 기준 아래로", int(pset.Item("Y") / 283.465), "mm에 위치")
+            X축 기준: 쪽
+            Y축 기준: 쪽
+            현재 2 페이지에 커서 위치
+            좌상단 기준 우측으로 79 mm에 위치
+            좌상단 기준 아래로 217 mm에 위치
+        """
+        return self.GetMousePos(XRelTo=x_rel_to, YRelTo=y_rel_to)
+
+    def get_page_text(self, pgno: int=0, option: hex=0x00) -> str:
+        """
+        페이지 단위의 텍스트 추출
+        일반 텍스트(글자처럼 취급 도형 포함)를 우선적으로 추출하고,
+        도형(표, 글상자) 내의 텍스트를 추출한다.
+
+        :param pgno:
+            텍스트를 추출 할 페이지의 번호(0부터 시작)
+
+        :param option:
+            추출 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다.
+            생략(또는 0xffffffff)하면 모든 텍스트를 추출한다.
+            0x00: 본문 텍스트를 추출한다.(항상 기본)(maskNormal)
+            0x01: 표에대한 텍스트를 추출한다.(maskTable)
+            0x02: 글상자 텍스트를 추출한다.(maskTextbox)
+            0x04: 캡션 텍스트를 추출한다. (표, ShapeObject)(maskCaption)
+
+        :return:
+            해당 페이지의 텍스트가 추출된다.
+        """
+        return self.GetPageText(pgno=pgno, option=option)
 
     def get_pos(self, list, para, pos):
         pass
