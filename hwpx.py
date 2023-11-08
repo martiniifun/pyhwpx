@@ -900,8 +900,21 @@ class Hwp:
         """
         return self.GetPageText(pgno=pgno, option=option)
 
-    def get_pos(self, list, para, pos):
-        pass
+    def get_pos(self) -> tuple[int]:
+        """
+        캐럿의 위치를 얻어온다.
+        파라미터 중 리스트는, 문단과 컨트롤들이 연결된 한/글 문서 내 구조를 뜻한다.
+        리스트 아이디는 문서 내 위치 정보 중 하나로서 SelectText에 넘겨줄 때 사용한다.
+        (파이썬 자료형인 list가 아님)
+
+        :return:
+            (List, para, pos) 튜플.
+            list: 캐럿이 위치한 문서 내 list ID(본문이 0)
+            para: 캐럿이 위치한 문단 ID(0부터 시작)
+            pos: 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
+
+        """
+        return self.GetPos()
 
     def get_pos_by_set(self):
         pass
