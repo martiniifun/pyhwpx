@@ -1337,7 +1337,7 @@ class Hwp:
                                   embedded=True, filloption=5, effect=1,
                                   watermark=False, brightness=0, contrast=0) -> bool:
         """
-        셀에 배경이미지를 삽입한다.
+        **셀**에 배경이미지를 삽입한다.
         CellBorderFill의 SetItem 중 FillAttr 의 SetItem FileName 에
         이미지의 binary data를 지정해 줄 수가 없어서 만든 함수다.
         기타 배경에 대한 다른 조정은 Action과 ParameterSet의 조합으로 가능하다.
@@ -1446,8 +1446,52 @@ class Hwp:
         """
         return self.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
-    def insert_picture(self, path, embedded, sizeoption, reverse, watermark, effect, width, height):
-        pass
+    def insert_picture(self, path, embedded=True, sizeoption=2, reverse=False, watermark=False, effect=0, width=0, height=0):
+        """
+        현재 캐럿의 위치에 그림을 삽입한다.
+        다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
+        이런 작업을 원하는 경우에는 그림을 클립보드로 복사하고,
+        Ctrl-V로 붙여넣기를 하는 수 밖에 없다.
+        또한, 셀의 크기를 조절할 때 이미지의 크기도 따라 변경되게 하고 싶다면
+        insert_background_picture 함수를 사용하는 것도 좋다.
+
+        :param path:
+            삽입할 이미지 파일의 전체경로
+
+        :param embedded:
+            이미지 파일을 문서 내에 포함할지 여부 (True/False). 생략하면 True
+
+        :param sizeoption:
+            삽입할 그림의 크기를 지정하는 옵션. 기본값은 2
+            0: 이미지 원래의 크기로 삽입한다. width와 height를 지정할 필요 없다.(realSize)
+            1: width와 height에 지정한 크기로 그림을 삽입한다.(specificSize)
+            2: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞게 자동 조절하여 삽입한다. (종횡비 유지안함)(cellSize)
+               캐럿이 셀 안에 있지 않으면 이미지의 원래 크기대로 삽입된다.
+            3: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞추어 원본 이미지의 가로 세로의 비율이 동일하게 확대/축소하여 삽입한다.(cellSizeWithSameRatio)
+
+        :param reverse: 이미지의 반전 유무 (True/False). 기본값은 False
+
+        :param watermark: watermark효과 유무 (True/False). 기본값은 False
+
+        :param effect:
+            그림 효과
+            0: 실제 이미지 그대로
+            1: 그레이 스케일
+            2: 흑백효과
+
+        :param width:
+            그림의 가로 크기 지정. 단위는 mm(HWPUNIT 아님!)
+
+        :param height:
+            그림의 높이 크기 지정. 단위는 mm
+
+        :return:
+            생성된 컨트롤 object.
+
+        """
+        return self.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption,
+                                  Reverse=reverse, watermark=watermark, Effect=effect,
+                                  Width=width, Height=height)
 
     def is_action_enable(self, action_id):
         pass
