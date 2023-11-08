@@ -917,7 +917,29 @@ class Hwp:
         return self.GetPos()
 
     def get_pos_by_set(self):
-        pass
+        """
+        현재 캐럿의 위치 정보를 ParameterSet으로 얻어온다.
+        해당 파라미터셋은 set_pos_by_set에 직접 집어넣을 수 있어 간편히 사용할 수 있다.
+
+        :return:
+            캐럿 위치에 대한 ParameterSet
+            해당 파라미터셋의 아이템은 아래와 같다.
+            "List": 캐럿이 위치한 문서 내 list ID(본문이 0)
+            "Para": 캐럿이 위치한 문단 ID(0부터 시작)
+            "Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
+
+        Examples:
+            >>> pset = hwp.get_pos_by_set()  # 캐럿위치 저장
+            >>> print(pset.Item("List"))
+            6
+            >>> print(pset.Item("Para"))
+            3
+            >>> print(pset.Item("Pos"))
+            2
+            >>> hwp.set_pos_by_set(pset)  # 캐럿위치 복원
+            True
+        """
+        return self.GetPosBySet()
 
     def get_script_source(self, filename):
         pass
