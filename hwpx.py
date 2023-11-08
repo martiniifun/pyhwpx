@@ -978,11 +978,52 @@ class Hwp:
         """
         return self.GetScriptSource(filename=filename)
 
-    def get_selected_pos(self, slist, spara, spos, elist, epara, epos):
-        pass
+    def get_selected_pos(self):
+        """
+        현재 설정된 블록의 위치정보를 얻어온다.
+
+        :return:
+            블록상태여부, 시작과 끝위치 인덱스인 6개 정수 등 7개 요소의 튜플을 리턴
+            (is_block, slist, spara, spos, elist, epara, epos)
+            is_block: 현재 블록선택상태 여부(블록상태이면 True)
+            slist: 설정된 블록의 시작 리스트 아이디.
+            spara: 설정된 블록의 시작 문단 아이디.
+            spos: 설정된 블록의 문단 내 시작 글자 단위 위치.
+            elist: 설정된 블록의 끝 리스트 아이디.
+            epara: 설정된 블록의 끝 문단 아이디.
+            epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
+
+        Examples:
+            >>> hwp.get_selected_pos()
+            (True, 0, 0, 16, 0, 7, 16)
+        """
+        return self.GetSelectedPos()
 
     def get_selected_pos_by_set(self, sset, eset):
-        pass
+        """
+        현재 설정된 블록의 위치정보를 얻어온다.
+        (GetSelectedPos의 ParameterSet버전)
+        실행 전 GetPos 형태의 파라미터셋 두 개를 미리 만들어서
+        인자로 넣어줘야 한다.
+
+        :param sset:
+            설정된 블록의 시작 파라메터셋 (ListParaPos)
+
+        :param eset:
+            설정된 블록의 끝 파라메터셋 (ListParaPos)
+
+        :return:
+            성공하면 True, 실패하면 False.
+            실행시 sset과 eset의 아이템 값이 업데이트된다.
+
+        Examples:
+            >>> sset = hwp.get_pos_by_set()
+            >>> eset = hwp.get_pos_by_set()
+            >>> hwp.GetSelectedPosBySet(sset, eset)
+            >>> hwp.SetPosBySet(eset)
+            True
+        """
+        return self.GetSelectedPosBySet(sset=sset, eset=eset)
 
     def get_text(self, text):
         pass
