@@ -657,6 +657,9 @@ class Hwp:
     def get_cur_field_name(self, option=0):
         """
         현재 캐럿이 위치하는 곳의 필드이름을 구한다.
+        이 함수를 통해 현재 필드가 셀필드인지 누름틀필드인지 구할 수 있다.
+        참고로, 필드 좌측에 커서가 붙어있을 때는 이름을 구할 수 있지만,
+        우측에 붙어 있을 때는 작동하지 않는다.
         GetFieldList()의 옵션 중에 hwpFieldSelection(=4)옵션은 사용하지 않는다.
 
 
@@ -675,7 +678,38 @@ class Hwp:
     def get_cur_metatag_name(self):
         return self.GetCurMetatagName()
 
-    def get_field_list(self, number, option):
+    def get_field_list(self, number=0, option=0):
+        """
+        문서에 존재하는 필드의 목록을 구한다.
+        문서 중에 동일한 이름의 필드가 여러 개 존재할 때는
+        number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 선택할 수 있다.
+        예를 들어 문서 중 title, body, title, body, footer 순으로
+        5개의 필드가 존재할 때, hwpFieldPlain, hwpFieldNumber, HwpFieldCount
+        세 가지 형식에 따라 다음과 같은 내용이 돌아온다.
+        hwpFieldPlain: "title\x2body\x2title\x2body\x2footer"
+        hwpFieldNumber: "title{{0}}\x2body{{0}}\x2title{{1}}\x2body{{1}}\x2footer{{0}}"
+        hwpFieldCount: "title{{2}}\x2body{{2}}\x2footer{{1}}"
+
+        :param number:
+            문서 내에서 동일한 이름의 필드가 여러 개 존재할 경우
+            이를 구별하기 위한 식별방법을 지정한다.
+            생략하면 0(hwpFieldPlain)이 지정된다.
+            0: 아무 기호 없이 순서대로 필드의 이름을 나열한다.(hwpFieldPlain)
+            1: 필드이름 뒤에 일련번호가 {{#}}과 같은 형식으로 붙는다.(hwpFieldNumber)
+            2: 필드이름 뒤에 그 필드의 개수가 {{#}}과 같은 형식으로 붙는다.(hwpFieldCount)
+
+        :param option:
+            다음과 같은 옵션을 조합할 수 있다. 0을 지정하면 모두 off이다.
+            생략하면 0이 지정된다.
+            0x01: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere과는 함께 지정할 수 없다.(hwpFieldCell)
+            0x02: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
+            0x04: 선택된 내용 안에 존재하는 필드 리스트를 구한다.(HwpFieldSelection)
+
+        :return:
+            각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
+            (가장 마지막 필드에는 0x02가 붙지 않는다.)
+            "필드이름#1\x02필드이름#2\x02...필드이름#n"
+        """
         return self.GetFieldList(Number=number, option=option)
 
     def get_field_text(self, field):
