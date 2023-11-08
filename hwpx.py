@@ -594,6 +594,44 @@ class Hwp:
         return self.FindDir(FindDir=find_dir)
 
     def find_private_info(self, private_type, private_string):
+        """
+        개인정보를 찾는다.
+        (비밀번호 설정 등의 이유, 현재 비활성화된 것으로 추정)
+
+        :param private_type:
+            보호할 개인정보 유형. 다음의 값을 하나이상 조합한다.
+			0x0001: 전화번호
+			0x0002: 주민등록번호
+			0x0004: 외국인등록번호
+			0x0008: 전자우편
+			0x0010: 계좌번호
+			0x0020: 신용카드번호
+			0x0040: IP 주소
+			0x0080: 생년월일
+			0x0100: 주소
+			0x0200: 사용자 정의
+			0x0400: 기타
+
+        :param private_string:
+            기타 문자열. 예: "신한카드"
+            0x0400 유형이 존재할 경우에만 유효하므로, 생략가능하다
+
+        :return:
+            찾은 개인정보의 유형 값. 다음과 같다.
+            0x0001 : 전화번호
+            0x0002 : 주민등록번호
+            0x0004 : 외국인등록번호
+            0x0008 : 전자우편
+            0x0010 : 계좌번호
+            0x0020 : 신용카드번호
+            0x0040 : IP 주소
+            0x0080 : 생년월일
+            0x0100 : 주소
+            0x0200 : 사용자 정의
+            0x0400 : 기타
+            개인정보가 없는 경우에는 0을 반환한다.
+            또한, 검색 중 문서의 끝(end of document)을 만나면 –1을 반환한다. 이는 함수가 무한히 반복하는 것을 막아준다.
+        """
         return self.FindPrivateInfo(PrivateType=private_type, PrivateString=private_string)
 
     def font_type(self, font_type):
