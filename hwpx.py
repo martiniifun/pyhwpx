@@ -1580,7 +1580,18 @@ class Hwp:
         pass
 
     def modify_field_properties(self, field, remove, add):
-        pass
+        """
+        지정한 필드의 속성을 바꾼다.
+        양식모드에서 편집가능/불가 여부를 변경하는 메서드지만,
+        현재 양식모드에서 어떤 속성이라도 편집가능하다..ㅜ
+
+
+        :param field:
+        :param remove:
+        :param add:
+        :return:
+        """
+        return self.ModifyFieldProperties(Field=field, remove=remove, Add=add)
 
     def modify_metatag_properties(self, tag, remove, add):
         pass
