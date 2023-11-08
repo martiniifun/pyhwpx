@@ -746,6 +746,34 @@ class Hwp:
         return self.GetFieldText(Field=field)
 
     def get_file_info(self, filename):
+        """
+        파일 정보를 알아낸다.
+        한글 문서를 열기 전에 암호가 걸린 문서인지 확인할 목적으로 만들어졌다.
+        (현재 한/글2022 기준으로 hwpx포맷에 대해서는 파일정보를 파악할 수 없다.)
+
+        :param filename:
+            정보를 구하고자 하는 hwp 파일의 전체 경로
+
+        :return:
+            "FileInfo" ParameterSet이 반환된다.
+            파라미터셋의 ItemID는 아래와 같다.
+            Format(string) : 파일의 형식.(HWP : 한/글 파일, UNKNOWN : 알 수 없음.)
+            VersionStr(string) : 파일의 버전 문자열. ex)5.0.0.3
+            VersionNum(unsigned int) : 파일의 버전. ex) 0x05000003
+            Encrypted(int) : 암호 여부 (현재는 파일 버전 3.0.0.0 이후 문서-한/글97, 한/글 워디안 및 한/글 2002 이상의 버전-에 대해서만 판단한다.)
+            (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
+
+        Examples:
+            >>> pset = hwp.GetFileInfo("C:/Users/Administrator/Desktop/이력서.hwp")
+            >>> print(pset.Item("Format"))
+            >>> print(pset.Item("VersionStr"))
+            >>> print(hex(pset.Item("VersionNum")))
+            >>> print(pset.Item("Encrypted"))
+            HWP
+            5.1.1.0
+            0x5010100
+            0
+        """
         return self.GetFileInfo(filename=filename)
 
     def get_font_list(self, langid):
