@@ -654,7 +654,22 @@ class Hwp:
         """
         return self.GetBinDataPath(binid=binid)
 
-    def get_cur_field_name(self, option):
+    def get_cur_field_name(self, option=0):
+        """
+        현재 캐럿이 위치하는 곳의 필드이름을 구한다.
+        GetFieldList()의 옵션 중에 hwpFieldSelection(=4)옵션은 사용하지 않는다.
+
+
+        :param option:
+            다음과 같은 옵션을 지정할 수 있다.
+            0: 모두 off. 생략하면 0이 지정된다.
+            1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+            2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
+
+        :return:
+            필드이름이 돌아온다.
+            필드이름이 없는 경우 빈 문자열이 돌아온다.
+        """
         return self.GetCurFieldName(option=option)
 
     def get_cur_metatag_name(self):
