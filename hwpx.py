@@ -780,6 +780,14 @@ class Hwp:
         return self.GetFontList(langid=langid)
 
     def get_heading_string(self):
+        """
+        현재 커서가 위치한 문단의 글머리표/문단번호/개요번호를 추출한다.
+        글머리표/문단번호/개요번호가 있는 경우, 해당 문자열을 얻어올 수 있다.
+        문단에 글머리표/문단번호/개요번호가 없는 경우, 빈 문자열이 추출된다.
+
+        :return:
+            (글머리표/문단번호/개요번호가 있다면) 해당 문자열이 반환된다.
+        """
         return self.GetHeadingString()
 
     def get_message_box_mode(self):
