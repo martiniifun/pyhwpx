@@ -1025,11 +1025,83 @@ class Hwp:
         """
         return self.GetSelectedPosBySet(sset=sset, eset=eset)
 
-    def get_text(self, text):
-        pass
+    def get_text(self):
+        """
+        문서 내에서 텍스트를 얻어온다.
+        줄바꿈 기준으로 텍스트를 얻어오므로 반복실행해야 한다.
+        get_text()의 사용이 끝나면 release_scan()을 반드시 호출하여
+        관련 정보를 초기화 해주어야 한다.
+        get_text()로 추출한 텍스트가 있는 문단으로 캐럿을 이동 시키려면
+        move_pos(201)을 실행하면 된다.
 
-    def get_text_file(self, format, option):
-        pass
+        :return:
+            (state: int, text: str) 형태의 튜플을 리턴한다.
+            state의 의미는 아래와 같다.
+            0: 텍스트 정보 없음
+            1: 리스트의 끝
+            2: 일반 텍스트
+            3: 다음 문단
+            4: 제어문자 내부로 들어감
+            5: 제어문자를 빠져나옴
+            101: 초기화 안 됨(init_scan() 실패 또는 init_scan()을 실행하지 않은 경우)
+            102: 텍스트 변환 실패
+            text는 추출한 텍스트 데이터이다.
+            텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,
+            이외의 특수 코드는 포함되지 않는다.
+
+        Examples:
+            >>> hwp.init_scan()
+            >>> while True:
+            ...     state, text = hwp.get_text()
+            ...     print(state, text)
+            ...     if state <= 1:
+            ...         break
+            ... hwp.release_scan()
+            2
+            2
+            2 ㅁㄴㅇㄹ
+            3
+            4 ㅂㅈㄷㄱ
+            2 ㅂㅈㄷㄱ
+            5
+            1
+
+        """
+        return self.GetText()
+
+    def get_text_file(self, format="UNICODE", option=""):
+        """
+        현재 열린 문서를 문자열로 넘겨준다.
+        이 함수는 JScript나 VBScript와 같이
+        직접적으로 local disk를 접근하기 힘든 언어를 위해 만들어졌으므로
+        disk를 접근할 수 있는 언어에서는 사용하지 않기를 권장.
+        disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
+        이 함수 역시 내부적으로는 save나 SaveBlockAction을 호출하도록 되어있고
+        텍스트로 저장된 파일이 메모리에서 3~4번 복사되기 때문에 느리고,
+        메모리를 낭비함.
+        팁: HTML로 추출시 표번호가 유지된다.
+
+        :param format:
+            파일의 형식. 기본값은 "UNICODE"
+            "HWP": HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+            "HWPML2X": HWP 형식과 호환. 문서의 모든 정보를 유지
+            "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
+            "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
+            "TEXT": 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
+            소문자로 입력해도 된다.
+
+        :param option:
+            "saveblock": 선택된 블록만 저장. 개체 선택 상태에서는 동작하지 않는다.
+            기본값은 빈 문자열("")
+
+        :return:
+            지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
+
+        Examples:
+            >>> hwp.get_text_file()
+            'ㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\n\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\n'
+        """
+        return self.GetTextFile(Format=format, option=option)
 
     def get_translate_lang_list(self, cur_lang):
         pass
@@ -1331,7 +1403,48 @@ class Hwp:
                                             Brightness=brightness, Contrast=contrast)
 
     def insert_ctrl(self, ctrl_id, initparam):
-        pass
+        """
+        현재 캐럿 위치에 컨트롤을 삽입한다.
+        ctrlid에 지정할 수 있는 컨트롤 ID는 HwpCtrl.CtrlID가 반환하는 ID와 동일하다.
+        자세한 것은  Ctrl 오브젝트 Properties인 CtrlID를 참조.
+        initparam에는 컨트롤의 초기 속성을 지정한다.
+        대부분의 컨트롤은 Ctrl.Properties와 동일한 포맷의 parameter set을 사용하지만,
+        컨트롤 생성 시에는 다른 포맷을 사용하는 경우도 있다.
+        예를 들어 표의 경우 Ctrl.Properties에는 "Table" 셋을 사용하지만,
+        생성 시 initparam에 지정하는 값은 "TableCreation" 셋이다.
+
+        :param ctrl_id:
+            삽입할 컨트롤 ID
+
+        :param initparam:
+            컨트롤 초기속성. 생략하면 default 속성으로 생성한다.
+
+        :return:
+            생성된 컨트롤 object
+
+        Examples:
+            >>> # 3행5열의 표를 삽입한다.
+            >>> from time import sleep
+            >>> tbset = hwp.CreateSet("TableCreation")
+            >>> tbset.SetItem("Rows", 3)
+            >>> tbset.SetItem("Cols", 5)
+            >>> row_set = tbset.CreateItemArray("RowHeight", 3)
+            >>> col_set = tbset.CreateItemArray("ColWidth", 5)
+            >>> row_set.SetItem(0, hwp.PointToHwpUnit(10))
+            >>> row_set.SetItem(1, hwp.PointToHwpUnit(10))
+            >>> row_set.SetItem(2, hwp.PointToHwpUnit(10))
+            >>> col_set.SetItem(0, hwp.MiliToHwpUnit(26))
+            >>> col_set.SetItem(1, hwp.MiliToHwpUnit(26))
+            >>> col_set.SetItem(2, hwp.MiliToHwpUnit(26))
+            >>> col_set.SetItem(3, hwp.MiliToHwpUnit(26))
+            >>> col_set.SetItem(4, hwp.MiliToHwpUnit(26))
+            >>> table = hwp.InsertCtrl("tbl", tbset)
+            >>> sleep(3)  # 표 생성 3초 후 다시 표 삭제
+            >>> hwp.delete_ctrl(table)
+
+
+        """
+        return self.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
     def insert_picture(self, path, embedded, sizeoption, reverse, watermark, effect, width, height):
         pass
