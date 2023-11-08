@@ -686,9 +686,9 @@ class Hwp:
         예를 들어 문서 중 title, body, title, body, footer 순으로
         5개의 필드가 존재할 때, hwpFieldPlain, hwpFieldNumber, HwpFieldCount
         세 가지 형식에 따라 다음과 같은 내용이 돌아온다.
-        hwpFieldPlain: "title\x2body\x2title\x2body\x2footer"
-        hwpFieldNumber: "title{{0}}\x2body{{0}}\x2title{{1}}\x2body{{1}}\x2footer{{0}}"
-        hwpFieldCount: "title{{2}}\x2body{{2}}\x2footer{{1}}"
+        hwpFieldPlain: "title\x02body\x02title\x02body\x02footer"
+        hwpFieldNumber: "title{{0}}\x02body{{0}}\x02title{{1}}\x02body{{1}}\x02footer{{0}}"
+        hwpFieldCount: "title{{2}}\x02body{{2}}\x02footer{{1}}"
 
         :param number:
             문서 내에서 동일한 이름의 필드가 여러 개 존재할 경우
@@ -725,7 +725,7 @@ class Hwp:
             지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.
             "필드이름": 이름의 필드 중 첫 번째
             "필드이름{{n}}": 지정한 이름의 필드 중 n 번째
-            예를 들어 "제목{{1}}\x2본문\x2이름{{0}}" 과 같이 지정하면
+            예를 들어 "제목{{1}}\x02본문\x02이름{{0}}" 과 같이 지정하면
             '제목'이라는 이름의 필드 중 두 번째,
             '본문'이라는 이름의 필드 중 첫 번째,
             '이름'이라는 이름의 필드 중 첫 번째를 각각 지정한다.
@@ -874,11 +874,14 @@ class Hwp:
         """
         return self.GetMousePos(XRelTo=x_rel_to, YRelTo=y_rel_to)
 
-    def get_page_text(self, pgno: int=0, option: hex=0x00) -> str:
+    def get_page_text(self, pgno: int=0, option: hex=0xffffffff) -> str:
         """
         페이지 단위의 텍스트 추출
         일반 텍스트(글자처럼 취급 도형 포함)를 우선적으로 추출하고,
         도형(표, 글상자) 내의 텍스트를 추출한다.
+        팁: get_text로는 글머리를 추출하지 않지만, get_page_text는 추출한다.
+        팁2: 아무리 get_page_text라도 유일하게 표번호는 추출하지 못한다.
+        표번호는 XML태그 속성 안에 저장되기 때문이다.
 
         :param pgno:
             텍스트를 추출 할 페이지의 번호(0부터 시작)
@@ -886,13 +889,14 @@ class Hwp:
         :param option:
             추출 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다.
             생략(또는 0xffffffff)하면 모든 텍스트를 추출한다.
-            0x00: 본문 텍스트를 추출한다.(항상 기본)(maskNormal)
+            0x00: 본문 텍스트만 추출한다.(maskNormal)
             0x01: 표에대한 텍스트를 추출한다.(maskTable)
             0x02: 글상자 텍스트를 추출한다.(maskTextbox)
             0x04: 캡션 텍스트를 추출한다. (표, ShapeObject)(maskCaption)
 
         :return:
             해당 페이지의 텍스트가 추출된다.
+            글머리는 추출하지만, 표번호는 추출하지 못한다.
         """
         return self.GetPageText(pgno=pgno, option=option)
 
