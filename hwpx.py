@@ -600,17 +600,17 @@ class Hwp:
 
         :param private_type:
             보호할 개인정보 유형. 다음의 값을 하나이상 조합한다.
-: 0x0001: 전화번호
-: 0x0002: 주민등록번호
-: 0x0004: 외국인등록번호
-: 0x0008: 전자우편
-: 0x0010: 계좌번호
-: 0x0020: 신용카드번호
-: 0x0040: IP 주소
-: 0x0080: 생년월일
-: 0x0100: 주소
-: 0x0200: 사용자 정의
-: 0x0400: 기타
+            0x0001: 전화번호
+            0x0002: 주민등록번호
+            0x0004: 외국인등록번호
+            0x0008: 전자우편
+            0x0010: 계좌번호
+            0x0020: 신용카드번호
+            0x0040: IP 주소
+            0x0080: 생년월일
+            0x0100: 주소
+            0x0200: 사용자 정의
+            0x0400: 기타
 
         :param private_string:
             기타 문자열. 예: "신한카드"
@@ -1694,7 +1694,93 @@ class Hwp:
         pass
 
     def open(self, filename, format, arg):
-        pass
+        """
+        문서를 연다.
+        
+        :param filename:
+            문서 파일의 전체경로
+
+        :param format:
+            문서 형식. 빈 문자열을 지정하면 자동으로 인식한다. 생략하면 빈 문자열이 지정된다.
+            "HWP": 한/글 native format
+            "HWP30": 한/글 3.X/96/97
+            "HTML": 인터넷 문서
+            "TEXT": 아스키 텍스트 문서
+            "UNICODE": 유니코드 텍스트 문서
+            "HWP20": 한글 2.0
+            "HWP21": 한글 2.1/2.5
+            "HWP15": 한글 1.X
+            "HWPML1X": HWPML 1.X 문서 (Open만 가능)
+            "HWPML2X": HWPML 2.X 문서 (Open / SaveAs 가능)
+            "RTF": 서식 있는 텍스트 문서
+            "DBF": DBASE II/III 문서
+            "HUNMIN": 훈민정음 3.0/2000
+            "MSWORD": 마이크로소프트 워드 문서
+            "DOCRTF": MS 워드 문서 (doc)
+            "OOXML": MS 워드 문서 (docx)
+            "HANA": 하나워드 문서
+            "ARIRANG": 아리랑 문서
+            "ICHITARO": 一太郞 문서 (일본 워드프로세서)
+            "WPS": WPS 문서
+            "DOCIMG": 인터넷 프레젠테이션 문서(SaveAs만 가능)
+            "SWF": Macromedia Flash 문서(SaveAs만 가능)
+
+        :param arg:
+            세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
+            arg에 지정할 수 있는 옵션의 의미는 필터가 정의하기에 따라 다르지만,
+            syntax는 다음과 같이 공통된 형식을 사용한다.
+            "key:value;key:value;..."
+            * key는 A-Z, a-z, 0-9, _ 로 구성된다.
+            * value는 타입에 따라 다음과 같은 3 종류가 있다.
+	        boolean: ex) fullsave:true (== fullsave)
+	        integer: ex) type:20
+	        string:  ex) prefix:_This_
+            * value는 생략 가능하며, 이때는 콜론도 생략한다.
+            * arg에 지정할 수 있는 옵션
+            <모든 파일포맷>
+                - setcurdir(boolean, true/false)
+                    로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다.
+                    hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
+            <HWP(HWPX)>
+                - lock (boolean, TRUE)
+                    로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
+                - notext (boolean, FALSE)
+                    텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
+                - template (boolean, FALSE)
+                    새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다.
+                    이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
+                - suspendpassword (boolean, FALSE)
+                    TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
+                - forceopen (boolean, FALSE)
+                    TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
+                - versionwarning (boolean, FALSE)
+                    TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
+            <HTML>
+                - code(string, codepage)
+                    문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
+                - textunit(boolean, pixel)
+                    Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
+                - formatunit(boolean, pixel)
+                    Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+                ※ [codepage 종류]
+                    - ks :  한글 KS 완성형
+                    - kssm: 한글 조합형
+                    - sjis : 일본
+                    - utf8 : UTF8
+                    - unicode: 유니코드
+                    - gb : 중국 간체
+                    - big5 : 중국 번체
+                    - acp : Active Codepage 현재 시스템의 코드 페이지
+            <DOCIMG>
+                - asimg(boolean, FALSE)
+                    저장할 때 페이지를 image로 저장
+                - ashtml(boolean, FALSE)
+                    저장할 때 페이지를 html로 저장
+
+        :return:
+            성공하면 True, 실패하면 False
+        """
+        return self.Open(filename=filename, Format=format, arg=arg)
 
     def page_num_position(self, pagenumpos):
         pass
@@ -1729,11 +1815,52 @@ class Hwp:
     def print_type(self, print_method):
         pass
 
-    def protect_private_info(self, potecting_char, private_pattern_type):
-        pass
+    def protect_private_info(self, protecting_char, private_pattern_type):
+        """
+        개인정보를 보호한다.
+        한/글의 경우 “찾아서 보호”와 “선택 글자 보호”를 다른 기능으로 구현하였지만,
+        API에서는 하나의 함수로 구현한다.
+
+        :param potecting_char:
+            보호문자. 개인정보는 해당문자로 가려진다.
+
+        :param private_pattern_type:
+            보호유형. 개인정보 유형마다 설정할 수 있는 값이 다르다.
+            0값은 기본 보호유형으로 모든 개인정보를 보호문자로 보호한다.
+
+        :return:
+            개인정보를 보호문자로 치환한 경우에 true를 반환한다.
+	        개인정보를 보호하지 못할 경우 false를 반환한다.
+	        문자열이 선택되지 않은 상태이거나, 개체가 선택된 상태에서는 실패한다.
+	        또한, 보호유형이 잘못된 설정된 경우에도 실패한다.
+	        마지막으로 보호암호가 설정되지 않은 경우에도 실패하게 된다.
+        """
+        return self.ProtectPrivateInfo(PotectingChar=protecting_char, PrivatePatternType=private_pattern_type)
 
     def put_field_text(self, field, text):
-        pass
+        """
+        지정한 필드의 내용을 채운다.
+        현재 필드에 입력되어 있는 내용은 지워진다.
+        채워진 내용의 글자모양은 필드에 지정해 놓은 글자모양을 따라간다.
+        fieldlist의 필드 개수와, textlist의 텍스트 개수는 동일해야 한다.
+        존재하지 않는 필드에 대해서는 무시한다.
+
+        :param field:
+            내용을 채울 필드 이름의 리스트.
+            한 번에 여러 개의 필드를 지정할 수 있으며,
+            형식은 GetFieldText와 동일하다.
+            다만 필드 이름 뒤에 "{{#}}"로 번호를 지정하지 않으면
+            해당 이름을 가진 모든 필드에 동일한 텍스트를 채워 넣는다.
+            즉, PutFieldText에서는 ‘필드이름’과 ‘필드이름{{0}}’의 의미가 다르다.
+
+        :param text:
+            필드에 채워 넣을 문자열의 리스트.
+            형식은 필드 리스트와 동일하게 필드의 개수만큼
+            텍스트를 0x02로 구분하여 지정한다.
+
+        :return: None
+        """
+        return self.PutFieldText(Field=field, Text=text)
 
     def put_metatag_name_text(self, tag, text):
         pass
