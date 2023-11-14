@@ -2311,7 +2311,24 @@ class Hwp:
         return self.SetPosBySet(dispVal=disp_val)
 
     def set_private_info_password(self, password):
-        pass
+        """
+        개인정보보호를 위한 암호를 등록한다.
+        개인정보 보호를 설정하기 위해서는
+        우선 개인정보 보호 암호를 먼저 설정해야 한다.
+        그러므로 개인정보 보호 함수를 실행하기 이전에
+        반드시 이 함수를 호출해야 한다.
+        (현재 작동하지 않는다.)
+
+        :param password:
+            새 암호
+
+        :return:
+            정상적으로 암호가 설정되면 true를 반환한다.
+            암호설정에 실패하면 false를 반환한다. false를 반환하는 경우는 다음과 같다
+            1. 암호의 길이가 너무 짧거나 너무 길 때 (영문: 5~44자, 한글: 3~22자)
+            2. 암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임
+        """
+        return self.SetPrivateInfoPassword(Password=password)
 
     def set_text_file(self, data, format, option):
         pass
