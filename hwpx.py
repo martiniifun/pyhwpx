@@ -2005,6 +2005,11 @@ class Hwp:
             새로운 필드 이름의 리스트. oldname과 동일한 개수의 필드 이름을 "\x02"로 구분하여 지정한다.
 
         :return: None
+
+        Examples:
+            >>> hwp.create_field("asdf")  # "asdf" 필드 생성
+            >>> hwp.rename_field("asdf", "zxcv")  # asdf 필드명을 "zxcv"로 변경
+            >>> hwp.put_field_text("zxcv", "Hello world!")  # zxcv 필드에 텍스트 삽입
         """
         return self.RenameField(oldname=oldname, newname=newname)
 
