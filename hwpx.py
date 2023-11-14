@@ -8,28 +8,40 @@ import win32com.client as win32
 
 
 class Hwp:
-    def __init__(self):
-        hwp = ""
+    def __init__(self, new=False, visible=True, register_module=True):
+        """
+        아래아한글 인스턴스를 실행한다.
+
+        :param new:
+            new=True인 경우, 기존에 열려 있는 한/글 인스턴스와 무관한 새 인스턴스를 생성한다.
+            new=False(기본값)인 경우, 기존에 열려 있는 한/글 인스턴스를 조작하게 된다.
+        :param visible:
+            한/글 인스턴스를 백그라운드에서 실행할지, 화면에 나타낼지 선택한다.
+            기본값은 True로, 화면에 나타나게 된다.
+            visible=False일 경우 백그라운드에서 작업할 수 있다.
+        """
+        hwp = 0
         context = pythoncom.CreateBindCtx(0)
 
         # 현재 실행중인 프로세스를 가져옵니다.
         running_coms = pythoncom.GetRunningObjectTable()
         monikers = running_coms.EnumRunning()
 
-        for moniker in monikers:
-            name = moniker.GetDisplayName(context, moniker);
-            # moniker의 DisplayName을 통해 한글을 가져옵니다
-            # 한글의 경우 HwpObject.버전으로 각 버전별 실행 이름을 설정합니다.
-            if name.startswith('!HwpObject.'):
-                # 120은 한글 2022의 경우입니다.
-                # 현재 moniker를 통해 ROT에서 한글의 object를 가져옵니다.
-                obj = running_coms.GetObject(moniker)
-                # 가져온 object를 Dispatch를 통해 사용할수 있는 객체로 변환시킵니다.
-                hwp = win32.gencache.EnsureDispatch(obj.QueryInterface(pythoncom.IID_IDispatch))
-                # 그이후는 오토메이션 api를 사용할수 있습니다
+        if not new:
+            for moniker in monikers:
+                name = moniker.GetDisplayName(context, moniker)
+                # moniker의 DisplayName을 통해 한글을 가져옵니다
+                # 한글의 경우 HwpObject.버전으로 각 버전별 실행 이름을 설정합니다.
+                if name.startswith('!HwpObject.'):
+                    # 120은 한글 2022의 경우입니다.
+                    # 현재 moniker를 통해 ROT에서 한글의 object를 가져옵니다.
+                    obj = running_coms.GetObject(moniker)
+                    # 가져온 object를 Dispatch를 통해 사용할수 있는 객체로 변환시킵니다.
+                    hwp = win32.gencache.EnsureDispatch(obj.QueryInterface(pythoncom.IID_IDispatch))
+                    # 그이후는 오토메이션 api를 사용할수 있습니다
         if not hwp:
             hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
-        hwp.XHwpWindows.Item(0).Visible = True
+        hwp.XHwpWindows.Item(0).Visible = visible
 
         self.Application = hwp.Application
         self.ArcType = hwp.ArcType
@@ -235,6 +247,9 @@ class Hwp:
         self.XHwpODBC = hwp.XHwpODBC
         self.XHwpWindows = hwp.XHwpWindows
 
+        if register_module:
+            self.register_module()
+
     def get_sel_text(self):
         self.InitScan(Range=0xff)
         total_text = ""
@@ -362,7 +377,7 @@ class Hwp:
         :param option:
             편집중인 문서의 내용에 대한 처리 방법, 생략하면 1(hwpDiscard)가 선택된다.
             0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
-            1: 문서의 내용을 버린다. (hwpDiscard)
+            1: 문서의 내용을 버린다. (hwpDiscard, 기본값)
             2: 문서가 변경된 경우 저장한다. (hwpSaveIfDirty)
             3: 무조건 저장한다. (hwpSave)
 
@@ -371,8 +386,6 @@ class Hwp:
 
         :examples:
             >>> hwp.clear(1)
-            True
-
         """
         return self.Clear(option=option)
 
@@ -417,7 +430,7 @@ class Hwp:
         """
         return self.CreateAction(actidstr=actidstr)
 
-    def create_field(self, name: str, direction: str="", memo: str="") -> bool:
+    def create_field(self, name: str, direction: str = "", memo: str = "") -> bool:
         """
         캐럿의 현재 위치에 누름틀을 생성한다.
 
@@ -874,7 +887,7 @@ class Hwp:
         """
         return self.GetMousePos(XRelTo=x_rel_to, YRelTo=y_rel_to)
 
-    def get_page_text(self, pgno: int=0, option: hex=0xffffffff) -> str:
+    def get_page_text(self, pgno: int = 0, option: hex = 0xffffffff) -> str:
         """
         페이지 단위의 텍스트 추출
         일반 텍스트(글자처럼 취급 도형 포함)를 우선적으로 추출하고,
@@ -1446,7 +1459,8 @@ class Hwp:
         """
         return self.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
-    def insert_picture(self, path, embedded=True, sizeoption=2, reverse=False, watermark=False, effect=0, width=0, height=0):
+    def insert_picture(self, path, embedded=True, sizeoption=2, reverse=False, watermark=False, effect=0, width=0,
+                       height=0):
         """
         현재 캐럿의 위치에 그림을 삽입한다.
         다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
@@ -1872,13 +1886,20 @@ class Hwp:
         pass
 
     def quit(self):
-        pass
+        """
+        한/글을 종료한다.
+        단, 저장되지 않은 변경사항이 있는 경우 팝업이 뜨므로
+        clear나 save 등의 메서드를 실행한 후에 quit을 실행해야 한다.
+        :return:
+        """
+        return self.Quit()
 
     def rgb_color(self, red, green, blue):
         pass
 
     def register_module(self, module_type="FilePathCheckDLL", module_data="FilePathCheckerModule"):
         """
+        (인스턴스 생성시 자동으로 실행된다.)
         한/글 컨트롤에 부가적인 모듈을 등록한다.
         사용자가 모르는 사이에 파일이 수정되거나 서버로 전송되는 것을 막기 위해
         한/글 오토메이션은 파일을 불러오거나 저장할 때 사용자로부터 승인을 받도록 되어있다.
@@ -1903,9 +1924,58 @@ class Hwp:
             >>> hwp.register_module("FilePathChekDLL", "FilePathCheckerModule")
             True
         """
+        self.register_regedit()
         return self.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
+    def register_regedit(self):
+        import os
+        import subprocess
+        from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, KEY_WRITE, SetValueEx, REG_SZ, CloseKey
+
+        location = [i.split(": ")[1] for i in subprocess.check_output(['pip', 'show', 'hwpx']).decode().split("\r\n") if
+                    i.startswith("Location: ")][0]
+        winup_path = r"Software\HNC\HwpAutomation\Modules"
+
+        # HKEY_LOCAL_MACHINE와 연결 생성 후 핸들 얻음
+        reg_handle = ConnectRegistry(None, HKEY_CURRENT_USER)
+
+        # 얻은 행동을 사용해 WRITE 권한으로 레지스트리 키를 엶
+        file_path_checker_module = winup_path + r"\FilePathCheckerModule"
+        key = OpenKey(reg_handle, winup_path, 0, KEY_WRITE)
+        SetValueEx(key, "FilePathCheckerModule", 0, REG_SZ, os.path.join(location, "FilePathCheckerModule.dll"))
+        CloseKey(key)
+
     def register_private_info_pattern(self, private_type, private_pattern):
+        """
+        개인정보의 패턴을 등록한다.
+        (현재 작동하지 않는다.)
+
+        :param private_type:
+            등록할 개인정보 유형. 다음의 값 중 하나다.
+			0x0001: 전화번호
+			0x0002: 주민등록번호
+			0x0004: 외국인등록번호
+			0x0008: 전자우편
+			0x0010: 계좌번호
+			0x0020: 신용카드번호
+			0x0040: IP 주소
+			0x0080: 생년월일
+			0x0100: 주소
+			0x0200: 사용자 정의
+
+        :param private_pattern:
+            등록할 개인정보 패턴. 예를 들면 이런 형태로 입력한다.
+			(예) 주민등록번호 - "NNNNNN-NNNNNNN"
+			한/글이 이미 정의한 패턴은 정의하면 안 된다.
+			함수를 여러 번 호출하는 것을 피하기 위해 패턴을 “;”기호로 구분
+			반속해서 입력할 수 있도록 한다.
+
+        :return:
+            등록이 성공하였으면 True, 실패하였으면 False
+
+        Examples:
+            >>> hwp.RegisterPrivateInfoPattern(0x01, "NNNN-NNNN;NN-NN-NNNN-NNNN")  # 전화번호패턴
+        """
         pass
 
     def release_action(self, action):
@@ -2013,6 +2083,17 @@ class Hwp:
     def set_user_info(self, user_info_id, value):
         pass
 
+    def set_visible(self, visible):
+        """
+        현재 조작중인 한/글 인스턴스의 백그라운드 숨김여부를 변경할 수 있다.
+
+        :param visible:
+            visible=False로 설정하면 현재 조작중인 한/글 인스턴스가 백그라운드로 숨겨진다.
+
+        :return:
+        """
+        self.XHwpWindows.Item(0).Visible = visible
+
     def side_type(self, side_type):
         pass
 
@@ -2084,5 +2165,3 @@ class Hwp:
 
     def width_rel(self, width_rel):
         pass
-
-
