@@ -2017,7 +2017,32 @@ class Hwp:
         pass
 
     def replace_action(self, old_action_id, new_action_id):
-        pass
+        """
+        특정 Action을 다른 Action으로 대체한다.
+        이는 메뉴나 단축키로 호출되는 Action을 대체할 뿐,
+        CreateAction()이나, Run() 등의 함수를 이용할 때에는 아무런 영향을 주지 않는다.
+        즉, ReplaceAction(“Cut", "Copy")을 호출하여
+        ”오려내기“ Action을 ”복사하기“ Action으로 교체하면
+        Ctrl+X 단축키나 오려내기 메뉴/툴바 기능을 수행하더라도 복사하기 기능이 수행되지만,
+        코드 상에서 Run("Cut")을 실행하면 오려내기 Action이 실행된다.
+        또한, 대체된 Action을 원래의 Action으로 되돌리기 위해서는
+        NewActionID의 값을 원래의 Action으로 설정한 뒤 호출한다. 이를테면 이런 식이다.
+        >>> hwp.replace_action("Cut", "Cut")
+
+        :param old_action_id:
+            변경될 원본 Action ID.
+            한/글 컨트롤에서 사용할 수 있는 Action ID는
+            ActionTable.hwp(별도문서)를 참고한다.
+
+        :param new_action_id:
+            변경할 대체 Action ID.
+            기존의 Action ID와 UserAction ID(ver:0x07050206) 모두 사용가능하다.
+
+        :return:
+            Action을 바꾸면 True를 바꾸지 못했다면 False를 반환한다.
+        """
+
+        return self.ReplaceAction(OldActionID=old_action_id, NewActionID=new_action_id)
 
     def replace_font(self, langid, des_font_name, des_font_type, new_font_name, new_font_type):
         pass
