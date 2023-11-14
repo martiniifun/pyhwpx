@@ -2112,7 +2112,34 @@ class Hwp:
         return self.Save(save_if_dirty=save_if_dirty)
 
     def save_as(self, path, format, arg):
-        pass
+        """
+        현재 편집중인 문서를 지정한 이름으로 저장한다.
+        format, arg의 일반적인 개념에 대해서는 Open()참조.
+        "Hwp" 포맷으로 파일 저장 시 arg에 지정할 수 있는 옵션은 다음과 같다.
+        "lock:true" - 저장한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
+        "backup:false" - 백업 파일 생성 여부
+        "compress:true" - 압축 여부
+        "fullsave:false" - 스토리지 파일을 완전히 새로 생성하여 저장
+        "prvimage:2" - 미리보기 이미지 (0=off, 1=BMP, 2=GIF)
+        "prvtext:1" - 미리보기 텍스트 (0=off, 1=on)
+        "autosave:false" - 자동저장 파일로 저장할 지 여부 (TRUE: 자동저장, FALSE: 지정 파일로 저장)
+        "export" - 다른 이름으로 저장하지만 열린 문서는 바꾸지 않는다.(lock:false와 함께 설정되어 있을 시 동작)
+        여러 개를 한꺼번에 할 경우에는 세미콜론으로 구분하여 연속적으로 사용할 수 있다.
+        "lock:TRUE;backup:FALSE;prvtext:1"
+
+        :param path:
+            문서 파일의 전체경로
+
+        :param format:
+            문서 형식. 생략하면 "HWP"가 지정된다.
+
+        :param arg:
+            세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
+
+        :return:
+            성공하면 True, 실패하면 False
+        """
+        return self.SaveAs(Path=path, Format=format, arg=arg)
 
     def scan_font(self):
         pass
