@@ -417,7 +417,7 @@ class Hwp:
         """
         return self.CreateAction(actidstr=actidstr)
 
-    def create_field(self, direction: str, memo: str, name: str) -> bool:
+    def create_field(self, name: str, direction: str="", memo: str="") -> bool:
         """
         캐럿의 현재 위치에 누름틀을 생성한다.
 
@@ -1693,7 +1693,7 @@ class Hwp:
     def numbering(self, numbering):
         pass
 
-    def open(self, filename, format, arg):
+    def open(self, filename, format="", arg=""):
         """
         문서를 연다.
         
@@ -1859,17 +1859,51 @@ class Hwp:
             텍스트를 0x02로 구분하여 지정한다.
 
         :return: None
+
+        Examples:
+            >>> # 현재 캐럿 위치에 zxcv 필드 생성
+            >>> hwp.create_field("zxcv")
+            >>> # zxcv 필드에 "Hello world!" 텍스트 삽입
+            >>> hwp.put_field_text("zxcv", "Hello world!")
         """
         return self.PutFieldText(Field=field, Text=text)
 
     def put_metatag_name_text(self, tag, text):
         pass
 
+    def quit(self):
+        pass
+
     def rgb_color(self, red, green, blue):
         pass
 
-    def register_module(self, module_type, module_data):
-        pass
+    def register_module(self, module_type="FilePathCheckDLL", module_data="FilePathCheckerModule"):
+        """
+        한/글 컨트롤에 부가적인 모듈을 등록한다.
+        사용자가 모르는 사이에 파일이 수정되거나 서버로 전송되는 것을 막기 위해
+        한/글 오토메이션은 파일을 불러오거나 저장할 때 사용자로부터 승인을 받도록 되어있다.
+        그러나 이미 검증받은 웹페이지이거나,
+        이미 사용자의 파일 시스템에 대해 강력한 접근 권한을 갖는 응용프로그램의 경우에는
+        이러한 승인절차가 아무런 의미가 없으며 오히려 불편하기만 하다.
+        이런 경우 register_module을 통해 보안승인모듈을 등록하여 승인절차를 생략할 수 있다.
+
+        :param module_type:
+            모듈의 유형. 기본값은 "FilePathCheckDLL"이다.
+            파일경로 승인모듈을 DLL 형태로 추가한다.
+
+        :param module_data:
+            Registry에 등록된 DLL 모듈 ID
+
+        :return:
+            추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
+
+        Examples:
+            >>> # 사전에 레지스트리에 보안모듈이 등록되어 있어야 한다.
+            >>> # 보다 자세한 설명은 공식문서 참조
+            >>> hwp.register_module("FilePathChekDLL", "FilePathCheckerModule")
+            True
+        """
+        return self.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
     def register_private_info_pattern(self, private_type, private_pattern):
         pass
@@ -1884,6 +1918,9 @@ class Hwp:
         pass
 
     def rename_metatag(self, oldtag, newtag):
+        pass
+
+    def replace_action(self, old_action_id, new_action_id):
         pass
 
     def replace_font(self, langid, des_font_name, des_font_type, new_font_name, new_font_type):
@@ -2047,3 +2084,5 @@ class Hwp:
 
     def width_rel(self, width_rel):
         pass
+
+
