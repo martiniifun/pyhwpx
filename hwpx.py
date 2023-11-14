@@ -2096,8 +2096,20 @@ class Hwp:
         """
         return self.RunScriptMacro(FunctionName=function_name, uMacroType=u_macro_type, uScriptType=u_script_type)
 
-    def save(self, save_if_dirty):
-        pass
+    def save(self, save_if_dirty=True):
+        """
+        현재 편집중인 문서를 저장한다.
+        문서의 경로가 지정되어있지 않으면 “새 이름으로 저장” 대화상자가 뜬다.
+
+        :param save_if_dirty:
+            True를 지정하면 문서가 변경된 경우에만 저장한다.
+            False를 지정하면 변경여부와 상관없이 무조건 저장한다.
+            생략하면 True가 지정된다.
+
+        :return:
+            성공하면 True, 실패하면 False
+        """
+        return self.Save(save_if_dirty=save_if_dirty)
 
     def save_as(self, path, format, arg):
         pass
