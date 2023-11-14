@@ -1982,10 +1982,31 @@ class Hwp:
         pass
 
     def release_scan(self):
-        pass
+        """
+        InitScan()으로 설정된 초기화 정보를 해제한다.
+        텍스트 검색작업이 끝나면 반드시 호출하여 설정된 정보를 해제해야 한다.
+
+        :return: None
+        """
+        return self.ReleaseScan()
 
     def rename_field(self, oldname, newname):
-        pass
+        """
+        지정한 필드의 이름을 바꾼다.
+        예를 들어 oldname에 "title{{0}}\x2title{{1}}",
+        newname에 "tt1\x2tt2로 지정하면 첫 번째 title은 tt1로, 두 번째 title은 tt2로 변경된다.
+        oldname의 필드 개수와, newname의 필드 개수는 동일해야 한다.
+        존재하지 않는 필드에 대해서는 무시한다.
+
+        :param oldname:
+            이름을 바꿀 필드 이름의 리스트. 형식은 PutFieldText와 동일하게 "\x02"로 구분한다.
+
+        :param newname:
+            새로운 필드 이름의 리스트. oldname과 동일한 개수의 필드 이름을 "\x02"로 구분하여 지정한다.
+
+        :return: None
+        """
+        return self.RenameField(oldname=oldname, newname=newname)
 
     def rename_metatag(self, oldtag, newtag):
         pass
