@@ -2051,7 +2051,17 @@ class Hwp:
         pass
 
     def run(self, act_id):
-        pass
+        """
+        액션을 실행한다. ActionTable.hwp 액션 리스트 중에서
+        "별도의 파라미터가 필요하지 않은" 단순 액션을 run으로 호출할 수 있다.
+
+        :param act_id:
+            액션 ID (ActionIDTable.hwp 참조)
+
+        :return:
+            성공시 True, 실패시 False를 반환한다.
+        """
+        return self.HAction.Run(ActID=act_id)
 
     def run_script_macro(self, function_name, u_macro_type=0, u_script_type=0):
         """
