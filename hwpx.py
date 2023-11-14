@@ -2334,7 +2334,18 @@ class Hwp:
         pass
 
     def set_title_name(self, title):
-        pass
+        """
+        한/글 프로그램의 타이틀을 변경한다.
+        파일명과 무관하게 설정할 수 있으며,
+        모든 특수문자를 허용한다.
+
+        :param title:
+            변경할 타이틀 문자열
+
+        :return:
+            성공시 True
+        """
+        return self.SetTitleName(Title=title)
 
     def set_user_info(self, user_info_id, value):
         pass
