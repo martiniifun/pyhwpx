@@ -1597,8 +1597,9 @@ class Hwp:
         """
         지정한 필드의 속성을 바꾼다.
         양식모드에서 편집가능/불가 여부를 변경하는 메서드지만,
-        현재 양식모드에서 어떤 속성이라도 편집가능하다..ㅜ
-
+        현재 양식모드에서 어떤 속성이라도 편집가능하다..
+        혹시 필드명이나 메모, 지시문을 수정하고 싶다면
+        set_cur_field_name 메서드를 사용하자.
 
         :param field:
         :param remove:
@@ -2145,13 +2146,65 @@ class Hwp:
         pass
 
     def select_text(self, spara, spos, epara, epos):
-        pass
+        """
+        특정 범위의 텍스트를 블록선택한다.
+        epos가 가리키는 문자는 포함되지 않는다.
+
+        :param spara:
+            블록 시작 위치의 문단 번호.
+
+        :param spos:
+            블록 시작 위치의 문단 중에서 문자의 위치.
+
+        :param epara:
+            블록 끝 위치의 문단 번호.
+
+        :param epos:
+            블록 끝 위치의 문단 중에서 문자의 위치.
+
+        :return:
+            성공하면 True, 실패하면 False
+        """
+        return self.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
 
     def set_bar_code_image(self, lp_image_path, pgno, index, x, y, width, height):
+        """
+        작동하지 않는다.
+
+        :param lp_image_path:
+        :param pgno:
+        :param index:
+        :param x:
+        :param y:
+        :param width:
+        :param height:
+        :return:
+        """
         pass
 
     def set_cur_field_name(self, field, option, direction, memo):
-        pass
+        """
+        현재 캐럿이 위치하는 곳의 필드이름을 설정한다.
+        GetFieldList()의 옵션 중에 4(hwpFieldSelection) 옵션은 사용하지 않는다.
+
+        :param field:
+            데이터 필드 이름
+
+        :param option:
+            다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
+            1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+            2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
+
+        :param direction:
+            누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다.
+
+        :param memo:
+            누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
+
+        :return:
+            성공하면 True, 실패하면 False
+        """
+        return self.SetCurFieldName(Field=field, option=option, Direction=direction, memo=memo)
 
     def set_cur_metatag_name(self, tag):
         pass
@@ -2160,16 +2213,102 @@ class Hwp:
         pass
 
     def set_field_view_option(self, option):
-        pass
+        """
+        양식모드와 읽기전용모드일 때 현재 열린 문서의 필드의 겉보기 속성(『』표시)을 바꾼다.
+        EditMode와 비슷하게 현재 열려있는 문서에 대한 속성이다. 따라서 저장되지 않는다.
+        (작동하지 않음)
+
+        :param option:
+            겉보기 속성 bit
+            1: 누름틀의 『』을 표시하지 않음, 기타필드의 『』을 표시하지 않음
+            2: 누름틀의 『』을 빨간색으로 표시, 기타필드의 『』을 흰색으로 표시(기본값)
+            3: 누름틀의 『』을 흰색으로 표시, 기타필드의 『』을 흰색으로 표시
+
+        :return:
+            설정된 속성이 반환된다.
+            에러일 경우 0이 반환된다.
+        """
+        return self.SetFieldViewOption(option=option)
 
     def set_message_box_mode(self, mode):
-        pass
+        """
+        한/글에서 쓰는 다양한 메시지박스가 뜨지 않고,
+        자동으로 특정 버튼을 클릭한 효과를 주기 위해 사용한다.
+        한/글에서 한/글이 로드된 후 SetMessageBoxMode()를 호출해서 사용한다.
+        SetMessageBoxMode는 하나의 파라메터를 받으며,
+        해당 파라메터는 자동으로 스킵할 버튼의 값으로 설정된다.
+        예를 들어, MB_OK_IDOK (0x00000001)값을 주면,
+        MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.
+
+        :param mode:
+            // 메시지 박스의 종류
+            #define MB_MASK						0x00FFFFFF
+            // 1. 확인(MB_OK) : IDOK(1)
+            #define MB_OK_IDOK						0x00000001
+            #define MB_OK_MASK						0x0000000F
+            // 2. 확인/취소(MB_OKCANCEL) : IDOK(1), IDCANCEL(2)
+            #define MB_OKCANCEL_IDOK					0x00000010
+            #define MB_OKCANCEL_IDCANCEL				0x00000020
+            #define MB_OKCANCEL_MASK					0x000000F0
+            // 3. 종료/재시도/무시(MB_ABORTRETRYIGNORE) : IDABORT(3), IDRETRY(4), IDIGNORE(5)
+            #define MB_ABORTRETRYIGNORE_IDABORT			0x00000100
+            #define MB_ABORTRETRYIGNORE_IDRETRY			0x00000200
+            #define MB_ABORTRETRYIGNORE_IDIGNORE			0x00000400
+            #define MB_ABORTRETRYIGNORE_MASK				0x00000F00
+            // 4. 예/아니오/취소(MB_YESNOCANCEL) : IDYES(6), IDNO(7), IDCANCEL(2)
+            #define MB_YESNOCANCEL_IDYES				0x00001000
+            #define MB_YESNOCANCEL_IDNO				0x00002000
+            #define MB_YESNOCANCEL_IDCANCEL				0x00004000
+            #define MB_YESNOCANCEL_MASK				0x0000F000
+            // 5. 예/아니오(MB_YESNO) : IDYES(6), IDNO(7)
+            #define MB_YESNO_IDYES					0x00010000
+            #define MB_YESNO_IDNO					0x00020000
+            #define MB_YESNO_MASK					0x000F0000
+            // 6. 재시도/취소(MB_RETRYCANCEL) : IDRETRY(4), IDCANCEL(2)
+            #define MB_RETRYCANCEL_IDRETRY				0x00100000
+            #define MB_RETRYCANCEL_IDCANCEL				0x00200000
+            #define MB_RETRYCANCEL_MASK				0x00F00000
+
+        :return:
+            실행 전의 MessageBoxMode
+        """
+        return self.SetMessageBoxMode(Mode=mode)
 
     def set_pos(self, list, para, pos):
-        pass
+        """
+        캐럿을 문서 내 특정 위치로 옮긴다.
+        지정된 위치로 캐럿을 옮겨준다.
+
+        :param list:
+            캐럿이 위치한 문서 내 list ID
+
+        :param para:
+            캐럿이 위치한 문단 ID. 음수거나, 범위를 넘어가면 문서의 시작으로 이동하며, pos는 무시한다.
+
+        :param pos:
+            캐럿이 위치한 문단 내 글자 위치. -1을 주면 해당문단의 끝으로 이동한다.
+            단 para가 범위 밖일 경우 pos는 무시되고 문서의 시작으로 캐럿을 옮긴다.
+
+        :return:
+            성공하면 True, 실패하면 False
+        """
+        return self.SetPos(List=list, Para=para, pos=pos)
 
     def set_pos_by_set(self, disp_val):
-        pass
+        """
+        캐럿을 ParameterSet으로 얻어지는 위치로 옮긴다.
+
+        :param disp_val:
+            캐럿을 옮길 위치에 대한 ParameterSet 정보
+
+        :return:
+            성공하면 true, 실패하면 false
+
+        Examples:
+            >>> start_pos = hwp.GetPosBySet()  # 현재 위치를 저장하고,
+            >>> hwp.set_pos_by_set(start_pos)  # 특정 작업 후에 저장위치로 재이동
+        """
+        return self.SetPosBySet(dispVal=disp_val)
 
     def set_private_info_password(self, password):
         pass
