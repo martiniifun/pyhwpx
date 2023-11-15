@@ -20,7 +20,7 @@ class Hwp:
             기본값은 True로, 화면에 나타나게 된다.
             visible=False일 경우 백그라운드에서 작업할 수 있다.
         """
-        hwp = 0
+        self.hwp = 0
         context = pythoncom.CreateBindCtx(0)
 
         # 현재 실행중인 프로세스를 가져옵니다.
@@ -37,218 +37,226 @@ class Hwp:
                     # 현재 moniker를 통해 ROT에서 한글의 object를 가져옵니다.
                     obj = running_coms.GetObject(moniker)
                     # 가져온 object를 Dispatch를 통해 사용할수 있는 객체로 변환시킵니다.
-                    hwp = win32.gencache.EnsureDispatch(obj.QueryInterface(pythoncom.IID_IDispatch))
+                    self.hwp = win32.gencache.EnsureDispatch(obj.QueryInterface(pythoncom.IID_IDispatch))
                     # 그이후는 오토메이션 api를 사용할수 있습니다
-        if not hwp:
-            hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
-        hwp.XHwpWindows.Item(0).Visible = visible
+        if not self.hwp:
+            self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
+        self.hwp.XHwpWindows.Item(0).Visible = visible
 
-        self.Application = hwp.Application
-        self.ArcType = hwp.ArcType
-        self.AutoNumType = hwp.AutoNumType
-        self.BorderShape = hwp.BorderShape
-        self.BreakWordLatin = hwp.BreakWordLatin
-        self.BrushType = hwp.BrushType
-        self.CLSID = hwp.CLSID
-        self.Canonical = hwp.Canonical
-        self.CellApply = hwp.CellApply
-        self.CellShape = hwp.CellShape
-        self.CharShadowType = hwp.CharShadowType
-        self.CharShape = hwp.CharShape
-        self.CheckXObject = hwp.CheckXObject
-        self.Clear = hwp.Clear
-        self.ColDefType = hwp.ColDefType
-        self.ColLayoutType = hwp.ColLayoutType
-        self.ConvertPUAHangulToUnicode = hwp.ConvertPUAHangulToUnicode
-        self.CreateAction = hwp.CreateAction
-        self.CreateField = hwp.CreateField
-        self.CreateID = hwp.CreateID
-        self.CreateMode = hwp.CreateMode
-        self.CreatePageImage = hwp.CreatePageImage
-        self.CreateSet = hwp.CreateSet
-        self.CrookedSlash = hwp.CrookedSlash
-        self.CurFieldState = hwp.CurFieldState
-        self.CurMetatagState = hwp.CurMetatagState
-        self.CurSelectedCtrl = hwp.CurSelectedCtrl
-        self.DSMark = hwp.DSMark
-        self.DbfCodeType = hwp.DbfCodeType
-        self.DeleteCtrl = hwp.DeleteCtrl
-        self.Delimiter = hwp.Delimiter
-        self.DrawAspect = hwp.DrawAspect
-        self.DrawFillImage = hwp.DrawFillImage
-        self.DrawShadowType = hwp.DrawShadowType
-        self.EditMode = hwp.EditMode
-        self.Encrypt = hwp.Encrypt
-        self.EndSize = hwp.EndSize
-        self.EndStyle = hwp.EndStyle
-        self.EngineProperties = hwp.EngineProperties
-        self.ExportStyle = hwp.ExportStyle
-        self.FieldExist = hwp.FieldExist
-        self.FileTranslate = hwp.FileTranslate
-        self.FillAreaType = hwp.FillAreaType
-        self.FindCtrl = hwp.FindCtrl
-        self.FindDir = hwp.FindDir
-        self.FindPrivateInfo = hwp.FindPrivateInfo
-        self.FontType = hwp.FontType
-        self.GetBinDataPath = hwp.GetBinDataPath
-        self.GetCurFieldName = hwp.GetCurFieldName
-        self.GetCurMetatagName = hwp.GetCurMetatagName
-        self.GetFieldList = hwp.GetFieldList
-        self.GetFieldText = hwp.GetFieldText
-        self.GetFileInfo = hwp.GetFileInfo
-        self.GetFontList = hwp.GetFontList
-        self.GetHeadingString = hwp.GetHeadingString
-        self.GetMessageBoxMode = hwp.GetMessageBoxMode
-        self.GetMetatagList = hwp.GetMetatagList
-        self.GetMetatagNameText = hwp.GetMetatagNameText
-        self.GetMousePos = hwp.GetMousePos
-        self.GetPageText = hwp.GetPageText
-        self.GetPos = hwp.GetPos
-        self.GetPosBySet = hwp.GetPosBySet
-        self.GetScriptSource = hwp.GetScriptSource
-        self.GetSelectedPos = hwp.GetSelectedPos
-        self.GetSelectedPosBySet = hwp.GetSelectedPosBySet
-        self.GetText = hwp.GetText
-        self.GetTextFile = hwp.GetTextFile
-        self.GetTranslateLangList = hwp.GetTranslateLangList
-        self.GetUserInfo = hwp.GetUserInfo
-        self.Gradation = hwp.Gradation
-        self.GridMethod = hwp.GridMethod
-        self.GridViewLine = hwp.GridViewLine
-        self.GutterMethod = hwp.GutterMethod
-        self.HAction = hwp.HAction
-        self.HAlign = hwp.HAlign
-        self.HParameterSet = hwp.HParameterSet
-        self.Handler = hwp.Handler
-        self.Hash = hwp.Hash
-        self.HatchStyle = hwp.HatchStyle
-        self.HeadCtrl = hwp.HeadCtrl
-        self.HeadType = hwp.HeadType
-        self.HeightRel = hwp.HeightRel
-        self.Hiding = hwp.Hiding
-        self.HorzRel = hwp.HorzRel
-        self.HwpLineType = hwp.HwpLineType
-        self.HwpLineWidth = hwp.HwpLineWidth
-        self.HwpOutlineStyle = hwp.HwpOutlineStyle
-        self.HwpOutlineType = hwp.HwpOutlineType
-        self.HwpUnderlineShape = hwp.HwpUnderlineShape
-        self.HwpUnderlineType = hwp.HwpUnderlineType
-        self.HwpZoomType = hwp.HwpZoomType
-        self.ImageFormat = hwp.ImageFormat
-        self.ImportStyle = hwp.ImportStyle
-        self.InitHParameterSet = hwp.InitHParameterSet
-        self.InitScan = hwp.InitScan
-        self.Insert = hwp.Insert
-        self.InsertBackgroundPicture = hwp.InsertBackgroundPicture
-        self.InsertCtrl = hwp.InsertCtrl
-        self.InsertPicture = hwp.InsertPicture
-        self.IsActionEnable = hwp.IsActionEnable
-        self.IsCommandLock = hwp.IsCommandLock
-        self.IsEmpty = hwp.IsEmpty
-        self.IsModified = hwp.IsModified
-        self.IsPrivateInfoProtected = hwp.IsPrivateInfoProtected
-        self.IsTrackChange = hwp.IsTrackChange
-        self.IsTrackChangePassword = hwp.IsTrackChangePassword
-        self.KeyIndicator = hwp.KeyIndicator
-        self.LastCtrl = hwp.LastCtrl
-        self.LineSpacingMethod = hwp.LineSpacingMethod
-        self.LineWrapType = hwp.LineWrapType
-        self.LockCommand = hwp.LockCommand
-        self.LunarToSolar = hwp.LunarToSolar
-        self.LunarToSolarBySet = hwp.LunarToSolarBySet
-        self.MacroState = hwp.MacroState
-        self.MailType = hwp.MailType
-        self.MetatagExist = hwp.MetatagExist
-        self.MiliToHwpUnit = hwp.MiliToHwpUnit
-        self.ModifyFieldProperties = hwp.ModifyFieldProperties
-        self.ModifyMetatagProperties = hwp.ModifyMetatagProperties
-        self.MovePos = hwp.MovePos
-        self.MoveToField = hwp.MoveToField
-        self.MoveToMetatag = hwp.MoveToMetatag
-        self.NumberFormat = hwp.NumberFormat
-        self.Numbering = hwp.Numbering
-        self.Open = hwp.Open
-        self.PageCount = hwp.PageCount
-        self.PageNumPosition = hwp.PageNumPosition
-        self.PageType = hwp.PageType
-        self.ParaHeadAlign = hwp.ParaHeadAlign
-        self.ParaShape = hwp.ParaShape
-        self.ParentCtrl = hwp.ParentCtrl
-        self.Path = hwp.Path
-        self.PicEffect = hwp.PicEffect
-        self.PlacementType = hwp.PlacementType
-        self.PointToHwpUnit = hwp.PointToHwpUnit
-        self.PresentEffect = hwp.PresentEffect
-        self.PrintDevice = hwp.PrintDevice
-        self.PrintPaper = hwp.PrintPaper
-        self.PrintRange = hwp.PrintRange
-        self.PrintType = hwp.PrintType
-        self.ProtectPrivateInfo = hwp.ProtectPrivateInfo
-        self.PutFieldText = hwp.PutFieldText
-        self.PutMetatagNameText = hwp.PutMetatagNameText
-        self.Quit = hwp.Quit
-        self.RGBColor = hwp.RGBColor
-        self.RegisterModule = hwp.RegisterModule
-        self.RegisterPrivateInfoPattern = hwp.RegisterPrivateInfoPattern
-        self.ReleaseAction = hwp.ReleaseAction
-        self.ReleaseScan = hwp.ReleaseScan
-        self.RenameField = hwp.RenameField
-        self.RenameMetatag = hwp.RenameMetatag
-        self.ReplaceAction = hwp.ReplaceAction
-        self.ReplaceFont = hwp.ReplaceFont
-        self.Revision = hwp.Revision
-        self.Run = hwp.Run
-        self.RunScriptMacro = hwp.RunScriptMacro
-        self.Save = hwp.Save
-        self.SaveAs = hwp.SaveAs
-        self.ScanFont = hwp.ScanFont
-        self.SelectText = hwp.SelectText
-        self.SelectionMode = hwp.SelectionMode
-        self.SetBarCodeImage = hwp.SetBarCodeImage
-        self.SetCurFieldName = hwp.SetCurFieldName
-        self.SetCurMetatagName = hwp.SetCurMetatagName
-        self.SetDRMAuthority = hwp.SetDRMAuthority
-        self.SetFieldViewOption = hwp.SetFieldViewOption
-        self.SetMessageBoxMode = hwp.SetMessageBoxMode
-        self.SetPos = hwp.SetPos
-        self.SetPosBySet = hwp.SetPosBySet
-        self.SetPrivateInfoPassword = hwp.SetPrivateInfoPassword
-        self.SetTextFile = hwp.SetTextFile
-        self.SetTitleName = hwp.SetTitleName
-        self.SetUserInfo = hwp.SetUserInfo
-        self.SideType = hwp.SideType
-        self.Signature = hwp.Signature
-        self.Slash = hwp.Slash
-        self.SolarToLunar = hwp.SolarToLunar
-        self.SolarToLunarBySet = hwp.SolarToLunarBySet
-        self.SortDelimiter = hwp.SortDelimiter
-        self.StrikeOut = hwp.StrikeOut
-        self.StyleType = hwp.StyleType
-        self.SubtPos = hwp.SubtPos
-        self.TableBreak = hwp.TableBreak
-        self.TableFormat = hwp.TableFormat
-        self.TableSwapType = hwp.TableSwapType
-        self.TableTarget = hwp.TableTarget
-        self.TextAlign = hwp.TextAlign
-        self.TextArtAlign = hwp.TextArtAlign
-        self.TextDir = hwp.TextDir
-        self.TextFlowType = hwp.TextFlowType
-        self.TextWrapType = hwp.TextWrapType
-        self.UnSelectCtrl = hwp.UnSelectCtrl
-        self.VAlign = hwp.VAlign
-        self.Version = hwp.Version
-        self.VertRel = hwp.VertRel
-        self.ViewFlag = hwp.ViewFlag
-        self.ViewProperties = hwp.ViewProperties
-        self.WatermarkBrush = hwp.WatermarkBrush
-        self.WidthRel = hwp.WidthRel
-        self.XHwpDocuments = hwp.XHwpDocuments
-        self.XHwpMessageBox = hwp.XHwpMessageBox
-        self.XHwpODBC = hwp.XHwpODBC
-        self.XHwpWindows = hwp.XHwpWindows
+        self.Application = self.hwp.Application
+        self.ArcType = self.hwp.ArcType
+        self.AutoNumType = self.hwp.AutoNumType
+        self.BorderShape = self.hwp.BorderShape
+        self.BreakWordLatin = self.hwp.BreakWordLatin
+        self.BrushType = self.hwp.BrushType
+        self.CLSID = self.hwp.CLSID
+        self.Canonical = self.hwp.Canonical
+        self.CellApply = self.hwp.CellApply
+        self.CellShape = self.hwp.CellShape
+        self.CharShadowType = self.hwp.CharShadowType
+        self.CharShape = self.hwp.CharShape
+        self.CheckXObject = self.hwp.CheckXObject
+        self.Clear = self.hwp.Clear
+        self.ColDefType = self.hwp.ColDefType
+        self.ColLayoutType = self.hwp.ColLayoutType
+        self.ConvertPUAHangulToUnicode = self.hwp.ConvertPUAHangulToUnicode
+        self.CreateAction = self.hwp.CreateAction
+        self.CreateField = self.hwp.CreateField
+        self.CreateID = self.hwp.CreateID
+        self.CreateMode = self.hwp.CreateMode
+        self.CreatePageImage = self.hwp.CreatePageImage
+        self.CreateSet = self.hwp.CreateSet
+        self.CrookedSlash = self.hwp.CrookedSlash
+        self.CurFieldState = self.hwp.CurFieldState
+        self.CurMetatagState = self.hwp.CurMetatagState
+        self.CurSelectedCtrl = self.hwp.CurSelectedCtrl
+        self.DSMark = self.hwp.DSMark
+        self.DbfCodeType = self.hwp.DbfCodeType
+        self.DeleteCtrl = self.hwp.DeleteCtrl
+        self.Delimiter = self.hwp.Delimiter
+        self.DrawAspect = self.hwp.DrawAspect
+        self.DrawFillImage = self.hwp.DrawFillImage
+        self.DrawShadowType = self.hwp.DrawShadowType
+        self.EditMode = self.hwp.EditMode
+        self.Encrypt = self.hwp.Encrypt
+        self.EndSize = self.hwp.EndSize
+        self.EndStyle = self.hwp.EndStyle
+        self.EngineProperties = self.hwp.EngineProperties
+        self.ExportStyle = self.hwp.ExportStyle
+        self.FieldExist = self.hwp.FieldExist
+        self.FileTranslate = self.hwp.FileTranslate
+        self.FillAreaType = self.hwp.FillAreaType
+        self.FindCtrl = self.hwp.FindCtrl
+        self.FindDir = self.hwp.FindDir
+        self.FindPrivateInfo = self.hwp.FindPrivateInfo
+        self.FontType = self.hwp.FontType
+        self.GetBinDataPath = self.hwp.GetBinDataPath
+        self.GetCurFieldName = self.hwp.GetCurFieldName
+        self.GetCurMetatagName = self.hwp.GetCurMetatagName
+        self.GetFieldList = self.hwp.GetFieldList
+        self.GetFieldText = self.hwp.GetFieldText
+        self.GetFileInfo = self.hwp.GetFileInfo
+        self.GetFontList = self.hwp.GetFontList
+        self.GetHeadingString = self.hwp.GetHeadingString
+        self.GetMessageBoxMode = self.hwp.GetMessageBoxMode
+        self.GetMetatagList = self.hwp.GetMetatagList
+        self.GetMetatagNameText = self.hwp.GetMetatagNameText
+        self.GetMousePos = self.hwp.GetMousePos
+        self.GetPageText = self.hwp.GetPageText
+        self.GetPos = self.hwp.GetPos
+        self.GetPosBySet = self.hwp.GetPosBySet
+        self.GetScriptSource = self.hwp.GetScriptSource
+        self.GetSelectedPos = self.hwp.GetSelectedPos
+        self.GetSelectedPosBySet = self.hwp.GetSelectedPosBySet
+        self.GetText = self.hwp.GetText
+        self.GetTextFile = self.hwp.GetTextFile
+        self.GetTranslateLangList = self.hwp.GetTranslateLangList
+        self.GetUserInfo = self.hwp.GetUserInfo
+        self.Gradation = self.hwp.Gradation
+        self.GridMethod = self.hwp.GridMethod
+        self.GridViewLine = self.hwp.GridViewLine
+        self.GutterMethod = self.hwp.GutterMethod
+        self.HAction = self.hwp.HAction
+        self.HAlign = self.hwp.HAlign
+        self.HParameterSet = self.hwp.HParameterSet
+        self.Handler = self.hwp.Handler
+        self.Hash = self.hwp.Hash
+        self.HatchStyle = self.hwp.HatchStyle
+        # self.HeadCtrl = self.hwp.HeadCtrl
+        self.HeadType = self.hwp.HeadType
+        self.HeightRel = self.hwp.HeightRel
+        self.Hiding = self.hwp.Hiding
+        self.HorzRel = self.hwp.HorzRel
+        self.HwpLineType = self.hwp.HwpLineType
+        self.HwpLineWidth = self.hwp.HwpLineWidth
+        self.HwpOutlineStyle = self.hwp.HwpOutlineStyle
+        self.HwpOutlineType = self.hwp.HwpOutlineType
+        self.HwpUnderlineShape = self.hwp.HwpUnderlineShape
+        self.HwpUnderlineType = self.hwp.HwpUnderlineType
+        self.HwpZoomType = self.hwp.HwpZoomType
+        self.ImageFormat = self.hwp.ImageFormat
+        self.ImportStyle = self.hwp.ImportStyle
+        self.InitHParameterSet = self.hwp.InitHParameterSet
+        self.InitScan = self.hwp.InitScan
+        self.Insert = self.hwp.Insert
+        self.InsertBackgroundPicture = self.hwp.InsertBackgroundPicture
+        self.InsertCtrl = self.hwp.InsertCtrl
+        self.InsertPicture = self.hwp.InsertPicture
+        self.IsActionEnable = self.hwp.IsActionEnable
+        self.IsCommandLock = self.hwp.IsCommandLock
+        self.IsEmpty = self.hwp.IsEmpty
+        self.IsModified = self.hwp.IsModified
+        self.IsPrivateInfoProtected = self.hwp.IsPrivateInfoProtected
+        self.IsTrackChange = self.hwp.IsTrackChange
+        self.IsTrackChangePassword = self.hwp.IsTrackChangePassword
+        self.KeyIndicator = self.hwp.KeyIndicator
+        # self.LastCtrl = self.hwp.LastCtrl
+        self.LineSpacingMethod = self.hwp.LineSpacingMethod
+        self.LineWrapType = self.hwp.LineWrapType
+        self.LockCommand = self.hwp.LockCommand
+        self.LunarToSolar = self.hwp.LunarToSolar
+        self.LunarToSolarBySet = self.hwp.LunarToSolarBySet
+        self.MacroState = self.hwp.MacroState
+        self.MailType = self.hwp.MailType
+        self.MetatagExist = self.hwp.MetatagExist
+        self.MiliToHwpUnit = self.hwp.MiliToHwpUnit
+        self.ModifyFieldProperties = self.hwp.ModifyFieldProperties
+        self.ModifyMetatagProperties = self.hwp.ModifyMetatagProperties
+        self.MovePos = self.hwp.MovePos
+        self.MoveToField = self.hwp.MoveToField
+        self.MoveToMetatag = self.hwp.MoveToMetatag
+        self.NumberFormat = self.hwp.NumberFormat
+        self.Numbering = self.hwp.Numbering
+        self.Open = self.hwp.Open
+        self.PageCount = self.hwp.PageCount
+        self.PageNumPosition = self.hwp.PageNumPosition
+        self.PageType = self.hwp.PageType
+        self.ParaHeadAlign = self.hwp.ParaHeadAlign
+        self.ParaShape = self.hwp.ParaShape
+        self.ParentCtrl = self.hwp.ParentCtrl
+        self.Path = self.hwp.Path
+        self.PicEffect = self.hwp.PicEffect
+        self.PlacementType = self.hwp.PlacementType
+        self.PointToHwpUnit = self.hwp.PointToHwpUnit
+        self.PresentEffect = self.hwp.PresentEffect
+        self.PrintDevice = self.hwp.PrintDevice
+        self.PrintPaper = self.hwp.PrintPaper
+        self.PrintRange = self.hwp.PrintRange
+        self.PrintType = self.hwp.PrintType
+        self.ProtectPrivateInfo = self.hwp.ProtectPrivateInfo
+        self.PutFieldText = self.hwp.PutFieldText
+        self.PutMetatagNameText = self.hwp.PutMetatagNameText
+        self.Quit = self.hwp.Quit
+        self.RGBColor = self.hwp.RGBColor
+        self.RegisterModule = self.hwp.RegisterModule
+        self.RegisterPrivateInfoPattern = self.hwp.RegisterPrivateInfoPattern
+        self.ReleaseAction = self.hwp.ReleaseAction
+        self.ReleaseScan = self.hwp.ReleaseScan
+        self.RenameField = self.hwp.RenameField
+        self.RenameMetatag = self.hwp.RenameMetatag
+        self.ReplaceAction = self.hwp.ReplaceAction
+        self.ReplaceFont = self.hwp.ReplaceFont
+        self.Revision = self.hwp.Revision
+        self.Run = self.hwp.Run
+        self.RunScriptMacro = self.hwp.RunScriptMacro
+        self.Save = self.hwp.Save
+        self.SaveAs = self.hwp.SaveAs
+        self.ScanFont = self.hwp.ScanFont
+        self.SelectText = self.hwp.SelectText
+        self.SelectionMode = self.hwp.SelectionMode
+        self.SetBarCodeImage = self.hwp.SetBarCodeImage
+        self.SetCurFieldName = self.hwp.SetCurFieldName
+        self.SetCurMetatagName = self.hwp.SetCurMetatagName
+        self.SetDRMAuthority = self.hwp.SetDRMAuthority
+        self.SetFieldViewOption = self.hwp.SetFieldViewOption
+        self.SetMessageBoxMode = self.hwp.SetMessageBoxMode
+        self.SetPos = self.hwp.SetPos
+        self.SetPosBySet = self.hwp.SetPosBySet
+        self.SetPrivateInfoPassword = self.hwp.SetPrivateInfoPassword
+        self.SetTextFile = self.hwp.SetTextFile
+        self.SetTitleName = self.hwp.SetTitleName
+        self.SetUserInfo = self.hwp.SetUserInfo
+        self.SideType = self.hwp.SideType
+        self.Signature = self.hwp.Signature
+        self.Slash = self.hwp.Slash
+        self.SolarToLunar = self.hwp.SolarToLunar
+        self.SolarToLunarBySet = self.hwp.SolarToLunarBySet
+        self.SortDelimiter = self.hwp.SortDelimiter
+        self.StrikeOut = self.hwp.StrikeOut
+        self.StyleType = self.hwp.StyleType
+        self.SubtPos = self.hwp.SubtPos
+        self.TableBreak = self.hwp.TableBreak
+        self.TableFormat = self.hwp.TableFormat
+        self.TableSwapType = self.hwp.TableSwapType
+        self.TableTarget = self.hwp.TableTarget
+        self.TextAlign = self.hwp.TextAlign
+        self.TextArtAlign = self.hwp.TextArtAlign
+        self.TextDir = self.hwp.TextDir
+        self.TextFlowType = self.hwp.TextFlowType
+        self.TextWrapType = self.hwp.TextWrapType
+        self.UnSelectCtrl = self.hwp.UnSelectCtrl
+        self.VAlign = self.hwp.VAlign
+        self.Version = self.hwp.Version
+        self.VertRel = self.hwp.VertRel
+        self.ViewFlag = self.hwp.ViewFlag
+        self.ViewProperties = self.hwp.ViewProperties
+        self.WatermarkBrush = self.hwp.WatermarkBrush
+        self.WidthRel = self.hwp.WidthRel
+        self.XHwpDocuments = self.hwp.XHwpDocuments
+        self.XHwpMessageBox = self.hwp.XHwpMessageBox
+        self.XHwpODBC = self.hwp.XHwpODBC
+        self.XHwpWindows = self.hwp.XHwpWindows
 
         if register_module:
             self.register_module()
+
+    @property
+    def HeadCtrl(self):
+        return self.hwp.HeadCtrl
+
+    @property
+    def LastCtrl(self):
+        return self.hwp.LastCtrl
 
     def get_sel_text(self):
         self.InitScan(Range=0xff)
@@ -385,7 +393,7 @@ class Hwp:
             None
 
         :examples:
-            >>> hwp.clear(1)
+            >>> self.hwp.clear(1)
         """
         return self.Clear(option=option)
 
@@ -413,17 +421,17 @@ class Hwp:
 
         :examples:
             >>> # 현재 커서의 폰트 크기(Height)를 구하는 코드
-            >>> act = hwp.CreateAction("CharShape")
-            >>> cs = act.CreateSet()  # == cs = hwp.CreateSet(act)
+            >>> act = self.hwp.CreateAction("CharShape")
+            >>> cs = act.CreateSet()  # == cs = self.hwp.CreateSet(act)
             >>> act.GetDefault(cs)
             >>> print(cs.Item("Height"))
             2800
 
             >>> # 현재 선택범위의 폰트 크기를 20pt로 변경하는 코드
-            >>> act = hwp.CreateAction("CharShape")
-            >>> cs = act.CreateSet()  # == cs = hwp.CreateSet(act)
+            >>> act = self.hwp.CreateAction("CharShape")
+            >>> cs = act.CreateSet()  # == cs = self.hwp.CreateSet(act)
             >>> act.GetDefault(cs)
-            >>> cs.SetItem("Height", hwp.PointToHwpUnit(20))
+            >>> cs.SetItem("Height", self.hwp.PointToHwpUnit(20))
             >>> act.Execute(cs)
             True
 
@@ -447,9 +455,9 @@ class Hwp:
             성공이면 True, 실패면 False
 
         :examples:
-            >>> hwp.create_field(direction="이름", memo="이름을 입력하는 필드", name="name")
+            >>> self.hwp.create_field(direction="이름", memo="이름을 입력하는 필드", name="name")
             True
-            >>> hwp.PutFieldText("name", "일코")
+            >>> self.hwp.PutFieldText("name", "일코")
         """
         return self.CreateField(Direction=direction, memo=memo, name=name)
 
@@ -489,7 +497,7 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         examples:
-            >>> hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
+            >>> self.hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
             True
         """
         return self.CreatePageImage(Path=path, pgno=pgno, resolution=resolution, depth=depth, Format=format)
@@ -535,9 +543,9 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         examples:
-            >>> ctrl = hwp.HeadCtrl.Next.Next
+            >>> ctrl = self.hwp.HeadCtrl.Next.Next
             >>> if ctrl.UserDesc == "표":
-            ...     hwp.delete_ctrl(ctrl)
+            ...     self.hwp.delete_ctrl(ctrl)
             ...
             True
         """
@@ -575,7 +583,7 @@ class Hwp:
             성공시 True, 실패시 False
 
         :Examples
-            >>> hwp.export_style("C:/Users/User/Desktop/new_style.sty")
+            >>> self.hwp.export_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
         style_set = self.HParameterSet.HStyleTemplate
@@ -661,7 +669,7 @@ class Hwp:
             바이너리 데이터의 경로
 
         Examples:
-            >>> path = hwp.GetBinDataPath(2)
+            >>> path = self.hwp.GetBinDataPath(2)
             >>> print(path)
             C:/Users/User/AppData/Local/Temp/Hnc/BinData/EMB00004dd86171.jpg
         """
@@ -777,7 +785,7 @@ class Hwp:
             (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
 
         Examples:
-            >>> pset = hwp.GetFileInfo("C:/Users/Administrator/Desktop/이력서.hwp")
+            >>> pset = self.hwp.GetFileInfo("C:/Users/Administrator/Desktop/이력서.hwp")
             >>> print(pset.Item("Format"))
             >>> print(pset.Item("VersionStr"))
             >>> print(hex(pset.Item("VersionNum")))
@@ -873,7 +881,7 @@ class Hwp:
             Y(long): 세로 클릭한 위치(HWPUNIT)
 
         Examples:
-            >>> pset = hwp.GetMousePos(1, 1)
+            >>> pset = self.hwp.GetMousePos(1, 1)
             >>> print("X축 기준:", "쪽" if pset.Item("XRelTo") else "종이")
             >>> print("Y축 기준:", "쪽" if pset.Item("YRelTo") else "종이")
             >>> print("현재", pset.Item("Page")+1, "페이지에 커서 위치")
@@ -942,14 +950,14 @@ class Hwp:
             "Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
 
         Examples:
-            >>> pset = hwp.get_pos_by_set()  # 캐럿위치 저장
+            >>> pset = self.hwp.get_pos_by_set()  # 캐럿위치 저장
             >>> print(pset.Item("List"))
             6
             >>> print(pset.Item("Para"))
             3
             >>> print(pset.Item("Pos"))
             2
-            >>> hwp.set_pos_by_set(pset)  # 캐럿위치 복원
+            >>> self.hwp.set_pos_by_set(pset)  # 캐럿위치 복원
             True
         """
         return self.GetPosBySet()
@@ -1007,7 +1015,7 @@ class Hwp:
             epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
 
         Examples:
-            >>> hwp.get_selected_pos()
+            >>> self.hwp.get_selected_pos()
             (True, 0, 0, 16, 0, 7, 16)
         """
         return self.GetSelectedPos()
@@ -1030,10 +1038,10 @@ class Hwp:
             실행시 sset과 eset의 아이템 값이 업데이트된다.
 
         Examples:
-            >>> sset = hwp.get_pos_by_set()
-            >>> eset = hwp.get_pos_by_set()
-            >>> hwp.GetSelectedPosBySet(sset, eset)
-            >>> hwp.SetPosBySet(eset)
+            >>> sset = self.hwp.get_pos_by_set()
+            >>> eset = self.hwp.get_pos_by_set()
+            >>> self.hwp.GetSelectedPosBySet(sset, eset)
+            >>> self.hwp.SetPosBySet(eset)
             True
         """
         return self.GetSelectedPosBySet(sset=sset, eset=eset)
@@ -1063,13 +1071,13 @@ class Hwp:
             이외의 특수 코드는 포함되지 않는다.
 
         Examples:
-            >>> hwp.init_scan()
+            >>> self.hwp.init_scan()
             >>> while True:
-            ...     state, text = hwp.get_text()
+            ...     state, text = self.hwp.get_text()
             ...     print(state, text)
             ...     if state <= 1:
             ...         break
-            ... hwp.release_scan()
+            ... self.hwp.release_scan()
             2
             2
             2 ㅁㄴㅇㄹ
@@ -1111,7 +1119,7 @@ class Hwp:
             지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
 
         Examples:
-            >>> hwp.get_text_file()
+            >>> self.hwp.get_text_file()
             'ㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\n\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\n'
         """
         return self.GetTextFile(Format=format, option=option)
@@ -1193,7 +1201,7 @@ class Hwp:
             성공시 True, 실패시 False
 
         :Examples
-            >>> hwp.import_style("C:/Users/User/Desktop/new_style.sty")
+            >>> self.hwp.import_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
         style_set = self.HParameterSet.HStyleTemplate
@@ -1264,9 +1272,9 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         Examples:
-            >>> hwp.init_scan(range=0xff)
-            >>> _, text = hwp.get_text()
-            >>> hwp.release_scan()
+            >>> self.hwp.init_scan(range=0xff)
+            >>> _, text = self.hwp.get_text()
+            >>> self.hwp.release_scan()
             >>> print(text)
             Hello, world!
         """
@@ -1276,7 +1284,7 @@ class Hwp:
     def insert(self, path, format="", arg=""):
         """
         현재 캐럿 위치에 문서파일을 삽입한다.
-        format, arg에 대해서는 hwp.open 참조
+        format, arg에 대해서는 self.hwp.open 참조
 
         :param path:
             문서파일의 경로
@@ -1407,7 +1415,7 @@ class Hwp:
             성공했을 경우 True, 실패했을 경우 False
 
         Examples:
-            >>> hwp.insert_background_picture(path="C:/Users/User/Desktop/KakaoTalk_20230709_023118549.jpg")
+            >>> self.hwp.insert_background_picture(path="C:/Users/User/Desktop/KakaoTalk_20230709_023118549.jpg")
             True
         """
         return self.InsertBackgroundPicture(Path=path, BorderType=border_type,
@@ -1438,22 +1446,22 @@ class Hwp:
         Examples:
             >>> # 3행5열의 표를 삽입한다.
             >>> from time import sleep
-            >>> tbset = hwp.CreateSet("TableCreation")
+            >>> tbset = self.hwp.CreateSet("TableCreation")
             >>> tbset.SetItem("Rows", 3)
             >>> tbset.SetItem("Cols", 5)
             >>> row_set = tbset.CreateItemArray("RowHeight", 3)
             >>> col_set = tbset.CreateItemArray("ColWidth", 5)
-            >>> row_set.SetItem(0, hwp.PointToHwpUnit(10))
-            >>> row_set.SetItem(1, hwp.PointToHwpUnit(10))
-            >>> row_set.SetItem(2, hwp.PointToHwpUnit(10))
-            >>> col_set.SetItem(0, hwp.MiliToHwpUnit(26))
-            >>> col_set.SetItem(1, hwp.MiliToHwpUnit(26))
-            >>> col_set.SetItem(2, hwp.MiliToHwpUnit(26))
-            >>> col_set.SetItem(3, hwp.MiliToHwpUnit(26))
-            >>> col_set.SetItem(4, hwp.MiliToHwpUnit(26))
-            >>> table = hwp.InsertCtrl("tbl", tbset)
+            >>> row_set.SetItem(0, self.hwp.PointToHwpUnit(10))
+            >>> row_set.SetItem(1, self.hwp.PointToHwpUnit(10))
+            >>> row_set.SetItem(2, self.hwp.PointToHwpUnit(10))
+            >>> col_set.SetItem(0, self.hwp.MiliToHwpUnit(26))
+            >>> col_set.SetItem(1, self.hwp.MiliToHwpUnit(26))
+            >>> col_set.SetItem(2, self.hwp.MiliToHwpUnit(26))
+            >>> col_set.SetItem(3, self.hwp.MiliToHwpUnit(26))
+            >>> col_set.SetItem(4, self.hwp.MiliToHwpUnit(26))
+            >>> table = self.hwp.InsertCtrl("tbl", tbset)
             >>> sleep(3)  # 표 생성 3초 후 다시 표 삭제
-            >>> hwp.delete_ctrl(table)
+            >>> self.hwp.delete_ctrl(table)
 
 
         """
@@ -1503,8 +1511,8 @@ class Hwp:
             생성된 컨트롤 object.
 
         Examples:
-            >>> ctrl = hwp.insert_picture("C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg")
-            >>> pset = ctrl.Properties  # == hwp.create_set("ShapeObject")
+            >>> ctrl = self.hwp.insert_picture("C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg")
+            >>> pset = ctrl.Properties  # == self.hwp.create_set("ShapeObject")
             >>> pset.SetItem("TreatAsChar", False)  # 글자처럼취급 해제
             >>> pset.SetItem("TextWrap", 2)  # 그림을 글 뒤로
             >>> ctrl.Properties = pset  # 설정한 값 적용(간단!)
@@ -1546,7 +1554,7 @@ class Hwp:
 
         Examples:
             >>> # 현재 셀 주소(표 안에 있을 때)
-            >>> hwp.KeyIndicator()[-1][1:].split(")")[0]
+            >>> self.hwp.KeyIndicator()[-1][1:].split(")")[0]
             "A1"
         """
         return self.KeyIndicator()
@@ -1570,8 +1578,8 @@ class Hwp:
 
         Examples:
             >>> # Undo와 Redo 잠그기
-            >>> hwp.LockCommand("Undo", True)
-            >>> hwp.LockCommand("Redo", True)
+            >>> self.hwp.LockCommand("Undo", True)
+            >>> self.hwp.LockCommand("Redo", True)
         """
         return self.LockCommand(ActID=act_id, isLock=is_lock)
 
@@ -1711,7 +1719,7 @@ class Hwp:
     def open(self, filename, format="", arg=""):
         """
         문서를 연다.
-        
+
         :param filename:
             문서 파일의 전체경로
 
@@ -1877,9 +1885,9 @@ class Hwp:
 
         Examples:
             >>> # 현재 캐럿 위치에 zxcv 필드 생성
-            >>> hwp.create_field("zxcv")
+            >>> self.hwp.create_field("zxcv")
             >>> # zxcv 필드에 "Hello world!" 텍스트 삽입
-            >>> hwp.put_field_text("zxcv", "Hello world!")
+            >>> self.hwp.put_field_text("zxcv", "Hello world!")
         """
         return self.PutFieldText(Field=field, Text=text)
 
@@ -1922,7 +1930,7 @@ class Hwp:
         Examples:
             >>> # 사전에 레지스트리에 보안모듈이 등록되어 있어야 한다.
             >>> # 보다 자세한 설명은 공식문서 참조
-            >>> hwp.register_module("FilePathChekDLL", "FilePathCheckerModule")
+            >>> self.hwp.register_module("FilePathChekDLL", "FilePathCheckerModule")
             True
         """
         self.register_regedit()
@@ -1975,7 +1983,7 @@ class Hwp:
             등록이 성공하였으면 True, 실패하였으면 False
 
         Examples:
-            >>> hwp.RegisterPrivateInfoPattern(0x01, "NNNN-NNNN;NN-NN-NNNN-NNNN")  # 전화번호패턴
+            >>> self.hwp.RegisterPrivateInfoPattern(0x01, "NNNN-NNNN;NN-NN-NNNN-NNNN")  # 전화번호패턴
         """
         pass
 
@@ -1994,8 +2002,8 @@ class Hwp:
     def rename_field(self, oldname, newname):
         """
         지정한 필드의 이름을 바꾼다.
-        예를 들어 oldname에 "title{{0}}\x2title{{1}}",
-        newname에 "tt1\x2tt2로 지정하면 첫 번째 title은 tt1로, 두 번째 title은 tt2로 변경된다.
+        예를 들어 oldname에 "title{{0}}\x02title{{1}}",
+        newname에 "tt1\x02tt2로 지정하면 첫 번째 title은 tt1로, 두 번째 title은 tt2로 변경된다.
         oldname의 필드 개수와, newname의 필드 개수는 동일해야 한다.
         존재하지 않는 필드에 대해서는 무시한다.
 
@@ -2008,9 +2016,9 @@ class Hwp:
         :return: None
 
         Examples:
-            >>> hwp.create_field("asdf")  # "asdf" 필드 생성
-            >>> hwp.rename_field("asdf", "zxcv")  # asdf 필드명을 "zxcv"로 변경
-            >>> hwp.put_field_text("zxcv", "Hello world!")  # zxcv 필드에 텍스트 삽입
+            >>> self.hwp.create_field("asdf")  # "asdf" 필드 생성
+            >>> self.hwp.rename_field("asdf", "zxcv")  # asdf 필드명을 "zxcv"로 변경
+            >>> self.hwp.put_field_text("zxcv", "Hello world!")  # zxcv 필드에 텍스트 삽입
         """
         return self.RenameField(oldname=oldname, newname=newname)
 
@@ -2028,7 +2036,7 @@ class Hwp:
         코드 상에서 Run("Cut")을 실행하면 오려내기 Action이 실행된다.
         또한, 대체된 Action을 원래의 Action으로 되돌리기 위해서는
         NewActionID의 값을 원래의 Action으로 설정한 뒤 호출한다. 이를테면 이런 식이다.
-        >>> hwp.replace_action("Cut", "Cut")
+        >>> self.hwp.replace_action("Cut", "Cut")
 
         :param old_action_id:
             변경될 원본 Action ID.
@@ -2072,7 +2080,7 @@ class Hwp:
         New, Open 두 개의 함수 밖에 선택할 수 없으므로
         별도의 함수를 정의하더라도 이 두 함수 중 하나에서 호출해야 하지만,
         (진입점이 되어야 함)
-        hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 있다.
+        self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 있다.
 
         :param function_name:
             실행할 매크로 함수이름(전체이름)
@@ -2090,9 +2098,9 @@ class Hwp:
             무조건 True를 반환(매크로의 실행여부와 상관없음)
 
         Examples:
-            >>> hwp.run_script_macro("OnDocument_New", u_macro_type=1)
+            >>> self.hwp.run_script_macro("OnDocument_New", u_macro_type=1)
             True
-            >>> hwp.run_script_macro("OnScriptMacro_중국어1성")
+            >>> self.hwp.run_script_macro("OnScriptMacro_중국어1성")
             True
         """
         return self.RunScriptMacro(FunctionName=function_name, uMacroType=u_macro_type, uScriptType=u_script_type)
@@ -2305,8 +2313,8 @@ class Hwp:
             성공하면 true, 실패하면 false
 
         Examples:
-            >>> start_pos = hwp.GetPosBySet()  # 현재 위치를 저장하고,
-            >>> hwp.set_pos_by_set(start_pos)  # 특정 작업 후에 저장위치로 재이동
+            >>> start_pos = self.hwp.GetPosBySet()  # 현재 위치를 저장하고,
+            >>> self.hwp.set_pos_by_set(start_pos)  # 특정 작업 후에 저장위치로 재이동
         """
         return self.SetPosBySet(dispVal=disp_val)
 
@@ -2330,8 +2338,27 @@ class Hwp:
         """
         return self.SetPrivateInfoPassword(Password=password)
 
-    def set_text_file(self, data, format, option):
-        pass
+    def set_text_file(self, data: str, format="HWPML2X", option=""):
+        """
+        문서를 문자열로 지정한다.
+
+        :param data:
+            문자열로 변경된 text 파일
+        :param format:
+            파일의 형식
+            "HWP": HWP native format. BASE64 로 인코딩되어 있어야 한다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+            "HWPML2X": HWP 형식과 호환. 문서의 모든 정보를 유지
+            "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
+            "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장
+            "TEXT": 일반 텍스트, 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
+
+        :param option:
+            "insertfile": 현재커서 이후에 지정된 파일 삽입
+
+        :return:
+            성공이면 1을, 실패하면 0을 반환한다.
+        """
+        return self.SetTextFile(data=data, Format=format, option=option)
 
     def set_title_name(self, title):
         """
