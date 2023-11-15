@@ -258,6 +258,45 @@ class Hwp:
     def LastCtrl(self):
         return self.hwp.LastCtrl
 
+    def hwp_unit_to_mili(self, hwp_unit):
+        return round(hwp_unit / 7200 * 25.4)
+
+    def create_table(self, rows, cols, treat_as_char, width_type=0, height_type=0):
+        """
+        아래의 148mm는 종이여백 210mm에서 60mm(좌우 각 30mm)를 뺀 150mm에다가,
+        표 바깥여백 각 1mm를 뺀 148mm이다. (TableProperties.Width = 41954)
+        각 열의 너비는 5개 기준으로 26mm인데 이는 셀마다 안쪽여백 좌우 각각 1.8mm를 뺀 값으로,
+        148 - (1.8 x 10 =) 18mm = 130mm
+        그래서 셀 너비의 총 합은 130이 되어야 한다.
+        아래의 라인28~32까지 셀너비의 합은 16+36+46+16+16=130
+        표를 생성하는 시점에는 표 안팎의 여백을 없애거나 수정할 수 없으므로
+        이는 고정된 값으로 간주해야 한다.
+
+        :return:
+        """
+        hwp.HAction.GetDefault("TableCreate", hwp.HParameterSet.HTableCreation.HSet)  # 표 생성 시작
+        hwp.HParameterSet.HTableCreation.Rows = rows  # 행 갯수
+        hwp.HParameterSet.HTableCreation.Cols = cols  # 열 갯수
+        hwp.HParameterSet.HTableCreation.WidthType = 2  # 너비 지정(0:단에맞춤, 1:문단에맞춤, 2:임의값)
+        hwp.HParameterSet.HTableCreation.HeightType = 1  # 높이 지정(0:자동, 1:임의값)
+        hwp.HParameterSet.HTableCreation.WidthValue = hwp.MiliToHwpUnit(148.0)  # 표 너비
+        hwp.HParameterSet.HTableCreation.HeightValue = hwp.MiliToHwpUnit(150)  # 표 높이
+        hwp.HParameterSet.HTableCreation.CreateItemArray("ColWidth", 5)  # 열 5개 생성
+        hwp.HParameterSet.HTableCreation.ColWidth.SetItem(0, hwp.MiliToHwpUnit(16.0))  # 1열
+        hwp.HParameterSet.HTableCreation.ColWidth.SetItem(1, hwp.MiliToHwpUnit(36.0))  # 2열
+        hwp.HParameterSet.HTableCreation.ColWidth.SetItem(2, hwp.MiliToHwpUnit(46.0))  # 3열
+        hwp.HParameterSet.HTableCreation.ColWidth.SetItem(3, hwp.MiliToHwpUnit(16.0))  # 4열
+        hwp.HParameterSet.HTableCreation.ColWidth.SetItem(4, hwp.MiliToHwpUnit(16.0))  # 5열
+        hwp.HParameterSet.HTableCreation.CreateItemArray("RowHeight", 5)  # 행 5개 생성
+        hwp.HParameterSet.HTableCreation.RowHeight.SetItem(0, hwp.MiliToHwpUnit(40.0))  # 1행
+        hwp.HParameterSet.HTableCreation.RowHeight.SetItem(1, hwp.MiliToHwpUnit(20.0))  # 2행
+        hwp.HParameterSet.HTableCreation.RowHeight.SetItem(2, hwp.MiliToHwpUnit(50.0))  # 3행
+        hwp.HParameterSet.HTableCreation.RowHeight.SetItem(3, hwp.MiliToHwpUnit(20.0))  # 4행
+        hwp.HParameterSet.HTableCreation.RowHeight.SetItem(4, hwp.MiliToHwpUnit(20.0))  # 5행
+        hwp.HParameterSet.HTableCreation.TableProperties.TreatAsChar = 1  # 글자처럼 취급
+        hwp.HParameterSet.HTableCreation.TableProperties.Width = hwp.MiliToHwpUnit(148)  # 표 너비
+        hwp.HAction.Execute("TableCreate", hwp.HParameterSet.HTableCreation.HSet)  # 위 코드 실행
+
     def get_sel_text(self):
         self.InitScan(Range=0xff)
         total_text = ""
@@ -1125,70 +1164,70 @@ class Hwp:
         return self.GetTextFile(Format=format, option=option)
 
     def get_translate_lang_list(self, cur_lang):
-        pass
+        return self.GetTranslateLangList(curLang=cur_lang)
 
     def get_user_info(self, user_info_id):
-        pass
+        return self.GetUserInfo(userInfoId=user_info_id)
 
     def gradation(self, gradation):
-        pass
+        return self.Gradation(Gradation=gradation)
 
     def grid_method(self, grid_method):
-        pass
+        return self.GridMethod(GridMethod=grid_method)
 
     def grid_view_line(self, grid_view_line):
-        pass
+        return self.GridViewLine(GridViewLine=grid_view_line)
 
     def gutter_method(self, gutter_type):
-        pass
+        return self.GutterMethod(GutterType=gutter_type)
 
     def h_align(self, h_align):
-        pass
+        return self.HAlign(HAlign=h_align)
 
     def handler(self, handler):
-        pass
+        return self.Handler(Handler=handler)
 
     def hash(self, hash):
-        pass
+        return self.Hash(Hash=hash)
 
     def hatch_style(self, hatch_style):
-        pass
+        return self.HatchStyle(HatchStyle=hatch_style)
 
     def head_type(self, heading_type):
-        pass
+        return self.HeadType(HeadingType=heading_type)
 
     def height_rel(self, height_rel):
-        pass
+        return self.HeightRel(HeightRel=height_rel)
 
     def hiding(self, hiding):
-        pass
+        return self.Hiding(Hiding=hiding)
 
     def horz_rel(self, horz_rel):
-        pass
+        return self.HorzRel(HorzRel=horz_rel)
 
     def hwp_line_type(self, line_type):
-        pass
+        return self.HwpLineType(LineType=line_type)
 
     def hwp_line_width(self, line_width):
-        pass
+        return self.HwpLineWidth(LineWidth=line_width)
 
     def hwp_outline_style(self, hwp_outline_style):
-        pass
+        return self.HwpOutlineStyle(HwpOutlineStyle=hwp_outline_style)
 
     def hwp_outline_type(self, hwp_outline_type):
-        pass
+        return self.HwpOutlineType(HwpOutlineType=hwp_outline_type)
 
     def hwp_underline_shape(self, hwp_underline_shape):
-        pass
+        return self.HwpUnderlineShape(HwpUnderlineShape=hwp_underline_shape)
 
     def hwp_underline_type(self, hwp_underline_type):
-        pass
+        return self.HwpUnderlineType(HwpUnderlineType=hwp_underline_type)
 
     def hwp_zoom_type(self, zoom_type):
-        pass
+        return self.HwpZoomType(ZoomType=zoom_type)
 
     def image_format(self, image_format):
-        pass
+        return self.ImageFormat(ImageFormat=image_format)
 
     def import_style(self, sty_filepath):
         """
@@ -1209,7 +1248,7 @@ class Hwp:
         return self.ImportStyle(style_set.HSet)
 
     def init_hparameter_set(self):
-        pass
+        return self.InitHParameterSet()
 
     def init_scan(self, option=0x07, range=0x77, spara=0, spos=0, epara=-1, epos=-1):
         """
@@ -1522,7 +1561,7 @@ class Hwp:
                                   Width=width, Height=height)
 
     def is_action_enable(self, action_id):
-        pass
+        return self.IsActionEnable(actionID=action_id)
 
     def is_command_lock(self, action_id):
         """
@@ -1560,10 +1599,10 @@ class Hwp:
         return self.KeyIndicator()
 
     def line_spacing_method(self, line_spacing):
-        pass
+        return self.LineSpacingMethod(LineSpacing=line_spacing)
 
     def line_wrap_type(self, line_wrap):
-        pass
+        return self.LineWrapType(LineWrap=line_wrap)
 
     def lock_command(self, act_id, is_lock):
         """
@@ -1584,22 +1623,23 @@ class Hwp:
         return self.LockCommand(ActID=act_id, isLock=is_lock)
 
     def lunar_to_solar(self, l_year, l_month, l_day, l_leap, s_year, s_month, s_day):
-        pass
+        return self.LunarToSolar(lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap,
+                                 sYear=s_year, sMonth=s_month, sDay=s_day)
 
     def lunar_to_solar_by_set(self, l_year, l_month, l_day, l_leap):
-        pass
+        return self.LunarToSolarBySet(lYear=l_year, lMonth=l_month, lLeap=l_leap)
 
     def macro_state(self, macro_state):
-        pass
+        return self.MacroState(MacroState=macro_state)
 
     def mail_type(self, mail_type):
-        pass
+        return self.MailType(MailType=mail_type)
 
     def metatag_exist(self, tag):
-        pass
+        return self.MetatagExist(tag=tag)
 
     def mili_to_hwp_unit(self, mili):
-        pass
+        return self.MiliToHwpUnit(mili=mili)
 
     def modify_field_properties(self, field, remove, add):
         """
@@ -1617,7 +1657,7 @@ class Hwp:
         return self.ModifyFieldProperties(Field=field, remove=remove, Add=add)
 
     def modify_metatag_properties(self, tag, remove, add):
-        pass
+        return self.ModifyMetatagProperties(tag=tag, remove=remove, Add=add)
 
     def move_pos(self, move_id=1, para=0, pos=0):
         """
@@ -1708,13 +1748,13 @@ class Hwp:
         return self.move_to_field(Field=field, Text=text, start=start, Select=select)
 
     def move_to_metatag(self, tag, text, start, select):
-        pass
+        return self.MoveToMetatag(tag=tag, Text=text, start=start, select=select)
 
     def number_format(self, num_format):
-        pass
+        return self.NumberFormat(NumFormat=num_format)
 
     def numbering(self, numbering):
-        pass
+        return self.Numbering(Numbering=numbering)
 
     def open(self, filename, format="", arg=""):
         """
@@ -1806,37 +1846,37 @@ class Hwp:
         return self.Open(filename=filename, Format=format, arg=arg)
 
     def page_num_position(self, pagenumpos):
-        pass
+        return self.PageNumPosition(pagenumpos=pagenumpos)
 
     def page_type(self, page_type):
-        pass
+        return self.PageType(PageType=page_type)
 
     def para_head_align(self, para_head_align):
-        pass
+        return self.ParaHeadAlign(ParaHeadAlign=para_head_align)
 
     def pic_effect(self, pic_effect):
-        pass
+        return self.PicEffect(PicEffect=pic_effect)
 
     def placement_type(self, restart):
-        pass
+        return self.PlacementType(Restart=restart)
 
     def point_to_hwp_unit(self, point):
-        pass
+        return self.PointToHwpUnit(Point=point)
 
     def present_effect(self, prsnteffect):
-        pass
+        return self.PresentEffect(prsnteffect=prsnteffect)
 
     def print_device(self, print_device):
-        pass
+        return self.PrintDevice(PrintDevice=print_device)
 
     def print_paper(self, print_paper):
-        pass
+        return self.PrintPaper(PrintPaper=print_paper)
 
     def print_range(self, print_range):
-        pass
+        return self.PrintRange(PrintRange=print_range)
 
     def print_type(self, print_method):
-        pass
+        return self.PrintType(PrintMethod=print_method)
 
     def protect_private_info(self, protecting_char, private_pattern_type):
         """
@@ -1892,7 +1932,7 @@ class Hwp:
         return self.PutFieldText(Field=field, Text=text)
 
     def put_metatag_name_text(self, tag, text):
-        pass
+        return self.PutMetatagNameText(tag=tag, Text=text)
 
     def quit(self):
         """
@@ -1904,7 +1944,7 @@ class Hwp:
         return self.Quit()
 
     def rgb_color(self, red, green, blue):
-        pass
+        return self.RGBColor(red=red, green=green, blue=blue)
 
     def register_module(self, module_type="FilePathCheckDLL", module_data="FilePathCheckerModule"):
         """
@@ -1985,10 +2025,10 @@ class Hwp:
         Examples:
             >>> self.hwp.RegisterPrivateInfoPattern(0x01, "NNNN-NNNN;NN-NN-NNNN-NNNN")  # 전화번호패턴
         """
-        pass
+        return self.RegisterPrivateInfoPattern(PrivateType=private_type, PrivatePattern=private_pattern)
 
     def release_action(self, action):
-        pass
+        return self.ReleaseAction(action=action)
 
     def release_scan(self):
         """
@@ -2023,7 +2063,7 @@ class Hwp:
         return self.RenameField(oldname=oldname, newname=newname)
 
     def rename_metatag(self, oldtag, newtag):
-        pass
+        return self.RenameMetatag(oldtag=oldtag, newtag=newtag)
 
     def replace_action(self, old_action_id, new_action_id):
         """
@@ -2054,10 +2094,11 @@ class Hwp:
         return self.ReplaceAction(OldActionID=old_action_id, NewActionID=new_action_id)
 
     def replace_font(self, langid, des_font_name, des_font_type, new_font_name, new_font_type):
-        pass
+        return self.ReplaceFont(langid=langid, desFontName=des_font_name, desFontType=des_font_type,
+                                newFontName=new_font_name, newFontType=new_font_type)
 
     def revision(self, revision):
-        pass
+        return self.Revision(Revision=revision)
 
     def run(self, act_id):
         """
@@ -2151,7 +2192,7 @@ class Hwp:
         return self.SaveAs(Path=path, Format=format, arg=arg)
 
     def scan_font(self):
-        pass
+        return self.ScanFont()
 
     def select_text(self, spara, spos, epara, epos):
         """
@@ -2188,7 +2229,8 @@ class Hwp:
         :param height:
         :return:
         """
-        pass
+        return self.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index,
+                                    X=x, Y=y, Width=width, Height=height)
 
     def set_cur_field_name(self, field, option, direction, memo):
         """
@@ -2215,10 +2257,10 @@ class Hwp:
         return self.SetCurFieldName(Field=field, option=option, Direction=direction, memo=memo)
 
     def set_cur_metatag_name(self, tag):
-        pass
+        return self.SetCurMetatagName(tag=tag)
 
     def set_drm_authority(self, authority):
-        pass
+        return self.SetDRMAuthority(authority=authority)
 
     def set_field_view_option(self, option):
         """
@@ -2310,7 +2352,7 @@ class Hwp:
             캐럿을 옮길 위치에 대한 ParameterSet 정보
 
         :return:
-            성공하면 true, 실패하면 false
+            성공하면 True, 실패하면 False
 
         Examples:
             >>> start_pos = self.hwp.GetPosBySet()  # 현재 위치를 저장하고,
@@ -2375,7 +2417,7 @@ class Hwp:
         return self.SetTitleName(Title=title)
 
     def set_user_info(self, user_info_id, value):
-        pass
+        return self.SetUserInfo(userInfoId=user_info_id, Value=value)
 
     def set_visible(self, visible):
         """
@@ -2389,73 +2431,74 @@ class Hwp:
         self.XHwpWindows.Item(0).Visible = visible
 
     def side_type(self, side_type):
-        pass
+        return self.SideType(SideType=side_type)
 
     def signature(self, signature):
-        pass
+        return self.Signature(Signature=signature)
 
     def slash(self, slash):
-        pass
+        return self.Slash(Slash=slash)
 
     def solar_to_lunar(self, s_year, s_month, s_day, l_year, l_month, l_day, l_leap):
-        pass
+        return self.SolarToLunar(sYear=s_year, sMonth=s_month, sDay=s_day,
+                     lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap)
 
     def solar_to_lunar_by_set(self, s_year, s_month, s_day):
-        pass
+        return self.SolarToLunarBySet(sYear=s_year, sMonth=s_month, sDay=s_day)
 
     def sort_delimiter(self, sort_delimiter):
-        pass
+        return self.SortDelimiter(SortDelimiter=sort_delimiter)
 
     def strike_out(self, strike_out_type):
-        pass
+        return self.StrikeOut(StrikeOutType=strike_out_type)
 
     def style_type(self, style_type):
-        pass
+        return self.StyleType(StyleType=style_type)
 
     def subt_pos(self, subt_pos):
-        pass
+        return self.SubtPos(SubtPos=subt_pos)
 
     def table_break(self, page_break):
-        pass
+        return self.TableBreak(PageBreak=page_break)
 
     def table_format(self, table_format):
-        pass
+        return self.TableFormat(TableFormat=table_format)
 
     def table_swap_type(self, tableswap):
-        pass
+        return self.TableSwapType(tableswap=tableswap)
 
     def table_target(self, table_target):
-        pass
+        return self.TableTarget(TableTarget=table_target)
 
     def text_align(self, text_align):
-        pass
+        return self.TextAlign(TextAlign=text_align)
 
     def text_art_align(self, text_art_align):
-        pass
+        return self.TextArtAlign(TextArtAlign=text_art_align)
 
     def text_dir(self, text_direction):
-        pass
+        return self.TextDir(TextDirection=text_direction)
 
     def text_flow_type(self, text_flow):
-        pass
+        return self.TextFlowType(TextFlow=text_flow)
 
     def text_wrap_type(self, text_wrap):
-        pass
+        return self.TextWrapType(TextWrap=text_wrap)
 
     def un_select_ctrl(self):
-        pass
+        return self.UnSelectCtrl()
 
     def v_align(self, v_align):
-        pass
+        return self.VAlign(VAlign=v_align)
 
     def vert_rel(self, vert_rel):
-        pass
+        return self.VertRel(VertRel=vert_rel)
 
     def view_flag(self, view_flag):
-        pass
+        return self.ViewFlag(ViewFlag=view_flag)
 
     def watermark_brush(self, watermark_brush):
-        pass
+        return self.WatermarkBrush(WatermarkBrush=watermark_brush)
 
     def width_rel(self, width_rel):
-        pass
+        return self.WidthRel(WidthRel=width_rel)
