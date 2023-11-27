@@ -2167,7 +2167,7 @@ class Hwp:
         """
         return self.Save(save_if_dirty=save_if_dirty)
 
-    def save_as(self, path, format, arg):
+    def save_as(self, path, format="HWP", arg=""):
         """
         현재 편집중인 문서를 지정한 이름으로 저장한다.
         format, arg의 일반적인 개념에 대해서는 Open()참조.
