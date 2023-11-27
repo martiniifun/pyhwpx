@@ -274,28 +274,28 @@ class Hwp:
 
         :return:
         """
-        hwp.HAction.GetDefault("TableCreate", hwp.HParameterSet.HTableCreation.HSet)  # 표 생성 시작
-        hwp.HParameterSet.HTableCreation.Rows = rows  # 행 갯수
-        hwp.HParameterSet.HTableCreation.Cols = cols  # 열 갯수
-        hwp.HParameterSet.HTableCreation.WidthType = 2  # 너비 지정(0:단에맞춤, 1:문단에맞춤, 2:임의값)
-        hwp.HParameterSet.HTableCreation.HeightType = 1  # 높이 지정(0:자동, 1:임의값)
-        hwp.HParameterSet.HTableCreation.WidthValue = hwp.MiliToHwpUnit(148.0)  # 표 너비
-        hwp.HParameterSet.HTableCreation.HeightValue = hwp.MiliToHwpUnit(150)  # 표 높이
-        hwp.HParameterSet.HTableCreation.CreateItemArray("ColWidth", 5)  # 열 5개 생성
-        hwp.HParameterSet.HTableCreation.ColWidth.SetItem(0, hwp.MiliToHwpUnit(16.0))  # 1열
-        hwp.HParameterSet.HTableCreation.ColWidth.SetItem(1, hwp.MiliToHwpUnit(36.0))  # 2열
-        hwp.HParameterSet.HTableCreation.ColWidth.SetItem(2, hwp.MiliToHwpUnit(46.0))  # 3열
-        hwp.HParameterSet.HTableCreation.ColWidth.SetItem(3, hwp.MiliToHwpUnit(16.0))  # 4열
-        hwp.HParameterSet.HTableCreation.ColWidth.SetItem(4, hwp.MiliToHwpUnit(16.0))  # 5열
-        hwp.HParameterSet.HTableCreation.CreateItemArray("RowHeight", 5)  # 행 5개 생성
-        hwp.HParameterSet.HTableCreation.RowHeight.SetItem(0, hwp.MiliToHwpUnit(40.0))  # 1행
-        hwp.HParameterSet.HTableCreation.RowHeight.SetItem(1, hwp.MiliToHwpUnit(20.0))  # 2행
-        hwp.HParameterSet.HTableCreation.RowHeight.SetItem(2, hwp.MiliToHwpUnit(50.0))  # 3행
-        hwp.HParameterSet.HTableCreation.RowHeight.SetItem(3, hwp.MiliToHwpUnit(20.0))  # 4행
-        hwp.HParameterSet.HTableCreation.RowHeight.SetItem(4, hwp.MiliToHwpUnit(20.0))  # 5행
-        hwp.HParameterSet.HTableCreation.TableProperties.TreatAsChar = 1  # 글자처럼 취급
-        hwp.HParameterSet.HTableCreation.TableProperties.Width = hwp.MiliToHwpUnit(148)  # 표 너비
-        hwp.HAction.Execute("TableCreate", hwp.HParameterSet.HTableCreation.HSet)  # 위 코드 실행
+        self.hwp.HAction.GetDefault("TableCreate", self.hwp.HParameterSet.HTableCreation.HSet)  # 표 생성 시작
+        self.hwp.HParameterSet.HTableCreation.Rows = rows  # 행 갯수
+        self.hwp.HParameterSet.HTableCreation.Cols = cols  # 열 갯수
+        self.hwp.HParameterSet.HTableCreation.WidthType = 2  # 너비 지정(0:단에맞춤, 1:문단에맞춤, 2:임의값)
+        self.hwp.HParameterSet.HTableCreation.HeightType = 1  # 높이 지정(0:자동, 1:임의값)
+        self.hwp.HParameterSet.HTableCreation.WidthValue = self.hwp.MiliToHwpUnit(148.0)  # 표 너비
+        self.hwp.HParameterSet.HTableCreation.HeightValue = self.hwp.MiliToHwpUnit(150)  # 표 높이
+        self.hwp.HParameterSet.HTableCreation.CreateItemArray("ColWidth", 5)  # 열 5개 생성
+        self.hwp.HParameterSet.HTableCreation.ColWidth.SetItem(0, self.hwp.MiliToHwpUnit(16.0))  # 1열
+        self.hwp.HParameterSet.HTableCreation.ColWidth.SetItem(1, self.hwp.MiliToHwpUnit(36.0))  # 2열
+        self.hwp.HParameterSet.HTableCreation.ColWidth.SetItem(2, self.hwp.MiliToHwpUnit(46.0))  # 3열
+        self.hwp.HParameterSet.HTableCreation.ColWidth.SetItem(3, self.hwp.MiliToHwpUnit(16.0))  # 4열
+        self.hwp.HParameterSet.HTableCreation.ColWidth.SetItem(4, self.hwp.MiliToHwpUnit(16.0))  # 5열
+        self.hwp.HParameterSet.HTableCreation.CreateItemArray("RowHeight", 5)  # 행 5개 생성
+        self.hwp.HParameterSet.HTableCreation.RowHeight.SetItem(0, self.hwp.MiliToHwpUnit(40.0))  # 1행
+        self.hwp.HParameterSet.HTableCreation.RowHeight.SetItem(1, self.hwp.MiliToHwpUnit(20.0))  # 2행
+        self.hwp.HParameterSet.HTableCreation.RowHeight.SetItem(2, self.hwp.MiliToHwpUnit(50.0))  # 3행
+        self.hwp.HParameterSet.HTableCreation.RowHeight.SetItem(3, self.hwp.MiliToHwpUnit(20.0))  # 4행
+        self.hwp.HParameterSet.HTableCreation.RowHeight.SetItem(4, self.hwp.MiliToHwpUnit(20.0))  # 5행
+        self.hwp.HParameterSet.HTableCreation.TableProperties.TreatAsChar = 1  # 글자처럼 취급
+        self.hwp.HParameterSet.HTableCreation.TableProperties.Width = self.hwp.MiliToHwpUnit(148)  # 표 너비
+        self.hwp.HAction.Execute("TableCreate", self.hwp.HParameterSet.HTableCreation.HSet)  # 위 코드 실행
 
     def get_sel_text(self):
         self.InitScan(Range=0xff)
