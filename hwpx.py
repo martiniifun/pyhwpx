@@ -321,7 +321,7 @@ class Hwp:
         self.SetPosBySet(ctrl.GetAnchorPos(0))
         self.FindCtrl()
         self.HAction.Run("ShapeObjTableSelCell")
-        data = list(self.get_sel_text())
+        data = [self.get_sel_text()]
         col_count = 1
         while self.HAction.Run("TableRightCell"):
             # a.append(get_text().replace("\r\n", "\n"))
@@ -350,7 +350,7 @@ class Hwp:
         self.SetPosBySet(ctrl.GetAnchorPos(0))
         self.FindCtrl()
         self.HAction.Run("ShapeObjTableSelCell")
-        data = list(self.get_sel_text())
+        data = [self.get_sel_text()]
         col_count = 1
         while self.HAction.Run("TableRightCell"):
             # a.append(get_text().replace("\r\n", "\n"))
