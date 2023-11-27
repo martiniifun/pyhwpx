@@ -261,7 +261,7 @@ class Hwp:
     def hwp_unit_to_mili(self, hwp_unit):
         return round(hwp_unit / 7200 * 25.4)
 
-    def create_table(self, rows, cols, treat_as_char, width_type=0, height_type=0):
+    def create_table(self, rows, cols, treat_as_char=1, width_type=0, height_type=0):
         """
         아래의 148mm는 종이여백 210mm에서 60mm(좌우 각 30mm)를 뺀 150mm에다가,
         표 바깥여백 각 1mm를 뺀 148mm이다. (TableProperties.Width = 41954)
@@ -274,28 +274,37 @@ class Hwp:
 
         :return:
         """
-        self.hwp.HAction.GetDefault("TableCreate", self.hwp.HParameterSet.HTableCreation.HSet)  # 표 생성 시작
-        self.hwp.HParameterSet.HTableCreation.Rows = rows  # 행 갯수
-        self.hwp.HParameterSet.HTableCreation.Cols = cols  # 열 갯수
-        self.hwp.HParameterSet.HTableCreation.WidthType = 2  # 너비 지정(0:단에맞춤, 1:문단에맞춤, 2:임의값)
-        self.hwp.HParameterSet.HTableCreation.HeightType = 1  # 높이 지정(0:자동, 1:임의값)
-        self.hwp.HParameterSet.HTableCreation.WidthValue = self.hwp.MiliToHwpUnit(148.0)  # 표 너비
-        self.hwp.HParameterSet.HTableCreation.HeightValue = self.hwp.MiliToHwpUnit(150)  # 표 높이
-        self.hwp.HParameterSet.HTableCreation.CreateItemArray("ColWidth", 5)  # 열 5개 생성
-        self.hwp.HParameterSet.HTableCreation.ColWidth.SetItem(0, self.hwp.MiliToHwpUnit(16.0))  # 1열
-        self.hwp.HParameterSet.HTableCreation.ColWidth.SetItem(1, self.hwp.MiliToHwpUnit(36.0))  # 2열
-        self.hwp.HParameterSet.HTableCreation.ColWidth.SetItem(2, self.hwp.MiliToHwpUnit(46.0))  # 3열
-        self.hwp.HParameterSet.HTableCreation.ColWidth.SetItem(3, self.hwp.MiliToHwpUnit(16.0))  # 4열
-        self.hwp.HParameterSet.HTableCreation.ColWidth.SetItem(4, self.hwp.MiliToHwpUnit(16.0))  # 5열
-        self.hwp.HParameterSet.HTableCreation.CreateItemArray("RowHeight", 5)  # 행 5개 생성
-        self.hwp.HParameterSet.HTableCreation.RowHeight.SetItem(0, self.hwp.MiliToHwpUnit(40.0))  # 1행
-        self.hwp.HParameterSet.HTableCreation.RowHeight.SetItem(1, self.hwp.MiliToHwpUnit(20.0))  # 2행
-        self.hwp.HParameterSet.HTableCreation.RowHeight.SetItem(2, self.hwp.MiliToHwpUnit(50.0))  # 3행
-        self.hwp.HParameterSet.HTableCreation.RowHeight.SetItem(3, self.hwp.MiliToHwpUnit(20.0))  # 4행
-        self.hwp.HParameterSet.HTableCreation.RowHeight.SetItem(4, self.hwp.MiliToHwpUnit(20.0))  # 5행
-        self.hwp.HParameterSet.HTableCreation.TableProperties.TreatAsChar = 1  # 글자처럼 취급
-        self.hwp.HParameterSet.HTableCreation.TableProperties.Width = self.hwp.MiliToHwpUnit(148)  # 표 너비
-        self.hwp.HAction.Execute("TableCreate", self.hwp.HParameterSet.HTableCreation.HSet)  # 위 코드 실행
+        pset = self.hwp.HParameterSet.HTableCreation
+        self.hwp.HAction.GetDefault("TableCreate", pset.HSet)  # 표 생성 시작
+        pset.Rows = rows  # 행 갯수
+        pset.Cols = cols  # 열 갯수
+        pset.WidthType = width_type  # 너비 지정(0:단에맞춤, 1:문단에맞춤, 2:임의값)
+        pset.HeightType = height_type  # 높이 지정(0:자동, 1:임의값)
+
+        sec_def = self.HParameterSet.HSecDef
+        self.HAction.GetDefault("PageSetup", sec_def.HSet)
+        total_width = (sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin
+                       - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen)
+
+        pset.WidthValue = self.hwp.MiliToHwpUnit(total_width)  # 표 너비
+        # pset.HeightValue = self.hwp.MiliToHwpUnit(150)  # 표 높이
+        pset.CreateItemArray("ColWidth", cols)  # 열 5개 생성
+        each_col_width = total_width - self.mili_to_hwp_unit(3.6 * cols)
+        for i in range(cols):
+            pset.ColWidth.SetItem(i, self.hwp.MiliToHwpUnit(each_col_width))  # 1열
+        # pset.ColWidth.SetItem(1, self.hwp.MiliToHwpUnit(36.0))  # 2열
+        # pset.ColWidth.SetItem(2, self.hwp.MiliToHwpUnit(46.0))  # 3열
+        # pset.ColWidth.SetItem(3, self.hwp.MiliToHwpUnit(16.0))  # 4열
+        # pset.ColWidth.SetItem(4, self.hwp.MiliToHwpUnit(16.0))  # 5열
+        # pset.CreateItemArray("RowHeight", rows)  # 행 5개 생성
+        # pset.RowHeight.SetItem(0, self.hwp.MiliToHwpUnit(40.0))  # 1행
+        # pset.RowHeight.SetItem(1, self.hwp.MiliToHwpUnit(20.0))  # 2행
+        # pset.RowHeight.SetItem(2, self.hwp.MiliToHwpUnit(50.0))  # 3행
+        # pset.RowHeight.SetItem(3, self.hwp.MiliToHwpUnit(20.0))  # 4행
+        # pset.RowHeight.SetItem(4, self.hwp.MiliToHwpUnit(20.0))  # 5행
+        pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
+        pset.TableProperties.Width = total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
+        self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
 
     def get_sel_text(self):
         self.InitScan(Range=0xff)
