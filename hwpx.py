@@ -388,7 +388,13 @@ class Hwp:
         """
         아무 내용도 들어있지 않은 빈 문서인지 여부를 나타낸다. 읽기전용
         """
-        return self.IsEmpty
+        return self.hwp.IsEmpty
+
+    def is_modified(self) -> bool:
+        """
+        최근 저장 또는 생성 이후 수정이 있는지 여부를 나타낸다. 읽기전용
+        """
+        return self.hwp.IsModified
 
     def arc_type(self, arc_type):
         return self.ArcType(ArcType=arc_type)
