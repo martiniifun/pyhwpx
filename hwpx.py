@@ -843,6 +843,7 @@ class Hwp:
         return self.GetFileInfo(filename=filename)
 
     def get_font_list(self, langid):
+        self.scan_font()
         return self.GetFontList(langid=langid)
 
     def get_heading_string(self):
