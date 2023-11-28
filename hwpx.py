@@ -15,18 +15,22 @@ class dotdict(dict):
 
 
 class Hwp:
-    def __init__(self, new=False, visible=True, register_module=True):
-        """
-        아래아한글 인스턴스를 실행한다.
+    """
+    아래아한글 인스턴스를 실행한다.
 
-        :param new:
-            new=True인 경우, 기존에 열려 있는 한/글 인스턴스와 무관한 새 인스턴스를 생성한다.
-            new=False(기본값)인 경우, 기존에 열려 있는 한/글 인스턴스를 조작하게 된다.
-        :param visible:
-            한/글 인스턴스를 백그라운드에서 실행할지, 화면에 나타낼지 선택한다.
-            기본값은 True로, 화면에 나타나게 된다.
-            visible=False일 경우 백그라운드에서 작업할 수 있다.
-        """
+    :param new:
+        new=True인 경우, 기존에 열려 있는 한/글 인스턴스와 무관한 새 인스턴스를 생성한다.
+        new=False(기본값)인 경우, 기존에 열려 있는 한/글 인스턴스를 조작하게 된다.
+    :param visible:
+        한/글 인스턴스를 백그라운드에서 실행할지, 화면에 나타낼지 선택한다.
+        기본값은 True로, 화면에 나타나게 된다.
+        visible=False일 경우 백그라운드에서 작업할 수 있다.
+    :param register_module:
+        기존의 hwp.RegisterModule("FilePathCheckDLL", "FilePathCheckerModule") 메서드를 실행한다.
+        레지스트리 키를 직접 추가(수정)한다.
+    """
+
+    def __init__(self, new=False, visible=True, register_module=True):
         self.hwp = 0
         context = pythoncom.CreateBindCtx(0)
 
@@ -264,6 +268,24 @@ class Hwp:
     @property
     def LastCtrl(self):
         return self.hwp.LastCtrl
+
+    def switch_to(self, num):
+        """
+        여러 개의 hwp인스턴스가 열려 있는 경우 해당 인스턴스를 활성화한다.
+        :param num:
+            인스턴스 번호
+        :return:
+            None
+        """
+        self.hwp.XHwpDocuments.Item(num).SetActive_XHwpDocument()
+
+    def add_tab(self):
+        """
+        새 문서를 현재 창의 새 탭에 추가한다.
+        새 창을 추가하고 싶은 경우는 add_tab 대신 hwp.FileNew()를 실행하면 된다.
+        :return:
+        """
+        self.hwp.XHwpDocuments.Add(1)  # 0은 새 창, 1은 새 탭
 
     def hwp_unit_to_mili(self, hwp_unit):
         return round(hwp_unit / 7200 * 25.4)
