@@ -2579,7 +2579,7 @@ class Hwp:
 
     def DrawObjTemplateSave(self):
         """
-        그리기개체를 그리기마당에 템플릿으로 등록하는 액션(어떻게 써먹고 싶어도 방법을 모르겠다...)그리기개체가 선택된 상태에서만 실행 가능하다.여담으로, 그리기 마당에 임의로 등록한 개체 삭제 아이콘을 못 찾고 있는데; 한글2020 기준으로, 개체 이름을 "얼굴"이라고 "기본도형"에 저장했을 경우, 찾아가서 아래의 파일을 삭제해도 된다."C:\Users\이름\AppData\Roaming\HNC\User\Shared110\HwpTemplate\Draw\FG_Basic_Shapes\얼굴.drt"
+        그리기개체를 그리기마당에 템플릿으로 등록하는 액션(어떻게 써먹고 싶어도 방법을 모르겠다...)그리기개체가 선택된 상태에서만 실행 가능하다.여담으로, 그리기 마당에 임의로 등록한 개체 삭제 아이콘을 못 찾고 있는데; 한글2020 기준으로, 개체 이름을 "얼굴"이라고 "기본도형"에 저장했을 경우, 찾아가서 아래의 파일을 삭제해도 된다."C:/Users/이름/AppData/Roaming/HNC/User/Shared110/HwpTemplate/Draw/FG_Basic_Shapes/얼굴.drt"
         """
         return self.hwp.HAction.Run("DrawObjTemplateSave")
 
