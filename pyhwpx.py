@@ -1867,7 +1867,7 @@ class Hwp:
         import subprocess
         from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, KEY_WRITE, SetValueEx, REG_SZ, CloseKey
 
-        location = [i.split(": ")[1] for i in subprocess.check_output(['pip', 'show', 'hwpx']).decode().split("\r\n") if
+        location = [i.split(": ")[1] for i in subprocess.check_output(['pip', 'show', 'pyhwpx']).decode().split("\r\n") if
                     i.startswith("Location: ")][0]
         winup_path = r"Software\HNC\HwpAutomation\Modules"
 
