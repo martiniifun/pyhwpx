@@ -1757,7 +1757,7 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
-        return self.hwp.MovePos(moveID=move_id, Para=para, Pos=pos)
+        return self.hwp.MovePos(moveID=move_id, Para=para, pos=pos)
 
     def move_to_field(self, field, text=True, start=True, select=False):
         """
