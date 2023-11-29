@@ -5347,9 +5347,9 @@ class Hwp:
         return self.hwp.WidthRel(WidthRel=width_rel)
 
 
-hwpx = Hwp()
+hwpx__ = Hwp(visible=False)
 
-hwp = hwpx.hwp
+hwp = hwpx__.hwp
 
 try:
     Application = hwp.Application
