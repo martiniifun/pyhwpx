@@ -282,10 +282,18 @@ class Hwp:
     def add_tab(self):
         """
         새 문서를 현재 창의 새 탭에 추가한다.
-        새 창을 추가하고 싶은 경우는 add_tab 대신 hwp.FileNew()를 실행하면 된다.
+        새 창을 추가하고 싶은 경우는 add_tab 대신 hwp.FileNew()나 hwp.add_doc()을 실행하면 된다.
         :return:
         """
         self.hwp.XHwpDocuments.Add(1)  # 0은 새 창, 1은 새 탭
+
+    def add_doc(self):
+        """
+        새 문서를 추가한다.
+        새 탭을 추가하고 싶은 경우는 add_doc 대신 add_tab()을 실행하면 된다.
+        :return:
+        """
+        self.hwp.XHwpDocuments.Add(0)  # 0은 새 창, 1은 새 탭
 
     def hwp_unit_to_mili(self, hwp_unit):
         return round(hwp_unit / 7200 * 25.4)
@@ -391,6 +399,17 @@ class Hwp:
         df = pd.DataFrame(array[1:], columns=array[0])
         self.hwp.SetPos(*start_pos)
         return df
+
+    def table_to_bottom(self, offset=0.):
+        self.hwp.FindCtrl()
+        pset = self.hwp.HParameterSet.HShapeObject
+        self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+        pset.VertAlign = self.hwp.VAlign("Bottom")
+        pset.VertRelTo = self.hwp.VertRel("Page")
+        pset.VertOffset = self.hwp.MiliToHwpUnit(offset)
+        pset.HSet.SetItem("ShapeType", 3)
+        self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
+        self.hwp.Run("Cancel")
 
     def insert_text(self, text):
         param = self.hwp.HParameterSet.HInsertText
