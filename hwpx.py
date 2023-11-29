@@ -30,6 +30,9 @@ class Hwp:
         레지스트리 키를 직접 추가(수정)한다.
     """
 
+    def __repr__(self):
+        return "<파이썬+아래아한글 자동화를 돕기 위한 함수모음 및 추상화 인스턴스>"
+
     def __init__(self, new=False, visible=True, register_module=True):
         self.hwp = 0
         context = pythoncom.CreateBindCtx(0)
@@ -53,210 +56,6 @@ class Hwp:
         if not self.hwp:
             self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
         self.hwp.XHwpWindows.Item(0).Visible = visible
-
-        # self.Application = self.hwp.Application
-        # self.ArcType = self.hwp.ArcType
-        # self.AutoNumType = self.hwp.AutoNumType
-        # self.BorderShape = self.hwp.BorderShape
-        # self.BreakWordLatin = self.hwp.BreakWordLatin
-        # self.BrushType = self.hwp.BrushType
-        # self.CLSID = self.hwp.CLSID
-        # self.Canonical = self.hwp.Canonical
-        # self.CellApply = self.hwp.CellApply
-        # self.CellShape = self.hwp.CellShape
-        # self.CharShadowType = self.hwp.CharShadowType
-        # self.CharShape = self.hwp.CharShape
-        # self.CheckXObject = self.hwp.CheckXObject
-        # self.Clear = self.hwp.Clear
-        # self.ColDefType = self.hwp.ColDefType
-        # self.ColLayoutType = self.hwp.ColLayoutType
-        # self.ConvertPUAHangulToUnicode = self.hwp.ConvertPUAHangulToUnicode
-        # self.CreateAction = self.hwp.CreateAction
-        # self.CreateField = self.hwp.CreateField
-        # self.CreateID = self.hwp.CreateID
-        # self.CreateMode = self.hwp.CreateMode
-        # self.CreatePageImage = self.hwp.CreatePageImage
-        # self.CreateSet = self.hwp.CreateSet
-        # self.CrookedSlash = self.hwp.CrookedSlash
-        # self.CurFieldState = self.hwp.CurFieldState
-        # self.CurMetatagState = self.hwp.CurMetatagState
-        # self.CurSelectedCtrl = self.hwp.CurSelectedCtrl
-        # self.DSMark = self.hwp.DSMark
-        # self.DbfCodeType = self.hwp.DbfCodeType
-        # self.DeleteCtrl = self.hwp.DeleteCtrl
-        # self.Delimiter = self.hwp.Delimiter
-        # self.DrawAspect = self.hwp.DrawAspect
-        # self.DrawFillImage = self.hwp.DrawFillImage
-        # self.DrawShadowType = self.hwp.DrawShadowType
-        # self.EditMode = self.hwp.EditMode
-        # self.Encrypt = self.hwp.Encrypt
-        # self.EndSize = self.hwp.EndSize
-        # self.EndStyle = self.hwp.EndStyle
-        # self.EngineProperties = self.hwp.EngineProperties
-        # self.ExportStyle = self.hwp.ExportStyle
-        # self.FieldExist = self.hwp.FieldExist
-        # self.FileTranslate = self.hwp.FileTranslate
-        # self.FillAreaType = self.hwp.FillAreaType
-        # self.FindCtrl = self.hwp.FindCtrl
-        # self.FindDir = self.hwp.FindDir
-        # self.FindPrivateInfo = self.hwp.FindPrivateInfo
-        # self.FontType = self.hwp.FontType
-        # self.GetBinDataPath = self.hwp.GetBinDataPath
-        # self.GetCurFieldName = self.hwp.GetCurFieldName
-        # self.GetCurMetatagName = self.hwp.GetCurMetatagName
-        # self.GetFieldList = self.hwp.GetFieldList
-        # self.GetFieldText = self.hwp.GetFieldText
-        # self.GetFileInfo = self.hwp.GetFileInfo
-        # self.GetFontList = self.hwp.GetFontList
-        # self.GetHeadingString = self.hwp.GetHeadingString
-        # self.GetMessageBoxMode = self.hwp.GetMessageBoxMode
-        # self.GetMetatagList = self.hwp.GetMetatagList
-        # self.GetMetatagNameText = self.hwp.GetMetatagNameText
-        # self.GetMousePos = self.hwp.GetMousePos
-        # self.GetPageText = self.hwp.GetPageText
-        # self.GetPos = self.hwp.GetPos
-        # self.GetPosBySet = self.hwp.GetPosBySet
-        # self.GetScriptSource = self.hwp.GetScriptSource
-        # self.GetSelectedPos = self.hwp.GetSelectedPos
-        # self.GetSelectedPosBySet = self.hwp.GetSelectedPosBySet
-        # self.GetText = self.hwp.GetText
-        # self.GetTextFile = self.hwp.GetTextFile
-        # self.GetTranslateLangList = self.hwp.GetTranslateLangList
-        # self.GetUserInfo = self.hwp.GetUserInfo
-        # self.Gradation = self.hwp.Gradation
-        # self.GridMethod = self.hwp.GridMethod
-        # self.GridViewLine = self.hwp.GridViewLine
-        # self.GutterMethod = self.hwp.GutterMethod
-        # self.HAction = self.hwp.HAction
-        # self.HAlign = self.hwp.HAlign
-        # self.HParameterSet = self.hwp.HParameterSet
-        # self.Handler = self.hwp.Handler
-        # self.Hash = self.hwp.Hash
-        # self.HatchStyle = self.hwp.HatchStyle
-        # self.HeadCtrl = self.hwp.HeadCtrl
-        # self.HeadType = self.hwp.HeadType
-        # self.HeightRel = self.hwp.HeightRel
-        # self.Hiding = self.hwp.Hiding
-        # self.HorzRel = self.hwp.HorzRel
-        # self.HwpLineType = self.hwp.HwpLineType
-        # self.HwpLineWidth = self.hwp.HwpLineWidth
-        # self.HwpOutlineStyle = self.hwp.HwpOutlineStyle
-        # self.HwpOutlineType = self.hwp.HwpOutlineType
-        # self.HwpUnderlineShape = self.hwp.HwpUnderlineShape
-        # self.HwpUnderlineType = self.hwp.HwpUnderlineType
-        # self.HwpZoomType = self.hwp.HwpZoomType
-        # self.ImageFormat = self.hwp.ImageFormat
-        # self.ImportStyle = self.hwp.ImportStyle
-        # self.InitHParameterSet = self.hwp.InitHParameterSet
-        # self.InitScan = self.hwp.InitScan
-        # self.Insert = self.hwp.Insert
-        # self.InsertBackgroundPicture = self.hwp.InsertBackgroundPicture
-        # self.InsertCtrl = self.hwp.InsertCtrl
-        # self.InsertPicture = self.hwp.InsertPicture
-        # self.IsActionEnable = self.hwp.IsActionEnable
-        # self.IsCommandLock = self.hwp.IsCommandLock
-        # self.IsEmpty = self.hwp.IsEmpty
-        # self.IsModified = self.hwp.IsModified
-        # self.IsPrivateInfoProtected = self.hwp.IsPrivateInfoProtected
-        # self.IsTrackChange = self.hwp.IsTrackChange
-        # self.IsTrackChangePassword = self.hwp.IsTrackChangePassword
-        # self.KeyIndicator = self.hwp.KeyIndicator
-        # self.LastCtrl = self.hwp.LastCtrl
-        # self.LineSpacingMethod = self.hwp.LineSpacingMethod
-        # self.LineWrapType = self.hwp.LineWrapType
-        # self.LockCommand = self.hwp.LockCommand
-        # self.LunarToSolar = self.hwp.LunarToSolar
-        # self.LunarToSolarBySet = self.hwp.LunarToSolarBySet
-        # self.MacroState = self.hwp.MacroState
-        # self.MailType = self.hwp.MailType
-        # self.MetatagExist = self.hwp.MetatagExist
-        # self.MiliToHwpUnit = self.hwp.MiliToHwpUnit
-        # self.ModifyFieldProperties = self.hwp.ModifyFieldProperties
-        # self.ModifyMetatagProperties = self.hwp.ModifyMetatagProperties
-        # self.MovePos = self.hwp.MovePos
-        # self.MoveToField = self.hwp.MoveToField
-        # self.MoveToMetatag = self.hwp.MoveToMetatag
-        # self.NumberFormat = self.hwp.NumberFormat
-        # self.Numbering = self.hwp.Numbering
-        # self.Open = self.hwp.Open
-        # self.PageCount = self.hwp.PageCount
-        # self.PageNumPosition = self.hwp.PageNumPosition
-        # self.PageType = self.hwp.PageType
-        # self.ParaHeadAlign = self.hwp.ParaHeadAlign
-        # self.ParaShape = self.hwp.ParaShape
-        # self.ParentCtrl = self.hwp.ParentCtrl
-        # self.Path = self.hwp.Path
-        # self.PicEffect = self.hwp.PicEffect
-        # self.PlacementType = self.hwp.PlacementType
-        # self.PointToHwpUnit = self.hwp.PointToHwpUnit
-        # self.PresentEffect = self.hwp.PresentEffect
-        # self.PrintDevice = self.hwp.PrintDevice
-        # self.PrintPaper = self.hwp.PrintPaper
-        # self.PrintRange = self.hwp.PrintRange
-        # self.PrintType = self.hwp.PrintType
-        # self.ProtectPrivateInfo = self.hwp.ProtectPrivateInfo
-        # self.PutFieldText = self.hwp.PutFieldText
-        # self.PutMetatagNameText = self.hwp.PutMetatagNameText
-        # self.Quit = self.hwp.Quit
-        # self.RGBColor = self.hwp.RGBColor
-        # self.RegisterModule = self.hwp.RegisterModule
-        # self.RegisterPrivateInfoPattern = self.hwp.RegisterPrivateInfoPattern
-        # self.ReleaseAction = self.hwp.ReleaseAction
-        # self.ReleaseScan = self.hwp.ReleaseScan
-        # self.RenameField = self.hwp.RenameField
-        # self.RenameMetatag = self.hwp.RenameMetatag
-        # self.ReplaceAction = self.hwp.ReplaceAction
-        # self.ReplaceFont = self.hwp.ReplaceFont
-        # self.Revision = self.hwp.Revision
-        # self.Run = self.hwp.Run
-        # self.RunScriptMacro = self.hwp.RunScriptMacro
-        # self.Save = self.hwp.Save
-        # self.SaveAs = self.hwp.SaveAs
-        # self.ScanFont = self.hwp.ScanFont
-        # self.SelectText = self.hwp.SelectText
-        # self.SelectionMode = self.hwp.SelectionMode
-        # self.SetBarCodeImage = self.hwp.SetBarCodeImage
-        # self.SetCurFieldName = self.hwp.SetCurFieldName
-        # self.SetCurMetatagName = self.hwp.SetCurMetatagName
-        # self.SetDRMAuthority = self.hwp.SetDRMAuthority
-        # self.SetFieldViewOption = self.hwp.SetFieldViewOption
-        # self.SetMessageBoxMode = self.hwp.SetMessageBoxMode
-        # self.SetPos = self.hwp.SetPos
-        # self.SetPosBySet = self.hwp.SetPosBySet
-        # self.SetPrivateInfoPassword = self.hwp.SetPrivateInfoPassword
-        # self.SetTextFile = self.hwp.SetTextFile
-        # self.SetTitleName = self.hwp.SetTitleName
-        # self.SetUserInfo = self.hwp.SetUserInfo
-        # self.SideType = self.hwp.SideType
-        # self.Signature = self.hwp.Signature
-        # self.Slash = self.hwp.Slash
-        # self.SolarToLunar = self.hwp.SolarToLunar
-        # self.SolarToLunarBySet = self.hwp.SolarToLunarBySet
-        # self.SortDelimiter = self.hwp.SortDelimiter
-        # self.StrikeOut = self.hwp.StrikeOut
-        # self.StyleType = self.hwp.StyleType
-        # self.SubtPos = self.hwp.SubtPos
-        # self.TableBreak = self.hwp.TableBreak
-        # self.TableFormat = self.hwp.TableFormat
-        # self.TableSwapType = self.hwp.TableSwapType
-        # self.TableTarget = self.hwp.TableTarget
-        # self.TextAlign = self.hwp.TextAlign
-        # self.TextArtAlign = self.hwp.TextArtAlign
-        # self.TextDir = self.hwp.TextDir
-        # self.TextFlowType = self.hwp.TextFlowType
-        # self.TextWrapType = self.hwp.TextWrapType
-        # self.UnSelectCtrl = self.hwp.UnSelectCtrl
-        # self.VAlign = self.hwp.VAlign
-        # self.Version = self.hwp.Version
-        # self.VertRel = self.hwp.VertRel
-        # self.ViewFlag = self.hwp.ViewFlag
-        # self.ViewProperties = self.hwp.ViewProperties
-        # self.WatermarkBrush = self.hwp.WatermarkBrush
-        # self.WidthRel = self.hwp.WidthRel
-        # self.XHwpDocuments = self.hwp.XHwpDocuments
-        # self.XHwpMessageBox = self.hwp.XHwpMessageBox
-        # self.XHwpODBC = self.hwp.XHwpODBC
-        # self.XHwpWindows = self.hwp.XHwpWindows
 
         if register_module:
             self.register_module()
@@ -401,11 +200,19 @@ class Hwp:
         return df
 
     def table_to_bottom(self, offset=0.):
+        """
+        표 앞에 캐럿을 둔 상태 또는 캐럿이 표 안에 있는 상태에서 위 함수 실행시
+        표를 (페이지 기준) 하단으로 위치시킨다.
+        :param offset:
+        페이지 하단 기준 오프셋(mm)
+        :return:
+        """
         self.hwp.FindCtrl()
         pset = self.hwp.HParameterSet.HShapeObject
         self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
         pset.VertAlign = self.hwp.VAlign("Bottom")
         pset.VertRelTo = self.hwp.VertRel("Page")
+        pset.TreatAsChar = 0
         pset.VertOffset = self.hwp.MiliToHwpUnit(offset)
         pset.HSet.SetItem("ShapeType", 3)
         self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
@@ -1939,7 +1746,7 @@ class Hwp:
         한/글의 경우 “찾아서 보호”와 “선택 글자 보호”를 다른 기능으로 구현하였지만,
         API에서는 하나의 함수로 구현한다.
 
-        :param potecting_char:
+        :param protecting_char:
             보호문자. 개인정보는 해당문자로 가려진다.
 
         :param private_pattern_type:
@@ -5512,3 +5319,1023 @@ class Hwp:
 
     def width_rel(self, width_rel):
         return self.hwp.WidthRel(WidthRel=width_rel)
+
+
+hwpx = Hwp()
+
+hwp = hwpx.hwp
+
+try:
+    Application = hwp.Application
+except:
+    pass
+
+try:
+    ArcType = hwp.ArcType
+except:
+    pass
+
+try:
+    AutoNumType = hwp.AutoNumType
+except:
+    pass
+
+try:
+    BorderShape = hwp.BorderShape
+except:
+    pass
+
+try:
+    BreakWordLatin = hwp.BreakWordLatin
+except:
+    pass
+
+try:
+    BrushType = hwp.BrushType
+except:
+    pass
+
+try:
+    CLSID = hwp.CLSID
+except:
+    pass
+
+try:
+    Canonical = hwp.Canonical
+except:
+    pass
+
+try:
+    CellApply = hwp.CellApply
+except:
+    pass
+
+try:
+    CellShape = hwp.CellShape
+except:
+    pass
+
+try:
+    CharShadowType = hwp.CharShadowType
+except:
+    pass
+
+try:
+    CharShape = hwp.CharShape
+except:
+    pass
+
+try:
+    CheckXObject = hwp.CheckXObject
+except:
+    pass
+
+try:
+    Clear = hwp.Clear
+except:
+    pass
+
+try:
+    ColDefType = hwp.ColDefType
+except:
+    pass
+
+try:
+    ColLayoutType = hwp.ColLayoutType
+except:
+    pass
+
+try:
+    ConvertPUAHangulToUnicode = hwp.ConvertPUAHangulToUnicode
+except:
+    pass
+
+try:
+    CreateAction = hwp.CreateAction
+except:
+    pass
+
+try:
+    CreateField = hwp.CreateField
+except:
+    pass
+
+try:
+    CreateID = hwp.CreateID
+except:
+    pass
+
+try:
+    CreateMode = hwp.CreateMode
+except:
+    pass
+
+try:
+    CreatePageImage = hwp.CreatePageImage
+except:
+    pass
+
+try:
+    CreateSet = hwp.CreateSet
+except:
+    pass
+
+try:
+    CrookedSlash = hwp.CrookedSlash
+except:
+    pass
+
+try:
+    CurFieldState = hwp.CurFieldState
+except:
+    pass
+
+try:
+    CurMetatagState = hwp.CurMetatagState
+except:
+    pass
+
+try:
+    CurSelectedCtrl = hwp.CurSelectedCtrl
+except:
+    pass
+
+try:
+    DSMark = hwp.DSMark
+except:
+    pass
+
+try:
+    DbfCodeType = hwp.DbfCodeType
+except:
+    pass
+
+try:
+    DeleteCtrl = hwp.DeleteCtrl
+except:
+    pass
+
+try:
+    Delimiter = hwp.Delimiter
+except:
+    pass
+
+try:
+    DrawAspect = hwp.DrawAspect
+except:
+    pass
+
+try:
+    DrawFillImage = hwp.DrawFillImage
+except:
+    pass
+
+try:
+    DrawShadowType = hwp.DrawShadowType
+except:
+    pass
+
+try:
+    EditMode = hwp.EditMode
+except:
+    pass
+
+try:
+    Encrypt = hwp.Encrypt
+except:
+    pass
+
+try:
+    EndSize = hwp.EndSize
+except:
+    pass
+
+try:
+    EndStyle = hwp.EndStyle
+except:
+    pass
+
+try:
+    EngineProperties = hwp.EngineProperties
+except:
+    pass
+
+try:
+    ExportStyle = hwp.ExportStyle
+except:
+    pass
+
+try:
+    FieldExist = hwp.FieldExist
+except:
+    pass
+
+try:
+    FileTranslate = hwp.FileTranslate
+except:
+    pass
+
+try:
+    FillAreaType = hwp.FillAreaType
+except:
+    pass
+
+try:
+    FindCtrl = hwp.FindCtrl
+except:
+    pass
+
+try:
+    FindDir = hwp.FindDir
+except:
+    pass
+
+try:
+    FindPrivateInfo = hwp.FindPrivateInfo
+except:
+    pass
+
+try:
+    FontType = hwp.FontType
+except:
+    pass
+
+try:
+    GetBinDataPath = hwp.GetBinDataPath
+except:
+    pass
+
+try:
+    GetCurFieldName = hwp.GetCurFieldName
+except:
+    pass
+
+try:
+    GetCurMetatagName = hwp.GetCurMetatagName
+except:
+    pass
+
+try:
+    GetFieldList = hwp.GetFieldList
+except:
+    pass
+
+try:
+    GetFieldText = hwp.GetFieldText
+except:
+    pass
+
+try:
+    GetFileInfo = hwp.GetFileInfo
+except:
+    pass
+
+try:
+    GetFontList = hwp.GetFontList
+except:
+    pass
+
+try:
+    GetHeadingString = hwp.GetHeadingString
+except:
+    pass
+
+try:
+    GetMessageBoxMode = hwp.GetMessageBoxMode
+except:
+    pass
+
+try:
+    GetMetatagList = hwp.GetMetatagList
+except:
+    pass
+
+try:
+    GetMetatagNameText = hwp.GetMetatagNameText
+except:
+    pass
+
+try:
+    GetMousePos = hwp.GetMousePos
+except:
+    pass
+
+try:
+    GetPageText = hwp.GetPageText
+except:
+    pass
+
+try:
+    GetPos = hwp.GetPos
+except:
+    pass
+
+try:
+    GetPosBySet = hwp.GetPosBySet
+except:
+    pass
+
+try:
+    GetScriptSource = hwp.GetScriptSource
+except:
+    pass
+
+try:
+    GetSelectedPos = hwp.GetSelectedPos
+except:
+    pass
+
+try:
+    GetSelectedPosBySet = hwp.GetSelectedPosBySet
+except:
+    pass
+
+try:
+    GetText = hwp.GetText
+except:
+    pass
+
+try:
+    GetTextFile = hwp.GetTextFile
+except:
+    pass
+
+try:
+    GetTranslateLangList = hwp.GetTranslateLangList
+except:
+    pass
+
+try:
+    GetUserInfo = hwp.GetUserInfo
+except:
+    pass
+
+try:
+    Gradation = hwp.Gradation
+except:
+    pass
+
+try:
+    GridMethod = hwp.GridMethod
+except:
+    pass
+
+try:
+    GridViewLine = hwp.GridViewLine
+except:
+    pass
+
+try:
+    GutterMethod = hwp.GutterMethod
+except:
+    pass
+
+try:
+    HAction = hwp.HAction
+except:
+    pass
+
+try:
+    HAlign = hwp.HAlign
+except:
+    pass
+
+try:
+    HParameterSet = hwp.HParameterSet
+except:
+    pass
+
+try:
+    Handler = hwp.Handler
+except:
+    pass
+
+try:
+    Hash = hwp.Hash
+except:
+    pass
+
+try:
+    HatchStyle = hwp.HatchStyle
+except:
+    pass
+
+try:
+    HeadCtrl = hwp.HeadCtrl
+except:
+    pass
+
+try:
+    HeadType = hwp.HeadType
+except:
+    pass
+
+try:
+    HeightRel = hwp.HeightRel
+except:
+    pass
+
+try:
+    Hiding = hwp.Hiding
+except:
+    pass
+
+try:
+    HorzRel = hwp.HorzRel
+except:
+    pass
+
+try:
+    HwpLineType = hwp.HwpLineType
+except:
+    pass
+
+try:
+    HwpLineWidth = hwp.HwpLineWidth
+except:
+    pass
+
+try:
+    HwpOutlineStyle = hwp.HwpOutlineStyle
+except:
+    pass
+
+try:
+    HwpOutlineType = hwp.HwpOutlineType
+except:
+    pass
+
+try:
+    HwpUnderlineShape = hwp.HwpUnderlineShape
+except:
+    pass
+
+try:
+    HwpUnderlineType = hwp.HwpUnderlineType
+except:
+    pass
+
+try:
+    HwpZoomType = hwp.HwpZoomType
+except:
+    pass
+
+try:
+    ImageFormat = hwp.ImageFormat
+except:
+    pass
+
+try:
+    ImportStyle = hwp.ImportStyle
+except:
+    pass
+
+try:
+    InitHParameterSet = hwp.InitHParameterSet
+except:
+    pass
+
+try:
+    InitScan = hwp.InitScan
+except:
+     pass
+
+try:
+    Insert = hwp.Insert
+except:
+    pass
+
+try:
+    InsertBackgroundPicture = hwp.InsertBackgroundPicture
+except:
+    pass
+
+try:
+    InsertCtrl = hwp.InsertCtrl
+except:
+    pass
+
+try:
+    InsertPicture = hwp.InsertPicture
+except:
+    pass
+
+try:
+    IsActionEnable = hwp.IsActionEnable
+except:
+    pass
+
+try:
+    IsCommandLock = hwp.IsCommandLock
+except:
+    pass
+
+try:
+    IsEmpty = hwp.IsEmpty
+except:
+    pass
+
+try:
+    IsModified = hwp.IsModified
+except:
+    pass
+
+try:
+    IsPrivateInfoProtected = hwp.IsPrivateInfoProtected
+except:
+    pass
+
+try:
+    IsTrackChange = hwp.IsTrackChange
+except:
+    pass
+
+try:
+    IsTrackChangePassword = hwp.IsTrackChangePassword
+except:
+    pass
+
+try:
+    KeyIndicator = hwp.KeyIndicator
+except:
+    pass
+
+try:
+    LastCtrl = hwp.LastCtrl
+except:
+    pass
+
+try:
+    LineSpacingMethod = hwp.LineSpacingMethod
+except:
+    pass
+
+try:
+    LineWrapType = hwp.LineWrapType
+except:
+    pass
+
+try:
+    LockCommand = hwp.LockCommand
+except:
+    pass
+
+try:
+    LunarToSolar = hwp.LunarToSolar
+except:
+    pass
+
+try:
+    LunarToSolarBySet = hwp.LunarToSolarBySet
+except:
+    pass
+
+try:
+    MacroState = hwp.MacroState
+except:
+    pass
+
+try:
+    MailType = hwp.MailType
+except:
+    pass
+
+try:
+    MetatagExist = hwp.MetatagExist
+except:
+    pass
+
+try:
+    MiliToHwpUnit = hwp.MiliToHwpUnit
+except:
+    pass
+
+try:
+    ModifyFieldProperties = hwp.ModifyFieldProperties
+except:
+    pass
+
+try:
+    ModifyMetatagProperties = hwp.ModifyMetatagProperties
+except:
+    pass
+
+try:
+    MovePos = hwp.MovePos
+except:
+    pass
+
+try:
+    MoveToField = hwp.MoveToField
+except:
+    pass
+
+try:
+    MoveToMetatag = hwp.MoveToMetatag
+except:
+    pass
+
+try:
+    NumberFormat = hwp.NumberFormat
+except:
+    pass
+
+try:
+    Numbering = hwp.Numbering
+except:
+    pass
+
+try:
+    Open = hwp.Open
+except:
+    pass
+
+try:
+    PageCount = hwp.PageCount
+except:
+    pass
+
+try:
+    PageNumPosition = hwp.PageNumPosition
+except:
+    pass
+
+try:
+    PageType = hwp.PageType
+except:
+    pass
+
+try:
+    ParaHeadAlign = hwp.ParaHeadAlign
+except:
+    pass
+
+try:
+    ParaShape = hwp.ParaShape
+except:
+     pass
+
+try:
+    ParentCtrl = hwp.ParentCtrl
+except:
+    pass
+
+try:
+    Path = hwp.Path
+except:
+    pass
+
+try:
+    PicEffect = hwp.PicEffect
+except:
+    pass
+
+try:
+    PlacementType = hwp.PlacementType
+except:
+    pass
+
+try:
+    PointToHwpUnit = hwp.PointToHwpUnit
+except:
+    pass
+
+try:
+    PresentEffect = hwp.PresentEffect
+except:
+    pass
+
+try:
+    PrintDevice = hwp.PrintDevice
+except:
+    pass
+
+try:
+    PrintPaper = hwp.PrintPaper
+except:
+    pass
+
+try:
+    PrintRange = hwp.PrintRange
+except:
+    pass
+
+try:
+    PrintType = hwp.PrintType
+except:
+    pass
+
+try:
+    ProtectPrivateInfo = hwp.ProtectPrivateInfo
+except:
+    pass
+
+try:
+    PutFieldText = hwp.PutFieldText
+except:
+    pass
+
+try:
+    PutMetatagNameText = hwp.PutMetatagNameText
+except:
+    pass
+
+try:
+    Quit = hwp.Quit
+except:
+     pass
+
+try:
+    RGBColor = hwp.RGBColor
+except:
+    pass
+
+try:
+    RegisterModule = hwp.RegisterModule
+except:
+    pass
+
+try:
+    RegisterPrivateInfoPattern = hwp.RegisterPrivateInfoPattern
+except:
+    pass
+
+try:
+    ReleaseAction = hwp.ReleaseAction
+except:
+     pass
+
+try:
+    ReleaseScan = hwp.ReleaseScan
+except:
+    pass
+
+try:
+    RenameField = hwp.RenameField
+except:
+    pass
+
+try:
+    RenameMetatag = hwp.RenameMetatag
+except:
+    pass
+
+try:
+    ReplaceAction = hwp.ReplaceAction
+except:
+    pass
+
+try:
+    ReplaceFont = hwp.ReplaceFont
+except:
+    pass
+
+try:
+    Revision = hwp.Revision
+except:
+    pass
+
+try:
+    Run = hwp.Run
+except:
+    pass
+
+try:
+    RunScriptMacro = hwp.RunScriptMacro
+except:
+    pass
+
+try:
+    Save = hwp.Save
+except:
+    pass
+
+try:
+    SaveAs = hwp.SaveAs
+except:
+    pass
+
+try:
+    ScanFont = hwp.ScanFont
+except:
+     pass
+
+try:
+    SelectText = hwp.SelectText
+except:
+    pass
+
+try:
+    SelectionMode = hwp.SelectionMode
+except:
+    pass
+
+try:
+    SetBarCodeImage = hwp.SetBarCodeImage
+except:
+    pass
+
+try:
+    SetCurFieldName = hwp.SetCurFieldName
+except:
+    pass
+
+try:
+    SetCurMetatagName = hwp.SetCurMetatagName
+except:
+    pass
+
+try:
+    SetDRMAuthority = hwp.SetDRMAuthority
+except:
+    pass
+
+try:
+    SetFieldViewOption = hwp.SetFieldViewOption
+except:
+    pass
+
+try:
+    SetMessageBoxMode = hwp.SetMessageBoxMode
+except:
+    pass
+
+try:
+    SetPos = hwp.SetPos
+except:
+    pass
+
+try:
+    SetPosBySet = hwp.SetPosBySet
+except:
+    pass
+
+try:
+    SetPrivateInfoPassword = hwp.SetPrivateInfoPassword
+except:
+    pass
+
+try:
+    SetTextFile = hwp.SetTextFile
+except:
+    pass
+
+try:
+    SetTitleName = hwp.SetTitleName
+except:
+    pass
+
+try:
+    SetUserInfo = hwp.SetUserInfo
+except:
+    pass
+
+try:
+    SideType = hwp.SideType
+except:
+    pass
+
+try:
+    Signature = hwp.Signature
+except:
+    pass
+
+try:
+    Slash = hwp.Slash
+except:
+    pass
+
+try:
+    SolarToLunar = hwp.SolarToLunar
+except:
+    pass
+
+try:
+    SolarToLunarBySet = hwp.SolarToLunarBySet
+except:
+    pass
+
+try:
+    SortDelimiter = hwp.SortDelimiter
+except:
+    pass
+
+try:
+    StrikeOut = hwp.StrikeOut
+except:
+    pass
+
+try:
+    StyleType = hwp.StyleType
+except:
+    pass
+
+try:
+    SubtPos = hwp.SubtPos
+except:
+    pass
+
+try:
+    TableBreak = hwp.TableBreak
+except:
+    pass
+
+try:
+    TableFormat = hwp.TableFormat
+except:
+    pass
+
+try:
+    TableSwapType = hwp.TableSwapType
+except:
+    pass
+
+try:
+    TableTarget = hwp.TableTarget
+except:
+    pass
+
+try:
+    TextAlign = hwp.TextAlign
+except:
+    pass
+
+try:
+    TextArtAlign = hwp.TextArtAlign
+except:
+    pass
+
+try:
+    TextDir = hwp.TextDir
+except:
+     pass
+
+try:
+    TextFlowType = hwp.TextFlowType
+except:
+    pass
+
+try:
+    TextWrapType = hwp.TextWrapType
+except:
+    pass
+
+try:
+    UnSelectCtrl = hwp.UnSelectCtrl
+except:
+    pass
+
+try:
+    VAlign = hwp.VAlign
+except:
+    pass
+
+try:
+    Version = hwp.Version
+except:
+    pass
+
+try:
+    VertRel = hwp.VertRel
+except:
+    pass
+
+try:
+    ViewFlag = hwp.ViewFlag
+except:
+    pass
+
+try:
+    ViewProperties = hwp.ViewProperties
+except:
+    pass
+
+try:
+    WatermarkBrush = hwp.WatermarkBrush
+except:
+    pass
+
+try:
+    WidthRel = hwp.WidthRel
+except:
+    pass
+
+try:
+    XHwpDocuments = hwp.XHwpDocuments
+except:
+    pass
+
+try:
+    XHwpMessageBox = hwp.XHwpMessageBox
+except:
+    pass
+
+try:
+    XHwpODBC = hwp.XHwpODBC
+except:
+    pass
+
+try:
+    XHwpWindows = hwp.XHwpWindows
+except:
+    pass
