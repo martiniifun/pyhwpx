@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import pythoncom
 import win32com.client as win32
+import pyperclip as cb
 
 
 class dotdict(dict):
@@ -67,6 +68,29 @@ class Hwp:
     @property
     def LastCtrl(self):
         return self.hwp.LastCtrl
+
+    def clipboard_to_pyfunc(self):
+        """
+        한/글 프로그램에서 스크립트매크로 녹화 코드를 클립보드에 복사하고
+        clipboard_to_pyfunc()을 실행하면, 클립보드의 매크로가 파이썬 함수로 변경된다.
+        """
+        text = cb.paste()
+        text = text.replace("\t", "    ").replace(";", "")
+        text = text.split("{\r\n", maxsplit=1)[1][:-5]
+        if "with" in text:
+            pset_name = text.split("with (")[1].split(")")[0]
+            inner_param = text.split("{\r\n")[1].split("\r\n}")[0].replace("        ", f"    {pset_name}")
+            result = f"def script_macro():\r\n    pset = {pset_name}\r\n    " + text.replace("    ", "").split("with")[
+                0].replace(pset_name, "pset").replace("\r\n", "\r\n    ") + inner_param.replace(pset_name,
+                                                                                                "pset.").replace("    ",
+                                                                                                                 "").replace(
+                "}\r\n", "").replace("..", ".").replace("\r\n", "\r\n    ")
+        else:
+            pset_name = text.split(", ")[1].split(".HSet")[0]
+            result = f"def script_macro():\r\n    pset = {pset_name}\r\n    " + text.replace("    ", "").replace(
+                pset_name, "pset").replace("\r\n", "\r\n    ")
+        print(result)
+        cb.copy(result)
 
     def switch_to(self, num):
         """
@@ -5006,6 +5030,8 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
+        if not path.lower().startswith("c:"):
+            path = os.path.join(os.getcwd(), path)
         return self.hwp.SaveAs(Path=path, Format=format, arg=arg)
 
     def scan_font(self):
