@@ -1722,7 +1722,11 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
-        return self.hwp.Open(filename=filename, Format=format, arg=arg)
+        if filename.lower().startswith("c:"):
+            return self.hwp.Open(filename=filename, Format=format, arg=arg)
+        else:
+            filename = os.path.join(os.getcwd(), filename)
+            return self.hwp.Open(filename=filename, Format=format, arg=arg)
 
     def page_num_position(self, pagenumpos):
         return self.hwp.PageNumPosition(pagenumpos=pagenumpos)
@@ -1860,8 +1864,14 @@ class Hwp:
         import subprocess
         from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, KEY_WRITE, SetValueEx, REG_SZ, CloseKey
 
-        location = [i.split(": ")[1] for i in subprocess.check_output(['pip', 'show', 'pyhwpx']).decode().split("\r\n") if
-                    i.startswith("Location: ")][0]
+        try:
+            location = [i.split(": ")[1] for i in
+                        subprocess.check_output(['pip', 'show', 'pyhwpx']).decode(encoding="cp949").split("\r\n") if
+                        i.startswith("Location: ")][0]
+        except:
+            location = [i.split(": ")[1] for i in
+                        subprocess.check_output(['pip', 'show', 'pyhwpx']).decode().split("\r\n") if
+                        i.startswith("Location: ")][0]
         winup_path = r"Software\HNC\HwpAutomation\Modules"
 
         # HKEY_LOCAL_MACHINE와 연결 생성 후 핸들 얻음
@@ -1869,7 +1879,11 @@ class Hwp:
 
         # 얻은 행동을 사용해 WRITE 권한으로 레지스트리 키를 엶
         file_path_checker_module = winup_path + r"\FilePathCheckerModule"
-        key = OpenKey(reg_handle, winup_path, 0, KEY_WRITE)
+        try:
+            key = OpenKey(reg_handle, winup_path, 0, KEY_WRITE)
+        except FileNotFoundError as e:
+            winup_path = r"Software\Hnc\HwpUserAction\Modules"
+            key = OpenKey(reg_handle, winup_path, 0, KEY_WRITE)
         SetValueEx(key, "FilePathCheckerModule", 0, REG_SZ, os.path.join(location, "FilePathCheckerModule.dll"))
         CloseKey(key)
 
@@ -5817,7 +5831,7 @@ except:
 try:
     InitScan = hwp__.InitScan
 except:
-     pass
+    pass
 
 try:
     Insert = hwp__.Insert
@@ -5992,7 +6006,7 @@ except:
 try:
     ParaShape = hwp__.ParaShape
 except:
-     pass
+    pass
 
 try:
     ParentCtrl = hwp__.ParentCtrl
@@ -6062,7 +6076,7 @@ except:
 try:
     Quit = hwp__.Quit
 except:
-     pass
+    pass
 
 try:
     RGBColor = hwp__.RGBColor
@@ -6082,7 +6096,7 @@ except:
 try:
     ReleaseAction = hwp__.ReleaseAction
 except:
-     pass
+    pass
 
 try:
     ReleaseScan = hwp__.ReleaseScan
@@ -6137,7 +6151,7 @@ except:
 try:
     ScanFont = hwp__.ScanFont
 except:
-     pass
+    pass
 
 try:
     SelectText = hwp__.SelectText
@@ -6287,7 +6301,7 @@ except:
 try:
     TextDir = hwp__.TextDir
 except:
-     pass
+    pass
 
 try:
     TextFlowType = hwp__.TextFlowType
