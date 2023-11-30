@@ -6,6 +6,7 @@ import pandas as pd
 import pythoncom
 import win32com.client as win32
 import pyperclip as cb
+import shutil
 
 
 class Hwp:
@@ -28,6 +29,10 @@ class Hwp:
         return "<파이썬+아래아한글 자동화를 돕기 위한 함수모음 및 추상화 인스턴스>"
 
     def __init__(self, new=False, visible=True, register_module=True):
+        try:
+            shutil.rmtree(os.path.join(os.environ["USERPROFILE"], "AppData/Local/Temp/gen_py"))
+        except FileNotFoundError as e:
+            pass
         self.hwp = 0
         context = pythoncom.CreateBindCtx(0)
 
