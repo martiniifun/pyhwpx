@@ -11,14 +11,17 @@ import shutil
 from win32com.client import gencache
 
 
+# temp 폴더 삭제
 try:
     shutil.rmtree(os.path.join(os.environ["USERPROFILE"], "AppData/Local/Temp/gen_py"))
 except FileNotFoundError as e:
     pass
 
+# Type Library 파일 재생성
 gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
+# 아래아한글 오토메이션 클래스 정의
 class Hwp:
     """
     아래아한글 인스턴스를 실행한다.
@@ -77,6 +80,7 @@ class Hwp:
         """
         한/글 프로그램에서 스크립트매크로 녹화 코드를 클립보드에 복사하고
         clipboard_to_pyfunc()을 실행하면, 클립보드의 매크로가 파이썬 함수로 변경된다.
+        곧 정규식으로 업데이트 예정(2023. 11. 30)
         """
         text = cb.paste()
         text = text.replace("\t", "    ").replace(";", "")
@@ -193,7 +197,7 @@ class Hwp:
                 col_count += 1
             data.append(self.get_sel_text())
 
-        array = np.array(data).reshape(col_count, -1)
+        array = np.array(data).reshape(-1, col_count)
         df = pd.DataFrame(array[1:], columns=array[0])
         df.to_csv(filename, index=False)
         self.hwp.SetPos(*start_pos)
@@ -222,7 +226,7 @@ class Hwp:
                 col_count += 1
             data.append(self.get_sel_text())
 
-        array = np.array(data).reshape(col_count, -1)
+        array = np.array(data).reshape(-1, col_count)
         df = pd.DataFrame(array[1:], columns=array[0])
         self.hwp.SetPos(*start_pos)
         return df
