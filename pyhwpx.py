@@ -76,6 +76,59 @@ class Hwp:
     def LastCtrl(self):
         return self.hwp.LastCtrl
 
+    def is_cell(self):
+        if self.key_indicator()[-1].startswith("("):
+            return True
+        else:
+            return False
+
+    def find(self, src):
+        pset = self.hwp.HParameterSet.HFindReplace
+        self.hwp.HAction.GetDefault("RepeatFind", pset.HSet)
+        pset.MatchCase = 1
+        pset.SeveralWords = 1
+        pset.UseWildCards = 1
+        pset.AutoSpell = 1
+        pset.Direction = 2
+        pset.FindString = src
+        pset.IgnoreMessage = 1
+        pset.HanjaFromHangul = 1
+        return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
+
+    def set_field_by_bracket(self):
+        while self.find("{{"):
+            while True:
+                self.hwp.HAction.Run("MoveSelRight")
+                if self.get_sel_text().endswith("}}"):
+                    field_name = self.get_sel_text()[2:-2]
+                    if ":" in field_name:
+                        field_name, direction = field_name.split(":", maxsplit=1)
+                        if ":" in direction:
+                            direction, memo = direction.split(":", maxsplit=1)
+                        else:
+                            memo = ""
+                    else:
+                        direction = memo = ""
+                    break
+                if self.get_sel_text().endswith("\r\n"):
+                    raise Exception("필드를 닫는 중괄호가 없습니다.")
+            self.hwp.HAction.Run("Delete")
+            if self.is_cell():
+                self.set_cur_field_name(field_name, option=1, direction=direction, memo=memo)
+            else:
+                self.create_field(field_name, direction, memo)
+
+    def find_replace_all(self, src, dst):
+        pset = self.hwp.HParameterSet.HFindReplace
+        self.hwp.HAction.GetDefault("AllReplace", pset.HSet)
+        pset.Direction = self.hwp.FindDir("AllDoc")
+        pset.FindString = src  # "\\r\\n"
+        pset.ReplaceString = dst  # "^n"
+        pset.ReplaceMode = 1
+        pset.IgnoreMessage = 1
+        pset.FindType = 1
+        self.hwp.HAction.Execute("AllReplace", pset.HSet)
+
     def clipboard_to_pyfunc(self):
         """
         한/글 프로그램에서 스크립트매크로 녹화 코드를 클립보드에 복사하고
@@ -100,10 +153,9 @@ class Hwp:
         print(result)
         cb.copy(result)
 
-    def clear_fields(self):
+    def clear_field_text(self):
         for i in self.hwp.GetFieldList(1).split("\x02"):
             self.hwp.PutFieldText(i, "")
-
 
     def switch_to(self, num):
         """
