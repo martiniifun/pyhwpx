@@ -77,12 +77,30 @@ class Hwp:
         return self.hwp.LastCtrl
 
     def is_cell(self):
+        """
+        캐럿이 현재 표 안에 있는지 알려주는 메서드
+        :return:
+            표 안에 있으면 True, 그렇지 않으면 False를 리턴
+        """
         if self.key_indicator()[-1].startswith("("):
             return True
         else:
             return False
 
     def find(self, src):
+        """
+        캐럿 뒤의 특정 단어를 찾아가는 메서드.
+        해당 단어를 선택한 상태가 되며,
+        문서 끝에 도달시 문서 처음부터 탐색을 재개하고,
+        원래 캐럿위치까지 왔을 때 False를 리턴하므로
+        while문의 조건으로 사용할 수 있다.
+
+        :param src:
+            찾을 단어
+        :return:
+            단어를 찾으면 찾아가서 선택한 후 True를 리턴,
+            단어가 더이상 없으면 False를 리턴
+        """
         pset = self.hwp.HParameterSet.HFindReplace
         self.hwp.HAction.GetDefault("RepeatFind", pset.HSet)
         pset.MatchCase = 1
@@ -96,6 +114,18 @@ class Hwp:
         return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
 
     def set_field_by_bracket(self):
+        """
+        필드를 지정하는 일련의 반복작업을 간소화하기 위한 메서드.
+        중괄호 두 겹({{}})으로 둘러싸인 구문을 누름틀로 변환해준다.
+        만약 본문에 "{{name}}"이라는 문구가 있었다면 해당 단어를 삭제하고
+        그 위치에 name이라는 누름틀을 생성한다.
+        지시문(direction)과 메모(memo)도 추가가 가능한데,
+        "{{name:direction}}" 또는 "{{name:direction:memo}}" 방식으로
+        콜론으로 구분하여 지정할 수 있다.
+        셀 안에서 누름틀을 삽입할 수도 있지만,
+        편의상 셀필드를 삽입하고 싶은 경우 "[[name]]"으로 지정하면 된다.
+        :return:
+        """
         while self.find("{{"):
             while True:
                 self.hwp.HAction.Run("MoveSelRight")
@@ -113,10 +143,28 @@ class Hwp:
                 if self.get_sel_text().endswith("\r\n"):
                     raise Exception("필드를 닫는 중괄호가 없습니다.")
             self.hwp.HAction.Run("Delete")
+            self.create_field(field_name, direction, memo)
+        while self.find("[["):
+            while True:
+                self.hwp.HAction.Run("MoveSelRight")
+                if self.get_sel_text().endswith("]]"):
+                    field_name = self.get_sel_text()[2:-2]
+                    if ":" in field_name:
+                        field_name, direction = field_name.split(":", maxsplit=1)
+                        if ":" in direction:
+                            direction, memo = direction.split(":", maxsplit=1)
+                        else:
+                            memo = ""
+                    else:
+                        direction = memo = ""
+                    break
+                if self.get_sel_text().endswith("\r\n"):
+                    raise Exception("필드를 닫는 중괄호가 없습니다.")
+            self.hwp.HAction.Run("Delete")
             if self.is_cell():
                 self.set_cur_field_name(field_name, option=1, direction=direction, memo=memo)
             else:
-                self.create_field(field_name, direction, memo)
+                pass
 
     def find_replace_all(self, src, dst):
         pset = self.hwp.HParameterSet.HFindReplace
