@@ -100,6 +100,11 @@ class Hwp:
         print(result)
         cb.copy(result)
 
+    def clear_fields(self):
+        for i in self.hwp.GetFieldList(1).split("\x02"):
+            self.hwp.PutFieldText(i, "")
+
+
     def switch_to(self, num):
         """
         여러 개의 hwp인스턴스가 열려 있는 경우 해당 인스턴스를 활성화한다.
@@ -2399,6 +2404,12 @@ class Hwp:
         """
         return self.hwp.HAction.Run("Copy")
 
+    def CopyPage(self):
+        """
+        쪽 복사
+        """
+        return self.hwp.HAction.Run("CopyPage")
+
     def Cut(self):
         """
         잘라내기. Copy 액션과 유사하지만, 복사 대신 잘라내기 기능을 수행한다. 자주 쓰이는 메서드이다.
@@ -2440,6 +2451,12 @@ class Hwp:
         현재 커서에서 줄 끝까지 지우기(Alt-Y). 수작업시에 굉장히 유용한 기능일 수 있지만, 자동화 작업시에는 DeleteLine이나 DeleteLineEnd 모두, 한 줄 안에 어떤 내용까지 있는지 파악하기 어려운 관계로, 자동화에 잘 쓰이지는 않는다.
         """
         return self.hwp.HAction.Run("DeleteLineEnd")
+
+    def DeletePage(self):
+        """
+        쪽 지우기
+        """
+        return self.hwp.HAction.Run("DeletePage")
 
     def DeleteWord(self):
         """
@@ -3730,6 +3747,12 @@ class Hwp:
         붙이기
         """
         return self.hwp.HAction.Run("Paste")
+
+    def PastePage(self):
+        """
+        쪽 붙여넣기
+        """
+        return self.hwp.HAction.Run("PastePage")
 
     def PasteSpecial(self):
         """
