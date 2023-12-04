@@ -116,12 +116,14 @@ class Hwp:
     def set_field_by_bracket(self):
         """
         필드를 지정하는 일련의 반복작업을 간소화하기 위한 메서드.
+
         중괄호 두 겹({{}})으로 둘러싸인 구문을 누름틀로 변환해준다.
         만약 본문에 "{{name}}"이라는 문구가 있었다면 해당 단어를 삭제하고
         그 위치에 name이라는 누름틀을 생성한다.
         지시문(direction)과 메모(memo)도 추가가 가능한데,
         "{{name:direction}}" 또는 "{{name:direction:memo}}" 방식으로
         콜론으로 구분하여 지정할 수 있다.
+        (가급적 direction을 지정해주도록 하자. 그렇지 않으면 누름틀이 보이지 않는다.)
         셀 안에서 누름틀을 삽입할 수도 있지만,
         편의상 셀필드를 삽입하고 싶은 경우 "[[name]]"으로 지정하면 된다.
         :return:
@@ -144,6 +146,7 @@ class Hwp:
                     raise Exception("필드를 닫는 중괄호가 없습니다.")
             self.hwp.HAction.Run("Delete")
             self.create_field(field_name, direction, memo)
+
         while self.find("[["):
             while True:
                 self.hwp.HAction.Run("MoveSelRight")
@@ -430,7 +433,10 @@ class Hwp:
             None
 
         :examples:
-            >>> self.hwp.clear(1)
+            >>> from pyhwpx import Hwp
+            >>>
+            >>> hwp = Hwp()
+            >>> hwp.clear(1)
         """
         return self.hwp.Clear(option=option)
 
@@ -457,15 +463,18 @@ class Hwp:
             Action object
 
         :examples:
+            >>> from pyhwpx import Hwp
+            >>>
+            >>> hwp = Hwp()
             >>> # 현재 커서의 폰트 크기(Height)를 구하는 코드
-            >>> act = self.hwp.CreateAction("CharShape")
+            >>> act = hwp.hwp.CreateAction("CharShape")
             >>> cs = act.CreateSet()  # == cs = self.hwp.CreateSet(act)
             >>> act.GetDefault(cs)
             >>> print(cs.Item("Height"))
             2800
 
             >>> # 현재 선택범위의 폰트 크기를 20pt로 변경하는 코드
-            >>> act = self.hwp.CreateAction("CharShape")
+            >>> act = hwp.hwp.CreateAction("CharShape")
             >>> cs = act.CreateSet()  # == cs = self.hwp.CreateSet(act)
             >>> act.GetDefault(cs)
             >>> cs.SetItem("Height", self.hwp.PointToHwpUnit(20))
@@ -537,6 +546,8 @@ class Hwp:
             >>> self.hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
             True
         """
+        if not path.lower().startswith("c:"):
+            path = os.path.join(os.getcwd(), path)
         return self.hwp.CreatePageImage(Path=path, pgno=pgno, resolution=resolution, depth=depth, Format=format)
 
     def create_set(self, setidstr):
@@ -623,6 +634,9 @@ class Hwp:
             >>> self.hwp.export_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
+        if not sty_filepath.lower().startswith("c:"):
+            sty_filepath = os.path.join(os.getcwd(), sty_filepath)
+
         style_set = self.hwp.HParameterSet.HStyleTemplate
         style_set.filename = sty_filepath
         return self.hwp.ExportStyle(param=style_set.HSet)
@@ -832,6 +846,8 @@ class Hwp:
             0x5010100
             0
         """
+        if not filename.lower().startswith("c:"):
+            filename = os.path.join(os.getcwd(), filename)
         return self.hwp.GetFileInfo(filename=filename)
 
     def get_font_list(self, langid):
@@ -1021,6 +1037,9 @@ class Hwp:
             (문서에 포함된) 스크립트의 소스코드
 
         Examples:
+            >>> from pyhwpx import Hwp
+            >>>
+            >>> hwp = Hwp()
             >>> print(hwp.get_script_source("C:/Users/User/Desktop/script.hwp"))
             function OnDocument_New()
             {
@@ -1035,6 +1054,8 @@ class Hwp:
                 HAction.Execute("InsertText", HParameterSet.HInsertText.HSet);
             }
         """
+        if not filename.lower().startswith("c:"):
+            filename = os.path.join(os.getcwd(), filename)
         return self.hwp.GetScriptSource(filename=filename)
 
     def get_selected_pos(self):
@@ -1242,6 +1263,9 @@ class Hwp:
             >>> self.hwp.import_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
+        if not sty_filepath.lower().startswith("c:"):
+            sty_filepath = os.path.join(os.getcwd(), sty_filepath)
+
         style_set = self.hwp.HParameterSet.HStyleTemplate
         style_set.filename = sty_filepath
         return self.hwp.ImportStyle(style_set.HSet)
@@ -1390,6 +1414,8 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
+        if not path.lower().startswith("c:"):
+            path = os.path.join(os.getcwd(), path)
         return self.hwp.Insert(Path=path, Format=format, arg=arg)
 
     def insert_background_picture(self, path, border_type="SelectedCell",
@@ -1456,6 +1482,9 @@ class Hwp:
             >>> self.hwp.insert_background_picture(path="C:/Users/User/Desktop/KakaoTalk_20230709_023118549.jpg")
             True
         """
+        if not path.lower().startswith("c:"):
+            path = os.path.join(os.getcwd(), path)
+
         return self.hwp.InsertBackgroundPicture(Path=path, BorderType=border_type,
                                                 Embedded=embedded, filloption=filloption,
                                                 Effect=effect, watermark=watermark,
@@ -1555,6 +1584,9 @@ class Hwp:
             >>> pset.SetItem("TextWrap", 2)  # 그림을 글 뒤로
             >>> ctrl.Properties = pset  # 설정한 값 적용(간단!)
         """
+        if not path.lower().startswith("c:"):
+            path = os.path.join(os.getcwd(), path)
+
         return self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption,
                                       Reverse=reverse, watermark=watermark, Effect=effect,
                                       Width=width, Height=height)
@@ -1842,11 +1874,9 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
-        if filename.lower().startswith("c:"):
-            return self.hwp.Open(filename=filename, Format=format, arg=arg)
-        else:
+        if not filename.lower().startswith("c:"):
             filename = os.path.join(os.getcwd(), filename)
-            return self.hwp.Open(filename=filename, Format=format, arg=arg)
+        return self.hwp.Open(filename=filename, Format=format, arg=arg)
 
     def page_num_position(self, pagenumpos):
         return self.hwp.PageNumPosition(pagenumpos=pagenumpos)
@@ -5217,6 +5247,8 @@ class Hwp:
         :param height:
         :return:
         """
+        if not lp_image_path.lower().startswith("c:"):
+            lp_image_path = os.path.join(os.getcwd(), lp_image_path)
         return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index,
                                         X=x, Y=y, Width=width, Height=height)
 
