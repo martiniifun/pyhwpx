@@ -5225,7 +5225,7 @@ class Hwp:
     def scan_font(self):
         return self.hwp.ScanFont()
 
-    def select_text(self, spara:Union[int, list, tuple], spos=0, epara=0, epos=0):
+    def select_text(self, spara: Union[int, list, tuple] = 0, spos=0, epara=0, epos=0, slist=0):
         """
         특정 범위의 텍스트를 블록선택한다.
         epos가 가리키는 문자는 포함되지 않는다.
@@ -5246,7 +5246,8 @@ class Hwp:
             성공하면 True, 실패하면 False
         """
         if type(spara) in [list, tuple]:
-            _, _, spara, spos, _, epara, epos = spara
+            _, slist, spara, spos, _, epara, epos = spara
+        self.set_pos(slist, 0, 0)
         return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
 
     def set_bar_code_image(self, lp_image_path, pgno, index, x, y, width, height):
