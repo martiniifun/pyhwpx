@@ -144,8 +144,8 @@ class Hwp:
         while self.find("{{"):
             while True:
                 self.hwp.HAction.Run("MoveSelRight")
-                if self.get_sel_text().endswith("}}"):
-                    field_name = self.get_sel_text()[2:-2]
+                if self.get_selected_text().endswith("}}"):
+                    field_name = self.get_selected_text()[2:-2]
                     if ":" in field_name:
                         field_name, direction = field_name.split(":", maxsplit=1)
                         if ":" in direction:
@@ -155,7 +155,7 @@ class Hwp:
                     else:
                         direction = memo = ""
                     break
-                if self.get_sel_text().endswith("\r\n"):
+                if self.get_selected_text().endswith("\r\n"):
                     raise Exception("필드를 닫는 중괄호가 없습니다.")
             self.hwp.HAction.Run("Delete")
             self.create_field(field_name, direction, memo)
@@ -163,8 +163,8 @@ class Hwp:
         while self.find("[["):
             while True:
                 self.hwp.HAction.Run("MoveSelRight")
-                if self.get_sel_text().endswith("]]"):
-                    field_name = self.get_sel_text()[2:-2]
+                if self.get_selected_text().endswith("]]"):
+                    field_name = self.get_selected_text()[2:-2]
                     if ":" in field_name:
                         field_name, direction = field_name.split(":", maxsplit=1)
                         if ":" in direction:
@@ -174,7 +174,7 @@ class Hwp:
                     else:
                         direction = memo = ""
                     break
-                if self.get_sel_text().endswith("\r\n"):
+                if self.get_selected_text().endswith("\r\n"):
                     raise Exception("필드를 닫는 중괄호가 없습니다.")
             self.hwp.HAction.Run("Delete")
             if self.is_cell():
@@ -286,7 +286,7 @@ class Hwp:
         pset.TableProperties.Width = total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
         self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
 
-    def get_sel_text(self):
+    def get_selected_text(self):
         self.hwp.InitScan(Range=0xff)
         total_text = ""
         state = 2
@@ -310,13 +310,13 @@ class Hwp:
         self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
         self.hwp.FindCtrl()
         self.hwp.HAction.Run("ShapeObjTableSelCell")
-        data = [self.get_sel_text()]
+        data = [self.get_selected_text()]
         col_count = 1
         while self.hwp.HAction.Run("TableRightCell"):
             # a.append(get_text().replace("\r\n", "\n"))
             if re.match("\([A-Z]1\)", self.hwp.KeyIndicator()[-1]):
                 col_count += 1
-            data.append(self.get_sel_text())
+            data.append(self.get_selected_text())
 
         array = np.array(data).reshape(-1, col_count)
         df = pd.DataFrame(array[1:], columns=array[0])
@@ -339,13 +339,13 @@ class Hwp:
         self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
         self.hwp.FindCtrl()
         self.hwp.HAction.Run("ShapeObjTableSelCell")
-        data = [self.get_sel_text()]
+        data = [self.get_selected_text()]
         col_count = 1
         while self.hwp.HAction.Run("TableRightCell"):
             # a.append(get_text().replace("\r\n", "\n"))
             if re.match("\([A-Z]1\)", self.hwp.KeyIndicator()[-1]):
                 col_count += 1
-            data.append(self.get_sel_text())
+            data.append(self.get_selected_text())
 
         array = np.array(data).reshape(-1, col_count)
         df = pd.DataFrame(array[1:], columns=array[0])
