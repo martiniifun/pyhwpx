@@ -120,7 +120,7 @@ class Hwp:
         pset.SeveralWords = 1
         pset.UseWildCards = 1
         pset.AutoSpell = 1
-        pset.Direction = direction
+        pset.Direction = self.find_dir(direction)
         pset.FindString = src
         pset.IgnoreMessage = 1
         pset.HanjaFromHangul = 1
