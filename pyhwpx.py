@@ -100,7 +100,7 @@ class Hwp:
         else:
             return False
 
-    def find(self, src, direction: Literal["Forward", "Backward", "Alldoc"] = "Alldoc"):
+    def find(self, src, direction: Literal["Forward", "Backward", "AllDoc"] = "AllDoc"):
         """
         캐럿 뒤의 특정 단어를 찾아가는 메서드.
         해당 단어를 선택한 상태가 되며,
@@ -675,7 +675,7 @@ class Hwp:
     def find_ctrl(self):
         return self.hwp.FindCtrl()
 
-    def find_dir(self, find_dir: Literal["Forward", "Backward", "Alldoc"] = "Alldoc"):
+    def find_dir(self, find_dir: Literal["Forward", "Backward", "AllDoc"] = "AllDoc"):
         return self.hwp.FindDir(FindDir=find_dir)
 
     def find_private_info(self, private_type, private_string):
@@ -1946,7 +1946,7 @@ class Hwp:
         """
         return self.hwp.ProtectPrivateInfo(PotectingChar=protecting_char, PrivatePatternType=private_pattern_type)
 
-    def put_field_text(self, field, text):
+    def put_field_text(self, field: Union[str, list, tuple, pd.Series], text):
         """
         지정한 필드의 내용을 채운다.
         현재 필드에 입력되어 있는 내용은 지워진다.
@@ -1975,6 +1975,8 @@ class Hwp:
             >>> # zxcv 필드에 "Hello world!" 텍스트 삽입
             >>> self.hwp.put_field_text("zxcv", "Hello world!")
         """
+        if type(field) in [list, tuple, pd.Series]:
+            field = "\x02".join(field)
         return self.hwp.PutFieldText(Field=field, Text=text)
 
     def put_metatag_name_text(self, tag, text):
