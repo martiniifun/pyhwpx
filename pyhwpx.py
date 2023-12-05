@@ -1946,7 +1946,7 @@ class Hwp:
         """
         return self.hwp.ProtectPrivateInfo(PotectingChar=protecting_char, PrivatePatternType=private_pattern_type)
 
-    def put_field_text(self, field: Union[str, list, tuple, pd.Series], text):
+    def put_field_text(self, field, text: Union[str, list, tuple, pd.Series]):
         """
         지정한 필드의 내용을 채운다.
         현재 필드에 입력되어 있는 내용은 지워진다.
@@ -1975,8 +1975,10 @@ class Hwp:
             >>> # zxcv 필드에 "Hello world!" 텍스트 삽입
             >>> self.hwp.put_field_text("zxcv", "Hello world!")
         """
-        if type(field) in [list, tuple, pd.Series]:
+        if type(field) in [list, tuple]:
             field = "\x02".join(field)
+        if type(text) in [list, tuple, pd.Series]:
+            text = "\x02".join(text)
         return self.hwp.PutFieldText(Field=field, Text=text)
 
     def put_metatag_name_text(self, tag, text):
