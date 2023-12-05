@@ -1,5 +1,6 @@
 import os
 import re
+from typing import Literal, Union
 
 import numpy as np
 import pandas as pd
@@ -76,6 +77,18 @@ class Hwp:
     def LastCtrl(self):
         return self.hwp.LastCtrl
 
+    def insert_memo(self, text):
+        """
+        선택한 단어 범위에 메모고침표를 삽입하는 코드.
+        한/글에서 일반 문자열을 삽입하는 코드와 크게 다르지 않다.
+        선택모드가 아닌 경우 캐럿이 위치한 단어에 메모고침표를 삽입한다.
+        :param text: str
+        :return: None
+        """
+        self.InsertFieldRevisionChagne()  # 이 라인이 메모고침표 삽입하는 코드
+        self.insert_text(text)
+        self.CloseEx()
+
     def is_cell(self):
         """
         캐럿이 현재 표 안에 있는지 알려주는 메서드
@@ -87,7 +100,7 @@ class Hwp:
         else:
             return False
 
-    def find(self, src):
+    def find(self, src, direction: Literal["Forward", "Backward", "Alldoc"] = "Alldoc"):
         """
         캐럿 뒤의 특정 단어를 찾아가는 메서드.
         해당 단어를 선택한 상태가 되며,
@@ -107,7 +120,7 @@ class Hwp:
         pset.SeveralWords = 1
         pset.UseWildCards = 1
         pset.AutoSpell = 1
-        pset.Direction = 2
+        pset.Direction = direction
         pset.FindString = src
         pset.IgnoreMessage = 1
         pset.HanjaFromHangul = 1
@@ -662,7 +675,7 @@ class Hwp:
     def find_ctrl(self):
         return self.hwp.FindCtrl()
 
-    def find_dir(self, find_dir):
+    def find_dir(self, find_dir: Literal["Forward", "Backward", "Alldoc"] = "Alldoc"):
         return self.hwp.FindDir(FindDir=find_dir)
 
     def find_private_info(self, private_type, private_string):
@@ -5212,7 +5225,7 @@ class Hwp:
     def scan_font(self):
         return self.hwp.ScanFont()
 
-    def select_text(self, spara, spos, epara, epos):
+    def select_text(self, spara:Union[int, list, tuple], spos=0, epara=0, epos=0):
         """
         특정 범위의 텍스트를 블록선택한다.
         epos가 가리키는 문자는 포함되지 않는다.
@@ -5232,6 +5245,8 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
+        if type(spara) in [list, tuple]:
+            _, _, spara, spos, _, epara, epos = spara
         return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
 
     def set_bar_code_image(self, lp_image_path, pgno, index, x, y, width, height):
