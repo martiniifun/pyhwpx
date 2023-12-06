@@ -1,6 +1,7 @@
 import os
 import re
 from typing import Literal, Union
+from time import sleep
 
 import numpy as np
 import pandas as pd
@@ -61,7 +62,12 @@ class Hwp:
                     # 그이후는 오토메이션 api를 사용할수 있습니다
         if not self.hwp:
             self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
-        self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
+        try:
+            self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
+        except:
+            sleep(0.01)
+            self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
+            self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
         if register_module:
             self.register_module()
@@ -77,6 +83,13 @@ class Hwp:
     @property
     def PageCount(self):
         return self.hwp.PageCount
+
+    def message_box(self, string, flag: int = 0):
+        msgbox = self.hwp.XHwpMessageBox  # 메시지박스 생성
+        msgbox.string = string
+        msgbox.Flag = flag  # [확인] 버튼만 나타나게 설정
+        msgbox.DoModal()  # 메시지박스 보이기
+        return msgbox.Result
 
     def insert_file(self, filename, keep_section=0, keep_charshape=0, keep_parashape=0, keep_style=0):
         if not filename.lower().startswith("c:"):
@@ -2064,7 +2077,8 @@ class Hwp:
         clear나 save 등의 메서드를 실행한 후에 quit을 실행해야 한다.
         :return:
         """
-        return self.hwp.Quit()
+        self.hwp.Quit()
+        del self.hwp
 
     def rgb_color(self, red, green, blue):
         return self.hwp.RGBColor(red=red, green=green, blue=blue)
