@@ -9,9 +9,6 @@ import win32com.client as win32
 import pyperclip as cb
 import shutil
 
-from win32com.client import gencache
-
-
 # temp 폴더 삭제
 try:
     shutil.rmtree(os.path.join(os.environ["USERPROFILE"], "AppData/Local/Temp/gen_py"))
@@ -19,7 +16,7 @@ except FileNotFoundError as e:
     pass
 
 # Type Library 파일 재생성
-gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
+win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
 # 아래아한글 오토메이션 클래스 정의
@@ -64,7 +61,7 @@ class Hwp:
                     # 그이후는 오토메이션 api를 사용할수 있습니다
         if not self.hwp:
             self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
-        self.hwp.XHwpWindows.Item(0).Visible = visible
+        self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
         if register_module:
             self.register_module()
@@ -80,6 +77,19 @@ class Hwp:
     @property
     def PageCount(self):
         return self.hwp.PageCount
+
+    def insert_file(self, filename, keep_section=0, keep_charshape=0, keep_parashape=0, keep_style=0):
+        if not filename.lower().startswith("c:"):
+            filename = os.path.join(os.getcwd(), filename)
+        pset = self.hwp.HParameterSet.HInsertFile
+        self.hwp.HAction.GetDefault("InsertFile", pset.HSet)
+        pset.filename = filename
+        pset.KeepSection = keep_section
+        pset.KeepCharshape = keep_charshape
+        pset.KeepParashape = keep_parashape
+        pset.KeepStyle = keep_style
+
+        return self.hwp.HAction.Execute("InsertFile", pset.HSet)
 
     def insert_memo(self, text):
         """
@@ -238,6 +248,10 @@ class Hwp:
     def add_tab(self):
         """
         새 문서를 현재 창의 새 탭에 추가한다.
+        백그라운드 상태에서 새 창을 만들 때 윈도우에 나타나는 경우가 있는데,
+        add_tab() 함수를 사용하면 백그라운드 작업이 보장된다.
+        탭 전환은 switch_to() 메서드로 가능하다.
+
         새 창을 추가하고 싶은 경우는 add_tab 대신 hwp__.FileNew()나 hwp__.add_doc()을 실행하면 된다.
         :return:
         """
@@ -245,17 +259,30 @@ class Hwp:
 
     def add_doc(self):
         """
-        새 문서를 추가한다.
+        새 문서를 추가한다. 원래 창이 백그라운드로 숨겨져 있어도
+        추가된 문서는 보이는 상태가 기본값이다. 숨기려면 set_visible(False)를 실행해야 한다.
         새 탭을 추가하고 싶은 경우는 add_doc 대신 add_tab()을 실행하면 된다.
         :return:
         """
         self.hwp.XHwpDocuments.Add(0)  # 0은 새 창, 1은 새 탭
 
     def hwp_unit_to_mili(self, hwp_unit):
+        """
+        HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
+        HwpUnit으로 리턴되었거나, 녹화된 코드의 HwpUnit값을 확인할 때 유용하게 사용할 수 있다.
+
+        :return:
+            HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값
+        """
         return round(hwp_unit / 7200 * 25.4)
 
     def create_table(self, rows, cols, treat_as_char=1, width_type=0, height_type=0):
         """
+        표를 생성하는 메서드.
+        기본적으로 rows와 cols만 지정하면 되며,
+        용지여백을 제외한 구간에 맞춰 표 너비가 결정된다.
+        이는 일반적인 표 생성과 동일한 수치이다.
+
         아래의 148mm는 종이여백 210mm에서 60mm(좌우 각 30mm)를 뺀 150mm에다가,
         표 바깥여백 각 1mm를 뺀 148mm이다. (TableProperties.Width = 41954)
         각 열의 너비는 5개 기준으로 26mm인데 이는 셀마다 안쪽여백 좌우 각각 1.8mm를 뺀 값으로,
@@ -266,6 +293,7 @@ class Hwp:
         이는 고정된 값으로 간주해야 한다.
 
         :return:
+            표 생성 성공시 True, 실패시 False를 리턴한다.
         """
         pset = self.hwp.HParameterSet.HTableCreation
         self.hwp.HAction.GetDefault("TableCreate", pset.HSet)  # 표 생성 시작
@@ -288,9 +316,14 @@ class Hwp:
             pset.ColWidth.SetItem(i, self.hwp.MiliToHwpUnit(each_col_width))  # 1열
         pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
         pset.TableProperties.Width = total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
-        self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
+        return self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
 
     def get_selected_text(self):
+        """
+        한/글 문서 선택 구간의 텍스트를 리턴하는 메서드.
+        :return:
+            선택한 문자열
+        """
         self.hwp.InitScan(Range=0xff)
         total_text = ""
         state = 2
@@ -301,6 +334,17 @@ class Hwp:
         return total_text
 
     def table_to_csv(self, idx=1, filename="result.csv"):
+        """
+        한/글 문서의 idx번째 표를 현재 폴더에 filename으로 csv포맷으로 저장한다.
+        filename을 지정하지 않는 경우 "./result.csv"가 기본값이다.
+        :return:
+            None
+        :example:
+            >>> from pyhwpx import Hwp
+            >>>
+            >>> hwp = Hwp()
+            >>> hwp.table_to_csv(1, "table.csv")
+        """
         start_pos = self.hwp.GetPos()
         table_num = 0
         ctrl = self.HeadCtrl
@@ -330,6 +374,16 @@ class Hwp:
         return None
 
     def table_to_df(self, idx=1):
+        """
+        한/글 문서의 idx번째 표를 판다스 데이터프레임으로 리턴하는 메서드.
+        :return:
+            pd.DataFrame
+        :example:
+            >>> from pyhwpx import Hwp
+            >>>
+            >>> hwp = Hwp()
+            >>> df = hwp.table_to_df(1)
+        """
         start_pos = self.hwp.GetPos()
         table_num = 0
         ctrl = self.HeadCtrl
@@ -361,7 +415,7 @@ class Hwp:
         표 앞에 캐럿을 둔 상태 또는 캐럿이 표 안에 있는 상태에서 위 함수 실행시
         표를 (페이지 기준) 하단으로 위치시킨다.
         :param offset:
-        페이지 하단 기준 오프셋(mm)
+            페이지 하단 기준 오프셋(mm)
         :return:
         """
         self.hwp.FindCtrl()
@@ -376,12 +430,24 @@ class Hwp:
         self.hwp.Run("Cancel")
 
     def insert_text(self, text):
+        """
+        한/글 문서 내 캐럿 위치에 문자열을 삽입하는 메서드.
+        :return:
+            삽입 성공시 True, 실패시 False를 리턴함.
+        :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.insert_text("Hello world!\r\n")
+        """
         param = self.hwp.HParameterSet.HInsertText
         self.hwp.HAction.GetDefault("InsertText", param.HSet)
         param.Text = text
-        self.hwp.HAction.Execute("InsertText", param.HSet)
+        return self.hwp.HAction.Execute("InsertText", param.HSet)
 
-    def move_caption(self, location="Bottom"):
+    def move_caption(self, location: Literal["Top", "Bottom", "Left", "Right"] = "Bottom"):
+        """
+        한/글 문서 내 모든 표의 주석 위치를 이동하는 메서드.
+        """
         start_pos = self.hwp.GetPos()
         ctrl = self.HeadCtrl
         while ctrl:
@@ -449,13 +515,16 @@ class Hwp:
         :return:
             None
 
-        :examples:
+        :example:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
-            >>> hwp.clear(1)
+            >>> hwp.clear()
         """
-        return self.hwp.Clear(option=option)
+        return self.hwp.XHwpDocuments.Active_XHwpDocument.Clear(option=option)
+
+    def close(self, is_dirty: bool = False):
+        return self.hwp.XHwpDocuments.Active_XHwpDocument.Close(isDirty=is_dirty)
 
     def col_def_type(self, col_def_type):
         return self.hwp.ColDefType(ColDefType=col_def_type)
@@ -479,7 +548,7 @@ class Hwp:
         :return:
             Action object
 
-        :examples:
+        :example:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
@@ -505,22 +574,22 @@ class Hwp:
         """
         캐럿의 현재 위치에 누름틀을 생성한다.
 
+        :param name:
+            누름틀 필드에 대한 필드 이름(중요)
+
         :param direction:
             누름틀에 입력이 안 된 상태에서 보이는 안내문/지시문.
 
         :param memo:
             누름틀에 대한 설명/도움말
 
-        :param name:
-            누름틀 필드에 대한 필드 이름(중요)
-
         :return:
             성공이면 True, 실패면 False
 
-        :examples:
-            >>> self.hwp.create_field(direction="이름", memo="이름을 입력하는 필드", name="name")
+        :example:
+            >>> hwp.create_field(direction="이름", memo="이름을 입력하는 필드", name="name")
             True
-            >>> self.hwp.PutFieldText("name", "일코")
+            >>> hwp.PutFieldText("name", "일코")
         """
         return self.hwp.CreateField(Direction=direction, memo=memo, name=name)
 
@@ -559,7 +628,7 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
 
-        examples:
+        :example:
             >>> self.hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
             True
         """
@@ -607,7 +676,7 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
 
-        examples:
+        :example:
             >>> ctrl = self.hwp.HeadCtrl.Next.Next
             >>> if ctrl.UserDesc == "표":
             ...     self.hwp.delete_ctrl(ctrl)
@@ -647,7 +716,7 @@ class Hwp:
         :return:
             성공시 True, 실패시 False
 
-        :Examples
+        :example:
             >>> self.hwp.export_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
@@ -736,7 +805,7 @@ class Hwp:
         :return:
             바이너리 데이터의 경로
 
-        Examples:
+        :example:
             >>> path = self.hwp.GetBinDataPath(2)
             >>> print(path)
             C:/Users/User/AppData/Local/Temp/Hnc/BinData/EMB00004dd86171.jpg
@@ -852,7 +921,7 @@ class Hwp:
             Encrypted(int) : 암호 여부 (현재는 파일 버전 3.0.0.0 이후 문서-한/글97, 한/글 워디안 및 한/글 2002 이상의 버전-에 대해서만 판단한다.)
             (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
 
-        Examples:
+        :example:
             >>> pset = self.hwp.GetFileInfo("C:/Users/Administrator/Desktop/이력서.hwp")
             >>> print(pset.Item("Format"))
             >>> print(pset.Item("VersionStr"))
@@ -951,7 +1020,7 @@ class Hwp:
             X(long): 가로 클릭한 위치(HWPUNIT)
             Y(long): 세로 클릭한 위치(HWPUNIT)
 
-        Examples:
+        :example:
             >>> pset = self.hwp.GetMousePos(1, 1)
             >>> print("X축 기준:", "쪽" if pset.Item("XRelTo") else "종이")
             >>> print("Y축 기준:", "쪽" if pset.Item("YRelTo") else "종이")
@@ -1020,7 +1089,7 @@ class Hwp:
             "Para": 캐럿이 위치한 문단 ID(0부터 시작)
             "Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
 
-        Examples:
+        :example:
             >>> pset = self.hwp.get_pos_by_set()  # 캐럿위치 저장
             >>> print(pset.Item("List"))
             6
@@ -1053,7 +1122,7 @@ class Hwp:
         :return:
             (문서에 포함된) 스크립트의 소스코드
 
-        Examples:
+        :example:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
@@ -1090,7 +1159,7 @@ class Hwp:
             epara: 설정된 블록의 끝 문단 아이디.
             epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
 
-        Examples:
+        :example:
             >>> self.hwp.get_selected_pos()
             (True, 0, 0, 16, 0, 7, 16)
         """
@@ -1113,7 +1182,7 @@ class Hwp:
             성공하면 True, 실패하면 False.
             실행시 sset과 eset의 아이템 값이 업데이트된다.
 
-        Examples:
+        :example:
             >>> sset = self.hwp.get_pos_by_set()
             >>> eset = self.hwp.get_pos_by_set()
             >>> self.hwp.GetSelectedPosBySet(sset, eset)
@@ -1146,7 +1215,7 @@ class Hwp:
             텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
 
-        Examples:
+        :example:
             >>> self.hwp.init_scan()
             >>> while True:
             ...     state, text = self.hwp.get_text()
@@ -1194,7 +1263,7 @@ class Hwp:
         :return:
             지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
 
-        Examples:
+        :example:
             >>> self.hwp.get_text_file()
             'ㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\n\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\n'
         """
@@ -1276,7 +1345,7 @@ class Hwp:
         :return:
             성공시 True, 실패시 False
 
-        :Examples
+        :example:
             >>> self.hwp.import_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
@@ -1350,7 +1419,7 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
 
-        Examples:
+        :example:
             >>> self.hwp.init_scan(range=0xff)
             >>> _, text = self.hwp.get_text()
             >>> self.hwp.release_scan()
@@ -1495,7 +1564,7 @@ class Hwp:
         :return:
             성공했을 경우 True, 실패했을 경우 False
 
-        Examples:
+        :example:
             >>> self.hwp.insert_background_picture(path="C:/Users/User/Desktop/KakaoTalk_20230709_023118549.jpg")
             True
         """
@@ -1527,7 +1596,7 @@ class Hwp:
         :return:
             생성된 컨트롤 object
 
-        Examples:
+        :example:
             >>> # 3행5열의 표를 삽입한다.
             >>> from time import sleep
             >>> tbset = self.hwp.CreateSet("TableCreation")
@@ -1594,7 +1663,7 @@ class Hwp:
         :return:
             생성된 컨트롤 object.
 
-        Examples:
+        :example:
             >>> ctrl = self.hwp.insert_picture("C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg")
             >>> pset = ctrl.Properties  # == self.hwp.create_set("ShapeObject")
             >>> pset.SetItem("TreatAsChar", False)  # 글자처럼취급 해제
@@ -1639,7 +1708,7 @@ class Hwp:
             over: 삽입모드 (True: 수정, False: 삽입)
             ctrlname: 캐럿이 위치한 곳의 컨트롤이름
 
-        Examples:
+        :example:
             >>> # 현재 셀 주소(표 안에 있을 때)
             >>> self.hwp.KeyIndicator()[-1][1:].split(")")[0]
             "A1"
@@ -1663,7 +1732,7 @@ class Hwp:
 
         :return: None
 
-        Examples:
+        :example:
             >>> # Undo와 Redo 잠그기
             >>> self.hwp.LockCommand("Undo", True)
             >>> self.hwp.LockCommand("Redo", True)
@@ -1793,7 +1862,7 @@ class Hwp:
             생략하면 False가 지정된다.
         :return:
         """
-        return self.hwp.MoveToField(Field=field, Text=text, start=start, Select=select)
+        return self.hwp.MoveToField(Field=field, Text=text, start=start, select=select)
 
     def move_to_metatag(self, tag, text, start, select):
         return self.hwp.MoveToMetatag(tag=tag, Text=text, start=start, select=select)
@@ -1973,7 +2042,7 @@ class Hwp:
 
         :return: None
 
-        Examples:
+        :example:
             >>> # 현재 캐럿 위치에 zxcv 필드 생성
             >>> self.hwp.create_field("zxcv")
             >>> # zxcv 필드에 "Hello world!" 텍스트 삽입
@@ -2021,7 +2090,7 @@ class Hwp:
         :return:
             추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
 
-        Examples:
+        :example:
             >>> # 사전에 레지스트리에 보안모듈이 등록되어 있어야 한다.
             >>> # 보다 자세한 설명은 공식문서 참조
             >>> self.hwp.register_module("FilePathChekDLL", "FilePathCheckerModule")
@@ -2086,7 +2155,7 @@ class Hwp:
         :return:
             등록이 성공하였으면 True, 실패하였으면 False
 
-        Examples:
+        :example:
             >>> self.hwp.RegisterPrivateInfoPattern(0x01, "NNNN-NNNN;NN-NN-NNNN-NNNN")  # 전화번호패턴
         """
         return self.hwp.RegisterPrivateInfoPattern(PrivateType=private_type, PrivatePattern=private_pattern)
@@ -2119,7 +2188,7 @@ class Hwp:
 
         :return: None
 
-        Examples:
+        :example:
             >>> self.hwp.create_field("asdf")  # "asdf" 필드 생성
             >>> self.hwp.rename_field("asdf", "zxcv")  # asdf 필드명을 "zxcv"로 변경
             >>> self.hwp.put_field_text("zxcv", "Hello world!")  # zxcv 필드에 텍스트 삽입
@@ -5175,7 +5244,7 @@ class Hwp:
         :return:
             무조건 True를 반환(매크로의 실행여부와 상관없음)
 
-        Examples:
+        :example:
             >>> self.hwp.run_script_macro("OnDocument_New", u_macro_type=1)
             True
             >>> self.hwp.run_script_macro("OnScriptMacro_중국어1성")
@@ -5398,7 +5467,7 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
 
-        Examples:
+        :example:
             >>> start_pos = self.hwp.GetPosBySet()  # 현재 위치를 저장하고,
             >>> self.hwp.set_pos_by_set(start_pos)  # 특정 작업 후에 저장위치로 재이동
         """
@@ -5472,7 +5541,7 @@ class Hwp:
 
         :return:
         """
-        self.hwp.XHwpWindows.Item(0).Visible = visible
+        self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
     def side_type(self, side_type):
         return self.hwp.SideType(SideType=side_type)
