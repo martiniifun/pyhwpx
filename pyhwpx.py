@@ -77,6 +77,10 @@ class Hwp:
     def LastCtrl(self):
         return self.hwp.LastCtrl
 
+    @property
+    def PageCount(self):
+        return self.hwp.PageCount
+
     def insert_memo(self, text):
         """
         선택한 단어 범위에 메모고침표를 삽입하는 코드.
