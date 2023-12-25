@@ -84,7 +84,58 @@ class Hwp:
     def PageCount(self):
         return self.hwp.PageCount
 
-    def message_box(self, string, flag: int = 0):
+    def count(self, word):
+        return self.get_text_file().count(word)
+
+    def delete_all_fields(self):
+        start_pos = self.get_pos()
+        ctrl = self.hwp.HeadCtrl
+        while ctrl:
+            if ctrl.CtrlID == "%clk":
+                self.hwp.DeleteCtrl(ctrl)
+            ctrl = ctrl.Next
+        self.set_pos(*start_pos)
+
+    def delete_field_by_name(self, field_name):
+        start_pos = self.get_pos()
+        ctrl = self.hwp.HeadCtrl
+        while ctrl:
+            if ctrl.CtrlID == "%clk":
+                self.set_pos_by_set(ctrl.GetAnchorPos(1))
+                if self.get_cur_field_name() == field_name:
+                    self.hwp.DeleteCtrl(ctrl)
+            ctrl = ctrl.Next
+        self.set_pos(*start_pos)
+
+    def markpen_on_selection(self, r=255, g=255, b=0):
+        pset = self.hwp.HParameterSet.HMarkpenShape
+        self.hwp.HAction.GetDefault("MarkPenShape", pset.HSet)
+        pset.Color = self.rgb_color(r, g, b)
+        return self.hwp.HAction.Execute("MarkPenShape", pset.HSet)
+
+    def open_pdf(self, pdf_path, this_window=1):
+        """
+        pdf를 hwp문서로 변환하여 여는 함수.
+        (최초 실행시 "다시 표시 안함ㅁ" 체크박스에 체크를 해야 한다.)
+
+        :param pdf_path:
+            pdf파일의 경로
+        :param this_window:
+            현재 창에 열고 싶으면 1, 새 창에 열고 싶으면 0.
+            하지만 아직(2023.12.11.) 작동하지 않음.
+        :return:
+        """
+        if not pdf_path.lower().startswith("c:"):
+            pdf_path = os.path.join(os.getcwd(), pdf_path)
+        pset = self.hwp.HParameterSet.HFileOpenSave
+        self.hwp.HAction.Run("CallPDFConverter")
+        self.hwp.HAction.GetDefault("FileOpenPDF", pset.HSet)
+        pset.Attributes = 0
+        pset.filename = pdf_path
+        pset.OpenFlag = this_window
+        return self.hwp.HAction.Execute("FileOpenPDF", pset.HSet)
+
+    def msgbox(self, string, flag: int = 0):
         msgbox = self.hwp.XHwpMessageBox  # 메시지박스 생성
         msgbox.string = string
         msgbox.Flag = flag  # [확인] 버튼만 나타나게 설정
@@ -450,7 +501,8 @@ class Hwp:
         :example:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
-            >>> hwp.insert_text("Hello world!\r\n")
+            >>> hwp.insert_text('Hello world!')
+            >>> hwp.BreakPara()
         """
         param = self.hwp.HParameterSet.HInsertText
         self.hwp.HAction.GetDefault("InsertText", param.HSet)
@@ -600,6 +652,8 @@ class Hwp:
             성공이면 True, 실패면 False
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.create_field(direction="이름", memo="이름을 입력하는 필드", name="name")
             True
             >>> hwp.PutFieldText("name", "일코")
@@ -1853,13 +1907,20 @@ class Hwp:
         """
         return self.hwp.MovePos(moveID=move_id, Para=para, pos=pos)
 
-    def move_to_field(self, field, text=True, start=True, select=False):
+    def move_to_field(self, field, idx=0, text=True, start=True, select=False):
         """
         지정한 필드로 캐럿을 이동한다.
 
         :param field:
             필드이름. GetFieldText()/PutFieldText()와 같은 형식으로
             이름 뒤에 ‘{{#}}’로 번호를 지정할 수 있다.
+
+        :param idx:
+            동일명으로 여러 개의 필드가 존재하는 경우,
+            idx번째 필드로 이동하고자 할 때 사용한다. 기본값은 0.
+            idx를 지정하지 않아도, 필드 파라미터 뒤에 ‘{{#}}’를 추가하여 인덱스를 지정할 수 있다.
+            이 경우 기본적으로 f스트링을 사용하며, f스트링 내부에 탈출문자열 \가 적용되지 않으므로
+            중괄호를 다섯 겹 입력해야 한다. 예 : hwp.move_to_field(f"필드명{{{{{i}}}}}")
 
         :param text:
             필드가 누름틀일 경우 누름틀 내부의 텍스트로 이동할지(True)
@@ -1868,14 +1929,18 @@ class Hwp:
 
         :param start:
             필드의 처음(True)으로 이동할지 끝(False)으로 이동할지 지정한다.
-            select를 True로 지정하면 무시된다. 생략하면 True가 지정된다.
+            select를 True로 지정하면 무시된다. (캐럿이 처음에 위치해 있게 된다.)
+            생략하면 True가 지정된다.
 
         :param select:
             필드 내용을 블록으로 선택할지(True), 캐럿만 이동할지(False) 지정한다.
             생략하면 False가 지정된다.
         :return:
         """
-        return self.hwp.MoveToField(Field=field, Text=text, start=start, select=select)
+        if "{{{{{" not in field:
+            return self.hwp.MoveToField(Field=f"{field}{{{{{idx}}}}}", Text=text, start=start, select=select)
+        else:
+            return self.hwp.MoveToField(Field=field, Text=text, start=start, select=select)
 
     def move_to_metatag(self, tag, text, start, select):
         return self.hwp.MoveToMetatag(tag=tag, Text=text, start=start, select=select)
@@ -2032,7 +2097,7 @@ class Hwp:
         """
         return self.hwp.ProtectPrivateInfo(PotectingChar=protecting_char, PrivatePatternType=private_pattern_type)
 
-    def put_field_text(self, field, text: Union[str, list, tuple, pd.Series]):
+    def put_field_text(self, field, text: Union[str, list, tuple, pd.Series]="", idx=None):
         """
         지정한 필드의 내용을 채운다.
         현재 필드에 입력되어 있는 내용은 지워진다.
@@ -2047,6 +2112,9 @@ class Hwp:
             다만 필드 이름 뒤에 "{{#}}"로 번호를 지정하지 않으면
             해당 이름을 가진 모든 필드에 동일한 텍스트를 채워 넣는다.
             즉, PutFieldText에서는 ‘필드이름’과 ‘필드이름{{0}}’의 의미가 다르다.
+            **단, field에 dict를 입력하는 경우에는 text 파라미터를 무시하고
+            dict.keys를 필드명으로, dict.values를 필드값으로 입력한다.**
+
 
         :param text:
             필드에 채워 넣을 문자열의 리스트.
@@ -2057,15 +2125,66 @@ class Hwp:
 
         :example:
             >>> # 현재 캐럿 위치에 zxcv 필드 생성
-            >>> self.hwp.create_field("zxcv")
+            >>> hwp.create_field("zxcv")
             >>> # zxcv 필드에 "Hello world!" 텍스트 삽입
-            >>> self.hwp.put_field_text("zxcv", "Hello world!")
+            >>> hwp.put_field_text("zxcv", "Hello world!")
         """
-        if type(field) in [list, tuple]:
-            field = "\x02".join(field)
-        if type(text) in [list, tuple, pd.Series]:
-            text = "\x02".join(text)
-        return self.hwp.PutFieldText(Field=field, Text=text)
+        if isinstance(field, dict):  # dict 자료형의 경우에는 text를 생략하고
+            field, text = list(zip(*list(field.items())))
+            field_str = ""
+            text_str = ""
+            if isinstance(idx, int):
+                for f_i, f in enumerate(field):
+                    field_str += f"{f}{{{{{idx}}}}}\x02"
+                    text_str += f"{text[f_i][idx]}\x02" # for t_i, t in enumerate(text[f_i]):
+            else:
+                for f_i, f in enumerate(field):
+                    for t_i, t in enumerate(text[f_i]):
+                        field_str += f"{f}{{{{{t_i}}}}}\x02"
+                        text_str += f"{t}\x02"
+            self.hwp.PutFieldText(Field=field_str, Text=text_str)
+            return
+
+        if isinstance(field, str) and type(text) in (list, tuple, pd.Series):
+            field = [f"{field}{{{{{i}}}}}" for i in range(len(text))]
+
+        if type(field) in [list, tuple, pd.Series]:  # 필드명 리스트를 파라미터로 넣은 경우
+            field = "\x02".join([str(i) for i in field])  # \x02로 병합
+
+        if type(text) in [list, tuple, pd.Series]:  # 필드 텍스트를 리스트나 배열로 넣은 경우에도
+            text = "\x02".join([str(i) for i in text])  # \x02로 병합
+
+        if isinstance(field, pd.DataFrame):
+            if isinstance(field.columns, pd.core.indexes.range.RangeIndex):
+                field = field.T
+            text_str = ""
+            if isinstance(idx, int):
+                field_str = "\x02".join([str(i) + f"{{{{{idx}}}}}" for i in field])  # \x02로 병합
+                text_str += "\x02".join([str(t) for t in field.iloc[idx]]) + "\x02"
+            else:
+                field_str = "\x02".join([str(i) + f"{{{{{j}}}}}" for j in range(len(field)) for i in field])  # \x02로 병합
+                for i in range(len(field)):
+                    text_str += "\x02".join([str(t) for t in field.iloc[i]]) + "\x02"
+            return self.hwp.PutFieldText(Field=field_str, Text=text_str)
+
+        if isinstance(text, pd.DataFrame):
+            if not isinstance(text.columns, pd.core.indexes.range.RangeIndex):
+                text = text.T
+            text_str = ""
+            if isinstance(idx, int):
+                field_str = "\x02".join([i + f"{{{{{idx}}}}}" for i in field.split("\x02")])  # \x02로 병합
+                text_str += "\x02".join([str(t) for t in text[idx]]) + "\x02"
+            else:
+                field_str = "\x02".join([str(i) + f"{{{{{j}}}}}" for i in field.split("\x02") for j in range(len(text.columns))])  # \x02로 병합
+                for i in range(len(text)):
+                    text_str += "\x02".join([str(t) for t in text.iloc[i]]) + "\x02"
+            return self.hwp.PutFieldText(Field=field_str, Text=text_str)
+
+
+        if isinstance(idx, int):
+            return self.hwp.PutFieldText(Field=field.replace("\x02", f"{{{{{idx}}}}}\x02") + f"{{{{{idx}}}}}", Text=text)
+        else:
+            return self.hwp.PutFieldText(Field=field, Text=text)
 
     def put_metatag_name_text(self, tag, text):
         return self.hwp.PutMetatagNameText(tag=tag, Text=text)
