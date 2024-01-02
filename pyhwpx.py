@@ -9,6 +9,7 @@ import pythoncom
 import win32com.client as win32
 import pyperclip as cb
 import shutil
+from urllib import request, parse
 
 # temp 폴더 삭제
 try:
@@ -84,6 +85,10 @@ class Hwp:
     def PageCount(self):
         return self.hwp.PageCount
 
+    @property
+    def Path(self):
+        return self.hwp.Path
+
     def count(self, word):
         return self.get_text_file().count(word)
 
@@ -125,7 +130,7 @@ class Hwp:
             하지만 아직(2023.12.11.) 작동하지 않음.
         :return:
         """
-        if not pdf_path.lower().startswith("c:"):
+        if pdf_path.lower()[1] != ":":
             pdf_path = os.path.join(os.getcwd(), pdf_path)
         pset = self.hwp.HParameterSet.HFileOpenSave
         self.hwp.HAction.Run("CallPDFConverter")
@@ -143,7 +148,7 @@ class Hwp:
         return msgbox.Result
 
     def insert_file(self, filename, keep_section=0, keep_charshape=0, keep_parashape=0, keep_style=0):
-        if not filename.lower().startswith("c:"):
+        if filename.lower()[1] != ":":
             filename = os.path.join(os.getcwd(), filename)
         pset = self.hwp.HParameterSet.HInsertFile
         self.hwp.HAction.GetDefault("InsertFile", pset.HSet)
@@ -380,7 +385,11 @@ class Hwp:
             pset.ColWidth.SetItem(i, self.hwp.MiliToHwpUnit(each_col_width))  # 1열
         pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
         pset.TableProperties.Width = total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
-        return self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
+        self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
+        ctrl = self.hwp.CurSelectedCtrl or self.hwp.ParentCtrl
+        pset = self.hwp.CreateSet("Table")
+        pset.SetItem("TreatAsChar", treat_as_char)
+        ctrl.Properties = pset
 
     def get_selected_text(self):
         """
@@ -699,7 +708,7 @@ class Hwp:
             >>> self.hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
             True
         """
-        if not path.lower().startswith("c:"):
+        if path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
         return self.hwp.CreatePageImage(Path=path, pgno=pgno, resolution=resolution, depth=depth, Format=format)
 
@@ -787,7 +796,7 @@ class Hwp:
             >>> self.hwp.export_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
-        if not sty_filepath.lower().startswith("c:"):
+        if sty_filepath.lower()[1] != ":":
             sty_filepath = os.path.join(os.getcwd(), sty_filepath)
 
         style_set = self.hwp.HParameterSet.HStyleTemplate
@@ -999,7 +1008,7 @@ class Hwp:
             0x5010100
             0
         """
-        if not filename.lower().startswith("c:"):
+        if filename.lower()[1] != ":":
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.GetFileInfo(filename=filename)
 
@@ -1207,7 +1216,7 @@ class Hwp:
                 HAction.Execute("InsertText", HParameterSet.HInsertText.HSet);
             }
         """
-        if not filename.lower().startswith("c:"):
+        if filename.lower()[1] != ":":
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.GetScriptSource(filename=filename)
 
@@ -1416,7 +1425,7 @@ class Hwp:
             >>> self.hwp.import_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
-        if not sty_filepath.lower().startswith("c:"):
+        if sty_filepath.lower()[1] != ":":
             sty_filepath = os.path.join(os.getcwd(), sty_filepath)
 
         style_set = self.hwp.HParameterSet.HStyleTemplate
@@ -1567,7 +1576,7 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
-        if not path.lower().startswith("c:"):
+        if path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
         return self.hwp.Insert(Path=path, Format=format, arg=arg)
 
@@ -1635,7 +1644,7 @@ class Hwp:
             >>> self.hwp.insert_background_picture(path="C:/Users/User/Desktop/KakaoTalk_20230709_023118549.jpg")
             True
         """
-        if not path.lower().startswith("c:"):
+        if path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
 
         return self.hwp.InsertBackgroundPicture(Path=path, BorderType=border_type,
@@ -1737,7 +1746,7 @@ class Hwp:
             >>> pset.SetItem("TextWrap", 2)  # 그림을 글 뒤로
             >>> ctrl.Properties = pset  # 설정한 값 적용(간단!)
         """
-        if not path.lower().startswith("c:"):
+        if path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
 
         return self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption,
@@ -2038,7 +2047,16 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
-        if not filename.lower().startswith("c:"):
+        if filename.startswith("http"):
+            try:
+                # url 문자열 중 hwp 파일명이 포함되어 있는지 체크해서 해당 파일명을 사용.
+                hwp_name = [parse.unquote_plus(i) for i in re.split("[/?=&]", filename) if ".hwp" in i][0]
+            except IndexError as e:
+                # url 문자열 안에 hwp 파일명이 포함되어 있지 않은 경우에는 임시파일명 지정(temp.hwp)
+                hwp_name = "temp.hwp"
+            request.urlretrieve(filename, os.path.join(os.getcwd(), hwp_name))
+            filename = os.path.join(os.getcwd(), hwp_name)
+        elif filename.lower()[1] != ":":
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.Open(filename=filename, Format=format, arg=arg)
 
@@ -5428,7 +5446,7 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
-        if not path.lower().startswith("c:"):
+        if path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
         return self.hwp.SaveAs(Path=path, Format=format, arg=arg)
 
@@ -5473,7 +5491,7 @@ class Hwp:
         :param height:
         :return:
         """
-        if not lp_image_path.lower().startswith("c:"):
+        if lp_image_path.lower()[1] != ":":
             lp_image_path = os.path.join(os.getcwd(), lp_image_path)
         return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index,
                                         X=x, Y=y, Width=width, Height=height)
