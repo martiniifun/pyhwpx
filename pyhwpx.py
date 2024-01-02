@@ -345,7 +345,7 @@ class Hwp:
         """
         return round(hwp_unit / 7200 * 25.4)
 
-    def create_table(self, rows, cols, treat_as_char=1, width_type=0, height_type=0):
+    def create_table(self, rows, cols, treat_as_char=True, width_type=0, height_type=0):
         """
         표를 생성하는 메서드.
         기본적으로 rows와 cols만 지정하면 되며,
@@ -383,7 +383,7 @@ class Hwp:
         each_col_width = total_width - self.mili_to_hwp_unit(3.6 * cols)
         for i in range(cols):
             pset.ColWidth.SetItem(i, self.hwp.MiliToHwpUnit(each_col_width))  # 1열
-        pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
+        # pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
         pset.TableProperties.Width = total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
         self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
         ctrl = self.hwp.CurSelectedCtrl or self.hwp.ParentCtrl
