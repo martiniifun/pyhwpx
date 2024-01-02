@@ -2,6 +2,7 @@ import os
 import re
 from typing import Literal, Union
 from time import sleep
+from io import StringIO
 
 import numpy as np
 import pandas as pd
@@ -88,6 +89,26 @@ class Hwp:
     @property
     def Path(self):
         return self.hwp.Path
+
+    def table_from_data(self, data):
+        if type(data) in [dict, list]:
+            df = pd.DataFrame(data)
+        elif type(data) is str:  # 엑셀파일 경로 또는 json으로 간주
+            if os.path.isfile(data):
+                df = pd.read_excel(data) if ".xls" in data else pd.read_csv(data)
+            else:
+                df = pd.read_json(StringIO(data))
+        else:
+            df = data
+        self.create_table(rows=len(df)+1, cols=len(df.columns), treat_as_char=False, header=True)
+        for i in df.columns:
+            self.insert_text(i)
+            self.TableRightCellAppend()
+        for i in range(len(df)):
+            for j in df.iloc[i]:
+                self.insert_text(j)
+                self.TableRightCell()
+
 
     def count(self, word):
         return self.get_text_file().count(word)
@@ -345,7 +366,7 @@ class Hwp:
         """
         return round(hwp_unit / 7200 * 25.4)
 
-    def create_table(self, rows, cols, treat_as_char=True, width_type=0, height_type=0):
+    def create_table(self, rows, cols, treat_as_char: bool = True, width_type=0, height_type=0, header=True):
         """
         표를 생성하는 메서드.
         기본적으로 rows와 cols만 지정하면 되며,
@@ -364,6 +385,8 @@ class Hwp:
         :return:
             표 생성 성공시 True, 실패시 False를 리턴한다.
         """
+
+
         pset = self.hwp.HParameterSet.HTableCreation
         self.hwp.HAction.GetDefault("TableCreate", pset.HSet)  # 표 생성 시작
         pset.Rows = rows  # 행 갯수
@@ -386,10 +409,18 @@ class Hwp:
         # pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
         pset.TableProperties.Width = total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
         self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
+
+        # 글자처럼 취급 여부 적용(treat_as_char)
         ctrl = self.hwp.CurSelectedCtrl or self.hwp.ParentCtrl
         pset = self.hwp.CreateSet("Table")
         pset.SetItem("TreatAsChar", treat_as_char)
         ctrl.Properties = pset
+
+        # 제목 행 여부 적용(header)
+        pset = self.hwp.HParameterSet.HShapeObject
+        self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+        pset.ShapeTableCell.Header = header
+        self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
     def get_selected_text(self):
         """
