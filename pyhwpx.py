@@ -900,14 +900,14 @@ class Hwp:
             >>>
             >>> hwp = Hwp()
             >>> # 현재 커서의 폰트 크기(Height)를 구하는 코드
-            >>> act = hwp.hwp.CreateAction("CharShape")
-            >>> cs = act.CreateSet()  # equal to "cs = hwp.hwp.CreateSet(act)"
+            >>> act = hwp.create_action("CharShape")
+            >>> cs = act.CreateSet()  # equal to "cs = hwp.create_set(act)"
             >>> act.GetDefault(cs)
             >>> print(cs.Item("Height"))
             2800
             >>> # 현재 선택범위의 폰트 크기를 20pt로 변경하는 코드
-            >>> act = hwp.hwp.CreateAction("CharShape")
-            >>> cs = act.CreateSet()  # equal to "cs = hwp.hwp.CreateSet(act)"
+            >>> act = hwp.create_action("CharShape")
+            >>> cs = act.CreateSet()  # equal to "cs = hwp.create_set(act)"
             >>> act.GetDefault(cs)
             >>> cs.SetItem("Height", hwp.point_to_hwp_unit(20))
             >>> act.Execute(cs)
@@ -1156,7 +1156,7 @@ class Hwp:
             바이너리 데이터의 경로
 
         :example:
-            >>> path = hwp.hwp.GetBinDataPath(2)
+            >>> path = hwp.get_bin_data_path(2)
             >>> print(path)
             C:/Users/User/AppData/Local/Temp/Hnc/BinData/EMB00004dd86171.jpg
         """
