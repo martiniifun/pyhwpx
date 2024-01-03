@@ -75,20 +75,264 @@ class Hwp:
             self.register_module()
 
     @property
+    def Application(self):
+        return self.hwp.Application
+    
+    @property
+    def CellShape(self):
+        return self.hwp.CellShape
+    
+    @property
+    def CharShape(self):
+        return self.hwp.CharShape
+    
+    @property
+    def CLSID(self):
+        return self.hwp.CLSID
+    
+    @property
+    def coclass_clsid(self):
+        return self.hwp.coclass_clsid
+        
+    @property
+    def CurFieldState(self):
+        return self.hwp.CurFieldState
+
+    @property
+    def CurMetatagState(self):
+        return self.hwp.CurMetatagState
+    
+    @property
+    def CurSelectedCtrl(self):
+        return self.hwp.CurSelectedCtrl
+    
+    @property
+    def EditMode(self):
+        return self.hwp.EditMode
+    
+    @property
+    def EngineProperties(self):
+        return self.hwp.EngineProperties
+    
+    @property
+    def HAction(self):
+        return self.hwp.HAction
+            
+    @property
     def HeadCtrl(self):
         return self.hwp.HeadCtrl
+        
+    @property
+    def HParameterSet(self):
+        return self.hwp.HParameterSet
+    
+    @property
+    def IsEmpty(self):
+        return self.hwp.IsEmpty
 
+    @property
+    def IsModified(self):
+        return self.hwp.IsModified
+        
+    @property
+    def IsPrivateInfoProtected(self):
+        return self.hwp.IsPrivateInfoProtected
+
+    @property
+    def IsTrackChangePassword(self):
+        return self.hwp.IsTrackChangePassword
+
+    @property
+    def IsTrackChange(self):
+        return self.hwp.IsTrackChange
+    
     @property
     def LastCtrl(self):
         return self.hwp.LastCtrl
-
+    
     @property
     def PageCount(self):
         return self.hwp.PageCount
-
+        
+    @property
+    def ParaShape(self):
+        return self.hwp.ParaShape
+        
+    @property
+    def ParentCtrl(self):
+        return self.hwp.ParentCtrl
+        
     @property
     def Path(self):
         return self.hwp.Path
+        
+    @property
+    def SelectionMode(self):
+        return self.hwp.SelectionMode
+        
+    @property
+    def Version(self):
+        return self.hwp.Version
+        
+    @property
+    def ViewProperties(self):
+        return self.hwp.ViewProperties
+    
+    @property
+    def XHwpDocuments(self):
+        return self.hwp.XHwpDocuments
+        
+    @property
+    def XHwpMessageBox(self):
+        return self.hwp.XHwpMessageBox
+    
+    @property
+    def XHwpODBC(self):
+        return self.hwp.XHwpODBC
+    
+    @property
+    def XHwpWindows(self):
+        return self.hwp.XHwpWindows
+
+    # 커스텀 메서드
+    def get_pagedef(self):
+        """
+        현재 페이지의 용지정보 파라미터셋을 리턴한다.
+        리턴값은 set_pagedef 메서드를 통해
+        새로운 문서에 적용할 수 있다.
+        연관 메서드로, get_pagedef_as_dict는 보다 직관적으로
+        밀리미터 단위로 변환된 dict를 리턴하므로,
+        get_pagedef_as_dict 메서드를 추천한다.
+        """
+        pset = self.hwp.HParameterSet.HSecDef
+        self.hwp.HAction.GetDefault("PageSetup", pset.HSet)
+        return pset
+
+    def get_pagedef_as_dict(self, as_: Literal["kor", "eng"] = "kor"):
+        """
+        현재 페이지의 용지정보를 dict 형태로 리턴한다.
+        dict의 각 값은 밀리미터 단위로 변환된 값이며,
+        set_pagedef 실행시 내부적으로 HWPUnit으로 자동변환하여 적용한다.
+        (as_ 파라미터를 "eng"로 변경하면 원래 영문 아이템명의 사전을 리턴한다.)
+        :return:
+            현재 페이지의 용지정보(dict)
+            각 키의 원래 아이템명은 아래와 같다.
+
+            PaperWidth: 용지폭
+            PaperHeight: 용지길이
+            Landscape: 용지방향(0: 가로, 1:세로)
+            GutterType: 제본타입(0: 한쪽, 1:맞쪽, 2:위쪽)
+            TopMargin: 위쪽
+            HeaderLen: 머리말
+            LeftMargin: 왼쪽
+            GutterLen: 제본여백
+            RightMargin: 오른쪽
+            FooterLen: 꼬리말
+            BottomMargin: 아래쪽
+        """
+        code_to_desc = {
+            'PaperWidth': "용지폭",
+            'PaperHeight': "용지길이",
+            'Landscape': "용지방향",  # 0: 가로, 1:세로
+            'GutterType': "제본타입",  # 0: 한쪽, 1:맞쪽, 2:위쪽
+            'TopMargin': "위쪽",
+            'HeaderLen': "머리말",
+            'LeftMargin': "왼쪽",
+            'GutterLen': "제본여백",
+            'RightMargin': "오른쪽",
+            'FooterLen': "꼬리말",
+            'BottomMargin': "아래쪽",
+        }
+
+        pset = self.hwp.HParameterSet.HSecDef
+        self.hwp.HAction.GetDefault("PageSetup", pset.HSet)
+        result_dict = {}
+        for key in pset.PageDef._prop_map_get_.keys():
+            if key == "HSet":
+                pass
+            elif key in ["Landscape", "GutterType"]:
+                if as_ == "kor":
+                    result_dict[code_to_desc[key]] = eval(f"pset.PageDef.{key}")
+                else:
+                    result_dict[key] = eval(f"pset.PageDef.{key}")
+            else:
+                if as_ == "kor":
+                    result_dict[code_to_desc[key]] = self.hwp_unit_to_mili(eval(f"pset.PageDef.{key}"))
+                else:
+                    result_dict[key] = self.hwp_unit_to_mili(eval(f"pset.PageDef.{key}"))
+
+        return result_dict
+
+    def set_pagedef(self, pset, apply: Literal["cur", "all", "new"] = "cur"):
+        """
+        get_pagedef 또는 get_pagedef_as_dict를 통해 얻은 용지정보를
+        새 문서에 적용하는 메서드이다.
+        :param pset:
+            파라미터셋 또는 dict. 용지정보를 담은 객체
+        :return:
+        """
+        if isinstance(pset, dict):
+            desc_to_code = {
+                "용지폭": 'PaperWidth',
+                "용지길이": 'PaperHeight',
+                "용지방향": 'Landscape',
+                "제본타입": 'GutterType',
+                "위쪽": 'TopMargin',
+                "머리말": 'HeaderLen',
+                "왼쪽": 'LeftMargin',
+                "제본여백": 'GutterLen',
+                "오른쪽": 'RightMargin',
+                "꼬리말": 'FooterLen',
+                "아래쪽": 'BottomMargin',
+            }
+
+            new_pset = self.hwp.HParameterSet.HSecDef
+            for key in pset.keys():
+                if key in desc_to_code.keys():  # 한글인 경우
+                    if key in ["용지방향", "제본여백"]:
+                        exec(f"new_pset.PageDef.{desc_to_code[key]} = {pset[key]}")
+                    else:
+                        exec(f"new_pset.PageDef.{desc_to_code[key]} = {self.mili_to_hwp_unit(pset[key])}")
+                elif key in desc_to_code.values():  # 영문인 경우
+                    if key in ["Landscape", "GutterLen"]:
+                        exec(f"new_pset.PageDef.{key} = {pset[key]}")
+                    else:
+                        exec(f"new_pset.PageDef.{key} = {self.mili_to_hwp_unit(pset[key])}")
+
+            # 적용범위
+            if apply == "cur":
+                new_pset.HSet.SetItem("ApplyTo", 2)
+            elif apply == "all":
+                new_pset.HSet.SetItem("ApplyTo", 3)
+            elif apply == "new":
+                new_pset.HSet.SetItem("ApplyTo", 4)
+            return self.hwp.HAction.Execute("PageSetup", new_pset.HSet)
+
+        elif type(pset) == type(self.hwp.HParameterSet.HSecDef):
+            if apply == "cur":
+                pset.HSet.SetItem("ApplyTo", 2)
+            elif apply == "all":
+                pset.HSet.SetItem("ApplyTo", 3)
+            elif apply == "new":
+                pset.HSet.SetItem("ApplyTo", 4)
+            return self.hwp.HAction.Execute("PageSetup", pset.HSet)
+
+    def save_block_as(self, path, format="HWP", attributes=1):
+        if path.lower()[1] != ":":
+            path = os.path.join(os.getcwd(), path)
+        pset = self.hwp.HParameterSet.HFileOpenSave
+        self.hwp.HAction.GetDefault("FileSaveBlock_S", pset.HSet)
+        pset.filename = path
+        pset.Format = format
+        pset.Attributes = attributes
+        self.hwp.HAction.Execute("FileSaveBlock_S", pset.HSet)
+
+    def goto_page(self, page_num):
+        pset = self.hwp.HParameterSet.HGotoE
+        self.hwp.HAction.GetDefault("Goto", pset.HSet)
+        pset.HSet.SetItem("DialogResult", page_num)
+        pset.SetSelectionIndex = 1
+        self.hwp.HAction.Execute("Goto", pset.HSet)
 
     def table_from_data(self, data):
         if type(data) in [dict, list]:
@@ -108,7 +352,6 @@ class Hwp:
             for j in df.iloc[i]:
                 self.insert_text(j)
                 self.TableRightCell()
-
 
     def count(self, word):
         return self.get_text_file().count(word)
@@ -168,7 +411,7 @@ class Hwp:
         msgbox.DoModal()  # 메시지박스 보이기
         return msgbox.Result
 
-    def insert_file(self, filename, keep_section=0, keep_charshape=0, keep_parashape=0, keep_style=0):
+    def insert_file(self, filename, keep_section=1, keep_charshape=1, keep_parashape=1, keep_style=1):
         if filename.lower()[1] != ":":
             filename = os.path.join(os.getcwd(), filename)
         pset = self.hwp.HParameterSet.HInsertFile
@@ -178,7 +421,6 @@ class Hwp:
         pset.KeepCharshape = keep_charshape
         pset.KeepParashape = keep_parashape
         pset.KeepStyle = keep_style
-
         return self.hwp.HAction.Execute("InsertFile", pset.HSet)
 
     def insert_memo(self, text):
@@ -659,16 +901,15 @@ class Hwp:
             >>> hwp = Hwp()
             >>> # 현재 커서의 폰트 크기(Height)를 구하는 코드
             >>> act = hwp.hwp.CreateAction("CharShape")
-            >>> cs = act.CreateSet()  # == cs = self.hwp.CreateSet(act)
+            >>> cs = act.CreateSet()  # equal to "cs = hwp.hwp.CreateSet(act)"
             >>> act.GetDefault(cs)
             >>> print(cs.Item("Height"))
             2800
-
             >>> # 현재 선택범위의 폰트 크기를 20pt로 변경하는 코드
             >>> act = hwp.hwp.CreateAction("CharShape")
-            >>> cs = act.CreateSet()  # == cs = self.hwp.CreateSet(act)
+            >>> cs = act.CreateSet()  # equal to "cs = hwp.hwp.CreateSet(act)"
             >>> act.GetDefault(cs)
-            >>> cs.SetItem("Height", self.hwp.PointToHwpUnit(20))
+            >>> cs.SetItem("Height", hwp.point_to_hwp_unit(20))
             >>> act.Execute(cs)
             True
 
@@ -696,7 +937,7 @@ class Hwp:
             >>> hwp = Hwp()
             >>> hwp.create_field(direction="이름", memo="이름을 입력하는 필드", name="name")
             True
-            >>> hwp.PutFieldText("name", "일코")
+            >>> hwp.put_field_text("name", "일코")
         """
         return self.hwp.CreateField(Direction=direction, memo=memo, name=name)
 
@@ -705,7 +946,7 @@ class Hwp:
 
     def create_mode(self, creation_mode):
         return self.hwp.CreateMode(CreationMode=creation_mode)
-
+    
     def create_page_image(self, path: str, pgno: int = 0, resolution: int = 300, depth: int = 24,
                           format: str = "bmp") -> bool:
         """
@@ -736,7 +977,7 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         :example:
-            >>> self.hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
+            >>> hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
             True
         """
         if path.lower()[1] != ":":
@@ -784,9 +1025,11 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         :example:
-            >>> ctrl = self.hwp.HeadCtrl.Next.Next
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> ctrl = hwp.HeadCtrl.Next.Next
             >>> if ctrl.UserDesc == "표":
-            ...     self.hwp.delete_ctrl(ctrl)
+            ...     hwp.delete_ctrl(ctrl)
             ...
             True
         """
@@ -824,7 +1067,7 @@ class Hwp:
             성공시 True, 실패시 False
 
         :example:
-            >>> self.hwp.export_style("C:/Users/User/Desktop/new_style.sty")
+            >>> hwp.export_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
         if sty_filepath.lower()[1] != ":":
@@ -913,7 +1156,7 @@ class Hwp:
             바이너리 데이터의 경로
 
         :example:
-            >>> path = self.hwp.GetBinDataPath(2)
+            >>> path = hwp.hwp.GetBinDataPath(2)
             >>> print(path)
             C:/Users/User/AppData/Local/Temp/Hnc/BinData/EMB00004dd86171.jpg
         """
@@ -1029,7 +1272,7 @@ class Hwp:
             (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
 
         :example:
-            >>> pset = self.hwp.GetFileInfo("C:/Users/Administrator/Desktop/이력서.hwp")
+            >>> pset = hwp.get_file_info("C:/Users/Administrator/Desktop/이력서.hwp")
             >>> print(pset.Item("Format"))
             >>> print(pset.Item("VersionStr"))
             >>> print(hex(pset.Item("VersionNum")))
@@ -1128,7 +1371,7 @@ class Hwp:
             Y(long): 세로 클릭한 위치(HWPUNIT)
 
         :example:
-            >>> pset = self.hwp.GetMousePos(1, 1)
+            >>> pset = hwp.get_mouse_pos(1, 1)
             >>> print("X축 기준:", "쪽" if pset.Item("XRelTo") else "종이")
             >>> print("Y축 기준:", "쪽" if pset.Item("YRelTo") else "종이")
             >>> print("현재", pset.Item("Page")+1, "페이지에 커서 위치")
@@ -1197,14 +1440,14 @@ class Hwp:
             "Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
 
         :example:
-            >>> pset = self.hwp.get_pos_by_set()  # 캐럿위치 저장
+            >>> pset = hwp.get_pos_by_set()  # 캐럿위치 저장
             >>> print(pset.Item("List"))
             6
             >>> print(pset.Item("Para"))
             3
             >>> print(pset.Item("Pos"))
             2
-            >>> self.hwp.set_pos_by_set(pset)  # 캐럿위치 복원
+            >>> hwp.set_pos_by_set(pset)  # 캐럿위치 복원
             True
         """
         return self.hwp.GetPosBySet()
@@ -1267,7 +1510,7 @@ class Hwp:
             epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
 
         :example:
-            >>> self.hwp.get_selected_pos()
+            >>> hwp.get_selected_pos()
             (True, 0, 0, 16, 0, 7, 16)
         """
         return self.hwp.GetSelectedPos()
@@ -1290,10 +1533,12 @@ class Hwp:
             실행시 sset과 eset의 아이템 값이 업데이트된다.
 
         :example:
-            >>> sset = self.hwp.get_pos_by_set()
-            >>> eset = self.hwp.get_pos_by_set()
-            >>> self.hwp.GetSelectedPosBySet(sset, eset)
-            >>> self.hwp.SetPosBySet(eset)
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> sset = hwp.get_pos_by_set()
+            >>> eset = hwp.get_pos_by_set()
+            >>> hwp.get_selected_pos_by_set(sset, eset)
+            >>> hwp.set_pos_by_set(eset)
             True
         """
         return self.hwp.GetSelectedPosBySet(sset=sset, eset=eset)
@@ -1323,13 +1568,13 @@ class Hwp:
             이외의 특수 코드는 포함되지 않는다.
 
         :example:
-            >>> self.hwp.init_scan()
+            >>> hwp.init_scan()
             >>> while True:
-            ...     state, text = self.hwp.get_text()
+            ...     state, text = hwp.get_text()
             ...     print(state, text)
             ...     if state <= 1:
             ...         break
-            ... self.hwp.release_scan()
+            ... hwp.release_scan()
             2
             2
             2 ㅁㄴㅇㄹ
@@ -1371,7 +1616,7 @@ class Hwp:
             지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
 
         :example:
-            >>> self.hwp.get_text_file()
+            >>> hwp.get_text_file()
             'ㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\n\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\n'
         """
         return self.hwp.GetTextFile(Format=format, option=option)
@@ -1453,7 +1698,7 @@ class Hwp:
             성공시 True, 실패시 False
 
         :example:
-            >>> self.hwp.import_style("C:/Users/User/Desktop/new_style.sty")
+            >>> hwp.import_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
         if sty_filepath.lower()[1] != ":":
@@ -1527,9 +1772,9 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         :example:
-            >>> self.hwp.init_scan(range=0xff)
-            >>> _, text = self.hwp.get_text()
-            >>> self.hwp.release_scan()
+            >>> hwp.init_scan(range=0xff)
+            >>> _, text = hwp.get_text()
+            >>> hwp.release_scan()
             >>> print(text)
             Hello, world!
         """
@@ -1672,7 +1917,7 @@ class Hwp:
             성공했을 경우 True, 실패했을 경우 False
 
         :example:
-            >>> self.hwp.insert_background_picture(path="C:/Users/User/Desktop/KakaoTalk_20230709_023118549.jpg")
+            >>> hwp.insert_background_picture(path="C:/Users/User/Desktop/KakaoTalk_20230709_023118549.jpg")
             True
         """
         if path.lower()[1] != ":":
@@ -1706,22 +1951,22 @@ class Hwp:
         :example:
             >>> # 3행5열의 표를 삽입한다.
             >>> from time import sleep
-            >>> tbset = self.hwp.CreateSet("TableCreation")
+            >>> tbset = hwp.create_set("TableCreation")
             >>> tbset.SetItem("Rows", 3)
             >>> tbset.SetItem("Cols", 5)
             >>> row_set = tbset.CreateItemArray("RowHeight", 3)
             >>> col_set = tbset.CreateItemArray("ColWidth", 5)
-            >>> row_set.SetItem(0, self.hwp.PointToHwpUnit(10))
-            >>> row_set.SetItem(1, self.hwp.PointToHwpUnit(10))
-            >>> row_set.SetItem(2, self.hwp.PointToHwpUnit(10))
-            >>> col_set.SetItem(0, self.hwp.MiliToHwpUnit(26))
-            >>> col_set.SetItem(1, self.hwp.MiliToHwpUnit(26))
-            >>> col_set.SetItem(2, self.hwp.MiliToHwpUnit(26))
-            >>> col_set.SetItem(3, self.hwp.MiliToHwpUnit(26))
-            >>> col_set.SetItem(4, self.hwp.MiliToHwpUnit(26))
-            >>> table = self.hwp.InsertCtrl("tbl", tbset)
+            >>> row_set.SetItem(0, hwp.mili_to_hwp_unit(10))
+            >>> row_set.SetItem(1, hwp.mili_to_hwp_unit(10))
+            >>> row_set.SetItem(2, hwp.mili_to_hwp_unit(10))
+            >>> col_set.SetItem(0, hwp.mili_to_hwp_unit(26))
+            >>> col_set.SetItem(1, hwp.mili_to_hwp_unit(26))
+            >>> col_set.SetItem(2, hwp.mili_to_hwp_unit(26))
+            >>> col_set.SetItem(3, hwp.mili_to_hwp_unit(26))
+            >>> col_set.SetItem(4, hwp.mili_to_hwp_unit(26))
+            >>> table = hwp.insert_ctrl("tbl", tbset)
             >>> sleep(3)  # 표 생성 3초 후 다시 표 삭제
-            >>> self.hwp.delete_ctrl(table)
+            >>> hwp.delete_ctrl(table)
 
 
         """
@@ -1771,8 +2016,8 @@ class Hwp:
             생성된 컨트롤 object.
 
         :example:
-            >>> ctrl = self.hwp.insert_picture("C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg")
-            >>> pset = ctrl.Properties  # == self.hwp.create_set("ShapeObject")
+            >>> ctrl = hwp.insert_picture("C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg")
+            >>> pset = ctrl.Properties  # == hwp.create_set("ShapeObject")
             >>> pset.SetItem("TreatAsChar", False)  # 글자처럼취급 해제
             >>> pset.SetItem("TextWrap", 2)  # 그림을 글 뒤로
             >>> ctrl.Properties = pset  # 설정한 값 적용(간단!)
@@ -1817,7 +2062,7 @@ class Hwp:
 
         :example:
             >>> # 현재 셀 주소(표 안에 있을 때)
-            >>> self.hwp.KeyIndicator()[-1][1:].split(")")[0]
+            >>> hwp.KeyIndicator()[-1][1:].split(")")[0]
             "A1"
         """
         return self.hwp.KeyIndicator()
@@ -1841,8 +2086,8 @@ class Hwp:
 
         :example:
             >>> # Undo와 Redo 잠그기
-            >>> self.hwp.LockCommand("Undo", True)
-            >>> self.hwp.LockCommand("Redo", True)
+            >>> hwp.LockCommand("Undo", True)
+            >>> hwp.LockCommand("Redo", True)
         """
         return self.hwp.LockCommand(ActID=act_id, isLock=is_lock)
 
@@ -2173,6 +2418,8 @@ class Hwp:
         :return: None
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> # 현재 캐럿 위치에 zxcv 필드 생성
             >>> hwp.create_field("zxcv")
             >>> # zxcv 필드에 "Hello world!" 텍스트 삽입
@@ -2273,9 +2520,11 @@ class Hwp:
             추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> # 사전에 레지스트리에 보안모듈이 등록되어 있어야 한다.
             >>> # 보다 자세한 설명은 공식문서 참조
-            >>> self.hwp.register_module("FilePathChekDLL", "FilePathCheckerModule")
+            >>> hwp.register_module("FilePathChekDLL", "FilePathCheckerModule")
             True
         """
         self.register_regedit()
@@ -2338,7 +2587,10 @@ class Hwp:
             등록이 성공하였으면 True, 실패하였으면 False
 
         :example:
-            >>> self.hwp.RegisterPrivateInfoPattern(0x01, "NNNN-NNNN;NN-NN-NNNN-NNNN")  # 전화번호패턴
+            >>> from pyhwpx import Hwp()
+            >>> hwp = Hwp()
+            >>>
+            >>> hwp.register_private_info_pattern(0x01, "NNNN-NNNN;NN-NN-NNNN-NNNN")  # 전화번호패턴
         """
         return self.hwp.RegisterPrivateInfoPattern(PrivateType=private_type, PrivatePattern=private_pattern)
 
@@ -2371,9 +2623,9 @@ class Hwp:
         :return: None
 
         :example:
-            >>> self.hwp.create_field("asdf")  # "asdf" 필드 생성
-            >>> self.hwp.rename_field("asdf", "zxcv")  # asdf 필드명을 "zxcv"로 변경
-            >>> self.hwp.put_field_text("zxcv", "Hello world!")  # zxcv 필드에 텍스트 삽입
+            >>> hwp.create_field("asdf")  # "asdf" 필드 생성
+            >>> hwp.rename_field("asdf", "zxcv")  # asdf 필드명을 "zxcv"로 변경
+            >>> hwp.put_field_text("zxcv", "Hello world!")  # zxcv 필드에 텍스트 삽입
         """
         return self.hwp.RenameField(oldname=oldname, newname=newname)
 
@@ -2391,7 +2643,7 @@ class Hwp:
         코드 상에서 Run("Cut")을 실행하면 오려내기 Action이 실행된다.
         또한, 대체된 Action을 원래의 Action으로 되돌리기 위해서는
         NewActionID의 값을 원래의 Action으로 설정한 뒤 호출한다. 이를테면 이런 식이다.
-        >>> self.hwp.replace_action("Cut", "Cut")
+        >>> hwp.replace_action("Cut", "Cut")
 
         :param old_action_id:
             변경될 원본 Action ID.
@@ -5427,9 +5679,9 @@ class Hwp:
             무조건 True를 반환(매크로의 실행여부와 상관없음)
 
         :example:
-            >>> self.hwp.run_script_macro("OnDocument_New", u_macro_type=1)
+            >>> hwp.run_script_macro("OnDocument_New", u_macro_type=1)
             True
-            >>> self.hwp.run_script_macro("OnScriptMacro_중국어1성")
+            >>> hwp.run_script_macro("OnScriptMacro_중국어1성")
             True
         """
         return self.hwp.RunScriptMacro(FunctionName=function_name, uMacroType=u_macro_type, uScriptType=u_script_type)
@@ -5650,8 +5902,8 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         :example:
-            >>> start_pos = self.hwp.GetPosBySet()  # 현재 위치를 저장하고,
-            >>> self.hwp.set_pos_by_set(start_pos)  # 특정 작업 후에 저장위치로 재이동
+            >>> start_pos = hwp.GetPosBySet()  # 현재 위치를 저장하고,
+            >>> hwp.set_pos_by_set(start_pos)  # 특정 작업 후에 저장위치로 재이동
         """
         return self.hwp.SetPosBySet(dispVal=disp_val)
 
