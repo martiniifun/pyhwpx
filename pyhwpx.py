@@ -1,16 +1,16 @@
 import os
 import re
-from typing import Literal, Union
-from time import sleep
+import shutil
 from io import StringIO
+from time import sleep
+from typing import Literal, Union
+from urllib import request, parse
 
 import numpy as np
 import pandas as pd
+import pyperclip as cb
 import pythoncom
 import win32com.client as win32
-import pyperclip as cb
-import shutil
-from urllib import request, parse
 
 # temp 폴더 삭제
 try:
@@ -77,23 +77,23 @@ class Hwp:
     @property
     def Application(self):
         return self.hwp.Application
-    
+
     @property
     def CellShape(self):
         return self.hwp.CellShape
-    
+
     @property
     def CharShape(self):
         return self.hwp.CharShape
-    
+
     @property
     def CLSID(self):
         return self.hwp.CLSID
-    
+
     @property
     def coclass_clsid(self):
         return self.hwp.coclass_clsid
-        
+
     @property
     def CurFieldState(self):
         return self.hwp.CurFieldState
@@ -101,31 +101,31 @@ class Hwp:
     @property
     def CurMetatagState(self):
         return self.hwp.CurMetatagState
-    
+
     @property
     def CurSelectedCtrl(self):
         return self.hwp.CurSelectedCtrl
-    
+
     @property
     def EditMode(self):
         return self.hwp.EditMode
-    
+
     @property
     def EngineProperties(self):
         return self.hwp.EngineProperties
-    
+
     @property
     def HAction(self):
         return self.hwp.HAction
-            
+
     @property
     def HeadCtrl(self):
         return self.hwp.HeadCtrl
-        
+
     @property
     def HParameterSet(self):
         return self.hwp.HParameterSet
-    
+
     @property
     def IsEmpty(self):
         return self.hwp.IsEmpty
@@ -133,7 +133,7 @@ class Hwp:
     @property
     def IsModified(self):
         return self.hwp.IsModified
-        
+
     @property
     def IsPrivateInfoProtected(self):
         return self.hwp.IsPrivateInfoProtected
@@ -145,56 +145,93 @@ class Hwp:
     @property
     def IsTrackChange(self):
         return self.hwp.IsTrackChange
-    
+
     @property
     def LastCtrl(self):
         return self.hwp.LastCtrl
-    
+
     @property
     def PageCount(self):
         return self.hwp.PageCount
-        
+
     @property
     def ParaShape(self):
         return self.hwp.ParaShape
-        
+
     @property
     def ParentCtrl(self):
         return self.hwp.ParentCtrl
-        
+
     @property
     def Path(self):
         return self.hwp.Path
-        
+
     @property
     def SelectionMode(self):
         return self.hwp.SelectionMode
-        
+
     @property
     def Version(self):
         return self.hwp.Version
-        
+
     @property
     def ViewProperties(self):
         return self.hwp.ViewProperties
-    
+
     @property
     def XHwpDocuments(self):
         return self.hwp.XHwpDocuments
-        
+
     @property
     def XHwpMessageBox(self):
         return self.hwp.XHwpMessageBox
-    
+
     @property
     def XHwpODBC(self):
         return self.hwp.XHwpODBC
-    
+
     @property
     def XHwpWindows(self):
         return self.hwp.XHwpWindows
 
     # 커스텀 메서드
+    def get_available_font(self) -> list:
+        """
+        현재 사용 가능한 폰트 리스트를 리턴
+        :return:
+            현재 사용 가능한 폰트 리스트
+        """
+        result_list = []
+        initial_font = self.CharShape.Item("FaceNameHangul")
+        for font_type in [
+            'FaceNameHangul',
+            'FaceNameHanja',
+            'FaceNameJapanese',
+            'FaceNameLatin',
+            'FaceNameOther',
+            'FaceNameSymbol',
+            'FaceNameUser',
+            'FaceNameHangul',
+        ]:
+            cur_face = self.CharShape.Item(font_type)
+            while self.CharShapeNextFaceName():
+                result_list.append(self.CharShape.Item(font_type))
+                if cur_face == self.CharShape.Item(font_type):
+                    break
+        return list(set(result_list))
+
+    def get_charshape_as_dict(self):
+        result_dict = {}
+        for key in self.HParameterSet.HCharShape._prop_map_get_.keys():
+            result_dict[key] = self.CharShape.Item(key)
+        return result_dict
+
+    def set_charshape(self, pset):
+        new_pset = self.hwp.HParameterSet.HCharShape
+        for key in pset.keys():
+            exec(f"new_pset.CharShape.{key} = {pset[key]}")
+        return self.hwp.HAction.Execute("CharShape", pset.HSet)
+
     def get_pagedef(self):
         """
         현재 페이지의 용지정보 파라미터셋을 리턴한다.
@@ -344,7 +381,7 @@ class Hwp:
                 df = pd.read_json(StringIO(data))
         else:
             df = data
-        self.create_table(rows=len(df)+1, cols=len(df.columns), treat_as_char=False, header=True)
+        self.create_table(rows=len(df) + 1, cols=len(df.columns), treat_as_char=False, header=True)
         for i in df.columns:
             self.insert_text(i)
             self.TableRightCellAppend()
@@ -627,7 +664,6 @@ class Hwp:
         :return:
             표 생성 성공시 True, 실패시 False를 리턴한다.
         """
-
 
         pset = self.hwp.HParameterSet.HTableCreation
         self.hwp.HAction.GetDefault("TableCreate", pset.HSet)  # 표 생성 시작
@@ -946,7 +982,7 @@ class Hwp:
 
     def create_mode(self, creation_mode):
         return self.hwp.CreateMode(CreationMode=creation_mode)
-    
+
     def create_page_image(self, path: str, pgno: int = 0, resolution: int = 300, depth: int = 24,
                           format: str = "bmp") -> bool:
         """
@@ -2391,7 +2427,7 @@ class Hwp:
         """
         return self.hwp.ProtectPrivateInfo(PotectingChar=protecting_char, PrivatePatternType=private_pattern_type)
 
-    def put_field_text(self, field, text: Union[str, list, tuple, pd.Series]="", idx=None):
+    def put_field_text(self, field, text: Union[str, list, tuple, pd.Series] = "", idx=None):
         """
         지정한 필드의 내용을 채운다.
         현재 필드에 입력되어 있는 내용은 지워진다.
@@ -2432,7 +2468,7 @@ class Hwp:
             if isinstance(idx, int):
                 for f_i, f in enumerate(field):
                     field_str += f"{f}{{{{{idx}}}}}\x02"
-                    text_str += f"{text[f_i][idx]}\x02" # for t_i, t in enumerate(text[f_i]):
+                    text_str += f"{text[f_i][idx]}\x02"  # for t_i, t in enumerate(text[f_i]):
             else:
                 for f_i, f in enumerate(field):
                     for t_i, t in enumerate(text[f_i]):
@@ -2471,14 +2507,15 @@ class Hwp:
                 field_str = "\x02".join([i + f"{{{{{idx}}}}}" for i in field.split("\x02")])  # \x02로 병합
                 text_str += "\x02".join([str(t) for t in text[idx]]) + "\x02"
             else:
-                field_str = "\x02".join([str(i) + f"{{{{{j}}}}}" for i in field.split("\x02") for j in range(len(text.columns))])  # \x02로 병합
+                field_str = "\x02".join([str(i) + f"{{{{{j}}}}}" for i in field.split("\x02") for j in
+                                         range(len(text.columns))])  # \x02로 병합
                 for i in range(len(text)):
                     text_str += "\x02".join([str(t) for t in text.iloc[i]]) + "\x02"
             return self.hwp.PutFieldText(Field=field_str, Text=text_str)
 
-
         if isinstance(idx, int):
-            return self.hwp.PutFieldText(Field=field.replace("\x02", f"{{{{{idx}}}}}\x02") + f"{{{{{idx}}}}}", Text=text)
+            return self.hwp.PutFieldText(Field=field.replace("\x02", f"{{{{{idx}}}}}\x02") + f"{{{{{idx}}}}}",
+                                         Text=text)
         else:
             return self.hwp.PutFieldText(Field=field, Text=text)
 
