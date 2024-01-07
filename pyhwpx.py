@@ -22,6 +22,13 @@ except FileNotFoundError as e:
 win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
+# 헬퍼함수
+def check_tuple_of_ints(var):
+    if isinstance(var, tuple):  # 먼저 변수가 튜플인지 확인
+        return all(isinstance(item, int) for item in var)  # 모든 요소가 int인지 확인
+    return False  # 변수가 튜플이 아니면 False 반환
+
+
 # 아래아한글 오토메이션 클래스 정의
 class Hwp:
     """
@@ -206,6 +213,8 @@ class Hwp:
                           step=255,
                           ):
         color_num = len(color_list)
+        if color_num == 1:
+            step = 1
         pset = self.hwp.HParameterSet.HCellBorderFill
         self.hwp.HAction.Run("TableCellBlock")
         self.hwp.HAction.GetDefault("CellFill", pset.HSet)
@@ -217,8 +226,11 @@ class Hwp:
         pset.FillAttr.GradationStep = step  # 번짐정도(영역개수) 2~255 (0은 투명, 1은 시작색)
         pset.FillAttr.GradationColorNum = color_num  # ?
         pset.FillAttr.CreateItemArray("GradationIndexPos", color_num)
-        if not pos_list:
+
+        if not pos_list and color_num > 1:
             pos_list = [round(i / (color_num - 1) * 255) for i in range(color_num)]
+        elif color_num == 1:
+            pos_list = [255]
         elif pos_list[-1] == 100:
             pos_list = [round(i * 2.55) for i in pos_list]
         for i in range(color_num):
@@ -228,7 +240,7 @@ class Hwp:
         for i in range(color_num):
             if type(color_list[i]) == str:
                 pset.FillAttr.GradationColor.SetItem(i, self.rgb_color(color_list[i]))  # 시작색 ~ 끝색
-            elif type(color_list[i]) == tuple[int]:
+            elif check_tuple_of_ints(color_list[i]):
                 pset.FillAttr.GradationColor.SetItem(i, self.rgb_color(*color_list[i]))  # 시작색 ~ 끝색
         pset.FillAttr.GradationBrush = 1
         self.hwp.HAction.Execute("CellFill", pset.HSet)
