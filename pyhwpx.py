@@ -195,6 +195,45 @@ class Hwp:
         return self.hwp.XHwpWindows
 
     # 커스텀 메서드
+    def gradation_on_cell(self,
+                          color_list: list[tuple] | list[str] = [(0, 0, 0), (255, 255, 255)],
+                          grad_type: Literal["Linear", "Radial", "Conical", "Square"] = "Linear",
+                          angle=0,
+                          xc=0,
+                          yc=0,
+                          pos_list: list[int] = None,
+                          step_center=50,
+                          step=255,
+                          ):
+        color_num = len(color_list)
+        pset = self.hwp.HParameterSet.HCellBorderFill
+        self.hwp.HAction.Run("TableCellBlock")
+        self.hwp.HAction.GetDefault("CellFill", pset.HSet)
+        pset.FillAttr.type = self.hwp.BrushType("NullBrush|GradBrush")
+        pset.FillAttr.GradationType = self.hwp.Gradation(grad_type)  # 0은 검정. Linear:1, Radial:2, Conical:3, Square:4
+        pset.FillAttr.GradationCenterX = xc  # 가로중심
+        pset.FillAttr.GradationCenterY = yc  # 세로중심
+        pset.FillAttr.GradationAngle = angle  # 기울임
+        pset.FillAttr.GradationStep = step  # 번짐정도(영역개수) 2~255 (0은 투명, 1은 시작색)
+        pset.FillAttr.GradationColorNum = color_num  # ?
+        pset.FillAttr.CreateItemArray("GradationIndexPos", color_num)
+        if not pos_list:
+            pos_list = [round(i / (color_num - 1) * 255) for i in range(color_num)]
+        elif pos_list[-1] == 100:
+            pos_list = [round(i * 2.55) for i in pos_list]
+        for i in range(color_num):
+            pset.FillAttr.GradationIndexPos.SetItem(i, pos_list[i])
+        pset.FillAttr.GradationStepCenter = step_center  # 번짐중심(%), 중간이 50, 작을수록 시작점에, 클수록 끝점에 그라데이션 중간점이 가까워짐
+        pset.FillAttr.CreateItemArray("GradationColor", color_num)
+        for i in range(color_num):
+            if type(color_list[i]) == str:
+                pset.FillAttr.GradationColor.SetItem(i, self.rgb_color(color_list[i]))  # 시작색 ~ 끝색
+            elif type(color_list[i]) == tuple[int]:
+                pset.FillAttr.GradationColor.SetItem(i, self.rgb_color(*color_list[i]))  # 시작색 ~ 끝색
+        pset.FillAttr.GradationBrush = 1
+        self.hwp.HAction.Execute("CellFill", pset.HSet)
+        self.hwp.HAction.Run("Cancel")
+
     def get_available_font(self) -> list:
         """
         현재 사용 가능한 폰트 리스트를 리턴
@@ -744,7 +783,7 @@ class Hwp:
         col_count = 1
         while self.hwp.HAction.Run("TableRightCell"):
             # a.append(get_text().replace("\r\n", "\n"))
-            if re.match("\([A-Z]1\)", self.hwp.KeyIndicator()[-1]):
+            if re.match("([A-Z]1)", self.hwp.KeyIndicator()[-1]):
                 col_count += 1
             data.append(self.get_selected_text())
 
@@ -783,7 +822,7 @@ class Hwp:
         col_count = 1
         while self.hwp.HAction.Run("TableRightCell"):
             # a.append(get_text().replace("\r\n", "\n"))
-            if re.match("\([A-Z]1\)", self.hwp.KeyIndicator()[-1]):
+            if re.match("([A-Z]1)", self.hwp.KeyIndicator()[-1]):
                 col_count += 1
             data.append(self.get_selected_text())
 
@@ -2532,7 +2571,35 @@ class Hwp:
         self.hwp.Quit()
         del self.hwp
 
-    def rgb_color(self, red, green, blue):
+    def rgb_color(self, red, green=255, blue=255):
+        color_palette = {
+            "Red": (255, 0, 0),
+            "Green": (0, 255, 0),
+            "Blue": (0, 0, 255),
+            "Yellow": (255, 255, 0),
+            "Cyan": (0, 255, 255),
+            "Magenta": (255, 0, 255),
+            "Black": (0, 0, 0),
+            "White": (255, 255, 255),
+            "Gray": (128, 128, 128),
+            "Orange": (255, 165, 0),
+            "DarkBlue": (0, 0, 139),
+            "Purple": (128, 0, 128),
+            "Pink": (255, 192, 203),
+            "Lime": (0, 255, 0),
+            "SkyBlue": (135, 206, 235),
+            "Gold": (255, 215, 0),
+            "Silver": (192, 192, 192),
+            "Mint": (189, 252, 201),
+            "Tomato": (255, 99, 71),
+            "Olive": (128, 128, 0),
+            "Crimson": (220, 20, 60),
+            "Navy": (0, 0, 128),
+            "Teal": (0, 128, 128),
+            "Chocolate": (210, 105, 30),
+        }
+        if red in color_palette:
+            return self.hwp.RGBColor(*color_palette[red])
         return self.hwp.RGBColor(red=red, green=green, blue=blue)
 
     def register_module(self, module_type="FilePathCheckDLL", module_data="FilePathCheckerModule"):
