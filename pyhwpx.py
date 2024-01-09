@@ -202,6 +202,9 @@ class Hwp:
         return self.hwp.XHwpWindows
 
     # 커스텀 메서드
+    def remove_background_picture(self):
+        self.insert_background_picture("", border_type="SelectedCellDelete")
+
     def gradation_on_cell(self,
                           color_list: list[tuple] | list[str] = [(0, 0, 0), (255, 255, 255)],
                           grad_type: Literal["Linear", "Radial", "Conical", "Square"] = "Linear",
@@ -422,7 +425,7 @@ class Hwp:
         pset.SetSelectionIndex = 1
         self.hwp.HAction.Execute("Goto", pset.HSet)
 
-    def table_from_data(self, data):
+    def table_from_data(self, data, transpose=False, header0="", treat_as_char=False, header=True):
         if type(data) in [dict, list]:
             df = pd.DataFrame(data)
         elif type(data) is str:  # 엑셀파일 경로 또는 json으로 간주
@@ -432,11 +435,18 @@ class Hwp:
                 df = pd.read_json(StringIO(data))
         else:
             df = data
-        self.create_table(rows=len(df) + 1, cols=len(df.columns), treat_as_char=False, header=True)
+        if transpose:
+            df = df.T
+        idx_list = list(df.index)
+        self.create_table(rows=len(df) + 1, cols=len(df.columns) + 1, treat_as_char=treat_as_char, header=header)
+        self.insert_text(header0)
+        self.TableRightCellAppend()
         for i in df.columns:
             self.insert_text(i)
             self.TableRightCellAppend()
         for i in range(len(df)):
+            self.insert_text(idx_list.pop(0))
+            self.TableRightCellAppend()
             for j in df.iloc[i]:
                 self.insert_text(j)
                 self.TableRightCell()
@@ -1943,8 +1953,9 @@ class Hwp:
             path = os.path.join(os.getcwd(), path)
         return self.hwp.Insert(Path=path, Format=format, arg=arg)
 
-    def insert_background_picture(self, path, border_type="SelectedCell",
-                                  embedded=True, filloption=5, effect=1,
+    def insert_background_picture(self, path,
+                                  border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
+                                  embedded=True, filloption=5, effect=0,
                                   watermark=False, brightness=0, contrast=0) -> bool:
         """
         **셀**에 배경이미지를 삽입한다.
@@ -2004,16 +2015,25 @@ class Hwp:
             성공했을 경우 True, 실패했을 경우 False
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.insert_background_picture(path="C:/Users/User/Desktop/KakaoTalk_20230709_023118549.jpg")
             True
         """
-        if path.lower()[1] != ":":
+        if path.startswith("http"):
+            request.urlretrieve(path, os.path.join(os.getcwd(), "temp.jpg"))
+            path = os.path.join(os.getcwd(), "temp.jpg")
+        elif path and path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
 
-        return self.hwp.InsertBackgroundPicture(Path=path, BorderType=border_type,
-                                                Embedded=embedded, filloption=filloption,
-                                                Effect=effect, watermark=watermark,
-                                                Brightness=brightness, Contrast=contrast)
+        try:
+            return self.hwp.InsertBackgroundPicture(Path=path, BorderType=border_type,
+                                                    Embedded=embedded, filloption=filloption,
+                                                    Effect=effect, watermark=watermark,
+                                                    Brightness=brightness, Contrast=contrast)
+        finally:
+            if "temp.jpg" in os.listdir():
+                os.remove(path)
 
     def insert_ctrl(self, ctrl_id, initparam):
         """
@@ -2109,12 +2129,20 @@ class Hwp:
             >>> pset.SetItem("TextWrap", 2)  # 그림을 글 뒤로
             >>> ctrl.Properties = pset  # 설정한 값 적용(간단!)
         """
-        if path.lower()[1] != ":":
+
+        if path.startswith("http"):
+            request.urlretrieve(path, os.path.join(os.getcwd(), "temp.jpg"))
+            path = os.path.join(os.getcwd(), "temp.jpg")
+        elif path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
 
-        return self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption,
-                                      Reverse=reverse, watermark=watermark, Effect=effect,
-                                      Width=width, Height=height)
+        try:
+            return self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption,
+                                          Reverse=reverse, watermark=watermark, Effect=effect,
+                                          Width=width, Height=height)
+        finally:
+            if "temp.jpg" in os.listdir():
+                os.remove(path)
 
     def is_action_enable(self, action_id):
         return self.hwp.IsActionEnable(actionID=action_id)
