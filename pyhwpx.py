@@ -2123,7 +2123,10 @@ class Hwp:
             생성된 컨트롤 object.
 
         :example:
-            >>> ctrl = hwp.insert_picture("C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg")
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> path = "C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg"
+            >>> ctrl = hwp.insert_picture(path)  # 삽입한 이미지 객체를 리턴함.
             >>> pset = ctrl.Properties  # == hwp.create_set("ShapeObject")
             >>> pset.SetItem("TreatAsChar", False)  # 글자처럼취급 해제
             >>> pset.SetItem("TextWrap", 2)  # 그림을 글 뒤로
@@ -2137,9 +2140,30 @@ class Hwp:
             path = os.path.join(os.getcwd(), path)
 
         try:
-            return self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption,
+            ctrl = self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption,
                                           Reverse=reverse, watermark=watermark, Effect=effect,
                                           Width=width, Height=height)
+            sec_def = self.HParameterSet.HSecDef
+            self.HAction.GetDefault("PageSetup", sec_def.HSet)
+            page_width = (sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin
+                          - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen)
+            page_height = (sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin
+                           - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen
+                           - sec_def.PageDef.FooterLen)
+            pic_prop = ctrl.Properties
+            pic_width = pic_prop.Item("Width")
+            pic_height = pic_prop.Item("Height")
+            if pic_width > page_width or pic_height > page_height:
+                width_shrink_ratio = page_width / pic_width
+                height_shrink_ratio = page_height / pic_height
+                if width_shrink_ratio <= height_shrink_ratio:
+                    pic_prop.SetItem("Width", page_width)
+                    pic_prop.SetItem("Height", pic_height * width_shrink_ratio)
+                else:
+                    pic_prop.SetItem("Width", pic_width * height_shrink_ratio)
+                    pic_prop.SetItem("Height", page_height)
+                ctrl.Properties = pic_prop
+            return ctrl
         finally:
             if "temp.jpg" in os.listdir():
                 os.remove(path)
