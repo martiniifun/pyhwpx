@@ -12,6 +12,8 @@ import pyperclip as cb
 import pythoncom
 import win32com.client as win32
 
+
+__version__ = "0.6.11"
 # temp 폴더 삭제
 try:
     shutil.rmtree(os.path.join(os.environ["USERPROFILE"], "AppData/Local/Temp/gen_py"))
@@ -201,7 +203,63 @@ class Hwp:
     def XHwpWindows(self):
         return self.hwp.XHwpWindows
 
+    @property
+    def ctrl_list(self):
+        c_list = []
+        ctrl = self.hwp.HeadCtrl
+        while ctrl:
+            c_list.append(ctrl)
+            ctrl = ctrl.Next
+        return c_list
+
     # 커스텀 메서드
+    def get_into_nth_table(self, n=0, select=False):
+        """
+        문서 n번째 표의 첫 번째 셀로 이동하는 함수(1~)
+        """
+        if n >= 0:
+            idx = 0
+            ctrl = self.hwp.HeadCtrl
+        else:
+            idx = -1
+            ctrl = self.hwp.LastCtrl
+        if isinstance(n, type(ctrl)):
+            # 정수인덱스 대신 ctrl 객체를 넣은 경우
+            self.set_pos_by_set(n.GetAnchorPos(0))
+            self.hwp.FindCtrl()
+            self.ShapeObjTableSelCell()
+            if not select:
+                self.Cancel()
+            return ctrl
+
+        while ctrl:
+            if ctrl.UserDesc == "표":
+                if n in (0, -1):
+                    self.set_pos_by_set(ctrl.GetAnchorPos(0))
+                    self.hwp.FindCtrl()
+                    self.ShapeObjTableSelCell()
+                    if not select:
+                        self.Cancel()
+                    return ctrl
+                else:
+                    if idx == n:
+                        self.set_pos_by_set(ctrl.GetAnchorPos(0))
+                        self.hwp.FindCtrl()
+                        self.ShapeObjTableSelCell()
+                        if not select:
+                            self.Cancel()
+                        return ctrl
+                    if n >= 0:
+                        idx += 1
+                    else:
+                        idx -= 1
+            if n >= 0:
+                ctrl = ctrl.Next
+            else:
+                ctrl = ctrl.Prev
+        raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
+                         f"현재 문서에는 표가 {abs(int(-4 + 0.1))}개 존재합니다.")
+
     def modify_row_height(self, height_mili):
         """
         캐럿이 표 안에 있는 경우
@@ -837,7 +895,7 @@ class Hwp:
         col_count = 1
         while self.hwp.HAction.Run("TableRightCell"):
             # a.append(get_text().replace("\r\n", "\n"))
-            if re.match("([A-Z]1)", self.hwp.KeyIndicator()[-1]):
+            if re.match(r"\([A-Z]+1\)", self.hwp.KeyIndicator()[-1]):
                 col_count += 1
             data.append(self.get_selected_text())
 
@@ -862,7 +920,7 @@ class Hwp:
         start_pos = self.hwp.GetPos()
         table_num = 0
         ctrl = self.HeadCtrl
-        while ctrl.Next:
+        while ctrl:
             if ctrl.UserDesc == "표":
                 table_num += 1
             if table_num == idx:
@@ -876,7 +934,7 @@ class Hwp:
         col_count = 1
         while self.hwp.HAction.Run("TableRightCell"):
             # a.append(get_text().replace("\r\n", "\n"))
-            if re.match("([A-Z]1)", self.hwp.KeyIndicator()[-1]):
+            if re.match(r"\([A-Z]+1\)", self.hwp.KeyIndicator()[-1]):
                 col_count += 1
             data.append(self.get_selected_text())
 
@@ -2112,9 +2170,8 @@ class Hwp:
         return self.hwp.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
     def insert_picture(self, path, embedded=True, sizeoption=0, reverse=False, watermark=False, effect=0, width=0,
-                       height=0, keep_ratio=1, keep_cellsize=0):
+                       height=0):
         """
-        todo: keep_ratio와 keep_cellsize를 추가하고 sizeoption을 정리하자.
         현재 캐럿의 위치에 그림을 삽입한다.
         다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
         이런 작업을 원하는 경우에는 그림을 클립보드로 복사하고,
@@ -2186,7 +2243,7 @@ class Hwp:
                 cell_width = cell_param.ShapeTableCell.Width
                 dst_height = pic_prop.Item("Height") / pic_prop.Item("Width") * cell_width
                 pic_prop.SetItem("Width", cell_width)
-                pic_prop.SetItem("Height", dst_height)
+                pic_prop.SetItem("Height", round(dst_height))
             else:
                 sec_def = self.HParameterSet.HSecDef
                 self.HAction.GetDefault("PageSetup", sec_def.HSet)
@@ -3276,11 +3333,22 @@ class Hwp:
         """
         return self.hwp.HAction.Run("CopyPage")
 
-    def Cut(self):
+    def Cut(self, remove_cell=True):
         """
         잘라내기. Copy 액션과 유사하지만, 복사 대신 잘라내기 기능을 수행한다. 자주 쓰이는 메서드이다.
         """
-        return self.hwp.HAction.Run("Cut")
+        if remove_cell:
+            self.set_message_box_mode(0x2000)
+            try:
+                return self.hwp.HAction.Run("Cut")
+            finally:
+                self.set_message_box_mode(0xF000)
+        else:
+            self.set_message_box_mode(0x1000)
+            try:
+                return self.hwp.HAction.Run("Cut")
+            finally:
+                self.set_message_box_mode(0xF000)
 
     def Delete(self):
         """
@@ -5632,7 +5700,12 @@ class Hwp:
         """
         표 붙이기
         """
-        return self.hwp.HAction.Run("TableMergeTable")
+        self.Cancel()
+        try:
+            self.set_message_box_mode(0x1)
+            return self.hwp.HAction.Run("TableMergeTable")
+        finally:
+            self.set_message_box_mode(0xf)
 
     def TableResizeCellDown(self):
         """
