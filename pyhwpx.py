@@ -12,8 +12,8 @@ import pyperclip as cb
 import pythoncom
 import win32com.client as win32
 
+__version__ = "0.6.13"
 
-__version__ = "0.6.11"
 # temp 폴더 삭제
 try:
     shutil.rmtree(os.path.join(os.environ["USERPROFILE"], "AppData/Local/Temp/gen_py"))
@@ -2936,7 +2936,7 @@ class Hwp:
     def revision(self, revision):
         return self.hwp.Revision(Revision=revision)
 
-    def run(self, act_id):
+    def Run(self, act_id):
         """
         액션을 실행한다. ActionTable.hwp 액션 리스트 중에서
         "별도의 파라미터가 필요하지 않은" 단순 액션을 run으로 호출할 수 있다.
@@ -5701,11 +5701,14 @@ class Hwp:
         표 붙이기
         """
         self.Cancel()
-        try:
+        result = self.hwp.HAction.Run("TableMergeTable")
+        if result:
+            return result
+        else:
             self.set_message_box_mode(0x1)
-            return self.hwp.HAction.Run("TableMergeTable")
-        finally:
+            sleep(0.1)
             self.set_message_box_mode(0xf)
+            return result
 
     def TableResizeCellDown(self):
         """
