@@ -12,7 +12,7 @@ import pyperclip as cb
 import pythoncom
 import win32com.client as win32
 
-__version__ = "0.6.13"
+__version__ = "0.6.14"
 
 # temp 폴더 삭제
 try:
