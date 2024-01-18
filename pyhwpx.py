@@ -14,7 +14,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.7.2"
+__version__ = "0.7.3"
 
 # temp 폴더 삭제
 try:
@@ -1005,9 +1005,9 @@ class Hwp:
                 IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
                            f"현재 문서에는 표가 {abs(int(-4 + 0.1))}개 존재합니다.")
 
-        self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
-        self.hwp.FindCtrl()
-        self.hwp.HAction.Run("ShapeObjTableSelCell")
+            self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
+            self.hwp.FindCtrl()
+            self.hwp.HAction.Run("ShapeObjTableSelCell")
         data = [self.get_selected_text()]
         col_count = 1
         while self.hwp.HAction.Run("TableRightCell"):
