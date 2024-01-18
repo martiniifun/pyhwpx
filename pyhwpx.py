@@ -14,7 +14,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.7.1"
+__version__ = "0.7.2"
 
 # temp 폴더 삭제
 try:
@@ -2895,12 +2895,7 @@ class Hwp:
                             subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode().split("\r\n") if
                             i.startswith("Location: ")][0]
             except subprocess.CalledProcessError as e:
-                location = os.environ["USERPROFILE"]
-                if "FilePathCheckerModule.dll" in os.listdir():
-                    try:
-                        shutil.copy("FilePathCheckerModule.dll", os.environ["USERPROFILE"])
-                    except shutil.Error as e:
-                        pass
+                location = os.getcwd()
         winup_path = r"Software\HNC\HwpAutomation\Modules"
 
         # HKEY_LOCAL_MACHINE와 연결 생성 후 핸들 얻음
