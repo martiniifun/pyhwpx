@@ -5,14 +5,16 @@ from io import StringIO
 from time import sleep
 from typing import Literal, Union
 from urllib import request, parse
+import shutil
 
 import numpy as np
 import pandas as pd
 import pyperclip as cb
 import pythoncom
 import win32com.client as win32
+from collections import defaultdict
 
-__version__ = "0.6.14"
+__version__ = "0.7.1"
 
 # temp 폴더 삭제
 try:
@@ -213,6 +215,20 @@ class Hwp:
         return c_list
 
     # 커스텀 메서드
+
+
+    def fields_to_dict(self):
+        result = defaultdict(list)
+        field_list = self.get_field_list(number=1)
+        field_values = self.get_field_text(field_list)
+        for i, j in zip(field_list.split("\x02"), field_values.split("\x02")):
+            result[i.split("{")[0]].append(j)
+        max_len = max([len(result[i]) for i in result])
+        for i in result:
+            if len(result[i]) == 1:
+                result[i] *= max_len
+        return result
+
     def get_into_nth_table(self, n=0, select=False):
         """
         문서 n번째 표의 첫 번째 셀로 이동하는 함수(1~)
@@ -305,12 +321,28 @@ class Hwp:
         :param step:
         :return:
         """
+        pset = self.hwp.HParameterSet.HCellBorderFill
+        self.hwp.HAction.GetDefault("CellFill", pset.HSet)
+        if not pset.FillAttr.type:
+            pset.FillAttr.type = self.hwp.BrushType("NullBrush|GradBrush")
+            pset.FillAttr.GradationType = 1
+            pset.FillAttr.GradationCenterX = 0
+            pset.FillAttr.GradationCenterY = 0
+            pset.FillAttr.GradationAngle = 0
+            pset.FillAttr.GradationStep = 1
+            pset.FillAttr.GradationColorNum = 2
+            pset.FillAttr.CreateItemArray("GradationIndexPos", 2)
+            pset.FillAttr.GradationIndexPos.SetItem(0, 0)
+            pset.FillAttr.GradationIndexPos.SetItem(1, 255)
+            pset.FillAttr.GradationStepCenter = 50
+            pset.FillAttr.CreateItemArray("GradationColor", 2)
+            pset.FillAttr.GradationColor.SetItem(0, self.rgb_color(255, 255, 255))  # 시작색 ~ 끝색
+            pset.FillAttr.GradationColor.SetItem(1, self.rgb_color(255, 255, 255))  # 시작색 ~ 끝색
+            pset.FillAttr.GradationBrush = 1
+            self.hwp.HAction.Execute("CellFill", pset.HSet)
         color_num = len(color_list)
         if color_num == 1:
             step = 1
-        pset = self.hwp.HParameterSet.HCellBorderFill
-        self.hwp.HAction.Run("TableCellBlock")
-        self.hwp.HAction.GetDefault("CellFill", pset.HSet)
         pset.FillAttr.type = self.hwp.BrushType("NullBrush|GradBrush")
         pset.FillAttr.GradationType = self.hwp.Gradation(grad_type)  # 0은 검정. Linear:1, Radial:2, Conical:3, Square:4
         pset.FillAttr.GradationCenterX = xc  # 가로중심
@@ -336,8 +368,7 @@ class Hwp:
             elif check_tuple_of_ints(color_list[i]):
                 pset.FillAttr.GradationColor.SetItem(i, self.rgb_color(*color_list[i]))  # 시작색 ~ 끝색
         pset.FillAttr.GradationBrush = 1
-        self.hwp.HAction.Execute("CellFill", pset.HSet)
-        self.hwp.HAction.Run("Cancel")
+        return self.hwp.HAction.Execute("CellFill", pset.HSet)
 
     def get_available_font(self) -> list:
         """
@@ -796,7 +827,7 @@ class Hwp:
         """
         return round(hwp_unit / 7200 * 25.4)
 
-    def create_table(self, rows, cols, treat_as_char: bool = True, width_type=0, height_type=0, header=True):
+    def create_table(self, rows, cols, treat_as_char: bool = True, width_type=0, height_type=0, header=True, height=0):
         """
         표를 생성하는 메서드.
         기본적으로 rows와 cols만 지정하면 되며,
@@ -830,13 +861,23 @@ class Hwp:
                        - self.mili_to_hwp_unit(2))
 
         pset.WidthValue = self.hwp.MiliToHwpUnit(total_width)  # 표 너비
-        # pset.HeightValue = self.hwp.MiliToHwpUnit(150)  # 표 높이
-        pset.CreateItemArray("ColWidth", cols)  # 열 5개 생성
+        if height and height_type == 1:  # 표높이가 정의되어 있으면
+            total_height = (sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin
+                            - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen
+                            - sec_def.PageDef.FooterLen - self.mili_to_hwp_unit(2))
+            pset.HeightValue = self.hwp.MiliToHwpUnit(height)  # 표 높이
+            pset.CreateItemArray("RowHeight", rows)  # 행 m개 생성
+            each_row_height = total_height - self.mili_to_hwp_unit(rows)
+            for i in range(rows):
+                pset.RowHeight.SetItem(i, each_row_height)  # 1열
+
+        pset.CreateItemArray("ColWidth", cols)  # 열 n개 생성
         each_col_width = total_width - self.mili_to_hwp_unit(3.6 * cols)
         for i in range(cols):
-            pset.ColWidth.SetItem(i, self.hwp.MiliToHwpUnit(each_col_width))  # 1열
+            pset.ColWidth.SetItem(i, each_col_width)  # 1열
         # pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
         pset.TableProperties.Width = total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
+        pset.TableProperties.Height = total_height  # self.hwp.MiliToHwpUnit(148)  # 표 너비
         self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
 
         # 글자처럼 취급 여부 적용(treat_as_char)
@@ -906,26 +947,63 @@ class Hwp:
         print(os.path.join(os.getcwd(), filename))
         return None
 
-    def table_to_df(self, idx=1):
+    def table_to_df(self, n=""):
         """
-        한/글 문서의 idx번째 표를 판다스 데이터프레임으로 리턴하는 메서드.
+        한/글 문서의 n번째 표를 판다스 데이터프레임으로 리턴하는 메서드.
+        n을 넣지 않는 경우
         :return:
             pd.DataFrame
         :example:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
-            >>> df = hwp.table_to_df(1)
+            >>> df = hwp.table_to_df(0)
         """
         start_pos = self.hwp.GetPos()
-        table_num = 0
-        ctrl = self.HeadCtrl
-        while ctrl:
-            if ctrl.UserDesc == "표":
-                table_num += 1
-            if table_num == idx:
-                break
-            ctrl = ctrl.Next
+        ctrl = self.hwp.HeadCtrl
+        if isinstance(n, type(ctrl)):
+            # 정수인덱스 대신 ctrl 객체를 넣은 경우
+            self.set_pos_by_set(n.GetAnchorPos(0))
+            self.hwp.FindCtrl()
+            self.ShapeObjTableSelCell()
+        elif n == "" and self.is_cell():
+            # 기본값은 현재위치의 표를 잡아오기
+            self.TableCellBlock()
+            self.TableColBegin()
+            self.TableColPageUp()
+        elif n == "" or isinstance(n, int):
+            if n == "":
+                n = 0
+            if n >= 0:
+                idx = 0
+            else:
+                idx = -1
+                ctrl = self.hwp.LastCtrl
+
+            while ctrl:
+                if ctrl.UserDesc == "표":
+                    if n in (0, -1):
+                        self.set_pos_by_set(ctrl.GetAnchorPos(0))
+                        self.hwp.FindCtrl()
+                        self.ShapeObjTableSelCell()
+                        break
+                    else:
+                        if idx == n:
+                            self.set_pos_by_set(ctrl.GetAnchorPos(0))
+                            self.hwp.FindCtrl()
+                            self.ShapeObjTableSelCell()
+                            break
+                        if n >= 0:
+                            idx += 1
+                        else:
+                            idx -= 1
+                if n >= 0:
+                    ctrl = ctrl.Next
+                else:
+                    ctrl = ctrl.Prev
+            else:
+                IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
+                           f"현재 문서에는 표가 {abs(int(-4 + 0.1))}개 존재합니다.")
 
         self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
         self.hwp.FindCtrl()
@@ -1373,7 +1451,7 @@ class Hwp:
     def get_cur_metatag_name(self):
         return self.hwp.GetCurMetatagName()
 
-    def get_field_list(self, number=0, option=0):
+    def get_field_list(self, number=1, option=0):
         """
         문서에 존재하는 필드의 목록을 구한다.
         문서 중에 동일한 이름의 필드가 여러 개 존재할 때는
@@ -1407,7 +1485,7 @@ class Hwp:
         """
         return self.hwp.GetFieldList(Number=number, option=option)
 
-    def get_field_text(self, field):
+    def get_field_text(self, field: str | list | tuple | set):
         """
         지정한 필드에서 문자열을 구한다.
 
@@ -1438,7 +1516,10 @@ class Hwp:
             사용자가 해당 필드에 아무 텍스트도 입력하지 않았으면
             해당 텍스트에는 빈 문자열이 돌아온다.
         """
-        return self.hwp.GetFieldText(Field=field)
+        if isinstance(field, str):
+            return self.hwp.GetFieldText(Field=field)
+        elif isinstance(field, list | tuple | set):
+            return self.hwp.GetFieldText(Field="\x02".join(str(i) for i in field))
 
     def get_file_info(self, filename):
         """
@@ -1906,7 +1987,7 @@ class Hwp:
         GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 수 있다.
         검색이 끝나면 ReleaseScan()을 호출하여 관련 정보를 Release해야 한다.
 
-        :param option:
+        :param option: 기본값은 0x7(모든 컨트롤 대상)
             찾을 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다.
             생략하면 모든 컨트롤을 찾을 대상으로 한다.
             0x00: 본문을 대상으로 검색한다.(서브리스트를 검색하지 않는다.) - maskNormal
@@ -2806,12 +2887,20 @@ class Hwp:
 
         try:
             location = [i.split(": ")[1] for i in
-                        subprocess.check_output(['pip', 'show', 'pyhwpx']).decode(encoding="cp949").split("\r\n") if
+                        subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode(encoding="cp949").split("\r\n") if
                         i.startswith("Location: ")][0]
         except:
-            location = [i.split(": ")[1] for i in
-                        subprocess.check_output(['pip', 'show', 'pyhwpx']).decode().split("\r\n") if
-                        i.startswith("Location: ")][0]
+            try:
+                location = [i.split(": ")[1] for i in
+                            subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode().split("\r\n") if
+                            i.startswith("Location: ")][0]
+            except subprocess.CalledProcessError as e:
+                location = os.environ["USERPROFILE"]
+                if "FilePathCheckerModule.dll" in os.listdir():
+                    try:
+                        shutil.copy("FilePathCheckerModule.dll", os.environ["USERPROFILE"])
+                    except shutil.Error as e:
+                        pass
         winup_path = r"Software\HNC\HwpAutomation\Modules"
 
         # HKEY_LOCAL_MACHINE와 연결 생성 후 핸들 얻음
@@ -6067,10 +6156,11 @@ class Hwp:
         return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index,
                                         X=x, Y=y, Width=width, Height=height)
 
-    def set_cur_field_name(self, field, option, direction, memo):
+    def set_cur_field_name(self, field, option=0, direction="", memo=""):
         """
         현재 캐럿이 위치하는 곳의 필드이름을 설정한다.
         GetFieldList()의 옵션 중에 4(hwpFieldSelection) 옵션은 사용하지 않는다.
+        (표의 셀에 셀필드를 매기고 싶은 경우 사용한다.)
 
         :param field:
             데이터 필드 이름
