@@ -14,7 +14,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.7.3"
+__version__ = "0.7.5"
 
 # temp 폴더 삭제
 try:
@@ -778,7 +778,7 @@ class Hwp:
         else:
             pset_name = text.split(", ")[1].split(".HSet")[0]
             result = f"def script_macro():\r\n    pset = {pset_name}\r\n    " + text.replace("    ", "").replace(
-                pset_name, "pset").replace("\r\n", "\r\n    ")
+                pset_name, "pset").replace("\r\n", "\r\on    ")
         print(result)
         cb.copy(result)
 
