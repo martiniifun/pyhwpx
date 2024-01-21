@@ -14,7 +14,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.7.5"
+__version__ = "0.7.7"
 
 # temp 폴더 삭제
 try:
@@ -215,7 +215,18 @@ class Hwp:
         return c_list
 
     # 커스텀 메서드
-
+    def cell_fill(self, face_color: tuple[int, int, int] = (217, 217, 217)):
+        pset = self.hwp.HParameterSet.HCellBorderFill
+        self.hwp.HAction.GetDefault("CellFill", pset.HSet)
+        pset.FillAttr.type = self.hwp.BrushType("NullBrush|WinBrush")
+        pset.FillAttr.WinBrushFaceColor = self.hwp.RGBColor(*face_color)
+        pset.FillAttr.WinBrushHatchColor = self.hwp.RGBColor(153, 153, 153)
+        pset.FillAttr.WinBrushFaceStyle = self.hwp.HatchStyle("None")
+        pset.FillAttr.WindowsBrush = 1
+        try:
+            return self.hwp.HAction.Execute("CellFill", pset.HSet)
+        finally:
+            self.hwp.HAction.Run("Cancel")
 
     def fields_to_dict(self):
         result = defaultdict(list)
@@ -546,7 +557,20 @@ class Hwp:
         pset.SetSelectionIndex = 1
         self.hwp.HAction.Execute("Goto", pset.HSet)
 
-    def table_from_data(self, data, transpose=False, header0="", treat_as_char=False, header=True):
+    def table_from_data(self, data, transpose=False, header0="", treat_as_char=False, header=True, index=True,
+                        cell_fill: bool | tuple[int, int, int] = False, header_bold=True):
+        """
+        dict, list 또는 csv나 xls, xlsx 및 json처럼 2차원 스프레드시트로 표현 가능한 데이터에 대해서,
+        정확히는 pd.DataFrame으로 변환 가능한 데이터에 대해 아래아한글 표로 변환하는 작업을 한다.
+        내부적으로 판다스 데이터프레임으로 변환하는 과정을 거친다.
+        :param data: 테이블로 변환할 데이터
+        :param transpose: 행/열 전환
+        :param header0: index=True일 경우 (1,1) 셀에 들어갈 텍스트
+        :param treat_as_char: 글자처럼 취급 여부
+        :param header: 1행을 "제목행"으로 선택할지 여부
+        :param header_bold: 1행의 텍스트에 bold를 적용할지 여부
+        :return:
+        """
         if type(data) in [dict, list]:
             df = pd.DataFrame(data)
         elif type(data) is str:  # 엑셀파일 경로 또는 json으로 간주
@@ -558,19 +582,36 @@ class Hwp:
             df = data
         if transpose:
             df = df.T
-        idx_list = list(df.index)
-        self.create_table(rows=len(df) + 1, cols=len(df.columns) + 1, treat_as_char=treat_as_char, header=header)
-        self.insert_text(header0)
-        self.TableRightCellAppend()
+        if index:
+            idx_list = list(df.index)
+            self.create_table(rows=len(df) + 1, cols=len(df.columns) + 1, treat_as_char=treat_as_char, header=header)
+            self.insert_text(header0)
+            self.TableRightCellAppend()
+        else:
+            self.create_table(rows=len(df) + 1, cols=len(df.columns), treat_as_char=treat_as_char, header=header)
         for i in df.columns:
             self.insert_text(i)
             self.TableRightCellAppend()
         for i in range(len(df)):
-            self.insert_text(idx_list.pop(0))
-            self.TableRightCellAppend()
+            if index:
+                self.insert_text(idx_list.pop(0))
+                self.TableRightCellAppend()
             for j in df.iloc[i]:
                 self.insert_text(j)
                 self.TableRightCell()
+        self.TableColBegin()
+        self.TableColPageUp()
+        self.TableCellBlockExtendAbs()
+        self.TableColEnd()
+        if header_bold:
+            self.CharShapeBold()
+        if cell_fill:
+            if isinstance(cell_fill, tuple):
+                self.cell_fill(cell_fill)
+            else:
+                self.cell_fill()
+        self.TableColBegin()
+        self.Cancel()
 
     def count(self, word):
         return self.get_text_file().count(word)
@@ -778,7 +819,7 @@ class Hwp:
         else:
             pset_name = text.split(", ")[1].split(".HSet")[0]
             result = f"def script_macro():\r\n    pset = {pset_name}\r\n    " + text.replace("    ", "").replace(
-                pset_name, "pset").replace("\r\n", "\r\on    ")
+                pset_name, "pset").replace("\r\n", "\r\n    ")
         print(result)
         cb.copy(result)
 
@@ -870,6 +911,7 @@ class Hwp:
             each_row_height = total_height - self.mili_to_hwp_unit(rows)
             for i in range(rows):
                 pset.RowHeight.SetItem(i, each_row_height)  # 1열
+            pset.TableProperties.Height = total_height  # self.hwp.MiliToHwpUnit(148)  # 표 너비
 
         pset.CreateItemArray("ColWidth", cols)  # 열 n개 생성
         each_col_width = total_width - self.mili_to_hwp_unit(3.6 * cols)
@@ -877,7 +919,6 @@ class Hwp:
             pset.ColWidth.SetItem(i, each_col_width)  # 1열
         # pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
         pset.TableProperties.Width = total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
-        pset.TableProperties.Height = total_height  # self.hwp.MiliToHwpUnit(148)  # 표 너비
         self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
 
         # 글자처럼 취급 여부 적용(treat_as_char)
@@ -898,6 +939,12 @@ class Hwp:
         :return:
             선택한 문자열
         """
+        if self.SelectionMode == 0:
+            if self.is_cell():
+                self.TableCellBlock()
+            else:
+                self.Select()
+                self.Select()
         self.hwp.InitScan(Range=0xff)
         total_text = ""
         state = 2
@@ -2887,12 +2934,14 @@ class Hwp:
 
         try:
             location = [i.split(": ")[1] for i in
-                        subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode(encoding="cp949").split("\r\n") if
+                        subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode(
+                            encoding="cp949").split("\r\n") if
                         i.startswith("Location: ")][0]
         except:
             try:
                 location = [i.split(": ")[1] for i in
-                            subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode().split("\r\n") if
+                            subprocess.check_output(['pip', 'show', 'pyhwpx'],
+                                                    stderr=subprocess.DEVNULL).decode().split("\r\n") if
                             i.startswith("Location: ")][0]
             except subprocess.CalledProcessError as e:
                 location = os.getcwd()
