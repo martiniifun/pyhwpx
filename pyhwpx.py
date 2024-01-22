@@ -1,6 +1,5 @@
 import os
 import re
-import shutil
 from io import StringIO
 from time import sleep
 from typing import Literal, Union
@@ -14,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.7.8"
+__version__ = "0.7.10"
 
 # temp 폴더 삭제
 try:
@@ -994,10 +993,13 @@ class Hwp:
         print(os.path.join(os.getcwd(), filename))
         return None
 
-    def table_to_df(self, n=""):
+    def table_to_df(self, n="", startrow=0):
         """
         한/글 문서의 n번째 표를 판다스 데이터프레임으로 리턴하는 메서드.
-        n을 넣지 않는 경우
+        n을 넣지 않는 경우, 캐럿이 셀에 있다면 해당 표를 df로,
+        캐럿이 표 밖에 있다면 첫 번째 표를 df로 리턴한다.
+        startrow는 표 제목에 일부 병합이 되어 있는 경우
+        df로 변환시작할 행을 특정할 때 사용된다.
         :return:
             pd.DataFrame
         :example:
@@ -1053,16 +1055,24 @@ class Hwp:
                 self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
             except AttributeError:
                 raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
-                           f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
+                                 f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
             self.hwp.FindCtrl()
             self.hwp.HAction.Run("ShapeObjTableSelCell")
         data = [self.get_selected_text()]
         col_count = 1
+        start = False
         while self.hwp.HAction.Run("TableRightCell"):
             # a.append(get_text().replace("\r\n", "\n"))
-            if re.match(r"\([A-Z]+1\)", self.hwp.KeyIndicator()[-1]):
-                col_count += 1
-            data.append(self.get_selected_text())
+            if not startrow:
+                if re.match(r"\([A-Z]+1\)", self.hwp.KeyIndicator()[-1]):
+                    col_count += 1
+                data.append(self.get_selected_text())
+            else:
+                if re.match(rf"\([A-Z]+{1 + startrow}\)", self.hwp.KeyIndicator()[-1]):
+                    col_count += 1
+                    start = True
+                if start:
+                    data.append(self.get_selected_text())
 
         array = np.array(data).reshape(-1, col_count)
         df = pd.DataFrame(array[1:], columns=array[0])
@@ -2814,7 +2824,11 @@ class Hwp:
             field = [f"{field}{{{{{i}}}}}" for i in range(len(text))]
 
         if type(field) in [list, tuple, pd.Series]:  # 필드명 리스트를 파라미터로 넣은 경우
-            field = "\x02".join([str(i) for i in field])  # \x02로 병합
+            if not text:
+                text_str = "\x02".join([field[i] for i in field.index])
+                field_str = "\x02".join([str(i) for i in field.index])  # \x02로 병합
+                self.hwp.PutFieldText(Field=field_str, Text=text_str)
+                return
 
         if type(text) in [list, tuple, pd.Series]:  # 필드 텍스트를 리스트나 배열로 넣은 경우에도
             text = "\x02".join([str(i) for i in text])  # \x02로 병합
