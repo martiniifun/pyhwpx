@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.7.11"
+__version__ = "0.7.12"
 
 # temp 폴더 삭제
 try:
@@ -284,7 +284,7 @@ class Hwp:
             else:
                 ctrl = ctrl.Prev
         raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
-                         f"현재 문서에는 표가 {abs(int(-4 + 0.1))}개 존재합니다.")
+                         f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
 
     def modify_row_height(self, height_mili):
         """
@@ -2804,6 +2804,9 @@ class Hwp:
             >>> # zxcv 필드에 "Hello world!" 텍스트 삽입
             >>> hwp.put_field_text("zxcv", "Hello world!")
         """
+        if isinstance(field, str) and (field.endswith(".xlsx") or field.endswith(".xls")):
+            field = pd.read_excel(field)
+
         if isinstance(field, dict):  # dict 자료형의 경우에는 text를 생략하고
             field, text = list(zip(*list(field.items())))
             field_str = ""
@@ -2829,7 +2832,7 @@ class Hwp:
         if isinstance(field, str) and type(text) in (list, tuple, pd.Series):
             field = [f"{field}{{{{{i}}}}}" for i in range(len(text))]
 
-        if type(field) in [list, tuple, pd.Series]:  # 필드명 리스트를 파라미터로 넣은 경우
+        if type(field) in [pd.Series]:  # 필드명 리스트를 파라미터로 넣은 경우
             if not text:  # text 파라미터가 입력되지 않았다면
                 text_str = "\x02".join([field[i] for i in field.index])
                 field_str = "\x02".join([str(i) for i in field.index])  # \x02로 병합
@@ -2839,6 +2842,24 @@ class Hwp:
                 text = "\x02".join([str(i) for i in text])  # \x02로 병합
             else:
                 raise IOError("text parameter required.")
+
+        if type(field) in [list, tuple]:
+
+            # field가 [[str, list[str]], [str, list[str]]] 타입인 경우
+            if not text and isinstance(field[0][0], (str, int, float)) and not isinstance(field[0][1], (str, int)) and len(field[0][1]) >= 1:
+                text_str = ""
+                field_str = "\x02".join([str(field[i][0])+f"{{{{{j}}}}}" for j in range(len(field[0][1])) for i in range(len(field))])
+                for i in range(len(field[0][1])):
+                    text_str += "\x02".join([str(field[j][1][i]) for j in range(len(field))]) + "\x02"
+                return self.hwp.PutFieldText(Field=field_str, Text=text_str)
+
+            # field가 [[str, str], [str, str]] 타입인 경우
+            else:
+                field_str = "\x02".join([str(field[i][0]) for i in range(len(field))])
+                text_str = "\x02".join([str(field[i][1]) for i in range(len(field))])
+                return self.hwp.PutFieldText(Field=field_str, Text=text_str)
+
+
 
         if isinstance(field, pd.DataFrame):
             if isinstance(field.columns, pd.core.indexes.range.RangeIndex):
