@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.7.10"
+__version__ = "0.7.11"
 
 # temp 폴더 삭제
 try:
@@ -2813,10 +2813,16 @@ class Hwp:
                     field_str += f"{f}{{{{{idx}}}}}\x02"
                     text_str += f"{text[f_i][idx]}\x02"  # for t_i, t in enumerate(text[f_i]):
             else:
-                for f_i, f in enumerate(field):
-                    for t_i, t in enumerate(text[f_i]):
-                        field_str += f"{f}{{{{{t_i}}}}}\x02"
-                        text_str += f"{t}\x02"
+                if isinstance(text[0], (list, tuple)):
+                    for f_i, f in enumerate(field):
+                        for t_i, t in enumerate(text[f_i]):
+                            field_str += f"{f}{{{{{t_i}}}}}\x02"
+                            text_str += f"{t}\x02"
+                elif isinstance(text[0], (str, int, float)):
+                    for f_i, f in enumerate(field):
+                        field_str += f"{f}\x02"
+                    text_str = "\x02".join(text)
+
             self.hwp.PutFieldText(Field=field_str, Text=text_str)
             return
 
@@ -2824,14 +2830,15 @@ class Hwp:
             field = [f"{field}{{{{{i}}}}}" for i in range(len(text))]
 
         if type(field) in [list, tuple, pd.Series]:  # 필드명 리스트를 파라미터로 넣은 경우
-            if not text:
+            if not text:  # text 파라미터가 입력되지 않았다면
                 text_str = "\x02".join([field[i] for i in field.index])
                 field_str = "\x02".join([str(i) for i in field.index])  # \x02로 병합
                 self.hwp.PutFieldText(Field=field_str, Text=text_str)
                 return
-
-        if type(text) in [list, tuple, pd.Series]:  # 필드 텍스트를 리스트나 배열로 넣은 경우에도
-            text = "\x02".join([str(i) for i in text])  # \x02로 병합
+            elif type(text) in [list, tuple, pd.Series]:  # 필드 텍스트를 리스트나 배열로 넣은 경우에도
+                text = "\x02".join([str(i) for i in text])  # \x02로 병합
+            else:
+                raise IOError("text parameter required.")
 
         if isinstance(field, pd.DataFrame):
             if isinstance(field.columns, pd.core.indexes.range.RangeIndex):
