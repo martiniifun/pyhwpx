@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.3"
+__version__ = "0.8.4"
 
 # temp 폴더 삭제
 try:
@@ -263,8 +263,8 @@ class Hwp:
             string = f"{loc_info[3]}쪽 {loc_info[4]}단 {"" if self.get_pos()[0] == 0 else self.ParentCtrl.UserDesc}{start_line_no}줄({self.get_selected_text()})"
             if verbose:
                 print(string, end=" : ")
-            min_val = 0
-            max_val = 0
+            min_val = init_spacing
+            max_val = init_spacing
             while self.key_indicator()[5] == start_line_no:
                 if direction == -1:  # 줄여야 하면
                     self.CharShapeSpacingDecrease()
