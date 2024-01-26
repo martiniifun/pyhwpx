@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.1"
+__version__ = "0.8.2"
 
 # temp 폴더 삭제
 try:
@@ -214,7 +214,7 @@ class Hwp:
         return c_list
 
     # 커스텀 메서드
-    def auto_spacing(self, init_spacing=0, init_ratio=100, max_spacing=50, min_spacing=50):
+    def auto_spacing(self, init_spacing=0, init_ratio=100, max_spacing=50, min_spacing=50, verbose=True):
         def reset_para_spacing(init_spacing=init_spacing, init_ratio=init_ratio):
             self.MoveListEnd()
             self.MoveSelListBegin()
@@ -260,7 +260,8 @@ class Hwp:
             loc_info = self.key_indicator()
             start_line_no = loc_info[5]
             string = f"{loc_info[3]}쪽 {loc_info[4]}단 {"" if self.get_pos()[0] == 0 else self.ParentCtrl.UserDesc}{start_line_no}줄({self.get_selected_text()})"
-            print(string, end=" : ")
+            if verbose:
+                print(string, end=" : ")
             min_val = 0
             max_val = 0
             while self.key_indicator()[5] == start_line_no:
@@ -272,9 +273,11 @@ class Hwp:
                     max_val += 1
                 if min_val == min_spacing or max_val == max_spacing:
                     self.set_font(Spacing=init_spacing)
-                    print(f"[롤백]{string}\n")
+                    if verbose:
+                        print(f"[롤백]{string}\n")
                     break
-            print(min_val or max_val)
+            if verbose:
+                print(min_val or max_val)
             return min_val or max_val, string
 
         dd = defaultdict(list)
@@ -306,11 +309,11 @@ class Hwp:
             area += 1
 
         spacings = np.array(list(dd.keys()))
-
-        print("\n\n자간 평균 :", round(spacings.mean(), 1))
-        print("자간 표준편차 :", round(spacings.std(), 1))
-        print(f"자간 최대값 : {spacings.max()}({dd[spacings.max()]})")
-        print(f"자간 최소값 : {spacings.min()}({dd[spacings.min()]})")
+        if verbose:
+            print("\n\n자간 평균 :", round(spacings.mean(), 1))
+            print("자간 표준편차 :", round(spacings.std(), 1))
+            print(f"자간 최대값 : {spacings.max()}({dd[spacings.max()]})")
+            print(f"자간 최소값 : {spacings.min()}({dd[spacings.min()]})")
         return True
 
     def set_font(self,
