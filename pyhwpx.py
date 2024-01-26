@@ -12,9 +12,8 @@ import pyperclip as cb
 import pythoncom
 import win32com.client as win32
 from collections import defaultdict
-from pywintypes import com_error
 
-__version__ = "0.8.0"
+__version__ = "0.8.1"
 
 # temp 폴더 삭제
 try:
@@ -215,6 +214,105 @@ class Hwp:
         return c_list
 
     # 커스텀 메서드
+    def auto_spacing(self, init_spacing=0, init_ratio=100, max_spacing=50, min_spacing=50):
+        def reset_para_spacing(init_spacing=init_spacing, init_ratio=init_ratio):
+            self.MoveListEnd()
+            self.MoveSelListBegin()
+            try:
+                return self.set_font(Spacing=init_spacing, Ratio=init_ratio)
+            finally:
+                self.Cancel()
+
+        def get_spacing_dir():
+            line_num = self.key_indicator()[5]
+            self.MoveLineEnd()
+            mid = self.get_pos()[2]
+            self.Select();
+            self.Select()
+            _, _, _, head, _, _, tail = self.get_selected_pos()
+            self.Cancel()
+            if self.key_indicator()[5] == line_num:
+                self.MoveNextChar()  # hwp.MoveNextParaBegin() 실행시 줄바꿈 엔터로 나뉜 구간을 무시해버림
+            if (mid - head == 0) or (tail - mid == 0):  # 둘 중 하나가 0이면(잘렸으면)
+                return 0  # 패스
+            elif (mid - head) > (tail - mid):  # 앞이 뒤보다 길면
+                return -1  # 자간 줄임
+            else:  # 뒤가 더 길면
+                return 1  # 자간 늘임
+
+        def select_spacing_area(direction=0):
+            if direction == 1:  # 늘여야 하면
+                self.MoveLineBegin()  # hwp.MoveLineUp()으로 실행하면 위에 표가 있을 때 들어가버림
+                self.MovePrevChar()
+                self.MoveLineBegin()
+                self.MoveSelLineEnd()
+                self.MoveSelPrevWord()
+            elif direction == -1:  # 줄여야 하면
+                start_pos = self.get_pos()
+                self.MoveLineUp()
+                self.MoveLineBegin()
+                self.select_text_by_get_pos(self.get_pos(), start_pos)
+                self.MoveSelPrevChar()
+
+        def modify_spacing(direction=0):
+            if direction == 0:
+                return 0, ""
+            loc_info = self.key_indicator()
+            start_line_no = loc_info[5]
+            string = f"{loc_info[3]}쪽 {loc_info[4]}단 {"" if self.get_pos()[0] == 0 else self.ParentCtrl.UserDesc}{start_line_no}줄({self.get_selected_text()})"
+            print(string, end=" : ")
+            min_val = 0
+            max_val = 0
+            while self.key_indicator()[5] == start_line_no:
+                if direction == -1:  # 줄여야 하면
+                    self.CharShapeSpacingDecrease()
+                    min_val -= 1
+                elif direction == 1:  # 늘여야 하면
+                    self.CharShapeSpacingIncrease()
+                    max_val += 1
+                if min_val == min_spacing or max_val == max_spacing:
+                    self.set_font(Spacing=init_spacing)
+                    print(f"[롤백]{string}\n")
+                    break
+            print(min_val or max_val)
+            return min_val or max_val, string
+
+        dd = defaultdict(list)
+        self.MoveDocBegin()
+        reset_para_spacing(init_spacing=init_spacing, init_ratio=init_ratio)
+        self.MoveDocEnd()
+        end_pos = self.get_pos()
+        self.MoveDocBegin()
+        while self.get_pos() != end_pos:
+            direction = get_spacing_dir()
+            select_spacing_area(direction)
+            spacing, string = modify_spacing(direction)
+            dd[spacing].append(string)
+
+        area = 2
+        while True:
+            self.set_pos(area, 0, 0)
+            if self.get_pos()[0] == 0:
+                break
+            reset_para_spacing(init_spacing=init_spacing, init_ratio=init_ratio)
+            self.MoveListEnd()
+            end_pos = self.get_pos()
+            self.MoveListBegin()
+            while self.get_pos() != end_pos:
+                direction = get_spacing_dir()
+                select_spacing_area(direction)
+                spacing, string = modify_spacing(direction)
+                dd[spacing].append(string)
+            area += 1
+
+        spacings = np.array(list(dd.keys()))
+
+        print("\n\n자간 평균 :", round(spacings.mean(), 1))
+        print("자간 표준편차 :", round(spacings.std(), 1))
+        print(f"자간 최대값 : {spacings.max()}({dd[spacings.max()]})")
+        print(f"자간 최소값 : {spacings.min()}({dd[spacings.min()]})")
+        return True
+
     def set_font(self,
                  Bold="",  # 진하게(True/False)
                  DiacSymMark="",  # 강조점(0~12)
@@ -529,7 +627,7 @@ class Hwp:
             for key in pset.keys():
                 try:
                     new_pset.__setattr__(key, pset[key])
-                except com_error:
+                except pythoncom.com_error:
                     print(key, pset[key])
         elif type(pset) == type(self.HParameterSet.HCharShape):
             new_pset = pset
@@ -6346,6 +6444,11 @@ class Hwp:
 
     def scan_font(self):
         return self.hwp.ScanFont()
+
+    def select_text_by_get_pos(self, s_getpos, e_getpos):
+        self.set_pos(s_getpos[0], 0, 0)
+        return self.hwp.SelectText(spara=s_getpos[1], spos=s_getpos[2], epara=e_getpos[1], epos=e_getpos[2])
+
 
     def select_text(self, spara: Union[int, list, tuple] = 0, spos=0, epara=0, epos=0, slist=0):
         """
