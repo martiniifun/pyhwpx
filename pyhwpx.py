@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.2"
+__version__ = "0.8.3"
 
 # temp 폴더 삭제
 try:
@@ -249,7 +249,8 @@ class Hwp:
                 self.MoveSelPrevWord()
             elif direction == -1:  # 줄여야 하면
                 start_pos = self.get_pos()
-                self.MoveLineUp()
+                self.MoveLineBegin()
+                self.MovePrevChar()
                 self.MoveLineBegin()
                 self.select_text_by_get_pos(self.get_pos(), start_pos)
                 self.MoveSelPrevChar()
