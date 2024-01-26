@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.4"
+__version__ = "0.8.5"
 
 # temp 폴더 삭제
 try:
@@ -277,9 +277,10 @@ class Hwp:
                     if verbose:
                         print(f"[롤백]{string}\n")
                     break
+            val = min_val if max_val == init_spacing else max_val
             if verbose:
-                print(min_val or max_val)
-            return min_val or max_val, string
+                print(val)
+            return val, string
 
         dd = defaultdict(list)
         self.MoveDocBegin()
