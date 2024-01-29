@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.5"
+__version__ = "0.8.6"
 
 # temp 폴더 삭제
 try:
@@ -941,7 +941,7 @@ class Hwp:
             단어가 더이상 없으면 False를 리턴
         """
         pset = self.hwp.HParameterSet.HFindReplace
-        self.hwp.HAction.GetDefault("RepeatFind", pset.HSet)
+        # self.hwp.HAction.GetDefault("RepeatFind", pset.HSet)
         pset.MatchCase = 1
         pset.SeveralWords = 1
         pset.UseWildCards = 1
@@ -1777,7 +1777,7 @@ class Hwp:
         """
         return self.hwp.GetFieldList(Number=number, option=option)
 
-    def get_field_text(self, field: str | list | tuple | set):
+    def get_field_text(self, field: str | list | tuple | set, idx=0):
         """
         지정한 필드에서 문자열을 구한다.
 
@@ -1809,7 +1809,10 @@ class Hwp:
             해당 텍스트에는 빈 문자열이 돌아온다.
         """
         if isinstance(field, str):
-            return self.hwp.GetFieldText(Field=field)
+            if idx and "{{" not in field:
+                return self.hwp.GetFieldText(Field=field + f"{{{{{idx}}}}}")
+            else:
+                return self.hwp.GetFieldText(Field=field)
         elif isinstance(field, list | tuple | set):
             return self.hwp.GetFieldText(Field="\x02".join(str(i) for i in field))
 
@@ -2835,7 +2838,7 @@ class Hwp:
             생략하면 False가 지정된다.
         :return:
         """
-        if "{{{{{" not in field:
+        if "{{" not in field:
             return self.hwp.MoveToField(Field=f"{field}{{{{{idx}}}}}", Text=text, start=start, select=select)
         else:
             return self.hwp.MoveToField(Field=field, Text=text, start=start, select=select)
@@ -3079,10 +3082,8 @@ class Hwp:
 
         if type(field) in [list, tuple]:
 
-            # field가 [[str, list[str]], [str, list[str]]] 타입인 경우
-            if not text and isinstance(field[0][0], (str, int, float)) and not isinstance(field[0][1],
-                                                                                          (str, int)) and len(
-                field[0][1]) >= 1:
+            # field와 text가 [[field0:str, list[text:str]], [field1:str, list[text:str]]] 타입인 경우
+            if not text and isinstance(field[0][0], (str, int, float)) and not isinstance(field[0][1], (str, int)) and len(field[0][1]) >= 1:
                 text_str = ""
                 field_str = "\x02".join(
                     [str(field[i][0]) + f"{{{{{j}}}}}" for j in range(len(field[0][1])) for i in range(len(field))])
@@ -3090,10 +3091,15 @@ class Hwp:
                     text_str += "\x02".join([str(field[j][1][i]) for j in range(len(field))]) + "\x02"
                 return self.hwp.PutFieldText(Field=field_str, Text=text_str)
 
-            # field가 [[str, str], [str, str]] 타입인 경우
+            elif isinstance(field, list) and type(text) in (list, tuple):
+                # field는 단순한 문자열 "필드", text는 리스트인 형태
+                field_str = "\x02".join([str(field[i]) for i in range(len(field))])
+                text_str = "\x02".join([str(text[i]) for i in range(len(text))])
+                return self.hwp.PutFieldText(Field=field_str, Text=text_str)
             else:
+                # field와 text가 field타입 안에 [[field0:str, text0:str], [field1:str, text1:str]] 형태로 들어간 경우
                 field_str = "\x02".join([str(field[i][0]) for i in range(len(field))])
-                text_str = "\x02".join([str(field[i][1]) for i in range(len(field))])
+                text_str = "\x02".join([str(field[i][1]) for i in range(len(text))])
                 return self.hwp.PutFieldText(Field=field_str, Text=text_str)
 
         if isinstance(field, pd.DataFrame):
@@ -6014,11 +6020,19 @@ class Hwp:
         """
         return self.hwp.HAction.Run("TableColPageUp")
 
-    def TableDeleteCell(self):
+    def TableDeleteCell(self, remain_cell=False):
         """
         셀 삭제
         """
-        return self.hwp.HAction.Run("TableDeleteCell")
+        if remain_cell:
+            self.set_message_box_mode(0x1000)
+        else:
+            self.set_message_box_mode(0x2000)
+        try:
+            return self.hwp.HAction.Run("TableDeleteCell")
+        finally:
+            self.set_message_box_mode(0xF000)
+
 
     def TableDistributeCellHeight(self):
         """
@@ -6476,7 +6490,7 @@ class Hwp:
             성공하면 True, 실패하면 False
         """
         if type(spara) in [list, tuple]:
-            _, slist, spara, spos, _, epara, epos = spara
+            _, slist, spara, spos, elist, epara, epos = spara
         self.set_pos(slist, 0, 0)
         return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
 
