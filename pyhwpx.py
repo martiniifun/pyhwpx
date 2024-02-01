@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.6"
+__version__ = "0.8.8"
 
 # temp 폴더 삭제
 try:
@@ -400,8 +400,8 @@ class Hwp:
             'RatioOther': Ratio,
             'RatioSymbol': Ratio,
             'RatioUser': Ratio,
-            'ShadeColor': self.rgb_color(ShadeColor) if type(ShadeColor) == str else ShadeColor,
-            'ShadowColor': self.rgb_color(ShadowColor) if type(ShadowColor) == str else ShadowColor,
+            'ShadeColor': self.rgb_color(ShadeColor) if type(ShadeColor) == str and ShadeColor else ShadeColor,
+            'ShadowColor': self.rgb_color(ShadowColor) if type(ShadowColor) == str and ShadowColor else ShadowColor,
             'ShadowOffsetX': ShadowOffsetX,
             'ShadowOffsetY': ShadowOffsetY,
             'ShadowType': ShadowType,
@@ -425,8 +425,8 @@ class Hwp:
             'StrikeOutType': StrikeOutType,
             'SubScript': SubScript,
             'SuperScript': SuperScript,
-            'TextColor': self.rgb_color(TextColor) if type(TextColor) == str else TextColor,
-            'UnderlineColor': self.rgb_color(UnderlineColor) if type(UnderlineColor) == str else UnderlineColor,
+            'TextColor': self.rgb_color(TextColor) if type(TextColor) == str and TextColor else TextColor,
+            'UnderlineColor': self.rgb_color(UnderlineColor) if type(UnderlineColor) == str and UnderlineColor else UnderlineColor,
             'UnderlineShape': UnderlineShape,
             'UnderlineType': UnderlineType,
             'UseFontSpace': UseFontSpace,
