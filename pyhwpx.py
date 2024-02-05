@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.10"
+__version__ = "0.8.11"
 
 # temp 폴더 삭제
 try:
@@ -350,7 +350,8 @@ class Hwp:
                  Offset="",  # 글자위치-상하오프셋(-100 ~ 100)
                  OutLineType="",  # 외곽선타입(0~6)
                  Ratio="",  # 장평(50~200)
-                 ShadeColor="",  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+                 ShadeColor="",
+                 # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
                  ShadowColor="",  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
                  ShadowOffsetX="",  # 그림자 X오프셋(-100 ~ 100)
                  ShadowOffsetY="",  # 그림자 Y오프셋(-100 ~ 100)
@@ -358,7 +359,8 @@ class Hwp:
                  Size="",  # 글자크기 축소확대%(10~250)
                  SmallCaps="",  # 모르겠다. 현재는 사용하지 않는 것으로 추정
                  Spacing="",  # 자간(-50 ~ 50)
-                 StrikeOutColor="",  # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+                 StrikeOutColor="",
+                 # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
                  StrikeOutShape="",  # 취소선 모양(0~12, 0이 일반 취소선)
                  StrikeOutType="",  # 취소선 유무(True/False)
                  SubScript="",  # 아래첨자(True/False)
@@ -432,7 +434,8 @@ class Hwp:
             'SubScript': SubScript,
             'SuperScript': SuperScript,
             'TextColor': self.rgb_color(TextColor) if type(TextColor) == str and TextColor else TextColor,
-            'UnderlineColor': self.rgb_color(UnderlineColor) if type(UnderlineColor) == str and UnderlineColor else UnderlineColor,
+            'UnderlineColor': self.rgb_color(UnderlineColor) if type(
+                UnderlineColor) == str and UnderlineColor else UnderlineColor,
             'UnderlineShape': UnderlineShape,
             'UnderlineType': UnderlineType,
             'UseFontSpace': UseFontSpace,
@@ -1402,15 +1405,13 @@ class Hwp:
         """
         return self.hwp.IsEmpty
 
-
-
     def is_modified(self) -> bool:
         """
         최근 저장 또는 생성 이후 수정이 있는지 여부를 나타낸다. 읽기전용
         """
         return self.hwp.IsModified
 
-# 액션 파라미터용 함수
+    # 액션 파라미터용 함수
 
     def arc_type(self, arc_type):
         return self.hwp.ArcType(ArcType=arc_type)
@@ -1702,7 +1703,7 @@ class Hwp:
         return self.hwp.CreatePageImage(Path=path, pgno=pgno, resolution=resolution, depth=depth, Format=format)
 
     def CreatePageImage(self, path: str, pgno: int = 0, resolution: int = 300, depth: int = 24,
-                          format: str = "bmp") -> bool:
+                        format: str = "bmp") -> bool:
         """
         지정된 페이지를 이미지파일로 저장한다.
         저장되는 이미지파일의 포맷은 비트맵 또는 GIF 이미지이다.
@@ -3502,9 +3503,9 @@ class Hwp:
                 os.remove(path)
 
     def InsertBackgroundPicture(self, path,
-                                  border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
-                                  embedded=True, filloption=5, effect=0,
-                                  watermark=False, brightness=0, contrast=0) -> bool:
+                                border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
+                                embedded=True, filloption=5, effect=0,
+                                watermark=False, brightness=0, contrast=0) -> bool:
         """
         **셀**에 배경이미지를 삽입한다.
         CellBorderFill의 SetItem 중 FillAttr 의 SetItem FileName 에
@@ -3772,7 +3773,7 @@ class Hwp:
                 os.remove(path)
 
     def InsertPicture(self, path, embedded=True, sizeoption=0, reverse=False, watermark=False, effect=0, width=0,
-                       height=0):
+                      height=0):
         """
         현재 캐럿의 위치에 그림을 삽입한다.
         다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
@@ -4671,7 +4672,9 @@ class Hwp:
         if type(field) in [list, tuple]:
 
             # field와 text가 [[field0:str, list[text:str]], [field1:str, list[text:str]]] 타입인 경우
-            if not text and isinstance(field[0][0], (str, int, float)) and not isinstance(field[0][1], (str, int)) and len(field[0][1]) >= 1:
+            if not text and isinstance(field[0][0], (str, int, float)) and not isinstance(field[0][1],
+                                                                                          (str, int)) and len(
+                    field[0][1]) >= 1:
                 text_str = ""
                 field_str = "\x02".join(
                     [str(field[i][0]) + f"{{{{{j}}}}}" for j in range(len(field[0][1])) for i in range(len(field))])
@@ -4679,8 +4682,8 @@ class Hwp:
                     text_str += "\x02".join([str(field[j][1][i]) for j in range(len(field))]) + "\x02"
                 return self.hwp.PutFieldText(Field=field_str, Text=text_str)
 
-            elif isinstance(field, list) and type(text) in (list, tuple):
-                # field는 단순한 문자열 "필드", text는 리스트인 형태
+            elif type(field) in (list, tuple, set) and type(text) in (list, tuple, set):
+                # field와 text가 모두 배열로 만들어져 있는 경우
                 field_str = "\x02".join([str(field[i]) for i in range(len(field))])
                 text_str = "\x02".join([str(text[i]) for i in range(len(text))])
                 return self.hwp.PutFieldText(Field=field_str, Text=text_str)
@@ -4799,7 +4802,9 @@ class Hwp:
         if type(field) in [list, tuple]:
 
             # field와 text가 [[field0:str, list[text:str]], [field1:str, list[text:str]]] 타입인 경우
-            if not text and isinstance(field[0][0], (str, int, float)) and not isinstance(field[0][1], (str, int)) and len(field[0][1]) >= 1:
+            if not text and isinstance(field[0][0], (str, int, float)) and not isinstance(field[0][1],
+                                                                                          (str, int)) and len(
+                    field[0][1]) >= 1:
                 text_str = ""
                 field_str = "\x02".join(
                     [str(field[i][0]) + f"{{{{{j}}}}}" for j in range(len(field[0][1])) for i in range(len(field))])
@@ -4807,11 +4812,12 @@ class Hwp:
                     text_str += "\x02".join([str(field[j][1][i]) for j in range(len(field))]) + "\x02"
                 return self.hwp.PutFieldText(Field=field_str, Text=text_str)
 
-            elif isinstance(field, list) and type(text) in (list, tuple):
-                # field는 단순한 문자열 "필드", text는 리스트인 형태
+            elif type(field) in (list, tuple, set) and type(text) in (list, tuple, set):
+                # field와 text가 모두 배열로 만들어져 있는 경우
                 field_str = "\x02".join([str(field[i]) for i in range(len(field))])
                 text_str = "\x02".join([str(text[i]) for i in range(len(text))])
                 return self.hwp.PutFieldText(Field=field_str, Text=text_str)
+
             else:
                 # field와 text가 field타입 안에 [[field0:str, text0:str], [field1:str, text1:str]] 형태로 들어간 경우
                 field_str = "\x02".join([str(field[i][0]) for i in range(len(field))])
@@ -4877,7 +4883,7 @@ class Hwp:
         self.hwp.Quit()
         del self.hwp
 
-    def rgb_color(self, red_or_colorname: str|tuple, green=255, blue=255):
+    def rgb_color(self, red_or_colorname: str | tuple, green=255, blue=255):
         color_palette = {
             "Red": (255, 0, 0),
             "Green": (0, 255, 0),
@@ -4908,7 +4914,7 @@ class Hwp:
             return self.hwp.RGBColor(*color_palette[red_or_colorname])
         return self.hwp.RGBColor(red=red_or_colorname, green=green, blue=blue)
 
-    def RGBColor(self, red_or_colorname: str|tuple, green=255, blue=255):
+    def RGBColor(self, red_or_colorname: str | tuple, green=255, blue=255):
         color_palette = {
             "Red": (255, 0, 0),
             "Green": (0, 255, 0),
@@ -5231,7 +5237,7 @@ class Hwp:
     def Revision(self, revision):
         return self.hwp.Revision(Revision=revision)
 
-# Run 액션
+    # Run 액션
 
     def Run(self, act_id):
         """
