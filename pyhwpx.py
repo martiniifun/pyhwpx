@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.9"
+__version__ = "0.8.10"
 
 # temp 폴더 삭제
 try:
@@ -4687,7 +4687,7 @@ class Hwp:
             else:
                 # field와 text가 field타입 안에 [[field0:str, text0:str], [field1:str, text1:str]] 형태로 들어간 경우
                 field_str = "\x02".join([str(field[i][0]) for i in range(len(field))])
-                text_str = "\x02".join([str(field[i][1]) for i in range(len(text))])
+                text_str = "\x02".join([str(field[i][1]) for i in range(len(field))])
                 return self.hwp.PutFieldText(Field=field_str, Text=text_str)
 
         if isinstance(field, pd.DataFrame):
@@ -4815,7 +4815,7 @@ class Hwp:
             else:
                 # field와 text가 field타입 안에 [[field0:str, text0:str], [field1:str, text1:str]] 형태로 들어간 경우
                 field_str = "\x02".join([str(field[i][0]) for i in range(len(field))])
-                text_str = "\x02".join([str(field[i][1]) for i in range(len(text))])
+                text_str = "\x02".join([str(field[i][1]) for i in range(len(field))])
                 return self.hwp.PutFieldText(Field=field_str, Text=text_str)
 
         if isinstance(field, pd.DataFrame):
