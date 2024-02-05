@@ -531,7 +531,7 @@ class Hwp:
         pset.HSet.SetItem("ShapeType", 3)
         pset.HSet.SetItem("ShapeCellSize", 1)
         pset.ShapeTableCell.Height = self.hwp.MiliToHwpUnit(height_mili)
-        self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
+        return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
     def remove_background_picture(self):
         """
@@ -791,14 +791,14 @@ class Hwp:
         pset.filename = path
         pset.Format = format
         pset.Attributes = attributes
-        self.hwp.HAction.Execute("FileSaveBlock_S", pset.HSet)
+        return self.hwp.HAction.Execute("FileSaveBlock_S", pset.HSet)
 
     def goto_page(self, page_num):
         pset = self.hwp.HParameterSet.HGotoE
         self.hwp.HAction.GetDefault("Goto", pset.HSet)
         pset.HSet.SetItem("DialogResult", page_num)
         pset.SetSelectionIndex = 1
-        self.hwp.HAction.Execute("Goto", pset.HSet)
+        return self.hwp.HAction.Execute("Goto", pset.HSet)
 
     def table_from_data(self, data, transpose=False, header0="", treat_as_char=False, header=True, index=True,
                         cell_fill: bool | tuple[int, int, int] = False, header_bold=True):
@@ -1362,8 +1362,10 @@ class Hwp:
         pset.TreatAsChar = 0
         pset.VertOffset = self.hwp.MiliToHwpUnit(offset)
         pset.HSet.SetItem("ShapeType", 3)
-        self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
-        self.hwp.Run("Cancel")
+        try:
+            self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
+        finally:
+            self.hwp.Run("Cancel")
 
     def insert_text(self, text):
         """
