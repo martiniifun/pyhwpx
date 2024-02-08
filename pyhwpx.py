@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.11"
+__version__ = "0.8.13"
 
 # temp 폴더 삭제
 try:
@@ -247,7 +247,7 @@ class Hwp:
             line_num = self.key_indicator()[5]
             self.MoveLineEnd()
             mid = self.get_pos()[2]
-            self.Select();
+            self.Select()
             self.Select()
             _, _, _, head, _, _, tail = self.get_selected_pos()
             self.Cancel()
@@ -926,7 +926,7 @@ class Hwp:
         pset.KeepStyle = keep_style
         return self.hwp.HAction.Execute("InsertFile", pset.HSet)
 
-    def insert_memo(self, text):
+    def insert_memo(self, text, memo_type: Literal["revision", "memo"]="memo"):
         """
         선택한 단어 범위에 메모고침표를 삽입하는 코드.
         한/글에서 일반 문자열을 삽입하는 코드와 크게 다르지 않다.
@@ -934,7 +934,10 @@ class Hwp:
         :param text: str
         :return: None
         """
-        self.InsertFieldRevisionChagne()  # 이 라인이 메모고침표 삽입하는 코드
+        if memo_type == "revision":
+            self.InsertFieldRevisionChagne()  # 이 라인이 메모고침표 삽입하는 코드
+        elif memo_type == "memo":
+            self.InsertFieldMemo()
         self.insert_text(text)
         self.CloseEx()
 
@@ -1697,6 +1700,8 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
             True
         """
@@ -1734,6 +1739,8 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
             True
         """
@@ -1896,6 +1903,8 @@ class Hwp:
             성공시 True, 실패시 False
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.export_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
@@ -1917,6 +1926,8 @@ class Hwp:
             성공시 True, 실패시 False
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.export_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
@@ -2074,6 +2085,8 @@ class Hwp:
             바이너리 데이터의 경로
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> path = hwp.get_bin_data_path(2)
             >>> print(path)
             C:/Users/User/AppData/Local/Temp/Hnc/BinData/EMB00004dd86171.jpg
@@ -2091,6 +2104,8 @@ class Hwp:
             바이너리 데이터의 경로
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> path = hwp.get_bin_data_path(2)
             >>> print(path)
             C:/Users/User/AppData/Local/Temp/Hnc/BinData/EMB00004dd86171.jpg
@@ -2310,6 +2325,8 @@ class Hwp:
             (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> pset = hwp.get_file_info("C:/Users/Administrator/Desktop/이력서.hwp")
             >>> print(pset.Item("Format"))
             >>> print(pset.Item("VersionStr"))
@@ -2343,6 +2360,8 @@ class Hwp:
             (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> pset = hwp.get_file_info("C:/Users/Administrator/Desktop/이력서.hwp")
             >>> print(pset.Item("Format"))
             >>> print(pset.Item("VersionStr"))
@@ -2501,6 +2520,8 @@ class Hwp:
             Y(long): 세로 클릭한 위치(HWPUNIT)
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> pset = hwp.get_mouse_pos(1, 1)
             >>> print("X축 기준:", "쪽" if pset.Item("XRelTo") else "종이")
             >>> print("Y축 기준:", "쪽" if pset.Item("YRelTo") else "종이")
@@ -2541,6 +2562,8 @@ class Hwp:
             Y(long): 세로 클릭한 위치(HWPUNIT)
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> pset = hwp.get_mouse_pos(1, 1)
             >>> print("X축 기준:", "쪽" if pset.Item("XRelTo") else "종이")
             >>> print("Y축 기준:", "쪽" if pset.Item("YRelTo") else "종이")
@@ -2652,6 +2675,8 @@ class Hwp:
             "Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> pset = hwp.get_pos_by_set()  # 캐럿위치 저장
             >>> print(pset.Item("List"))
             6
@@ -2677,6 +2702,8 @@ class Hwp:
             "Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> pset = hwp.get_pos_by_set()  # 캐럿위치 저장
             >>> print(pset.Item("List"))
             6
@@ -2789,6 +2816,8 @@ class Hwp:
             epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.get_selected_pos()
             (True, 0, 0, 16, 0, 7, 16)
         """
@@ -2810,6 +2839,8 @@ class Hwp:
             epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.get_selected_pos()
             (True, 0, 0, 16, 0, 7, 16)
         """
@@ -2896,6 +2927,8 @@ class Hwp:
             이외의 특수 코드는 포함되지 않는다.
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.init_scan()
             >>> while True:
             ...     state, text = hwp.get_text()
@@ -2940,6 +2973,8 @@ class Hwp:
             이외의 특수 코드는 포함되지 않는다.
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.init_scan()
             >>> while True:
             ...     state, text = hwp.get_text()
@@ -2988,6 +3023,8 @@ class Hwp:
             지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.get_text_file()
             'ㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\n\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\n'
         """
@@ -3022,6 +3059,8 @@ class Hwp:
             지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.get_text_file()
             'ㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\n\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\n'
         """
@@ -3170,6 +3209,8 @@ class Hwp:
             성공시 True, 실패시 False
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.import_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
@@ -3191,6 +3232,8 @@ class Hwp:
             성공시 True, 실패시 False
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.import_style("C:/Users/User/Desktop/new_style.sty")
             True
         """
@@ -3268,6 +3311,8 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.init_scan(range=0xff)
             >>> _, text = hwp.get_text()
             >>> hwp.release_scan()
@@ -3338,6 +3383,8 @@ class Hwp:
             성공하면 True, 실패하면 False
 
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.init_scan(range=0xff)
             >>> _, text = hwp.get_text()
             >>> hwp.release_scan()
@@ -3608,7 +3655,9 @@ class Hwp:
 
         :example:
             >>> # 3행5열의 표를 삽입한다.
+            >>> from pyhwpx import Hwp
             >>> from time import sleep
+            >>> hwp = Hwp()
             >>> tbset = hwp.create_set("TableCreation")
             >>> tbset.SetItem("Rows", 3)
             >>> tbset.SetItem("Cols", 5)
@@ -3653,6 +3702,8 @@ class Hwp:
         :example:
             >>> # 3행5열의 표를 삽입한다.
             >>> from time import sleep
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> tbset = hwp.create_set("TableCreation")
             >>> tbset.SetItem("Rows", 3)
             >>> tbset.SetItem("Cols", 5)
@@ -3921,6 +3972,8 @@ class Hwp:
 
         :example:
             >>> # 현재 셀 주소(표 안에 있을 때)
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.KeyIndicator()[-1][1:].split(")")[0]
             "A1"
         """
@@ -3945,6 +3998,8 @@ class Hwp:
 
         :example:
             >>> # 현재 셀 주소(표 안에 있을 때)
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.KeyIndicator()[-1][1:].split(")")[0]
             "A1"
         """
@@ -3975,6 +4030,8 @@ class Hwp:
 
         :example:
             >>> # Undo와 Redo 잠그기
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.LockCommand("Undo", True)
             >>> hwp.LockCommand("Redo", True)
         """
@@ -3993,6 +4050,8 @@ class Hwp:
 
         :example:
             >>> # Undo와 Redo 잠그기
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.LockCommand("Undo", True)
             >>> hwp.LockCommand("Redo", True)
         """
