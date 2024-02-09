@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.15"
+__version__ = "0.8.17"
 
 # temp 폴더 삭제
 try:
@@ -1055,6 +1055,8 @@ class Hwp:
             pset.ReplaceString = dst  # "^n"
             pset.ReplaceMode = 1
             pset.IgnoreMessage = 1
+            pset.HanjaFromHangul = 1
+            pset.AutoSpell = 1
             pset.FindType = 1
             return self.hwp.HAction.Execute("AllReplace", pset.HSet)
 
@@ -1079,8 +1081,9 @@ class Hwp:
             pset_name = text.split(", ")[1].split(".HSet")[0]
             result = f"def script_macro():\r\n    pset = {pset_name}\r\n    " + text.replace("    ", "").replace(
                 pset_name, "pset").replace("\r\n", "\r\n    ")
-        result = re.sub(r"= (\D)", "= hwp.\g<1>",result)
         result = result.replace("HAction.", "hwp.HAction.").replace("HParameterSet.", "hwp.HParameterSet.")
+        result = re.sub(r"= (?!hwp\.)(\D)", r"= hwp.\g<1>", result)
+        result = result.replace('hwp.""', '""')
         print(result)
         cb.copy(result)
 
