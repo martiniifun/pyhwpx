@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.14"
+__version__ = "0.8.15"
 
 # temp 폴더 삭제
 try:
@@ -1049,7 +1049,7 @@ class Hwp:
                 self.find_replace_all(i, j)
         else:
             pset = self.hwp.HParameterSet.HFindReplace
-            self.hwp.HAction.GetDefault("AllReplace", pset.HSet)
+            # self.hwp.HAction.GetDefault("AllReplace", pset.HSet)
             pset.Direction = self.hwp.FindDir("AllDoc")
             pset.FindString = src  # "\\r\\n"
             pset.ReplaceString = dst  # "^n"
