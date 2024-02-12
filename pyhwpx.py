@@ -15,7 +15,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.9.10"
+__version__ = "0.9.11"
 
 # temp 폴더 삭제
 try:
@@ -1455,7 +1455,8 @@ class Hwp:
             print("Error:", e.reason)
         return self.insert_text(response_text)
 
-    def move_caption(self, location: Literal["Top", "Bottom", "Left", "Right"] = "Bottom"):
+    def move_caption(self, location: Literal["Top", "Bottom", "Left", "Right"] = "Bottom",
+                     align: Literal["Left", "Center", "Right", "Distribute", "Division", "Justify"] = "Justify"):
         """
         한/글 문서 내 모든 표의 주석 위치를 이동하는 메서드.
         """
@@ -1464,14 +1465,25 @@ class Hwp:
         while ctrl:
             if ctrl.UserDesc == "번호 넣기":
                 self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
-                self.hwp.HAction.Run("ParagraphShapeAlignCenter")
+                if align == "Left":
+                    self.ParagraphShapeAlignLeft()
+                elif align == "Center":
+                    self.ParagraphShapeAlignCenter()
+                elif align == "Right":
+                    self.ParagraphShapeAlignRight()
+                elif align == "Distribute":
+                    self.ParagraphShapeAlignDistribute()
+                elif align == "Division":
+                    self.ParagraphShapeAlignDivision()
+                elif align == "Justify":
+                    self.ParagraphShapeAlignJustify()
                 param = self.hwp.HParameterSet.HShapeObject
                 self.hwp.HAction.GetDefault("TablePropertyDialog", param.HSet)
                 param.ShapeCaption.Side = self.hwp.SideType(location)
                 self.hwp.HAction.Execute("TablePropertyDialog", param.HSet)
             ctrl = ctrl.Next
         self.hwp.SetPos(*start_pos)
-        return None
+        return True
 
     def is_empty(self) -> bool:
         """
