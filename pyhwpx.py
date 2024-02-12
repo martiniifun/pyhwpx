@@ -4,7 +4,9 @@ from io import StringIO
 from time import sleep
 from typing import Literal, Union
 from urllib import request, parse
+import urllib.error
 import shutil
+import json
 
 import numpy as np
 import pandas as pd
@@ -13,7 +15,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.9.1"
+__version__ = "0.9.3"
 
 # temp 폴더 삭제
 try:
@@ -1406,6 +1408,24 @@ class Hwp:
         self.hwp.HAction.GetDefault("InsertText", param.HSet)
         param.Text = text
         return self.hwp.HAction.Execute("InsertText", param.HSet)
+
+    def insert_lorem(self, para_num=1):
+        api_url = f'https://api.api-ninjas.com/v1/loremipsum?paragraphs={para_num}'
+
+        headers = {
+            'X-Api-Key': "hzzbbAAy7mQjKyXSW5quRw==PbJStWB0ymMpGRH1"
+        }
+
+        req = request.Request(api_url, headers=headers)
+
+        try:
+            with request.urlopen(req) as response:
+                response_text = json.loads(response.read().decode('utf-8'))["text"].replace("\n", "\r\n")
+        except urllib.error.HTTPError as e:
+            print("Error:", e.code, e.reason)
+        except urllib.error.URLError as e:
+            print("Error:", e.reason)
+        return self.insert_text(response_text)
 
     def move_caption(self, location: Literal["Top", "Bottom", "Left", "Right"] = "Bottom"):
         """
@@ -3945,6 +3965,9 @@ class Hwp:
         finally:
             if "temp.jpg" in os.listdir():
                 os.remove(path)
+
+    def insert_random_picture(self, x:int=200, y:int=200):
+        return self.insert_picture(f"https://picsum.photos/{x}/{y}")
 
     def is_action_enable(self, action_id):
         return self.hwp.IsActionEnable(actionID=action_id)
