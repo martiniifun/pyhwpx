@@ -13,7 +13,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.8.17"
+__version__ = "0.9.1"
 
 # temp 폴더 삭제
 try:
@@ -952,7 +952,7 @@ class Hwp:
         else:
             return False
 
-    def find(self, src, direction: Literal["Forward", "Backward", "AllDoc"] = "AllDoc"):
+    def find(self, src, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex=False):
         """
         캐럿 뒤의 특정 단어를 찾아가는 메서드.
         해당 단어를 선택한 상태가 되며,
@@ -966,6 +966,7 @@ class Hwp:
             단어를 찾으면 찾아가서 선택한 후 True를 리턴,
             단어가 더이상 없으면 False를 리턴
         """
+        cwd = self.get_pos()
         pset = self.hwp.HParameterSet.HFindReplace
         # self.hwp.HAction.GetDefault("RepeatFind", pset.HSet)
         pset.MatchCase = 1
@@ -976,7 +977,22 @@ class Hwp:
         pset.FindString = src
         pset.IgnoreMessage = 1
         pset.HanjaFromHangul = 1
-        return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
+        pset.FindRegExp = regex
+        r = self.hwp.HAction.Execute("RepeatFind", pset.HSet)
+        if direction == "Forward":
+            if self.get_pos() > cwd or cwd[0]:
+                return True
+            else:
+                self.Cancel()
+                return False
+        elif direction == "Backward":
+            if self.get_pos() < cwd or self.get_pos()[0]:
+                return True
+            else:
+                self.Cancel()
+                return False
+        else:
+            return r
 
     def set_field_by_bracket(self):
         """
@@ -1083,7 +1099,7 @@ class Hwp:
                 pset_name, "pset").replace("\r\n", "\r\n    ")
         result = result.replace("HAction.", "hwp.HAction.").replace("HParameterSet.", "hwp.HParameterSet.")
         result = re.sub(r"= (?!hwp\.)(\D)", r"= hwp.\g<1>", result)
-        result = result.replace('hwp.""', '""')
+        result = result.replace('hwp."', '"')
         print(result)
         cb.copy(result)
 
@@ -6425,13 +6441,23 @@ class Hwp:
         """
         캐럿을 (논리적 개념의) 아래로 이동시킨다.
         """
-        return self.hwp.HAction.Run("MoveDown")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveDown")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveLeft(self):
         """
         캐럿을 (논리적 개념의) 왼쪽으로 이동시킨다.
         """
-        return self.hwp.HAction.Run("MoveLeft")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveLeft")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveLineBegin(self):
         """
@@ -6443,19 +6469,30 @@ class Hwp:
         """
         한 줄 아래로 이동한다.
         """
+
         return self.hwp.HAction.Run("MoveLineDown")
 
     def MoveLineEnd(self):
         """
         현재 위치한 줄의 시작/끝으로 이동
         """
-        return self.hwp.HAction.Run("MoveLineEnd")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveLineEnd")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveLineUp(self):
         """
         한 줄 위로 이동한다.
         """
-        return self.hwp.HAction.Run("MoveLineUp")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveLineUp")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveListBegin(self):
         """
@@ -6473,37 +6510,67 @@ class Hwp:
         """
         한 글자 뒤로 이동. 현재 리스트만을 대상으로 동작한다.
         """
-        return self.hwp.HAction.Run("MoveNextChar")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveNextChar")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveNextColumn(self):
         """
         뒤 단으로 이동
         """
-        return self.hwp.HAction.Run("MoveNextColumn")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveNextColumn")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveNextParaBegin(self):
         """
         다음 문단의 시작으로 이동. 현재 리스트만을 대상으로 동작한다.
         """
-        return self.hwp.HAction.Run("MoveNextParaBegin")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveNextParaBegin")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveNextPos(self):
         """
         한 글자 뒤로 이동. 서브 리스트를 옮겨 다닐 수 있다.
         """
-        return self.hwp.HAction.Run("MoveNextPos")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveNextPos")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveNextPosEx(self):
         """
         한 글자 뒤로 이동. 서브 리스트를 옮겨 다닐 수 있다. (머리말, 꼬리말, 각주, 미주, 글상자 포함)
         """
-        return self.hwp.HAction.Run("MoveNextPosEx")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveNextPosEx")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveNextWord(self):
         """
         한 단어 뒤로 이동. 현재 리스트만을 대상으로 동작한다.
         """
-        return self.hwp.HAction.Run("MoveNextWord")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveNextWord")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MovePageBegin(self):
         """
@@ -6515,19 +6582,34 @@ class Hwp:
         """
         앞 페이지의 시작으로 이동. 현재 탑레벨 리스트가 아니면 탑레벨 리스트로 빠져나온다.
         """
-        return self.hwp.HAction.Run("MovePageDown")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MovePageDown")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MovePageEnd(self):
         """
         현재 페이지의 끝점으로 이동한다.. 만약 캐럿의 위치가 변경되었다면 화면이 전환되어 쪽의 하단으로 페이지뷰잉이 맞춰진다.
         """
-        return self.hwp.HAction.Run("MovePageEnd")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MovePageEnd")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MovePageUp(self):
         """
         뒤 페이지의 시작으로 이동. 현재 탑레벨 리스트가 아니면 탑레벨 리스트로 빠져나온다.
         """
-        return self.hwp.HAction.Run("MovePageUp")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MovePageUp")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveParaBegin(self):
         """
@@ -6551,49 +6633,89 @@ class Hwp:
         """
         한 글자 앞 이동. 현재 리스트만을 대상으로 동작한다.
         """
-        return self.hwp.HAction.Run("MovePrevChar")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MovePrevChar")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MovePrevColumn(self):
         """
         앞 단으로 이동
         """
-        return self.hwp.HAction.Run("MovePrevColumn")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MovePrevColumn")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MovePrevParaBegin(self):
         """
         앞 문단의 시작으로 이동. 현재 리스트만을 대상으로 동작한다.
         """
-        return self.hwp.HAction.Run("MovePrevParaBegin")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MovePrevParaBegin")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MovePrevParaEnd(self):
         """
         앞 문단의 끝으로 이동. 현재 리스트만을 대상으로 동작한다.
         """
-        return self.hwp.HAction.Run("MovePrevParaEnd")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MovePrevParaEnd")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MovePrevPos(self):
         """
         한 글자 앞으로 이동. 서브 리스트를 옮겨 다닐 수 있다.
         """
-        return self.hwp.HAction.Run("MovePrevPos")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MovePrevPos")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MovePrevPosEx(self):
         """
         한 글자 앞으로 이동. 서브 리스트를 옮겨 다닐 수 있다. (머리말, 꼬리말, 각주, 미주, 글상자 포함)
         """
-        return self.hwp.HAction.Run("MovePrevPosEx")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MovePrevPosEx")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MovePrevWord(self):
         """
         한 단어 앞으로 이동. 현재 리스트만을 대상으로 동작한다.
         """
-        return self.hwp.HAction.Run("MovePrevWord")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MovePrevWord")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveRight(self):
         """
         캐럿을 (논리적 개념의) 오른쪽으로 이동시킨다.
         """
-        return self.hwp.HAction.Run("MoveRight")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveRight")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveRootList(self):
         """
@@ -6629,13 +6751,23 @@ class Hwp:
         """
         뒤 섹션으로 이동. 현재 루트 리스트가 아니면 루트 리스트로 빠져나온다.
         """
-        return self.hwp.HAction.Run("MoveSectionDown")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSectionDown")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSectionUp(self):
         """
         앞 섹션으로 이동. 현재 루트 리스트가 아니면 루트 리스트로 빠져나온다.
         """
-        return self.hwp.HAction.Run("MoveSectionUp")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSectionUp")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelDocBegin(self):
         """
@@ -6653,13 +6785,23 @@ class Hwp:
         """
         셀렉션: 캐럿을 (논리적 방향) 아래로 이동
         """
-        return self.hwp.HAction.Run("MoveSelDown")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelDown")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelLeft(self):
         """
         셀렉션: 캐럿을 (논리적 방향) 왼쪽으로 이동
         """
-        return self.hwp.HAction.Run("MoveSelLeft")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelLeft")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelLineBegin(self):
         """
@@ -6671,7 +6813,12 @@ class Hwp:
         """
         셀렉션: 한줄 아래
         """
-        return self.hwp.HAction.Run("MoveSelLineDown")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelLineDown")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelLineEnd(self):
         """
@@ -6683,7 +6830,12 @@ class Hwp:
         """
         셀렉션: 한줄 위
         """
-        return self.hwp.HAction.Run("MoveSelLineUp")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelLineUp")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelListBegin(self):
         """
@@ -6701,37 +6853,67 @@ class Hwp:
         """
         셀렉션: 다음 글자
         """
-        return self.hwp.HAction.Run("MoveSelNextChar")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelNextChar")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelNextParaBegin(self):
         """
         셀렉션: 다음 문단 처음
         """
-        return self.hwp.HAction.Run("MoveSelNextParaBegin")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelNextParaBegin")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelNextPos(self):
         """
         셀렉션: 다음 위치
         """
-        return self.hwp.HAction.Run("MoveSelNextPos")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelNextPos")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelNextWord(self):
         """
         셀렉션: 다음 단어
         """
-        return self.hwp.HAction.Run("MoveSelNextWord")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelNextWord")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelPageDown(self):
         """
         셀렉션: 페이지다운
         """
-        return self.hwp.HAction.Run("MoveSelPageDown")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelPageDown")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelPageUp(self):
         """
         셀렉션: 페이지 업
         """
-        return self.hwp.HAction.Run("MoveSelPageUp")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelPageUp")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelParaBegin(self):
         """
@@ -6749,37 +6931,67 @@ class Hwp:
         """
         셀렉션: 이전 글자
         """
-        return self.hwp.HAction.Run("MoveSelPrevChar")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelPrevChar")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelPrevParaBegin(self):
         """
         셀렉션: 이전 문단 시작
         """
-        return self.hwp.HAction.Run("MoveSelPrevParaBegin")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelPrevParaBegin")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelPrevParaEnd(self):
         """
         셀렉션: 이전 문단 끝
         """
-        return self.hwp.HAction.Run("MoveSelPrevParaEnd")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelPrevParaEnd")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelPrevPos(self):
         """
         셀렉션: 이전 위치
         """
-        return self.hwp.HAction.Run("MoveSelPrevPos")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelPrevPos")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelPrevWord(self):
         """
         셀렉션: 이전 단어
         """
-        return self.hwp.HAction.Run("MoveSelPrevWord")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelPrevWord")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelRight(self):
         """
         셀렉션: 캐럿을 (논리적 방향) 오른쪽으로 이동
         """
-        return self.hwp.HAction.Run("MoveSelRight")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelRight")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelTopLevelBegin(self):
         """
@@ -6797,19 +7009,34 @@ class Hwp:
         """
         셀렉션: 캐럿을 (논리적 방향) 위로 이동
         """
-        return self.hwp.HAction.Run("MoveSelUp")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelUp")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelViewDown(self):
         """
         셀렉션: 아래
         """
-        return self.hwp.HAction.Run("MoveSelViewDown")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelViewDown")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelViewUp(self):
         """
         셀렉션: 위
         """
-        return self.hwp.HAction.Run("MoveSelViewUp")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveSelViewUp")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveSelWordBegin(self):
         """
@@ -6845,7 +7072,12 @@ class Hwp:
         """
         캐럿을 (논리적 개념의) 위로 이동시킨다.
         """
-        return self.hwp.HAction.Run("MoveUp")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveUp")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveViewBegin(self):
         """
@@ -6857,7 +7089,12 @@ class Hwp:
         """
         현재 뷰의 크기만큼 아래로 이동한다. PgDn 키의 기능이다.
         """
-        return self.hwp.HAction.Run("MoveViewDown")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveViewDown")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveViewEnd(self):
         """
@@ -6869,7 +7106,12 @@ class Hwp:
         """
         현재 뷰의 크기만큼 위로 이동한다. PgUp 키의 기능이다.
         """
-        return self.hwp.HAction.Run("MoveViewUp")
+        cwd = self.get_pos()
+        self.hwp.HAction.Run("MoveViewUp")
+        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+            return True
+        else:
+            return False
 
     def MoveWordBegin(self):
         """
@@ -8525,7 +8767,11 @@ class Hwp:
         if type(spara) in [list, tuple]:
             _, slist, spara, spos, elist, epara, epos = spara
         self.set_pos(slist, 0, 0)
-        return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
+        if epos == -1:
+            self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=0)
+            return self.MoveSelParaEnd()
+        else:
+            return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
 
     def SelectText(self, spara: Union[int, list, tuple] = 0, spos=0, epara=0, epos=0, slist=0):
         """
@@ -8550,7 +8796,11 @@ class Hwp:
         if type(spara) in [list, tuple]:
             _, slist, spara, spos, elist, epara, epos = spara
         self.set_pos(slist, 0, 0)
-        return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
+        if epos == -1:
+            self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=0)
+            return self.MoveSelParaEnd()
+        else:
+            return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
 
     def set_bar_code_image(self, lp_image_path, pgno, index, x, y, width, height):
         """
@@ -8792,7 +9042,11 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
-        return self.hwp.SetPos(List=list, Para=para, pos=pos)
+        self.hwp.SetPos(List=list, Para=para, pos=pos)
+        if para == self.get_pos()[1]:
+            return True
+        else:
+            return False
 
     def SetPos(self, list, para, pos):
         """
@@ -8812,7 +9066,11 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
-        return self.hwp.SetPos(List=list, Para=para, pos=pos)
+        self.hwp.SetPos(List=list, Para=para, pos=pos)
+        if para == self.get_pos()[1]:
+            return True
+        else:
+            return False
 
     def set_pos_by_set(self, disp_val):
         """
