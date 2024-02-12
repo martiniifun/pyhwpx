@@ -15,7 +15,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.9.5"
+__version__ = "0.9.7"
 
 # temp 폴더 삭제
 try:
@@ -879,9 +879,11 @@ class Hwp:
             if ctrl.CtrlID == "%clk":
                 self.hwp.DeleteCtrl(ctrl)
             ctrl = ctrl.Next
-        self.set_pos(*start_pos)
+        for field in self.get_field_list().split("\x02"):
+            self.rename_field(field, "")
+        return self.set_pos(*start_pos)
 
-    def delete_field_by_name(self, field_name):
+    def delete_field_by_name(self, field_name, idx=-1):
         start_pos = self.get_pos()
         ctrl = self.hwp.HeadCtrl
         while ctrl:
@@ -890,7 +892,13 @@ class Hwp:
                 if self.get_cur_field_name() == field_name:
                     self.hwp.DeleteCtrl(ctrl)
             ctrl = ctrl.Next
-        self.set_pos(*start_pos)
+        try:
+            if idx == -1:
+                return self.rename_field(field_name, "")
+            elif not field_name.endswith("}}"):
+                return self.rename_field(field_name + f"{{{{{idx}}}}}", "")
+        finally:
+            self.set_pos(*start_pos)
 
     def markpen_on_selection(self, r=255, g=255, b=0):
         pset = self.hwp.HParameterSet.HMarkpenShape
