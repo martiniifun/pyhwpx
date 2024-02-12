@@ -3302,7 +3302,7 @@ class Hwp:
         style_set.filename = sty_filepath
         return self.hwp.ImportStyle(style_set.HSet)
 
-    def ImportStype(self, sty_filepath):
+    def ImportStyle(self, sty_filepath):
         """
         미리 저장된 특정 sty파일의 스타일을 임포트한다.
 
