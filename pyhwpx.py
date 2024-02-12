@@ -15,7 +15,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.9.8"
+__version__ = "0.9.10"
 
 # temp 폴더 삭제
 try:
@@ -1220,7 +1220,7 @@ class Hwp:
                             - sec_def.PageDef.FooterLen - self.mili_to_hwp_unit(2))
             pset.HeightValue = min(self.hwp.MiliToHwpUnit(height), total_height)  # 표 높이
             pset.CreateItemArray("RowHeight", rows)  # 행 m개 생성
-            each_row_height = min(self.mili_to_hwp_unit(height) // rows,
+            each_row_height = min((self.mili_to_hwp_unit(height) - self.mili_to_hwp_unit((0.5 + 0.5) * rows)) // rows,
                                   (total_height - self.mili_to_hwp_unit((0.5 + 0.5) * rows)) // rows)
             for i in range(rows):
                 pset.RowHeight.SetItem(i, each_row_height)  # 1열
@@ -1247,7 +1247,7 @@ class Hwp:
         pset.ShapeTableCell.Header = header
         self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
-    def get_selected_text(self):
+    def get_selected_text(self, as_: Literal["list", "str"] = "str"):
         """
         한/글 문서 선택 구간의 텍스트를 리턴하는 메서드.
         :return:
@@ -1260,13 +1260,19 @@ class Hwp:
                 self.Select()
                 self.Select()
         self.hwp.InitScan(Range=0xff)
-        total_text = ""
+        if as_ == "list":
+            result = []
+        else:
+            result = ""
         state = 2
         while state not in [0, 1]:
             state, text = self.hwp.GetText()
-            total_text += text
+            if as_ == "list":
+                result.append(text)
+            else:
+                result += text
         self.hwp.ReleaseScan()
-        return total_text
+        return result if type(result) == str else result[:-1]
 
     def table_to_csv(self, idx=1, filename="result.csv"):
         """
