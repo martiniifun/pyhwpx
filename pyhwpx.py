@@ -15,7 +15,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.9.7"
+__version__ = "0.9.8"
 
 # temp 폴더 삭제
 try:
@@ -1214,15 +1214,18 @@ class Hwp:
 
         pset.WidthValue = self.hwp.MiliToHwpUnit(total_width)  # 표 너비
         if height and height_type == 1:  # 표높이가 정의되어 있으면
+            # 페이지 최대 높이 계산
             total_height = (sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin
                             - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen
                             - sec_def.PageDef.FooterLen - self.mili_to_hwp_unit(2))
-            pset.HeightValue = self.hwp.MiliToHwpUnit(height)  # 표 높이
+            pset.HeightValue = min(self.hwp.MiliToHwpUnit(height), total_height)  # 표 높이
             pset.CreateItemArray("RowHeight", rows)  # 행 m개 생성
-            each_row_height = total_height - self.mili_to_hwp_unit(rows)
+            each_row_height = min(self.mili_to_hwp_unit(height) // rows,
+                                  (total_height - self.mili_to_hwp_unit((0.5 + 0.5) * rows)) // rows)
             for i in range(rows):
                 pset.RowHeight.SetItem(i, each_row_height)  # 1열
-            pset.TableProperties.Height = total_height  # self.hwp.MiliToHwpUnit(148)  # 표 너비
+            pset.TableProperties.Height = min(self.MiliToHwpUnit(height),
+                                              total_height - self.mili_to_hwp_unit((0.5 + 0.5) * rows))
 
         pset.CreateItemArray("ColWidth", cols)  # 열 n개 생성
         each_col_width = total_width - self.mili_to_hwp_unit(3.6 * cols)
