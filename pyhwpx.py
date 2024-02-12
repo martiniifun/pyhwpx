@@ -15,7 +15,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.9.3"
+__version__ = "0.9.5"
 
 # temp 폴더 삭제
 try:
@@ -214,14 +214,25 @@ class Hwp:
 
     @property
     def ctrl_list(self):
+        """
+        문서 내 모든 ctrl를 리스트로 반환한다.
+        단, 기본으로 삽입되고 선택 불가능한
+        두 개의 컨트롤인 secd(섹션정의)와 cold(단정의) 두 개는
+        ctrl_list에서 제외했다.
+        :return:
+        """
         c_list = []
-        ctrl = self.hwp.HeadCtrl
+        ctrl = self.hwp.HeadCtrl.Next.Next
         while ctrl:
             c_list.append(ctrl)
             ctrl = ctrl.Next
         return c_list
 
     # 커스텀 메서드
+    def select_ctrl(self, ctrl):
+        self.set_pos_by_set(ctrl.GetAnchorPos(0))
+        return self.SelectCtrlFront()
+
     def move_to_ctrl(self, ctrl):
         return self.set_pos_by_set(ctrl.GetAnchorPos(0))
 
