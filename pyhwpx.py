@@ -7,15 +7,16 @@ from urllib import request, parse
 import urllib.error
 import shutil
 import json
-
 import numpy as np
 import pandas as pd
 import pyperclip as cb
 import pythoncom
 import win32com.client as win32
 from collections import defaultdict
+import zipfile
 
-__version__ = "0.9.13"
+
+__version__ = "0.9.14"
 
 # temp 폴더 삭제
 try:
@@ -245,6 +246,33 @@ class Hwp:
         return c_list
 
     # 커스텀 메서드
+    def save_all_pictures(self, save_path="./binData"):
+        current_path = self.Path
+        self.save_as("temp.zip", format="HWPX")
+        self.open(current_path)
+        with zipfile.ZipFile("./temp.zip", 'r') as zf:
+            zf.extractall(path="./temp")
+        os.remove("./temp.zip")
+        try:
+            os.rename("./temp/binData", save_path)
+        except FileExistsError:
+            shutil.rmtree(save_path)
+            os.rename("./temp/binData", save_path)
+        with open("./temp/Contents/section0.xml", encoding="utf-8") as f:
+            content = f.read()
+        bin_list = re.findall(r'원본 그림의 이름: (.*?\..+?)\n', content)
+        os.chdir(save_path)
+        file_list = os.listdir()
+        for i in file_list:
+            idx = re.findall(r"\d+", i)[0]
+            os.rename(i, i.replace(idx, f"{int(idx):04}"))
+
+        for i, j in zip(os.listdir(), bin_list):
+            os.rename(i, j)
+        os.chdir("..")
+        shutil.rmtree("./temp")
+        return True
+
     def select_ctrl(self, ctrl):
         self.set_pos_by_set(ctrl.GetAnchorPos(0))
         return self.SelectCtrlFront()
@@ -3868,7 +3896,8 @@ class Hwp:
         """
         return self.hwp.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
-    def insert_picture(self, path, embedded=True, sizeoption=0, reverse=False, watermark=False, effect=0, width=0,
+    def insert_picture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
+                       effect=0, width=0,
                        height=0):
         """
         현재 캐럿의 위치에 그림을 삽입한다.
@@ -3962,14 +3991,16 @@ class Hwp:
                     else:
                         pic_prop.SetItem("Width", pic_width * height_shrink_ratio)
                         pic_prop.SetItem("Height", page_height)
+            pic_prop.SetItem("TreatAsChar", treat_as_char)
             ctrl.Properties = pic_prop
             return ctrl
         finally:
             if "temp.jpg" in os.listdir():
                 os.remove(path)
 
-    def InsertPicture(self, path, embedded=True, sizeoption=0, reverse=False, watermark=False, effect=0, width=0,
-                      height=0):
+    def InsertPicture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
+                       effect=0, width=0,
+                       height=0):
         """
         현재 캐럿의 위치에 그림을 삽입한다.
         다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
@@ -4062,6 +4093,7 @@ class Hwp:
                     else:
                         pic_prop.SetItem("Width", pic_width * height_shrink_ratio)
                         pic_prop.SetItem("Height", page_height)
+            pic_prop.SetItem("TreatAsChar", treat_as_char)
             ctrl.Properties = pic_prop
             return ctrl
         finally:
@@ -8824,7 +8856,7 @@ class Hwp:
             성공하면 True, 실패하면 False
         """
         if path.lower()[1] != ":":
-            path = os.path.join(os.getcwd(), path)
+            path = os.path.abspath(path)
         return self.hwp.SaveAs(Path=path, Format=format, arg=arg)
 
     def SaveAs(self, path, format="HWP", arg=""):
