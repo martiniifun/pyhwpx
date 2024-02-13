@@ -16,7 +16,7 @@ from collections import defaultdict
 import zipfile
 
 
-__version__ = "0.9.14"
+__version__ = "0.9.15"
 
 # temp 폴더 삭제
 try:
@@ -979,7 +979,7 @@ class Hwp:
         msgbox.DoModal()  # 메시지박스 보이기
         return msgbox.Result
 
-    def insert_file(self, filename, keep_section=1, keep_charshape=1, keep_parashape=1, keep_style=1):
+    def insert_file(self, filename, keep_section=1, keep_charshape=1, keep_parashape=1, keep_style=1, move_doc_end=False):
         if filename.lower()[1] != ":":
             filename = os.path.join(os.getcwd(), filename)
         pset = self.hwp.HParameterSet.HInsertFile
@@ -989,7 +989,11 @@ class Hwp:
         pset.KeepCharshape = keep_charshape
         pset.KeepParashape = keep_parashape
         pset.KeepStyle = keep_style
-        return self.hwp.HAction.Execute("InsertFile", pset.HSet)
+        try:
+            return self.hwp.HAction.Execute("InsertFile", pset.HSet)
+        finally:
+            if move_doc_end:
+                self.MoveDocEnd()
 
     def insert_memo(self, text, memo_type: Literal["revision", "memo"]="memo"):
         """
@@ -3565,7 +3569,7 @@ class Hwp:
         return self.hwp.InitScan(option=option, Range=range, spara=spara,
                                  spos=spos, epara=epara, epos=epos)
 
-    def insert(self, path, format="", arg=""):
+    def insert(self, path, format="", arg="", move_doc_end=False):
         """
         현재 캐럿 위치에 문서파일을 삽입한다.
         format, arg에 대해서는 self.hwp.open 참조
@@ -3638,7 +3642,11 @@ class Hwp:
         """
         if path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
-        return self.hwp.Insert(Path=path, Format=format, arg=arg)
+        try:
+            return self.hwp.Insert(Path=path, Format=format, arg=arg)
+        finally:
+            if move_doc_end:
+                self.MoveDocEnd()
 
     def insert_background_picture(self, path,
                                   border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
