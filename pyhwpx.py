@@ -15,7 +15,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.9.11"
+__version__ = "0.9.12"
 
 # temp 폴더 삭제
 try:
@@ -94,9 +94,17 @@ class Hwp:
     def CellShape(self):
         return self.hwp.CellShape
 
+    @CellShape.setter
+    def CellShape(self, prop):
+        self.hwp.CellShape = prop
+
     @property
     def CharShape(self):
         return self.hwp.CharShape
+
+    @CharShape.setter
+    def CharShape(self, prop):
+        self.hwp.CharShape = prop
 
     @property
     def CLSID(self):
@@ -175,6 +183,10 @@ class Hwp:
     @property
     def ParaShape(self):
         return self.hwp.ParaShape
+
+    @ParaShape.setter
+    def ParaShape(self, prop):
+        self.hwp.ParaShape = prop
 
     @property
     def ParentCtrl(self):
@@ -1274,7 +1286,7 @@ class Hwp:
         self.hwp.ReleaseScan()
         return result if type(result) == str else result[:-1]
 
-    def table_to_csv(self, idx=1, filename="result.csv"):
+    def table_to_csv(self, n="", filename="result.csv", encoding="utf-8", startrow=0):
         """
         한/글 문서의 idx번째 표를 현재 폴더에 filename으로 csv포맷으로 저장한다.
         filename을 지정하지 않는 경우 "./result.csv"가 기본값이다.
@@ -1287,29 +1299,74 @@ class Hwp:
             >>> hwp.table_to_csv(1, "table.csv")
         """
         start_pos = self.hwp.GetPos()
-        table_num = 0
-        ctrl = self.HeadCtrl
-        while ctrl.Next:
-            if ctrl.UserDesc == "표":
-                table_num += 1
-            if table_num == idx:
-                break
-            ctrl = ctrl.Next
+        ctrl = self.hwp.HeadCtrl
+        if isinstance(n, type(ctrl)):
+            # 정수인덱스 대신 ctrl 객체를 넣은 경우
+            self.set_pos_by_set(n.GetAnchorPos(0))
+            self.find_ctrl()
+            self.ShapeObjTableSelCell()
+        elif n == "" and self.is_cell():
+            # 기본값은 현재위치의 표를 잡아오기
+            self.TableCellBlock()
+            self.TableColBegin()
+            self.TableColPageUp()
+        elif n == "" or isinstance(n, int):
+            if n == "":
+                n = 0
+            if n >= 0:
+                idx = 0
+            else:
+                idx = -1
+                ctrl = self.hwp.LastCtrl
 
-        self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
-        self.hwp.FindCtrl()
-        self.hwp.HAction.Run("ShapeObjTableSelCell")
+            while ctrl:
+                if ctrl.UserDesc == "표":
+                    if n in (0, -1):
+                        self.set_pos_by_set(ctrl.GetAnchorPos(0))
+                        self.hwp.FindCtrl()
+                        self.ShapeObjTableSelCell()
+                        break
+                    else:
+                        if idx == n:
+                            self.set_pos_by_set(ctrl.GetAnchorPos(0))
+                            self.hwp.FindCtrl()
+                            self.ShapeObjTableSelCell()
+                            break
+                        if n >= 0:
+                            idx += 1
+                        else:
+                            idx -= 1
+                if n >= 0:
+                    ctrl = ctrl.Next
+                else:
+                    ctrl = ctrl.Prev
+
+            try:
+                self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
+            except AttributeError:
+                raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
+                                 f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
+            self.hwp.FindCtrl()
+            self.ShapeObjTableSelCell()
         data = [self.get_selected_text()]
         col_count = 1
-        while self.hwp.HAction.Run("TableRightCell"):
-            # a.append(get_text().replace("\r\n", "\n"))
-            if re.match(r"\([A-Z]+1\)", self.hwp.KeyIndicator()[-1]):
-                col_count += 1
-            data.append(self.get_selected_text())
+        start = False
+        while self.TableRightCell():
+            if not startrow:
+                if re.match(r"\([A-Z]+1\)", self.hwp.KeyIndicator()[-1]):
+                    col_count += 1
+                data.append(self.get_selected_text())
+            else:
+                if re.match(rf"\([A-Z]+{1 + startrow}\)", self.hwp.KeyIndicator()[-1]):
+                    col_count += 1
+                    start = True
+                if start:
+                    data.append(self.get_selected_text())
 
         array = np.array(data).reshape(-1, col_count)
         df = pd.DataFrame(array[1:], columns=array[0])
-        df.to_csv(filename, index=False)
+        self.hwp.SetPos(*start_pos)
+        df.to_csv(filename, index=False, encoding=encoding)
         self.hwp.SetPos(*start_pos)
         print(os.path.join(os.getcwd(), filename))
         return None
@@ -1600,8 +1657,9 @@ class Hwp:
     def close(self, is_dirty: bool = False):
         return self.hwp.XHwpDocuments.Active_XHwpDocument.Close(isDirty=is_dirty)
 
-    def Close(self, is_dirty: bool = False):
-        return self.hwp.XHwpDocuments.Active_XHwpDocument.Close(isDirty=is_dirty)
+    # Run 액션아이디의 Close와 중복되어 주석처리함. close로 실행가능
+    # def Close(self, is_dirty: bool = False):
+    #     return self.hwp.XHwpDocuments.Active_XHwpDocument.Close(isDirty=is_dirty)
 
     def col_def_type(self, col_def_type):
         return self.hwp.ColDefType(ColDefType=col_def_type)
@@ -3307,7 +3365,7 @@ class Hwp:
         미리 저장된 특정 sty파일의 스타일을 임포트한다.
 
         :param sty_filepath:
-            sty파일의 경로
+            sty파일의 경로A
 
         :return:
             성공시 True, 실패시 False
