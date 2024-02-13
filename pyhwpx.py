@@ -15,7 +15,7 @@ import pythoncom
 import win32com.client as win32
 from collections import defaultdict
 
-__version__ = "0.9.12"
+__version__ = "0.9.13"
 
 # temp 폴더 삭제
 try:
@@ -207,6 +207,10 @@ class Hwp:
     @property
     def ViewProperties(self):
         return self.hwp.ViewProperties
+
+    @ViewProperties.setter
+    def ViewProperties(self, prop):
+        self.hwp.ViewProperties = prop
 
     @property
     def XHwpDocuments(self):
