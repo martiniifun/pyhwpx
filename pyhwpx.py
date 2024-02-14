@@ -10,13 +10,12 @@ import json
 import numpy as np
 import pandas as pd
 import pyperclip as cb
-import pythoncom
 import win32com.client as win32
+import pythoncom
 from collections import defaultdict
 import zipfile
 
-
-__version__ = "0.9.15"
+__version__ = "0.9.16"
 
 # temp 폴더 삭제
 try:
@@ -979,7 +978,8 @@ class Hwp:
         msgbox.DoModal()  # 메시지박스 보이기
         return msgbox.Result
 
-    def insert_file(self, filename, keep_section=1, keep_charshape=1, keep_parashape=1, keep_style=1, move_doc_end=False):
+    def insert_file(self, filename, keep_section=1, keep_charshape=1, keep_parashape=1, keep_style=1,
+                    move_doc_end=False):
         if filename.lower()[1] != ":":
             filename = os.path.join(os.getcwd(), filename)
         pset = self.hwp.HParameterSet.HInsertFile
@@ -995,7 +995,7 @@ class Hwp:
             if move_doc_end:
                 self.MoveDocEnd()
 
-    def insert_memo(self, text, memo_type: Literal["revision", "memo"]="memo"):
+    def insert_memo(self, text, memo_type: Literal["revision", "memo"] = "memo"):
         """
         선택한 단어 범위에 메모고침표를 삽입하는 코드.
         한/글에서 일반 문자열을 삽입하는 코드와 크게 다르지 않다.
@@ -3325,16 +3325,82 @@ class Hwp:
     def HorzRel(self, horz_rel):
         return self.hwp.HorzRel(HorzRel=horz_rel)
 
-    def hwp_line_type(self, line_type):
+    def hwp_line_type(self, line_type: Literal[
+        "None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot", "LongDash", "Circle", "DoubleSlim", "SlimThick", "ThickSlim", "SlimThickSlim"] = "Solid"):
+        """
+        "None": 없음(0)
+        "Solid": 실선(1)
+        "Dash": 파선(2)
+        "Dot": 점선(3)
+        "DashDot": 일점쇄선(4)
+        "DashDotDot": 이점쇄선(5)
+        "LongDash": 긴 파선(6)
+        "Circle": 원형 점선(7)
+        "DoubleSlim": 이중 실선(8)
+        "SlimThick": 얇고 굵은 이중선(9)
+        "ThickSlim": 굵고 얇은 이중선(10)
+        "SlimThickSlim": 얇고 굵고 얇은 삼중선(11)
+        """
         return self.hwp.HwpLineType(LineType=line_type)
 
-    def HwpLineType(self, line_type):
+    def HwpLineType(self, line_type: Literal[
+        "None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot", "LongDash", "Circle", "DoubleSlim", "SlimThick", "ThickSlim", "SlimThickSlim"] = "Solid"):
+        """
+        "None": 없음(0)
+        "Solid": 실선(1)
+        "Dash": 파선(2)
+        "Dot": 점선(3)
+        "DashDot": 일점쇄선(4)
+        "DashDotDot": 이점쇄선(5)
+        "LongDash": 긴 파선(6)
+        "Circle": 원형 점선(7)
+        "DoubleSlim": 이중 실선(8)
+        "SlimThick": 얇고 굵은 이중선(9)
+        "ThickSlim": 굵고 얇은 이중선(10)
+        "SlimThickSlim": 얇고 굵고 얇은 삼중선(11)
+        """
         return self.hwp.HwpLineType(LineType=line_type)
 
-    def hwp_line_width(self, line_width):
+    def hwp_line_width(self, line_width: Literal["0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm"):
+        """
+            "0.1mm"(0)
+            "0.12mm"(1)
+            "0.15mm"(2)
+            "0.2mm"(3)
+            "0.25mm"(4)
+            "0.3mm"(5)
+            "0.4mm"(6)
+            "0.5mm"(7)
+            "0.6mm"(8)
+            "0.7mm"(9)
+            "1.0mm"(10)
+            "1.5mm"(11)
+            "2.0mm"(12)
+            "3.0mm"(13)
+            "4.0mm"(14)
+            "5.0mm"(15)
+            """
         return self.hwp.HwpLineWidth(LineWidth=line_width)
 
-    def HwpLineWidth(self, line_width):
+    def HwpLineWidth(self, line_width: Literal["0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm"):
+        """
+            "0.1mm"(0)
+            "0.12mm"(1)
+            "0.15mm"(2)
+            "0.2mm"(3)
+            "0.25mm"(4)
+            "0.3mm"(5)
+            "0.4mm"(6)
+            "0.5mm"(7)
+            "0.6mm"(8)
+            "0.7mm"(9)
+            "1.0mm"(10)
+            "1.5mm"(11)
+            "2.0mm"(12)
+            "3.0mm"(13)
+            "4.0mm"(14)
+            "5.0mm"(15)
+            """
         return self.hwp.HwpLineWidth(LineWidth=line_width)
 
     def hwp_outline_style(self, hwp_outline_style):
@@ -4007,8 +4073,8 @@ class Hwp:
                 os.remove(path)
 
     def InsertPicture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
-                       effect=0, width=0,
-                       height=0):
+                      effect=0, width=0,
+                      height=0):
         """
         현재 캐럿의 위치에 그림을 삽입한다.
         다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
@@ -4108,7 +4174,7 @@ class Hwp:
             if "temp.jpg" in os.listdir():
                 os.remove(path)
 
-    def insert_random_picture(self, x:int=200, y:int=200):
+    def insert_random_picture(self, x: int = 200, y: int = 200):
         return self.insert_picture(f"https://picsum.photos/{x}/{y}")
 
     def is_action_enable(self, action_id):
@@ -4921,7 +4987,7 @@ class Hwp:
             # field와 text가 [[field0:str, list[text:str]], [field1:str, list[text:str]]] 타입인 경우
             if not text and isinstance(field[0][0], (str, int, float)) and not isinstance(field[0][1],
                                                                                           (str, int)) and len(
-                    field[0][1]) >= 1:
+                field[0][1]) >= 1:
                 text_str = ""
                 field_str = "\x02".join(
                     [str(field[i][0]) + f"{{{{{j}}}}}" for j in range(len(field[0][1])) for i in range(len(field))])
@@ -5051,7 +5117,7 @@ class Hwp:
             # field와 text가 [[field0:str, list[text:str]], [field1:str, list[text:str]]] 타입인 경우
             if not text and isinstance(field[0][0], (str, int, float)) and not isinstance(field[0][1],
                                                                                           (str, int)) and len(
-                    field[0][1]) >= 1:
+                field[0][1]) >= 1:
                 text_str = ""
                 field_str = "\x02".join(
                     [str(field[i][0]) + f"{{{{{j}}}}}" for j in range(len(field[0][1])) for i in range(len(field))])
