@@ -15,7 +15,7 @@ import pythoncom
 from collections import defaultdict
 import zipfile
 
-__version__ = "0.9.16"
+__version__ = "0.9.17"
 
 # temp 폴더 삭제
 try:
@@ -129,6 +129,10 @@ class Hwp:
     @property
     def EditMode(self):
         return self.hwp.EditMode
+
+    @EditMode.setter
+    def EditMode(self, prop):
+        self.hwp.EditMode = prop
 
     @property
     def EngineProperties(self):
