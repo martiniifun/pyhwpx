@@ -15,7 +15,7 @@ import pythoncom
 from collections import defaultdict
 import zipfile
 
-__version__ = "0.9.17"
+__version__ = "0.9.20"
 
 # temp 폴더 삭제
 try:
@@ -33,6 +33,18 @@ def check_tuple_of_ints(var):
         return all(isinstance(item, int) for item in var)  # 모든 요소가 int인지 확인
     return False  # 변수가 튜플이 아니면 False 반환
 
+
+def excel_address_to_tuple_zero_based(address):
+    column = 0
+    row = 0
+    for char in address:
+        if char.isalpha():
+            column = column * 26 + (ord(char.upper()) - ord('A'))
+        elif char.isdigit():
+            row = row * 10 + int(char)
+        else:
+            raise ValueError("Invalid address format")
+    return (column, row - 1)
 
 # 아래아한글 오토메이션 클래스 정의
 class Hwp:
@@ -249,6 +261,31 @@ class Hwp:
         return c_list
 
     # 커스텀 메서드
+    def get_cell_addr(self, as_: Literal["str", "tuple"] = "str"):
+        """
+        현재 캐럿이 위치한 셀의 주소를 "A1" 또는 (0, 0)으로 리턴.
+        캐럿이 표 안에 있지 않은 경우 False를 리턴함
+        :param as_:
+            "str"의 경우 엑셀처럼 "A1" 방식으로 리턴,
+            "tuple"인 경우 (0,0) 방식으로 리턴.
+        :return:
+        """
+        if not self.hwp.CellShape:
+            return False
+        result = self.KeyIndicator()[-1][1:].split(")")[0]
+        if as_ == "str":
+            return result
+        else:
+            return excel_address_to_tuple_zero_based(result)
+
+    def adjust_cellwidth(self, width: int):
+        pset = self.HParameterSet.HShapeObject
+        self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+        pset.HSet.SetItem("ShapeType", 3)
+        pset.HSet.SetItem("ShapeCellSize", 1)
+        pset.ShapeTableCell.Width = self.MiliToHwpUnit(width)
+        return self.HAction.Execute("TablePropertyDialog", pset.HSet)
+
     def save_all_pictures(self, save_path="./binData"):
         current_path = self.Path
         self.save_as("temp.zip", format="HWPX")
@@ -576,8 +613,9 @@ class Hwp:
                 ctrl = ctrl.Next
             else:
                 ctrl = ctrl.Prev
-        raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
-                         f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
+        return False
+        # raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
+        #                  f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
 
     def modify_row_height(self, height_mili):
         """
