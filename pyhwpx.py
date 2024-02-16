@@ -16,7 +16,7 @@ from collections import defaultdict
 import zipfile
 from PIL import Image
 
-__version__ = "0.9.23"
+__version__ = "0.9.24"
 
 # temp 폴더 삭제
 try:
@@ -1904,20 +1904,26 @@ class Hwp:
     def CreateMode(self, creation_mode):
         return self.hwp.CreateMode(CreationMode=creation_mode)
 
-    def create_page_image(self, path: str, pgno: int = 0, resolution: int = 300, depth: int = 24, format: str = "bmp") -> bool:
+    def create_page_image(self, path: str, pgno: int = 0, resolution: int = 300, depth: int = 24,
+                          format: str = "bmp") -> bool:
         """
-        지정된 페이지를 이미지파일로 저장한다.
+        pgno로 지정한 페이지를 path 라는 파일명으로 저장한다.
+        이 때 페이지번호는 1부터 시작하며,(1-index)
+        pgno=0이면 현재 페이지, pgno=-1이면 전체 페이지를 이미지로 저장한다.
         내부적으로 Pillow 모듈을 사용하여 변환하므로,
         사실상 Pillow에서 변환 가능한 모든 포맷으로 입력 가능하다.
-        (저장되는 이미지파일의 포맷은 원래 BMP 또는 GIF 두 가지이다.)
 
         :param path:
             생성할 이미지 파일의 경로(전체경로로 입력해야 함)
 
         :param pgno:
-            페이지 번호. 생략하면(기본값은 -1) 모든 페이지가 저장된다.
-            0부터 PageCount-1 사이에서 pgno 입력시 선택한 페이지만 저장한다.
-            현재 편집중인 페이지만 저장할 때에는
+            페이지 번호(1페이지 저장하려면 pgno=1).
+            생략하면(기본값은 0) 현재 페이지가 저장된다.
+            1부터 hwp.PageCount 사이에서 pgno 입력시 선택한 페이지만 저장한다.
+            모든 페이지를 저장하고 싶을 때에는 pgno=-1로 설정하면 된다.
+            이 때 path가 "img.jpg"라면 저장되는 파일명은
+            "img001.jpg", "img002.jpg", "img003.jpg",..,"img099.jpg" 가 된다.
+
 
         :param resolution:
             이미지 해상도. DPI단위(96, 300, 1200 등)로 지정한다.
@@ -1942,28 +1948,48 @@ class Hwp:
         if path.lower()[1] != ":":
             path = os.path.abspath(path)
         ext = path.split(".")[-1]
-        try:
-            return self.hwp.CreatePageImage(Path=path, pgno=pgno, resolution=resolution, depth=depth, Format=format)
-        finally:
-            if not ext.lower() in ("gif", "bmp"):
-                with Image.open(path.replace(ext, format)) as img:
-                    img.save(path.replace(format, ext))
-                os.remove(path.replace(ext, format))
+        if pgno >= 0:
+            if pgno == 0:
+                pgno = self.current_page
+            try:
+                return self.hwp.CreatePageImage(Path=path, pgno=pgno, resolution=resolution, depth=depth, Format=format)
+            finally:
+                if not ext.lower() in ("gif", "bmp"):
+                    with Image.open(path.replace(ext, format)) as img:
+                        img.save(path.replace(format, ext))
+                    os.remove(path.replace(ext, format))
+        elif pgno == -1:
+            for i in range(1, self.PageCount + 1):
+                path = os.path.join(os.path.dirname(path), os.path.basename(path).replace(f".{ext}", f"{i:03}.{ext}"))
+                self.hwp.CreatePageImage(Path=path, pgno=pgno, resolution=resolution, depth=depth, Format=format)
+                if not ext.lower() in ("gif", "bmp"):
+                    with Image.open(path.replace(ext, format)) as img:
+                        img.save(path.replace(format, ext))
+                    os.remove(path.replace(ext, format))
+                return True
+        else:
+            raise IndexError(f"pgno는 -1부터 {self.PageCount}까지 입력 가능합니다.")
 
-    def CreatePageImage(self, path: str, pgno: int = 0, resolution: int = 300, depth: int = 24, format: str = "bmp") -> bool:
+    def CreatePageImage(self, path: str, pgno: int = 0, resolution: int = 300, depth: int = 24,
+                          format: str = "bmp") -> bool:
         """
-        지정된 페이지를 이미지파일로 저장한다.
+        pgno로 지정한 페이지를 path 라는 파일명으로 저장한다.
+        이 때 페이지번호는 1부터 시작하며,(1-index)
+        pgno=0이면 현재 페이지, pgno=-1이면 전체 페이지를 이미지로 저장한다.
         내부적으로 Pillow 모듈을 사용하여 변환하므로,
         사실상 Pillow에서 변환 가능한 모든 포맷으로 입력 가능하다.
-        (저장되는 이미지파일의 포맷은 원래 BMP 또는 GIF 두 가지이다.)
 
         :param path:
             생성할 이미지 파일의 경로(전체경로로 입력해야 함)
 
         :param pgno:
-            페이지 번호. 생략하면(기본값은 -1) 모든 페이지가 저장된다.
-            0부터 PageCount-1 사이에서 pgno 입력시 선택한 페이지만 저장한다.
-            현재 편집중인 페이지만 저장할 때에는
+            페이지 번호(1페이지 저장하려면 pgno=1).
+            생략하면(기본값은 0) 현재 페이지가 저장된다.
+            1부터 hwp.PageCount 사이에서 pgno 입력시 선택한 페이지만 저장한다.
+            모든 페이지를 저장하고 싶을 때에는 pgno=-1로 설정하면 된다.
+            이 때 path가 "img.jpg"라면 저장되는 파일명은
+            "img001.jpg", "img002.jpg", "img003.jpg",..,"img099.jpg" 가 된다.
+
 
         :param resolution:
             이미지 해상도. DPI단위(96, 300, 1200 등)로 지정한다.
@@ -1988,13 +2014,27 @@ class Hwp:
         if path.lower()[1] != ":":
             path = os.path.abspath(path)
         ext = path.split(".")[-1]
-        try:
-            return self.hwp.CreatePageImage(Path=path, pgno=pgno, resolution=resolution, depth=depth, Format=format)
-        finally:
-            if not ext.lower() in ("gif", "bmp"):
-                with Image.open(path.replace(ext, format)) as img:
-                    img.save(path.replace(format, ext))
-                os.remove(path.replace(ext, format))
+        if pgno >= 0:
+            if pgno == 0:
+                pgno = self.current_page
+            try:
+                return self.hwp.CreatePageImage(Path=path, pgno=pgno, resolution=resolution, depth=depth, Format=format)
+            finally:
+                if not ext.lower() in ("gif", "bmp"):
+                    with Image.open(path.replace(ext, format)) as img:
+                        img.save(path.replace(format, ext))
+                    os.remove(path.replace(ext, format))
+        elif pgno == -1:
+            for i in range(1, self.PageCount + 1):
+                path = os.path.join(os.path.dirname(path), os.path.basename(path).replace(f".{ext}", f"{i:03}.{ext}"))
+                self.hwp.CreatePageImage(Path=path, pgno=pgno, resolution=resolution, depth=depth, Format=format)
+                if not ext.lower() in ("gif", "bmp"):
+                    with Image.open(path.replace(ext, format)) as img:
+                        img.save(path.replace(format, ext))
+                    os.remove(path.replace(ext, format))
+                return True
+        else:
+            raise IndexError(f"pgno는 -1부터 {self.PageCount}까지 입력 가능합니다.")
 
     def create_set(self, setidstr):
         """
