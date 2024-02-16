@@ -15,7 +15,7 @@ import pythoncom
 from collections import defaultdict
 import zipfile
 
-__version__ = "0.9.20"
+__version__ = "0.9.21"
 
 # temp 폴더 삭제
 try:
@@ -44,7 +44,7 @@ def excel_address_to_tuple_zero_based(address):
             row = row * 10 + int(char)
         else:
             raise ValueError("Invalid address format")
-    return (column, row - 1)
+    return column, row - 1
 
 # 아래아한글 오토메이션 클래스 정의
 class Hwp:
@@ -4876,6 +4876,25 @@ class Hwp:
 
     def PointToHwpUnit(self, point):
         return self.hwp.PointToHwpUnit(Point=point)
+
+    def hwp_unit_to_point(self, HwpUnit:int):
+        return HwpUnit * 100
+
+    def HwpUnitToPoint(self, HwpUnit:int):
+        return HwpUnit * 100
+
+    def hwp_unit_to_inch(self, HwpUnit):
+        return HwpUnit / 7200
+
+    def HwpUnitToInch(self, HwpUnit):
+        return HwpUnit / 7200
+
+    def inch_to_hwp_unit(self, inch):
+        return inch * 7200
+
+    def InchToHwpUnit(self, inch):
+        return inch * 7200
+
 
     def present_effect(self, prsnteffect):
         return self.hwp.PresentEffect(prsnteffect=prsnteffect)
