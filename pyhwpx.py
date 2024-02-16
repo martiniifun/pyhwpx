@@ -16,7 +16,7 @@ from collections import defaultdict
 import zipfile
 from PIL import Image
 
-__version__ = "0.9.24"
+__version__ = "0.9.25"
 
 # temp 폴더 삭제
 try:
@@ -1947,7 +1947,9 @@ class Hwp:
         """
         if path.lower()[1] != ":":
             path = os.path.abspath(path)
-        ext = path.split(".")[-1]
+        if not os.path.exists(os.path.dirname(path)):
+            os.mkdir(os.path.dirname(path))
+        ext = path.rsplit(".", maxsplit=1)[-1]
         if pgno >= 0:
             if pgno == 0:
                 pgno = self.current_page
@@ -2013,7 +2015,9 @@ class Hwp:
         """
         if path.lower()[1] != ":":
             path = os.path.abspath(path)
-        ext = path.split(".")[-1]
+        if not os.path.exists(os.path.dirname(path)):
+            os.mkdir(os.path.dirname(path))
+        ext = path.rsplit(".", maxsplit=1)[-1]
         if pgno >= 0:
             if pgno == 0:
                 pgno = self.current_page
