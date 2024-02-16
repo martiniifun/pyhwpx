@@ -1,22 +1,24 @@
+import json
 import os
 import re
+import shutil
+import tempfile
+import urllib.error
+import zipfile
+from collections import defaultdict
 from io import StringIO
 from time import sleep
 from typing import Literal, Union
 from urllib import request, parse
-import urllib.error
-import shutil
-import json
+
 import numpy as np
 import pandas as pd
 import pyperclip as cb
-import win32com.client as win32
 import pythoncom
-from collections import defaultdict
-import zipfile
+import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.9.26"
+__version__ = "0.9.27"
 
 # temp 폴더 삭제
 try:
@@ -46,6 +48,7 @@ def excel_address_to_tuple_zero_based(address):
         else:
             raise ValueError("Invalid address format")
     return column, row - 1
+
 
 # 아래아한글 오토메이션 클래스 정의
 class Hwp:
@@ -85,8 +88,8 @@ class Hwp:
                     # 현재 moniker를 통해 ROT에서 한글의 object를 가져옵니다.
                     obj = running_coms.GetObject(moniker)
                     # 가져온 object를 Dispatch를 통해 사용할수 있는 객체로 변환시킵니다.
-                    self.hwp = win32.gencache.EnsureDispatch(obj.QueryInterface(pythoncom.IID_IDispatch))
-                    # 그이후는 오토메이션 api를 사용할수 있습니다
+                    self.hwp = win32.gencache.EnsureDispatch(
+                        obj.QueryInterface(pythoncom.IID_IDispatch))  # 그이후는 오토메이션 api를 사용할수 있습니다
         if not self.hwp:
             self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
         try:
@@ -271,6 +274,22 @@ class Hwp:
         return self.KeyIndicator()[3]
 
     # 커스텀 메서드
+    def save_pdf_as_image(self, path: str = "", img_format="bmp"):
+        if path == "" and self.Path:
+            path = self.Path.rsplit(".hwp", maxsplit=1)[0] + ".pdf"
+        elif path == "" and self.Path == "":
+            path = os.path.abspath("result.pdf")
+        else:
+            if not os.path.exists(os.path.dirname(os.path.abspath(path))):
+                os.mkdir(os.path.dirname(os.path.abspath(path)))
+        temp_dir = tempfile.mkdtemp()
+        self.create_page_image(os.path.join(temp_dir, f"img.{img_format}"))
+        img_list = [os.path.join(temp_dir, i) for i in os.listdir(temp_dir)]
+        img_list = [Image.open(i).convert("RGB") for i in img_list]
+        img_list[0].save(path, save_all=True, append_images=img_list[1:])
+        shutil.rmtree(temp_dir)
+        return True
+
     def get_cell_addr(self, as_: Literal["str", "tuple"] = "str"):
         """
         현재 캐럿이 위치한 셀의 주소를 "A1" 또는 (0, 0)으로 리턴.
@@ -452,8 +471,7 @@ class Hwp:
             print(f"자간 최소값 : {spacings.min()}({dd[spacings.min()]})")
         return True
 
-    def set_font(self,
-                 Bold="",  # 진하게(True/False)
+    def set_font(self, Bold="",  # 진하게(True/False)
                  DiacSymMark="",  # 강조점(0~12)
                  Emboss="",  # 양각(True/False)
                  Engrave="",  # 음각(True/False)
@@ -486,74 +504,29 @@ class Hwp:
                  UseFontSpace="",  # 글꼴에 어울리는 빈칸(True/False)
                  UseKerning=""  # 커닝 적용(True/False) : 차이가 없다?
                  ):
-        d = {
-            'Bold': Bold,
-            'DiacSymMark': DiacSymMark,
-            'Emboss': Emboss,
-            'Engrave': Engrave,
-            'FaceNameHangul': FaceName,
-            'FaceNameHanja': FaceName,
-            'FaceNameJapanese': FaceName,
-            'FaceNameLatin': FaceName,
-            'FaceNameOther': FaceName,
-            'FaceNameSymbol': FaceName,
-            'FaceNameUser': FaceName,
-            'FontTypeHangul': FontType,
-            'FontTypeHanja': FontType,
-            'FontTypeJapanese': FontType,
-            'FontTypeLatin': FontType,
-            'FontTypeOther': FontType,
-            'FontTypeSymbol': FontType,
-            'FontTypeUser': FontType,
-            'Height': Height * 100,
-            'Italic': Italic,
-            'OffsetHangul': Offset,
-            'OffsetHanja': Offset,
-            'OffsetJapanese': Offset,
-            'OffsetLatin': Offset,
-            'OffsetOther': Offset,
-            'OffsetSymbol': Offset,
-            'OffsetUser': Offset,
-            'OutLineType': OutLineType,
-            'RatioHangul': Ratio,
-            'RatioHanja': Ratio,
-            'RatioJapanese': Ratio,
-            'RatioLatin': Ratio,
-            'RatioOther': Ratio,
-            'RatioSymbol': Ratio,
-            'RatioUser': Ratio,
-            'ShadeColor': self.rgb_color(ShadeColor) if type(ShadeColor) == str and ShadeColor else ShadeColor,
-            'ShadowColor': self.rgb_color(ShadowColor) if type(ShadowColor) == str and ShadowColor else ShadowColor,
-            'ShadowOffsetX': ShadowOffsetX,
-            'ShadowOffsetY': ShadowOffsetY,
-            'ShadowType': ShadowType,
-            'SizeHangul': Size,
-            'SizeHanja': Size,
-            'SizeJapanese': Size,
-            'SizeLatin': Size,
-            'SizeOther': Size,
-            'SizeSymbol': Size,
-            'SizeUser': Size,
-            'SmallCaps': SmallCaps,
-            'SpacingHangul': Spacing,
-            'SpacingHanja': Spacing,
-            'SpacingJapanese': Spacing,
-            'SpacingLatin': Spacing,
-            'SpacingOther': Spacing,
-            'SpacingSymbol': Spacing,
-            'SpacingUser': Spacing,
-            'StrikeOutColor': StrikeOutColor,
-            'StrikeOutShape': StrikeOutShape,
-            'StrikeOutType': StrikeOutType,
-            'SubScript': SubScript,
-            'SuperScript': SuperScript,
-            'TextColor': self.rgb_color(TextColor) if type(TextColor) == str and TextColor else TextColor,
-            'UnderlineColor': self.rgb_color(UnderlineColor) if type(
-                UnderlineColor) == str and UnderlineColor else UnderlineColor,
-            'UnderlineShape': UnderlineShape,
-            'UnderlineType': UnderlineType,
-            'UseFontSpace': UseFontSpace,
-            'UseKerning': UseKerning}
+        d = {'Bold': Bold, 'DiacSymMark': DiacSymMark, 'Emboss': Emboss, 'Engrave': Engrave, 'FaceNameHangul': FaceName,
+             'FaceNameHanja': FaceName, 'FaceNameJapanese': FaceName, 'FaceNameLatin': FaceName,
+             'FaceNameOther': FaceName, 'FaceNameSymbol': FaceName, 'FaceNameUser': FaceName,
+             'FontTypeHangul': FontType,
+             'FontTypeHanja': FontType, 'FontTypeJapanese': FontType, 'FontTypeLatin': FontType,
+             'FontTypeOther': FontType, 'FontTypeSymbol': FontType, 'FontTypeUser': FontType, 'Height': Height * 100,
+             'Italic': Italic, 'OffsetHangul': Offset, 'OffsetHanja': Offset, 'OffsetJapanese': Offset,
+             'OffsetLatin': Offset, 'OffsetOther': Offset, 'OffsetSymbol': Offset, 'OffsetUser': Offset,
+             'OutLineType': OutLineType, 'RatioHangul': Ratio, 'RatioHanja': Ratio, 'RatioJapanese': Ratio,
+             'RatioLatin': Ratio, 'RatioOther': Ratio, 'RatioSymbol': Ratio, 'RatioUser': Ratio,
+             'ShadeColor': self.rgb_color(ShadeColor) if type(ShadeColor) == str and ShadeColor else ShadeColor,
+             'ShadowColor': self.rgb_color(ShadowColor) if type(ShadowColor) == str and ShadowColor else ShadowColor,
+             'ShadowOffsetX': ShadowOffsetX, 'ShadowOffsetY': ShadowOffsetY, 'ShadowType': ShadowType,
+             'SizeHangul': Size, 'SizeHanja': Size, 'SizeJapanese': Size, 'SizeLatin': Size, 'SizeOther': Size,
+             'SizeSymbol': Size, 'SizeUser': Size, 'SmallCaps': SmallCaps, 'SpacingHangul': Spacing,
+             'SpacingHanja': Spacing, 'SpacingJapanese': Spacing, 'SpacingLatin': Spacing, 'SpacingOther': Spacing,
+             'SpacingSymbol': Spacing, 'SpacingUser': Spacing, 'StrikeOutColor': StrikeOutColor,
+             'StrikeOutShape': StrikeOutShape, 'StrikeOutType': StrikeOutType, 'SubScript': SubScript,
+             'SuperScript': SuperScript,
+             'TextColor': self.rgb_color(TextColor) if type(TextColor) == str and TextColor else TextColor,
+             'UnderlineColor': self.rgb_color(UnderlineColor) if type(
+                 UnderlineColor) == str and UnderlineColor else UnderlineColor, 'UnderlineShape': UnderlineShape,
+             'UnderlineType': UnderlineType, 'UseFontSpace': UseFontSpace, 'UseKerning': UseKerning}
         pset = self.hwp.HParameterSet.HCharShape
         self.HAction.GetDefault("CharShape", pset.HSet)
         for key in d.keys():
@@ -630,9 +603,7 @@ class Hwp:
                 ctrl = ctrl.Next
             else:
                 ctrl = ctrl.Prev
-        return False
-        # raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
-        #                  f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
+        return False  # raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."  #                  f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
 
     def modify_row_height(self, height_mili):
         """
@@ -657,16 +628,9 @@ class Hwp:
         """
         self.insert_background_picture("", border_type="SelectedCellDelete")
 
-    def gradation_on_cell(self,
-                          color_list: list[tuple] | list[str] = [(0, 0, 0), (255, 255, 255)],
-                          grad_type: Literal["Linear", "Radial", "Conical", "Square"] = "Linear",
-                          angle=0,
-                          xc=0,
-                          yc=0,
-                          pos_list: list[int] = None,
-                          step_center=50,
-                          step=255,
-                          ):
+    def gradation_on_cell(self, color_list: list[tuple] | list[str] = [(0, 0, 0), (255, 255, 255)],
+                          grad_type: Literal["Linear", "Radial", "Conical", "Square"] = "Linear", angle=0, xc=0, yc=0,
+                          pos_list: list[int] = None, step_center=50, step=255, ):
         """
         셀에 그라데이션을 적용하는 메서드
         :param color_list:
@@ -811,19 +775,11 @@ class Hwp:
             FooterLen: 꼬리말
             BottomMargin: 아래쪽
         """
-        code_to_desc = {
-            'PaperWidth': "용지폭",
-            'PaperHeight': "용지길이",
-            'Landscape': "용지방향",  # 0: 가로, 1:세로
-            'GutterType': "제본타입",  # 0: 한쪽, 1:맞쪽, 2:위쪽
-            'TopMargin': "위쪽",
-            'HeaderLen': "머리말",
-            'LeftMargin': "왼쪽",
-            'GutterLen': "제본여백",
-            'RightMargin': "오른쪽",
-            'FooterLen': "꼬리말",
-            'BottomMargin': "아래쪽",
-        }
+        code_to_desc = {'PaperWidth': "용지폭", 'PaperHeight': "용지길이", 'Landscape': "용지방향",  # 0: 가로, 1:세로
+                        'GutterType': "제본타입",  # 0: 한쪽, 1:맞쪽, 2:위쪽
+                        'TopMargin': "위쪽", 'HeaderLen': "머리말", 'LeftMargin': "왼쪽", 'GutterLen': "제본여백",
+                        'RightMargin': "오른쪽",
+                        'FooterLen': "꼬리말", 'BottomMargin': "아래쪽", }
 
         pset = self.hwp.HParameterSet.HSecDef
         self.hwp.HAction.GetDefault("PageSetup", pset.HSet)
@@ -853,19 +809,10 @@ class Hwp:
         :return:
         """
         if isinstance(pset, dict):
-            desc_to_code = {
-                "용지폭": 'PaperWidth',
-                "용지길이": 'PaperHeight',
-                "용지방향": 'Landscape',
-                "제본타입": 'GutterType',
-                "위쪽": 'TopMargin',
-                "머리말": 'HeaderLen',
-                "왼쪽": 'LeftMargin',
-                "제본여백": 'GutterLen',
-                "오른쪽": 'RightMargin',
-                "꼬리말": 'FooterLen',
-                "아래쪽": 'BottomMargin',
-            }
+            desc_to_code = {"용지폭": 'PaperWidth', "용지길이": 'PaperHeight', "용지방향": 'Landscape', "제본타입": 'GutterType',
+                            "위쪽": 'TopMargin', "머리말": 'HeaderLen', "왼쪽": 'LeftMargin', "제본여백": 'GutterLen',
+                            "오른쪽": 'RightMargin',
+                            "꼬리말": 'FooterLen', "아래쪽": 'BottomMargin', }
 
             new_pset = self.hwp.HParameterSet.HSecDef
             for key in pset.keys():
@@ -1315,16 +1262,16 @@ class Hwp:
 
         sec_def = self.hwp.HParameterSet.HSecDef
         self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
-        total_width = (sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin
-                       - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen
-                       - self.mili_to_hwp_unit(2))
+        total_width = (
+                sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
+            2))
 
         pset.WidthValue = self.hwp.MiliToHwpUnit(total_width)  # 표 너비
         if height and height_type == 1:  # 표높이가 정의되어 있으면
             # 페이지 최대 높이 계산
-            total_height = (sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin
-                            - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen
-                            - sec_def.PageDef.FooterLen - self.mili_to_hwp_unit(2))
+            total_height = (
+                    sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen - sec_def.PageDef.FooterLen - self.mili_to_hwp_unit(
+                2))
             pset.HeightValue = min(self.hwp.MiliToHwpUnit(height), total_height)  # 표 높이
             pset.CreateItemArray("RowHeight", rows)  # 행 m개 생성
             each_row_height = min((self.mili_to_hwp_unit(height) - self.mili_to_hwp_unit((0.5 + 0.5) * rows)) // rows,
@@ -1592,9 +1539,7 @@ class Hwp:
     def insert_lorem(self, para_num=1):
         api_url = f'https://api.api-ninjas.com/v1/loremipsum?paragraphs={para_num}'
 
-        headers = {
-            'X-Api-Key': "hzzbbAAy7mQjKyXSW5quRw==PbJStWB0ymMpGRH1"
-        }
+        headers = {'X-Api-Key': "hzzbbAAy7mQjKyXSW5quRw==PbJStWB0ymMpGRH1"}
 
         req = request.Request(api_url, headers=headers)
 
@@ -3483,7 +3428,8 @@ class Hwp:
         """
         return self.hwp.HwpLineType(LineType=line_type)
 
-    def hwp_line_width(self, line_width: Literal["0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm"):
+    def hwp_line_width(self, line_width: Literal[
+        "0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm"):
         """
             "0.1mm"(0)
             "0.12mm"(1)
@@ -3504,7 +3450,8 @@ class Hwp:
             """
         return self.hwp.HwpLineWidth(LineWidth=line_width)
 
-    def HwpLineWidth(self, line_width: Literal["0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm"):
+    def HwpLineWidth(self, line_width: Literal[
+        "0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm"):
         """
             "0.1mm"(0)
             "0.12mm"(1)
@@ -3682,8 +3629,7 @@ class Hwp:
             >>> print(text)
             Hello, world!
         """
-        return self.hwp.InitScan(option=option, Range=range, spara=spara,
-                                 spos=spos, epara=epara, epos=epos)
+        return self.hwp.InitScan(option=option, Range=range, spara=spara, spos=spos, epara=epara, epos=epos)
 
     def InitScan(self, option=0x07, range=0x77, spara=0, spos=0, epara=-1, epos=-1):
         """
@@ -3754,8 +3700,7 @@ class Hwp:
             >>> print(text)
             Hello, world!
         """
-        return self.hwp.InitScan(option=option, Range=range, spara=spara,
-                                 spos=spos, epara=epara, epos=epos)
+        return self.hwp.InitScan(option=option, Range=range, spara=spara, spos=spos, epara=epara, epos=epos)
 
     def insert(self, path, format="", arg="", move_doc_end=False):
         """
@@ -3838,8 +3783,8 @@ class Hwp:
 
     def insert_background_picture(self, path,
                                   border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
-                                  embedded=True, filloption=5, effect=0,
-                                  watermark=False, brightness=0, contrast=0) -> bool:
+                                  embedded=True, filloption=5, effect=0, watermark=False, brightness=0,
+                                  contrast=0) -> bool:
         """
         **셀**에 배경이미지를 삽입한다.
         CellBorderFill의 SetItem 중 FillAttr 의 SetItem FileName 에
@@ -3910,18 +3855,16 @@ class Hwp:
             path = os.path.join(os.getcwd(), path)
 
         try:
-            return self.hwp.InsertBackgroundPicture(Path=path, BorderType=border_type,
-                                                    Embedded=embedded, filloption=filloption,
-                                                    Effect=effect, watermark=watermark,
+            return self.hwp.InsertBackgroundPicture(Path=path, BorderType=border_type, Embedded=embedded,
+                                                    filloption=filloption, Effect=effect, watermark=watermark,
                                                     Brightness=brightness, Contrast=contrast)
         finally:
             if "temp.jpg" in os.listdir():
                 os.remove(path)
 
-    def InsertBackgroundPicture(self, path,
-                                border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
-                                embedded=True, filloption=5, effect=0,
-                                watermark=False, brightness=0, contrast=0) -> bool:
+    def InsertBackgroundPicture(self, path, border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
+                                embedded=True, filloption=5, effect=0, watermark=False, brightness=0,
+                                contrast=0) -> bool:
         """
         **셀**에 배경이미지를 삽입한다.
         CellBorderFill의 SetItem 중 FillAttr 의 SetItem FileName 에
@@ -3992,9 +3935,8 @@ class Hwp:
             path = os.path.join(os.getcwd(), path)
 
         try:
-            return self.hwp.InsertBackgroundPicture(Path=path, BorderType=border_type,
-                                                    Embedded=embedded, filloption=filloption,
-                                                    Effect=effect, watermark=watermark,
+            return self.hwp.InsertBackgroundPicture(Path=path, BorderType=border_type, Embedded=embedded,
+                                                    filloption=filloption, Effect=effect, watermark=watermark,
                                                     Brightness=brightness, Contrast=contrast)
         finally:
             if "temp.jpg" in os.listdir():
@@ -4093,8 +4035,7 @@ class Hwp:
         return self.hwp.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
     def insert_picture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
-                       effect=0, width=0,
-                       height=0):
+                       effect=0, width=0, height=0):
         """
         현재 캐럿의 위치에 그림을 삽입한다.
         다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
@@ -4157,9 +4098,8 @@ class Hwp:
             path = os.path.join(os.getcwd(), path)
 
         try:
-            ctrl = self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption,
-                                          Reverse=reverse, watermark=watermark, Effect=effect,
-                                          Width=width, Height=height)
+            ctrl = self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption, Reverse=reverse,
+                                          watermark=watermark, Effect=effect, Width=width, Height=height)
             pic_prop = ctrl.Properties
             if not all([width, height]) and self.is_cell():
                 cell_param = self.hwp.HParameterSet.HShapeObject
@@ -4171,11 +4111,10 @@ class Hwp:
             else:
                 sec_def = self.HParameterSet.HSecDef
                 self.HAction.GetDefault("PageSetup", sec_def.HSet)
-                page_width = (sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin
-                              - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen)
-                page_height = (sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin
-                               - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen
-                               - sec_def.PageDef.FooterLen)
+                page_width = (
+                        sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen)
+                page_height = (
+                        sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen - sec_def.PageDef.FooterLen)
                 pic_width = pic_prop.Item("Width")
                 pic_height = pic_prop.Item("Height")
                 if pic_width > page_width or pic_height > page_height:
@@ -4195,8 +4134,7 @@ class Hwp:
                 os.remove(path)
 
     def InsertPicture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
-                      effect=0, width=0,
-                      height=0):
+                      effect=0, width=0, height=0):
         """
         현재 캐럿의 위치에 그림을 삽입한다.
         다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
@@ -4259,9 +4197,8 @@ class Hwp:
             path = os.path.join(os.getcwd(), path)
 
         try:
-            ctrl = self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption,
-                                          Reverse=reverse, watermark=watermark, Effect=effect,
-                                          Width=width, Height=height)
+            ctrl = self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption, Reverse=reverse,
+                                          watermark=watermark, Effect=effect, Width=width, Height=height)
             pic_prop = ctrl.Properties
             if not all([width, height]) and self.is_cell():
                 cell_param = self.hwp.HParameterSet.HShapeObject
@@ -4273,11 +4210,10 @@ class Hwp:
             else:
                 sec_def = self.HParameterSet.HSecDef
                 self.HAction.GetDefault("PageSetup", sec_def.HSet)
-                page_width = (sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin
-                              - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen)
-                page_height = (sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin
-                               - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen
-                               - sec_def.PageDef.FooterLen)
+                page_width = (
+                        sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen)
+                page_height = (
+                        sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen - sec_def.PageDef.FooterLen)
                 pic_width = pic_prop.Item("Width")
                 pic_height = pic_prop.Item("Height")
                 if pic_width > page_width or pic_height > page_height:
@@ -4432,12 +4368,12 @@ class Hwp:
         return self.hwp.LockCommand(ActID=act_id, isLock=is_lock)
 
     def lunar_to_solar(self, l_year, l_month, l_day, l_leap, s_year, s_month, s_day):
-        return self.hwp.LunarToSolar(lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap,
-                                     sYear=s_year, sMonth=s_month, sDay=s_day)
+        return self.hwp.LunarToSolar(lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap, sYear=s_year,
+                                     sMonth=s_month, sDay=s_day)
 
     def LunarToSolar(self, l_year, l_month, l_day, l_leap, s_year, s_month, s_day):
-        return self.hwp.LunarToSolar(lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap,
-                                     sYear=s_year, sMonth=s_month, sDay=s_day)
+        return self.hwp.LunarToSolar(lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap, sYear=s_year,
+                                     sMonth=s_month, sDay=s_day)
 
     def lunar_to_solar_by_set(self, l_year, l_month, l_day, l_leap):
         return self.hwp.LunarToSolarBySet(lYear=l_year, lMonth=l_month, lLeap=l_leap)
@@ -4957,10 +4893,10 @@ class Hwp:
     def PointToHwpUnit(self, point):
         return self.hwp.PointToHwpUnit(Point=point)
 
-    def hwp_unit_to_point(self, HwpUnit:int):
+    def hwp_unit_to_point(self, HwpUnit: int):
         return HwpUnit * 100
 
-    def HwpUnitToPoint(self, HwpUnit:int):
+    def HwpUnitToPoint(self, HwpUnit: int):
         return HwpUnit * 100
 
     def hwp_unit_to_inch(self, HwpUnit):
@@ -4974,7 +4910,6 @@ class Hwp:
 
     def InchToHwpUnit(self, inch):
         return inch * 7200
-
 
     def present_effect(self, prsnteffect):
         return self.hwp.PresentEffect(prsnteffect=prsnteffect)
@@ -5338,63 +5273,31 @@ class Hwp:
         del self.hwp
 
     def rgb_color(self, red_or_colorname: str | tuple, green=255, blue=255):
-        color_palette = {
-            "Red": (255, 0, 0),
-            "Green": (0, 255, 0),
-            "Blue": (0, 0, 255),
-            "Yellow": (255, 255, 0),
-            "Cyan": (0, 255, 255),
-            "Magenta": (255, 0, 255),
-            "Black": (0, 0, 0),
-            "White": (255, 255, 255),
-            "Gray": (128, 128, 128),
-            "Orange": (255, 165, 0),
-            "DarkBlue": (0, 0, 139),
-            "Purple": (128, 0, 128),
-            "Pink": (255, 192, 203),
-            "Lime": (0, 255, 0),
-            "SkyBlue": (135, 206, 235),
-            "Gold": (255, 215, 0),
-            "Silver": (192, 192, 192),
-            "Mint": (189, 252, 201),
-            "Tomato": (255, 99, 71),
-            "Olive": (128, 128, 0),
-            "Crimson": (220, 20, 60),
-            "Navy": (0, 0, 128),
-            "Teal": (0, 128, 128),
-            "Chocolate": (210, 105, 30),
-        }
+        color_palette = {"Red": (255, 0, 0), "Green": (0, 255, 0), "Blue": (0, 0, 255), "Yellow": (255, 255, 0),
+                         "Cyan": (0, 255, 255), "Magenta": (255, 0, 255), "Black": (0, 0, 0), "White": (255, 255, 255),
+                         "Gray": (128, 128, 128), "Orange": (255, 165, 0), "DarkBlue": (0, 0, 139),
+                         "Purple": (128, 0, 128),
+                         "Pink": (255, 192, 203), "Lime": (0, 255, 0), "SkyBlue": (135, 206, 235),
+                         "Gold": (255, 215, 0),
+                         "Silver": (192, 192, 192), "Mint": (189, 252, 201), "Tomato": (255, 99, 71),
+                         "Olive": (128, 128, 0),
+                         "Crimson": (220, 20, 60), "Navy": (0, 0, 128), "Teal": (0, 128, 128),
+                         "Chocolate": (210, 105, 30), }
         if red_or_colorname in color_palette:
             return self.hwp.RGBColor(*color_palette[red_or_colorname])
         return self.hwp.RGBColor(red=red_or_colorname, green=green, blue=blue)
 
     def RGBColor(self, red_or_colorname: str | tuple, green=255, blue=255):
-        color_palette = {
-            "Red": (255, 0, 0),
-            "Green": (0, 255, 0),
-            "Blue": (0, 0, 255),
-            "Yellow": (255, 255, 0),
-            "Cyan": (0, 255, 255),
-            "Magenta": (255, 0, 255),
-            "Black": (0, 0, 0),
-            "White": (255, 255, 255),
-            "Gray": (128, 128, 128),
-            "Orange": (255, 165, 0),
-            "DarkBlue": (0, 0, 139),
-            "Purple": (128, 0, 128),
-            "Pink": (255, 192, 203),
-            "Lime": (0, 255, 0),
-            "SkyBlue": (135, 206, 235),
-            "Gold": (255, 215, 0),
-            "Silver": (192, 192, 192),
-            "Mint": (189, 252, 201),
-            "Tomato": (255, 99, 71),
-            "Olive": (128, 128, 0),
-            "Crimson": (220, 20, 60),
-            "Navy": (0, 0, 128),
-            "Teal": (0, 128, 128),
-            "Chocolate": (210, 105, 30),
-        }
+        color_palette = {"Red": (255, 0, 0), "Green": (0, 255, 0), "Blue": (0, 0, 255), "Yellow": (255, 255, 0),
+                         "Cyan": (0, 255, 255), "Magenta": (255, 0, 255), "Black": (0, 0, 0), "White": (255, 255, 255),
+                         "Gray": (128, 128, 128), "Orange": (255, 165, 0), "DarkBlue": (0, 0, 139),
+                         "Purple": (128, 0, 128),
+                         "Pink": (255, 192, 203), "Lime": (0, 255, 0), "SkyBlue": (135, 206, 235),
+                         "Gold": (255, 215, 0),
+                         "Silver": (192, 192, 192), "Mint": (189, 252, 201), "Tomato": (255, 99, 71),
+                         "Olive": (128, 128, 0),
+                         "Crimson": (220, 20, 60), "Navy": (0, 0, 128), "Teal": (0, 128, 128),
+                         "Chocolate": (210, 105, 30), }
         if red_or_colorname in color_palette:
             return self.hwp.RGBColor(*color_palette[red_or_colorname])
         return self.hwp.RGBColor(red=red_or_colorname, green=green, blue=blue)
@@ -5471,14 +5374,12 @@ class Hwp:
         try:
             location = [i.split(": ")[1] for i in
                         subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode(
-                            encoding="cp949").split("\r\n") if
-                        i.startswith("Location: ")][0]
+                            encoding="cp949").split("\r\n") if i.startswith("Location: ")][0]
         except:
             try:
-                location = [i.split(": ")[1] for i in
-                            subprocess.check_output(['pip', 'show', 'pyhwpx'],
-                                                    stderr=subprocess.DEVNULL).decode().split("\r\n") if
-                            i.startswith("Location: ")][0]
+                location = [i.split(": ")[1] for i in subprocess.check_output(['pip', 'show', 'pyhwpx'],
+                                                                              stderr=subprocess.DEVNULL).decode().split(
+                    "\r\n") if i.startswith("Location: ")][0]
             except subprocess.CalledProcessError as e:
                 location = os.getcwd()
         winup_path = r"Software\HNC\HwpAutomation\Modules"
@@ -9189,8 +9090,8 @@ class Hwp:
         """
         if lp_image_path.lower()[1] != ":":
             lp_image_path = os.path.join(os.getcwd(), lp_image_path)
-        return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index,
-                                        X=x, Y=y, Width=width, Height=height)
+        return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index, X=x, Y=y, Width=width,
+                                        Height=height)
 
     def SetBarCodeImage(self, lp_image_path, pgno, index, x, y, width, height):
         """
@@ -9207,8 +9108,8 @@ class Hwp:
         """
         if lp_image_path.lower()[1] != ":":
             lp_image_path = os.path.join(os.getcwd(), lp_image_path)
-        return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index,
-                                        X=x, Y=y, Width=width, Height=height)
+        return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index, X=x, Y=y, Width=width,
+                                        Height=height)
 
     def set_cur_field_name(self, field, option=0, direction="", memo=""):
         """
@@ -9613,12 +9514,12 @@ class Hwp:
         return self.hwp.Slash(Slash=slash)
 
     def solar_to_lunar(self, s_year, s_month, s_day, l_year, l_month, l_day, l_leap):
-        return self.hwp.SolarToLunar(sYear=s_year, sMonth=s_month, sDay=s_day,
-                                     lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap)
+        return self.hwp.SolarToLunar(sYear=s_year, sMonth=s_month, sDay=s_day, lYear=l_year, lMonth=l_month, lDay=l_day,
+                                     lLeap=l_leap)
 
     def SolarToLunar(self, s_year, s_month, s_day, l_year, l_month, l_day, l_leap):
-        return self.hwp.SolarToLunar(sYear=s_year, sMonth=s_month, sDay=s_day,
-                                     lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap)
+        return self.hwp.SolarToLunar(sYear=s_year, sMonth=s_month, sDay=s_day, lYear=l_year, lMonth=l_month, lDay=l_day,
+                                     lLeap=l_leap)
 
     def solar_to_lunar_by_set(self, s_year, s_month, s_day):
         return self.hwp.SolarToLunarBySet(sYear=s_year, sMonth=s_month, sDay=s_day)
