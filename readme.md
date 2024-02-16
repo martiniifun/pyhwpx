@@ -43,39 +43,29 @@ hwp 문서업무 자동화에 많이 쓰이는 패턴들을
 # 사용법
 
 ```python
-from pyhwpx import *
+from pyhwpx import Hwp
 
-# 아래아한글이 바로 실행되며, hwp, hwpx 등 두 개의 인스턴스 자동생성됨.
-# 편의를 위한 커스텀 인스턴스는 hwpx로, 
-# 기존 win32com (로우레벨) 인스턴스는 hwp로 생성됨.
-# (직관적이지 않은 부분이 있음을 인정함..ㅜ)
-# (한/글 스크립트매크로와의 호환을 위해 어쩔 수 없었음. 향후 개선 예정)
-# 기존에 한/글 프로그램이 열려 있는 경우 해당 문서를 제어
+hwp = Hwp
 
 # 텍스트 삽입
-hwpx.insert_text("Hello world!")
+hwp.insert_text("Hello world!")
 
-# 위의 코드는 아래처럼 hwp 인스턴스로도 실행 가능
+# 위의 코드는 아래처럼 win32com의 hwp 인스턴스처럼 실행 가능
 pset = hwp.HParameterSet.HInsertText
 hwp.HAction.GetDefault("InsertText", pset.HSet)
 pset.Text = "Hello world!"
 hwp.HAction.Execute("InsertText", pset.HSet)
 
-# (ver.0.4.0 이상에서는 스크립트매크로 방식으로 사용 가능)
-HAction.GetDefault("InsertText", HParameterSet.HInsertText.HSet)
-HParameterSet.HInsertText = "Hello world!"
-HAction.Execute("InsertText", HParameterSet.HInsertText.HSet)
-
 # 다른이름으로 저장
-hwpx.save_as("./helloworld.hwp")
+hwp.save_as("./helloworld.hwp")
 
 # 한/글 종료
-hwpx.quit()
+hwp.quit()
 ```
 
-이밖에 구체적인 hwpx 모듈 사용법과 주요업데이트는 
+이밖에 구체적인 pyhwpx 모듈 사용법과 주요업데이트는 
 
-https://martinii.fun/ 블로그에
+https://blog.naver.com/pythonrpa/ 블로그에
 
 틈틈이 포스팅으로 남기겠습니다.
 
