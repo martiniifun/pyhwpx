@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.9.28"
+__version__ = "0.9.29"
 
 # temp 폴더 삭제
 try:
@@ -274,6 +274,121 @@ class Hwp:
         return self.KeyIndicator()[3]
 
     # 커스텀 메서드
+    def get_col_num(self):
+        cur_pos = self.get_pos()
+        self.TableColPageUp()
+        self.TableColEnd()
+        try:
+            return ord(self.KeyIndicator()[-1][1:].split(")")[0][0]) - 64
+        finally:
+            self.set_pos(*cur_pos)
+
+    def get_col_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
+        pset = self.HParameterSet.HShapeObject
+        self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+        if as_.lower() == "mm":
+            return self.HwpUnitToMili(pset.ShapeTableCell.Width)
+        elif as_.lower() in ("hwpunit", "hu"):
+            return pset.ShapeTableCell.Width
+        elif as_.lower() in ("point", "pt"):
+            return self.HwpUnitToPoint(pset.ShapeTableCell.Width)
+        elif as_.lower() == "inch":
+            return self.HwpUnitToInch(pset.ShapeTableCell.Width)
+        else:
+            raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
+
+    def set_col_width(self, width: int | list | tuple, as_:Literal["mm", "ratio"]="ratio"):
+        cur_pos = self.get_pos()
+        if type(width) == int:
+            self.TableColPageUp()
+            self.TableCellBlock()
+            self.TableCellBlockExtend()
+            self.TableColPageDown()
+            pset = self.HParameterSet.HShapeObject
+            self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+            pset.HSet.SetItem("ShapeType", 3)
+            pset.HSet.SetItem("ShapeCellSize", 1)
+            pset.ShapeTableCell.Width = self.MiliToHwpUnit(width)
+            try:
+                return self.HAction.Execute("TablePropertyDialog", pset.HSet)
+            finally:
+                self.set_pos(*cur_pos)
+        else:
+            if as_ == "ratio":
+                table_width = self.get_table_width()
+                width = [i / sum(width) * table_width for i in width]
+            self.TableColBegin()
+            for i in width:
+                self.TableColPageUp()
+                self.TableCellBlock()
+                self.TableCellBlockExtend()
+                self.TableColPageDown()
+                pset = self.HParameterSet.HShapeObject
+                self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+                pset.HSet.SetItem("ShapeType", 3)
+                pset.HSet.SetItem("ShapeCellSize", 1)
+                pset.ShapeTableCell.Width = self.MiliToHwpUnit(i)
+                self.HAction.Execute("TablePropertyDialog", pset.HSet)
+                self.TableRightCell()
+            return self.set_pos(*cur_pos)
+
+    def get_table_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm") -> int:
+        """
+        현재 캐럿이 속한 표의 너비(mm)를 리턴함
+        :return: 표의 너비(mm)
+        """
+        if as_.lower() == "mm":
+            return self.HwpUnitToMili(self.CellShape.Item("Width"))
+        elif as_.lower() in ("hwpunit", "hu"):
+            return self.CellShape.Item("Width")
+        elif as_.lower() in ("point", "pt"):
+            return self.HwpUnitToPoint(self.CellShape.Item("Width"))
+        elif as_.lower() == "inch":
+            return self.HwpUnitToInch(self.CellShape.Item("Width"))
+        else:
+            raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
+
+    def set_table_width(self, width: int = 0, as_: Literal["mm", "hwpunit", "hu"] = "mm"):
+        """
+        표 전체의 너비를 원래 열들의 비율을 유지하면서 조정하는 메서드.
+        :param width: 너비(단위는 기본 mm이며, hwpunit으로 변경 가능)
+        :param as_: 단위("mm" or "hwpunit")
+        :return: 성공시 True
+        """
+        cur_pos = self.get_pos()
+        self.TableColBegin()
+        if not width:
+            sec_def = self.hwp.HParameterSet.HSecDef
+            self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
+            width = sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
+                2)
+        table_width = self.get_table_width(as_="hu")
+        cur_col_widths = []
+        col_num = self.get_col_num()
+        for i in range(col_num):
+            cur_col_widths.append(self.get_col_width(as_="hu"))
+            self.TableRightCell()
+
+        dst_col_widths = [i / table_width * width for i in cur_col_widths]
+
+        self.TableColBegin()
+        for i in dst_col_widths:
+            self.TableColPageUp()
+            self.TableCellBlock()
+            self.TableCellBlockExtend()
+            self.TableColPageDown()
+            pset = self.HParameterSet.HShapeObject
+            self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+            pset.HSet.SetItem("ShapeType", 3)
+            pset.HSet.SetItem("ShapeCellSize", 1)
+            if as_.lower() == "mm":
+                pset.ShapeTableCell.Width = self.MiliToHwpUnit(i)
+            elif as_.lower() in ("hu", "hwpunit"):
+                pset.ShapeTableCell.Width = i
+            self.HAction.Execute("TablePropertyDialog", pset.HSet)
+            self.TableRightCell()
+        return self.set_pos(*cur_pos)
+
     def save_pdf_as_image(self, path: str = "", img_format="bmp"):
         if path == "" and self.Path:
             path = self.Path.rsplit(".hwp", maxsplit=1)[0] + ".pdf"
@@ -307,21 +422,37 @@ class Hwp:
         else:
             return excel_address_to_tuple_zero_based(result)
 
-    def adjust_cellwidth(self, width: int):
+    def set_cellwidth(self, width: int | list | tuple):
         cur_pos = self.get_pos()
-        self.TableColPageUp()
-        self.TableCellBlock()
-        self.TableCellBlockExtend()
-        self.TableColPageDown()
-        pset = self.HParameterSet.HShapeObject
-        self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
-        pset.HSet.SetItem("ShapeType", 3)
-        pset.HSet.SetItem("ShapeCellSize", 1)
-        pset.ShapeTableCell.Width = self.MiliToHwpUnit(width)
-        try:
-            return self.HAction.Execute("TablePropertyDialog", pset.HSet)
-        finally:
-            self.set_pos(*cur_pos)
+        if type(width) == int:
+            self.TableColPageUp()
+            self.TableCellBlock()
+            self.TableCellBlockExtend()
+            self.TableColPageDown()
+            pset = self.HParameterSet.HShapeObject
+            self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+            pset.HSet.SetItem("ShapeType", 3)
+            pset.HSet.SetItem("ShapeCellSize", 1)
+            pset.ShapeTableCell.Width = self.MiliToHwpUnit(width)
+            try:
+                return self.HAction.Execute("TablePropertyDialog", pset.HSet)
+            finally:
+                self.set_pos(*cur_pos)
+        else:
+            self.TableColBegin()
+            for i in width:
+                self.TableColPageUp()
+                self.TableCellBlock()
+                self.TableCellBlockExtend()
+                self.TableColPageDown()
+                pset = self.HParameterSet.HShapeObject
+                self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+                pset.HSet.SetItem("ShapeType", 3)
+                pset.HSet.SetItem("ShapeCellSize", 1)
+                pset.ShapeTableCell.Width = self.MiliToHwpUnit(i)
+                self.HAction.Execute("TablePropertyDialog", pset.HSet)
+                self.TableRightCell()
+            return self.set_pos(*cur_pos)
 
     def save_all_pictures(self, save_path="./binData"):
         current_path = self.Path
@@ -1267,7 +1398,7 @@ class Hwp:
                 sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
             2))
 
-        pset.WidthValue = self.hwp.MiliToHwpUnit(total_width)  # 표 너비
+        pset.WidthValue = total_width  # 표 너비(근데 영향이 없는 듯)
         if height and height_type == 1:  # 표높이가 정의되어 있으면
             # 페이지 최대 높이 계산
             total_height = (
