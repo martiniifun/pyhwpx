@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.9.27"
+__version__ = "0.9.28"
 
 # temp 폴더 삭제
 try:
@@ -310,7 +310,8 @@ class Hwp:
     def adjust_cellwidth(self, width: int):
         cur_pos = self.get_pos()
         self.TableColPageUp()
-        self.TableCellBlockExtendAbs()
+        self.TableCellBlock()
+        self.TableCellBlockExtend()
         self.TableColPageDown()
         pset = self.HParameterSet.HShapeObject
         self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
@@ -8973,7 +8974,16 @@ class Hwp:
         """
         if path.lower()[1] != ":":
             path = os.path.abspath(path)
-        return self.hwp.SaveAs(Path=path, Format=format, arg=arg)
+        ext = path.rsplit(".", maxsplit=1)[-1]
+        if ext.lower() == "pdf":
+            pset = self.HParameterSet.HFileOpenSave
+            self.HAction.GetDefault("FileSaveAsPdf", pset.HSet)
+            self.HParameterSet.HFileOpenSave.filename = path
+            self.HParameterSet.HFileOpenSave.Format = "PDF"
+            self.HParameterSet.HFileOpenSave.Attributes = 16384
+            return self.HAction.Execute("FileSaveAsPdf", pset.HSet)
+        else:
+            return self.hwp.SaveAs(Path=path, Format=format, arg=arg)
 
     def SaveAs(self, path, format="HWP", arg=""):
         """
