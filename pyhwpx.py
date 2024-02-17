@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.9.29"
+__version__ = "0.9.30"
 
 # temp 폴더 삭제
 try:
@@ -360,13 +360,14 @@ class Hwp:
         if not width:
             sec_def = self.hwp.HParameterSet.HSecDef
             self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
-            width = sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
-                2)
-        table_width = self.get_table_width(as_="hu")
+            width = sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(2)
+            if as_ == "mm":
+                width = self.HwpUnitToMili(width)
+        table_width = self.get_table_width(as_=as_)
         cur_col_widths = []
         col_num = self.get_col_num()
         for i in range(col_num):
-            cur_col_widths.append(self.get_col_width(as_="hu"))
+            cur_col_widths.append(self.get_col_width(as_=as_))
             self.TableRightCell()
 
         dst_col_widths = [i / table_width * width for i in cur_col_widths]
@@ -421,38 +422,6 @@ class Hwp:
             return result
         else:
             return excel_address_to_tuple_zero_based(result)
-
-    def set_cellwidth(self, width: int | list | tuple):
-        cur_pos = self.get_pos()
-        if type(width) == int:
-            self.TableColPageUp()
-            self.TableCellBlock()
-            self.TableCellBlockExtend()
-            self.TableColPageDown()
-            pset = self.HParameterSet.HShapeObject
-            self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
-            pset.HSet.SetItem("ShapeType", 3)
-            pset.HSet.SetItem("ShapeCellSize", 1)
-            pset.ShapeTableCell.Width = self.MiliToHwpUnit(width)
-            try:
-                return self.HAction.Execute("TablePropertyDialog", pset.HSet)
-            finally:
-                self.set_pos(*cur_pos)
-        else:
-            self.TableColBegin()
-            for i in width:
-                self.TableColPageUp()
-                self.TableCellBlock()
-                self.TableCellBlockExtend()
-                self.TableColPageDown()
-                pset = self.HParameterSet.HShapeObject
-                self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
-                pset.HSet.SetItem("ShapeType", 3)
-                pset.HSet.SetItem("ShapeCellSize", 1)
-                pset.ShapeTableCell.Width = self.MiliToHwpUnit(i)
-                self.HAction.Execute("TablePropertyDialog", pset.HSet)
-                self.TableRightCell()
-            return self.set_pos(*cur_pos)
 
     def save_all_pictures(self, save_path="./binData"):
         current_path = self.Path
