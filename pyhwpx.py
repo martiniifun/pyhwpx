@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.9.31"
+__version__ = "0.9.32"
 
 # temp 폴더 삭제
 try:
@@ -274,6 +274,37 @@ class Hwp:
         return self.KeyIndicator()[3]
 
     # 커스텀 메서드
+    def get_table_height(self, as_:Literal["mm", "hwpunit", "point", "inch"] = "mm"):
+        """
+        현재 캐럿이 속한 표의 너비(mm)를 리턴함
+        :return: 표의 너비(mm)
+        """
+        if as_.lower() == "mm":
+            return self.HwpUnitToMili(self.CellShape.Item("Height"))
+        elif as_.lower() in ("hwpunit", "hu"):
+            return self.CellShape.Item("Height")
+        elif as_.lower() in ("point", "pt"):
+            return self.HwpUnitToPoint(self.CellShape.Item("Height"))
+        elif as_.lower() == "inch":
+            return self.HwpUnitToInch(self.CellShape.Item("Height"))
+        else:
+            raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
+
+
+    def get_row_height(self, as_:Literal["mm", "hwpunit", "point", "inch"] = "mm"):
+        pset = self.HParameterSet.HShapeObject
+        self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+        if as_.lower() == "mm":
+            return self.HwpUnitToMili(pset.ShapeTableCell.Height)
+        elif as_.lower() in ("hwpunit", "hu"):
+            return pset.ShapeTableCell.Height
+        elif as_.lower() in ("point", "pt"):
+            return self.HwpUnitToPoint(pset.ShapeTableCell.Height)
+        elif as_.lower() == "inch":
+            return self.HwpUnitToInch(pset.ShapeTableCell.Height)
+        else:
+            raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
+
     def get_col_num(self):
         cur_pos = self.get_pos()
         self.TableColPageUp()
