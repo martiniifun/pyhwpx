@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.9.30"
+__version__ = "0.9.31"
 
 # temp 폴더 삭제
 try:
@@ -297,9 +297,9 @@ class Hwp:
         else:
             raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
 
-    def set_col_width(self, width: int | list | tuple, as_:Literal["mm", "ratio"]="ratio"):
+    def set_col_width(self, width: int | float | list | tuple, as_:Literal["mm", "ratio"]="ratio"):
         cur_pos = self.get_pos()
-        if type(width) == int:
+        if type(width) in (int, float):
             self.TableColPageUp()
             self.TableCellBlock()
             self.TableCellBlockExtend()
