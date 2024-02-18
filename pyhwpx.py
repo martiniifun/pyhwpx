@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.9.32"
+__version__ = "0.9.33"
 
 # temp 폴더 삭제
 try:
@@ -6939,7 +6939,7 @@ class Hwp:
         """
         cwd = self.get_pos()
         self.hwp.HAction.Run("MoveNextParaBegin")
-        if self.get_pos()[0] != cwd[0] or self.get_pos()[1:] != cwd[1:]:
+        if self.get_pos()[1] != cwd[1]:
             return True
         else:
             return False
