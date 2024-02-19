@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.9.33"
+__version__ = "0.9.34"
 
 # temp 폴더 삭제
 try:
@@ -737,7 +737,7 @@ class Hwp:
                 ctrl = ctrl.Prev
         return False  # raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."  #                  f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
 
-    def modify_row_height(self, height_mili):
+    def set_row_height(self, height:int|float, as_:Literal["mm", "hwpunit"]="mm"):
         """
         캐럿이 표 안에 있는 경우
         캐럿이 위치한 행의 셀 높이를 조절하는 메서드
@@ -748,7 +748,10 @@ class Hwp:
         self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
         pset.HSet.SetItem("ShapeType", 3)
         pset.HSet.SetItem("ShapeCellSize", 1)
-        pset.ShapeTableCell.Height = self.hwp.MiliToHwpUnit(height_mili)
+        if as_.lower() == "mm":
+            pset.ShapeTableCell.Height = self.hwp.MiliToHwpUnit(height)
+        else:
+            pset.ShapeTableCell.Height = height
         return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
     def remove_background_picture(self):
