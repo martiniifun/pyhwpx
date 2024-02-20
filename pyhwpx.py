@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.1"
+__version__ = "0.10.2"
 
 # temp 폴더 삭제
 try:
@@ -463,6 +463,13 @@ class Hwp:
             raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
 
     def get_col_num(self):
+        """
+        캐럿이 표 안에 있을 때,
+        현재 셀의 열번호, 즉 셀주소 문자열의 정수 부분을 리턴
+        :return:
+        """
+        if not self.is_cell():
+            raise AssertionError("현재 캐럿이 표 안에 있지 않습니다.")
         cur_pos = self.get_pos()
         self.TableColPageUp()
         self.TableColEnd()
@@ -472,6 +479,14 @@ class Hwp:
             self.set_pos(*cur_pos)
 
     def get_col_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
+        """
+        현재 캐럿이 위치한 셀(칼럼)의 너비를 리턴하는 메서드.
+        기본 단위는 mm이지만, as_ 파라미터를 사용하여 단위를 hwpunit이나 point, inch 등으로 변경 가능하다.
+        :param as_: 리턴값의 단위(mm, HwpUnit, Pt, Inch 등 4종류)
+        :return:
+        """
+        if not self.is_cell():
+            raise AssertionError("현재 캐럿이 표 안에 있지 않습니다.")
         pset = self.HParameterSet.HShapeObject
         self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
         if as_.lower() == "mm":
@@ -486,8 +501,30 @@ class Hwp:
             raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
 
     def set_col_width(self, width: int | float | list | tuple, as_:Literal["mm", "ratio"]="ratio"):
+        """
+        칼럼의 너비를 변경할 수 있는 메서드.
+        정수(int)나 부동소수점수(float) 입력시 현재 칼럼의 너비가 변경되며,
+        리스트나 튜플 등 iterable 타입 입력시에는 각 요소들의 비에 따라 칼럼들의 너비가 일괄변경된다.
+        예를 들어 3행 3열의 표 안에서 set_col_width([1,2,3]) 을 실행하는 경우
+        1열너비:2열너비:3열너비가 1:2:3으로 변경된다.
+        (표 전체의 너비가 148mm라면, 각각 24mm : 48mm : 72mm로 변경된다는 뜻이다.)
+
+        단, 열너비의 비가 아닌 "mm" 단위로 값을 입력하려면 as_="mm"로 파라미터를 수정하면 된다.
+        이 때, width에 정수 또는 부동소수점수를 입력하는 경우 as_="ratio"를 사용할 수 없다.
+
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.create_table(3,3)
+        >>> hwp.get_into_nth_table(0)
+        >>> hwp.set_col_width([1,2,3])
+        :param width: 열 너비
+        :param as_:
+        :return:
+        """
         cur_pos = self.get_pos()
         if type(width) in (int, float):
+            if as_ == "ratio":
+                raise TypeError('width에 int나 float 입력시 as_ 파라미터는 "mm"로 설정해주세요.')
             self.TableColPageUp()
             self.TableCellBlock()
             self.TableCellBlockExtend()
@@ -522,7 +559,8 @@ class Hwp:
 
     def get_table_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm") -> int:
         """
-        현재 캐럿이 속한 표의 너비(mm)를 리턴함
+        현재 캐럿이 속한 표의 너비(mm)를 리턴함.
+        이 때 수치의 단위는 as_ 파라미터를 통해 변경 가능하며, "mm", "HwpUnit", "Pt", "Inch" 등을 쓸 수 있다.
         :return: 표의 너비(mm)
         """
         if as_.lower() == "mm":
@@ -579,6 +617,19 @@ class Hwp:
         return self.set_pos(*cur_pos)
 
     def save_pdf_as_image(self, path: str = "", img_format="bmp"):
+        """
+        문서보안이나 복제방지를 위해
+        모든 페이지를 이미지로 변경 후
+        PDF로 저장하는 메서드.
+        아무 인수가 주어지지 않는 경우
+        모든 페이지를 bmp로 저장한 후에
+        현재 폴더에 {문서이름}.pdf로 저장한다.
+        (만약 저장하지 않은 빈 문서의 경우에는 result.pdf로 저장한다.)
+
+        :param path: 저장경로 및 파일명
+        :param img_format: 이미지 변환 포맷
+        :return:
+        """
         if path == "" and self.Path:
             path = self.Path.rsplit(".hwp", maxsplit=1)[0] + ".pdf"
         elif path == "" and self.Path == "":
@@ -612,6 +663,13 @@ class Hwp:
             return excel_address_to_tuple_zero_based(result)
 
     def save_all_pictures(self, save_path="./binData"):
+        """
+        현재 문서에 삽입된 모든 이미지들을
+        삽입 당시 파일명으로 복원하여 저장.
+        기본 저장폴더명은 ./binData
+        :param save_path:
+        :return:
+        """
         current_path = self.Path
         self.save_as("temp.zip", format="HWPX")
         self.open(current_path)
@@ -639,10 +697,20 @@ class Hwp:
         return True
 
     def select_ctrl(self, ctrl):
+        """
+        인수로 넣은 컨트롤 오브젝트를 선택하는 메서드.
+        :param ctrl:
+        :return:
+        """
         self.set_pos_by_set(ctrl.GetAnchorPos(0))
         return self.SelectCtrlFront()
 
     def move_to_ctrl(self, ctrl):
+        """
+        인수로 넣은 컨트롤 오브젝트의 조판 앞으로 이동하는 메서드
+        :param ctrl:
+        :return:
+        """
         return self.set_pos_by_set(ctrl.GetAnchorPos(0))
 
     def set_visible(self, visible):
@@ -656,7 +724,18 @@ class Hwp:
         """
         self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
-    def auto_spacing(self, init_spacing=0, init_ratio=100, max_spacing=50, min_spacing=50, verbose=True):
+    def auto_spacing(self, init_spacing=0, init_ratio=100, max_spacing=40, min_spacing=40, verbose=True):
+        """
+        자동 자간조정 메서드(beta)
+        라인 끝에 단어가 a와 b로 잘려 있는 경우 a>b인 경우 라인의 자간을 줄이고, a<b인 경우 자간을 넓혀
+        잘린 단어가 합쳐질 때까지 자간조정을 계속한다.
+        단, max_spacing이나 min_spacing을 넘어야 하는 경우에는 원상태로 되돌린 후
+        해당 라인의 정보를 콘솔에 출력한다.
+        (아주 너비가 작은 셀이나 글상자 등에서는 제대로 작동하지 않을 수 있음.)
+
+        init_spacing과 init_ratio 파라미터를 통해
+        자동자간조정을 실행하기 전에 모든 문서의 기본 자간장평을 설정할 수 있다.
+        """
         def reset_para_spacing(init_spacing=init_spacing, init_ratio=init_ratio):
             self.MoveListEnd()
             self.MoveSelListBegin()
@@ -760,7 +839,8 @@ class Hwp:
             print(f"자간 최소값 : {spacings.min()}({dd[spacings.min()]})")
         return True
 
-    def set_font(self, Bold="",  # 진하게(True/False)
+    def set_font(self,
+                 Bold="",  # 진하게(True/False)
                  DiacSymMark="",  # 강조점(0~12)
                  Emboss="",  # 양각(True/False)
                  Engrave="",  # 음각(True/False)
@@ -771,17 +851,15 @@ class Hwp:
                  Offset="",  # 글자위치-상하오프셋(-100 ~ 100)
                  OutLineType="",  # 외곽선타입(0~6)
                  Ratio="",  # 장평(50~200)
-                 ShadeColor="",
-                 # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+                 ShadeColor="",  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
                  ShadowColor="",  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
                  ShadowOffsetX="",  # 그림자 X오프셋(-100 ~ 100)
                  ShadowOffsetY="",  # 그림자 Y오프셋(-100 ~ 100)
                  ShadowType="",  # 그림자 유형(0: 없음, 1: 비연속, 2:연속)
                  Size="",  # 글자크기 축소확대%(10~250)
-                 SmallCaps="",  # 모르겠다. 현재는 사용하지 않는 것으로 추정
+                 SmallCaps="",  # 강조점
                  Spacing="",  # 자간(-50 ~ 50)
-                 StrikeOutColor="",
-                 # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+                 StrikeOutColor="",  # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
                  StrikeOutShape="",  # 취소선 모양(0~12, 0이 일반 취소선)
                  StrikeOutType="",  # 취소선 유무(True/False)
                  SubScript="",  # 아래첨자(True/False)
@@ -793,6 +871,40 @@ class Hwp:
                  UseFontSpace="",  # 글꼴에 어울리는 빈칸(True/False)
                  UseKerning=""  # 커닝 적용(True/False) : 차이가 없다?
                  ):
+        """
+        글자모양을 메서드 형태로 수정할 수 있는 메서드.
+        :param Bold:  # 진하게(True/False)
+        :param DiacSymMark:  # 강조점(0~12)
+        :param Emboss:  # 양각(True/False)
+        :param Engrave:  # 음각(True/False)
+        :param FaceName:  # 서체
+        :param FontType:  # 1(TTF),
+        :param Height:  # 글자크기(pt, 0.1 ~ 4096)
+        :param Italic:  # 이탤릭(True/False)
+        :param Offset:  # 글자위치-상하오프셋(-100 ~ 100)
+        :param OutLineType:  # 외곽선타입(0~6)
+        :param Ratio:   # 장평(50~200)
+        :param ShadeColor:  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+        :param ShadowColor:  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+        :param ShadowOffsetX:  # 그림자 X오프셋(-100 ~ 100)
+        :param ShadowOffsetY:  # 그림자 Y오프셋(-100 ~ 100)
+        :param ShadowType:  # 그림자 유형(0: 없음, 1: 비연속, 2:연속)
+        :param Size:  # 글자크기 축소확대%(10~250)
+        :param SmallCaps:  # 강조점
+        :param Spacing:  # 자간(-50 ~ 50)
+        :param StrikeOutColor:  # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+        :param StrikeOutShape:  # 취소선 모양(0~12, 0이 일반 취소선)
+        :param StrikeOutType:  # 취소선 유무(True/False)
+        :param SubScript:  # 아래첨자(True/False)
+        :param SuperScript:  # 위첨자(True/False)
+        :param TextColor:  # 글자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+        :param UnderlineColor:  # 밑줄색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+        :param UnderlineShape:  # 밑줄형태(0~12)
+        :param UnderlineType:  # 밑줄위치(0:없음, 1:하단, 3:상단)
+        :param UseFontSpace:  # 글꼴에 어울리는 빈칸(True/False) : 차이가 나는 폰트를 못 찾았다...
+        :param UseKerning: 커닝 적용(True/False) : 차이가 전혀 없다?
+        :return:
+        """
         d = {'Bold': Bold, 'DiacSymMark': DiacSymMark, 'Emboss': Emboss, 'Engrave': Engrave, 'FaceNameHangul': FaceName,
              'FaceNameHanja': FaceName, 'FaceNameJapanese': FaceName, 'FaceNameLatin': FaceName,
              'FaceNameOther': FaceName, 'FaceNameSymbol': FaceName, 'FaceNameUser': FaceName,
@@ -824,6 +936,11 @@ class Hwp:
         return self.hwp.HAction.Execute("CharShape", pset.HSet)
 
     def cell_fill(self, face_color: tuple[int, int, int] = (217, 217, 217)):
+        """
+        선택한 셀에 색 채우기
+        :param face_color:
+        :return:
+        """
         pset = self.hwp.HParameterSet.HCellBorderFill
         self.hwp.HAction.GetDefault("CellFill", pset.HSet)
         pset.FillAttr.type = self.hwp.BrushType("NullBrush|WinBrush")
@@ -837,6 +954,11 @@ class Hwp:
             self.hwp.HAction.Run("Cancel")
 
     def fields_to_dict(self):
+        """
+        현재 문서에 저장된 필드명과 필드값을
+        dict 타입으로 리턴하는 메서드.
+        :return:
+        """
         result = defaultdict(list)
         field_list = self.get_field_list(number=1)
         field_values = self.get_field_text(field_list)
@@ -850,7 +972,9 @@ class Hwp:
 
     def get_into_nth_table(self, n=0, select=False):
         """
-        문서 n번째 표의 첫 번째 셀로 이동하는 함수(1~)
+        문서 n번째 표의 첫 번째 셀로 이동하는 함수.
+        첫 번째 표의 인덱스가 0이며, 음수인덱스 사용 가능.
+        단, 표들의 인덱스 순서는 표의 위치 순서와 일치하지 않을 수도 있으므로 유의해야 한다.
         """
         if n >= 0:
             idx = 0
@@ -897,10 +1021,12 @@ class Hwp:
     def set_row_height(self, height:int|float, as_:Literal["mm", "hwpunit"]="mm"):
         """
         캐럿이 표 안에 있는 경우
-        캐럿이 위치한 행의 셀 높이를 조절하는 메서드
+        캐럿이 위치한 행의 셀 높이를 조절하는 메서드(기본단위는 mm)
         :param height_mili:
         :return:
         """
+        if not self.is_Cell():
+            raise AssertionError("캐럿이 표 안에 있지 않습니다. 표 안에서 실행해주세요.")
         pset = self.hwp.HParameterSet.HShapeObject
         self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
         pset.HSet.SetItem("ShapeType", 3)
@@ -935,6 +1061,8 @@ class Hwp:
         :param step:
         :return:
         """
+        if not self.is_cell():
+            raise AssertionError("캐럿이 현재 표 안에 위치하지 않습니다. 표 안에서 다시 실행해주세요.")
         pset = self.hwp.HParameterSet.HCellBorderFill
         self.hwp.HAction.GetDefault("CellFill", pset.HSet)
         if not pset.FillAttr.type:
@@ -986,7 +1114,8 @@ class Hwp:
 
     def get_available_font(self) -> list:
         """
-        현재 사용 가능한 폰트 리스트를 리턴
+        현재 사용 가능한 폰트 리스트를 리턴.
+        API 사용시 발생하는 오류로 인해 현재는 한글 폰트만 지원하고 있음.
         :return:
             현재 사용 가능한 폰트 리스트
         """
