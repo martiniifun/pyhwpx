@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.2"
+__version__ = "0.10.3"
 
 # temp 폴더 삭제
 try:
@@ -47,7 +47,7 @@ def excel_address_to_tuple_zero_based(address):
             row = row * 10 + int(char)
         else:
             raise ValueError("Invalid address format")
-    return column, row - 1
+    return row - 1, column
 
 
 # 아래아한글 오토메이션 클래스 정의
