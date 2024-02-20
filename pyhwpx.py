@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.0"
+__version__ = "0.10.1"
 
 # temp 폴더 삭제
 try:
@@ -68,7 +68,16 @@ class Hwp:
     """
 
     def __repr__(self):
-        return "<파이썬+아래아한글 자동화를 돕기 위한 함수모음 및 추상화 인스턴스 by 일상의코딩>"
+        # return "<파이썬+아래아한글 자동화를 돕기 위한 함수모음 및 추상화 인스턴스 by 일상의코딩>"
+        return """
+        파이썬으로 한/글 오토메이션API를 간편하게 사용하기 위한 메서드와 속성을 제공하는 클래스입니다.
+        파이썬 콘솔 또는 쥬피터 노트북에서 아래와 같이 실행하여 한/글을 실행할 수 있습니다.
+        
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        
+        코드 실행 전에 한/글이 실행되어 있었다면 가장 최근에 조작(또는 포커스)했던 한/글 창에 연결됩니다. 
+        """
 
     def __init__(self, new=False, visible=True, register_module=True):
         self.hwp = 0
@@ -104,50 +113,106 @@ class Hwp:
 
     @property
     def Application(self):
+        """
+        저수준의 아래아한글 오토메이션API에 직접 접근하기 위한 속성
+        사용예시는 아래와 같다.
+
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.Application.XHwpWindows.Item(0).Visible = True
+        :return: HwpApplication 객체
+        """
         return self.hwp.Application
 
     @property
     def CellShape(self):
+        """
+        셀(또는 표) 모양을 관리하는 파라미터셋 속성
+        :return:
+        """
         return self.hwp.CellShape
 
     @CellShape.setter
     def CellShape(self, prop):
+        """
+        셀(또는 표) 모양 파라미터셋을 변경할 수 있는 setter 속성
+        :param prop:
+        :return:
+        """
         self.hwp.CellShape = prop
 
     @property
     def CharShape(self):
+        """
+        글자모양 파라미터셋을 조회할 수 있는 파라미터셋 속성
+        :return:
+        """
         return self.hwp.CharShape
 
     @CharShape.setter
     def CharShape(self, prop):
+        """
+        글자모양 파라미터셋을 변경할 수 있는 setter 속성
+        :param prop:
+        :return:
+        """
         self.hwp.CharShape = prop
 
     @property
     def CLSID(self):
+        """
+        클래스아이디를 리턴하는 속성
+        :return:
+        """
         return self.hwp.CLSID
 
     @property
     def coclass_clsid(self):
+        """
+        coclass의 clsid를 리턴하는 속성
+        :return:
+        """
         return self.hwp.coclass_clsid
 
     @property
     def CurFieldState(self):
+        """
+        현재 캐럿이 들어가 있는 필드의 상태를 조회할 수 있는 속성
+        :return:
+        """
         return self.hwp.CurFieldState
 
     @property
     def CurMetatagState(self):
+        """
+        현재 캐럿이 들어가 있는 메타태그 상태를 조회할 수 있는 속성
+        :return:
+        """
         return self.hwp.CurMetatagState
 
     @property
     def CurSelectedCtrl(self):
+        """
+        현재 선택된 컨트롤을 리턴하는 속성
+        :return:
+        """
         return self.hwp.CurSelectedCtrl
 
     @property
     def EditMode(self):
+        """
+        현재 편집모드를 리턴하는 속성
+        :return:
+        """
         return self.hwp.EditMode
 
     @EditMode.setter
     def EditMode(self, prop):
+        """
+        현재 편집모드를 수정하기 위한 setter 속성
+        :param prop:
+        :return:
+        """
         self.hwp.EditMode = prop
 
     @property
@@ -156,14 +221,47 @@ class Hwp:
 
     @property
     def HAction(self):
+        """
+        한/글의 액션을 설정하고 실행하기 위한 속성.
+        GetDefalut, Execute, Run 등의 메서드를 가지고 있다.
+        :return:
+        """
         return self.hwp.HAction
 
     @property
     def HeadCtrl(self):
+        """
+        문서의 첫 번째 컨트롤을 리턴한다.
+        거의 모든 경우 HeadCtrl은 구역 정의(Section Definition, secd)를 리턴한다.
+        사용법은 아래와 같다.
+
+        >>> # 문서에 첫 번째로 삽입된 표의 컨트롤을 탐색하여 선택하는 방법
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> ctrl = hwp.HeadCtrl
+        >>> while True:
+        >>>     if ctrl.UserDesc == "표":
+        >>>         break
+        >>>     ctrl = ctrl.Next
+        >>> print("표가 선택되었습니다.")
+        """
         return self.hwp.HeadCtrl
 
     @property
     def HParameterSet(self):
+        """
+        한/글에서 실행되는 대부분의 액션에 필요한
+        다양한 파라미터셋을 제공해주는 속성.
+        사용법은 아래와 같다.
+
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> pset = hwp.HParameterSet.HInsertText
+        >>> pset.Text = "Hello world!"
+        >>> hwp.HAction.Execute("InsertText", pset.HSet)
+
+        :return:
+        """
         return self.hwp.HParameterSet
 
     @property
@@ -194,50 +292,102 @@ class Hwp:
 
     @property
     def LastCtrl(self):
+        """
+        문서의 가장 마지막 컨트롤 객체를 리턴한다.
+        연결리스트 타입이므로, HeadCtrl부터 LastCtrl까지 모두 연결되어 있고
+        LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색이 가능하다.
+        :return:
+        """
         return self.hwp.LastCtrl
 
     @property
     def PageCount(self):
+        """
+        현재 문서의 총 페이지 수를 리턴한다.
+        :return:
+        """
         return self.hwp.PageCount
 
     @property
     def ParaShape(self):
+        """
+        현재 캐럿이 위치한 문단의 문단모양 파라미터셋을 리턴하는 속성.
+        :return:
+        """
         return self.hwp.ParaShape
 
     @ParaShape.setter
     def ParaShape(self, prop):
+        """
+        문단모양 파라미터셋을 수정하기 위한 세터 프로퍼티
+        :param prop:
+        :return:
+        """
         self.hwp.ParaShape = prop
 
     @property
     def ParentCtrl(self):
+        """
+        현재 선택되어 있거나, 캐럿이 들어있는 컨트롤을 포함하는 상위 컨트롤을 리턴한다.
+        :return:
+        """
         return self.hwp.ParentCtrl
 
     @property
     def Path(self):
+        """
+        현재 빈 문서가 아닌 경우, 열려 있는 문서의 파일명을 포함한 전체경로를 리턴한다.
+        :return:
+        """
         return self.hwp.Path
 
     @property
     def SelectionMode(self):
+        """
+        현재 선택모드가 어떤 상태인지 리턴한다.
+        :return:
+        """
         return self.hwp.SelectionMode
 
     @property
     def Version(self):
+        """
+        아래아한글 프로그램의 버전을 문자열로 리턴한다.
+        :return:
+        """
         return self.hwp.Version
 
     @property
     def ViewProperties(self):
+        """
+        현재 한/글 프로그램의 보기 속성 파라미터셋을 리턴한다.
+        :return:
+        """
         return self.hwp.ViewProperties
 
     @ViewProperties.setter
     def ViewProperties(self, prop):
+        """
+        현재 한/글 프로그램의 보기 속성 파라미터셋을 수정하는 세터 프로퍼티.
+        :param prop:
+        :return:
+        """
         self.hwp.ViewProperties = prop
 
     @property
     def XHwpDocuments(self):
+        """
+        HwpApplication의 XHwpDocuments 객체를 리턴한다.
+        :return:
+        """
         return self.hwp.XHwpDocuments
 
     @property
     def XHwpMessageBox(self):
+        """
+        메시지박스 객체 리턴
+        :return:
+        """
         return self.hwp.XHwpMessageBox
 
     @property
@@ -255,6 +405,7 @@ class Hwp:
         단, 기본으로 삽입되고 선택 불가능한
         두 개의 컨트롤인 secd(섹션정의)와 cold(단정의) 두 개는
         ctrl_list에서 제외했다.
+        (모든 컨트롤을 제거하는 등의 경우 편의를 위함)
         :return:
         """
         c_list = []
@@ -290,8 +441,14 @@ class Hwp:
         else:
             raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
 
-
     def get_row_height(self, as_:Literal["mm", "hwpunit", "point", "inch"] = "mm"):
+        """
+        표 안에서 캐럿이 들어있는 행(row)의 높이를 리턴함.
+        기본단위는 mm 이지만, HwpUnit이나 Point 등 보다 작은 단위를 사용할 수 있다.
+        (메서드 내부에서는 HwpUnit으로 연산한다.)
+        :param as_: 리턴하는 수치의 단위
+        :return: 캐럿이 속한 행의 높이
+        """
         pset = self.HParameterSet.HShapeObject
         self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
         if as_.lower() == "mm":
@@ -1358,7 +1515,7 @@ class Hwp:
         """
         return round(hwp_unit / 7200 * 25.4)
 
-    def HwpUnitToMili(self, hwp_unit):
+    def HwpUnitToMili(self, hwp_unit: int) -> float:
         """
         HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
         HwpUnit으로 리턴되었거나, 녹화된 코드의 HwpUnit값을 확인할 때 유용하게 사용할 수 있다.
@@ -1366,7 +1523,7 @@ class Hwp:
         :return:
             HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값
         """
-        return round(hwp_unit / 7200 * 25.4)
+        return round(hwp_unit / 7200 * 25.4, 4)
 
     def create_table(self, rows, cols, treat_as_char: bool = True, width_type=0, height_type=0, header=True, height=0):
         """
