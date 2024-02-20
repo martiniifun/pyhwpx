@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.9.34"
+__version__ = "0.10.0"
 
 # temp 폴더 삭제
 try:
@@ -7694,6 +7694,23 @@ class Hwp:
         다음 문단과 함께
         """
         return self.hwp.HAction.Run("ParagraphShapeWithNext")
+
+    def paste(self, option: Literal[0,1,2,3,4,5,6] = 4):
+        """
+        붙여넣기 확장메서드. (참고로 paste가 아닌 Paste는 API 그대로 작동한다.)
+        option 파라미터에 할당할 수 있는 값은 모두 7가지로,
+        0: (셀) 왼쪽에 끼워넣기
+        1: 오른쪽에 끼워넣기
+        2: 위쪽에 끼워넣기
+        3: 아래쪽에 끼워넣기
+        4: 덮어쓰기
+        5: 내용만 덮어쓰기
+        6: 셀 안에 표로 넣기
+        """
+        pset = self.hwp.HParameterSet.HSelectionOpt
+        self.hwp.HAction.GetDefault("Paste", pset.HSet)
+        pset.option = option
+        self.hwp.HAction.Execute("Paste", pset.HSet)
 
     def Paste(self):
         """
