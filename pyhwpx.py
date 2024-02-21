@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.4"
+__version__ = "0.10.5"
 
 # temp 폴더 삭제
 try:
@@ -426,6 +426,8 @@ class Hwp:
 
     # 커스텀 메서드
     def table_to_string(self, rowsep="", colsep="\r\n"):
+        if not self.is_cell():
+            raise AssertionError("캐럿이 표 안에 있지 않습니다.")
         def extract_content_from_table(sep):
             pset =self.HParameterSet.HTableTblToStr
             self.HAction.GetDefault("TableTableToString", pset.HSet)
