@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.3"
+__version__ = "0.10.4"
 
 # temp 폴더 삭제
 try:
@@ -425,6 +425,29 @@ class Hwp:
         return self.KeyIndicator()[3]
 
     # 커스텀 메서드
+    def table_to_string(self, rowsep="", colsep="\r\n"):
+        def extract_content_from_table(sep):
+            pset =self.HParameterSet.HTableTblToStr
+            self.HAction.GetDefault("TableTableToString", pset.HSet)
+            # <pset.DelimiterType>
+            # 0: hwp.Delimiter("Tab")
+            # 1: hwp.Delimiter("SemiBreve") 콤마
+            # 2: hwp.Delimiter("Space")
+            # 3: hwp.Delimiter("LineSep")
+            pset.DelimiterType = self.Delimiter("LineSep")
+            pset.UserDefine = sep
+            self.HAction.Execute("TableTableToString", pset.HSet)
+
+        self.TableColPageDown()
+        i = 1
+        while self.TableSplitTable():
+            self.MoveUp()
+            i += 1
+        for i in range(i):
+            extract_content_from_table(colsep)
+            self.insert_text(rowsep)
+            self.SelectCtrlFront()
+
     def get_table_height(self, as_:Literal["mm", "hwpunit", "point", "inch"] = "mm"):
         """
         현재 캐럿이 속한 표의 너비(mm)를 리턴함
@@ -9163,6 +9186,8 @@ class Hwp:
         """
         표 나누기
         """
+        if self.get_cell_addr("tuple")[0] == 0:
+            return False
         return self.hwp.HAction.Run("TableSplitTable")
 
     def TableUpperCell(self):
