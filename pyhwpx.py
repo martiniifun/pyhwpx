@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.5"
+__version__ = "0.10.6"
 
 # temp 폴더 삭제
 try:
@@ -9608,7 +9608,17 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
-        return self.hwp.SetCurFieldName(Field=field, option=option, Direction=direction, memo=memo)
+        if not self.is_cell():
+            raise AssertionError("캐럿이 표 안에 있지 않습니다.")
+        if self.SelectionMode == 0x13:
+            pset = self.HParameterSet.HShapeObject
+            self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+            pset.HSet.SetItem("ShapeType", 3)
+            pset.HSet.SetItem("ShapeCellSize", 0)
+            pset.ShapeTableCell.CellCtrlData.name = field
+            return self.HAction.Execute("TablePropertyDialog", pset.HSet)
+        else:
+            return self.hwp.SetCurFieldName(Field=field, option=option, Direction=direction, memo=memo)
 
     def SetCurFieldName(self, field, option=0, direction="", memo=""):
         """
@@ -9633,7 +9643,17 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
-        return self.hwp.SetCurFieldName(Field=field, option=option, Direction=direction, memo=memo)
+        if not self.is_cell():
+            raise AssertionError("캐럿이 표 안에 있지 않습니다.")
+        if self.SelectionMode == 0x13:
+            pset = self.HParameterSet.HShapeObject
+            self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+            pset.HSet.SetItem("ShapeType", 3)
+            pset.HSet.SetItem("ShapeCellSize", 0)
+            pset.ShapeTableCell.CellCtrlData.name = field
+            return self.HAction.Execute("TablePropertyDialog", pset.HSet)
+        else:
+            return self.hwp.SetCurFieldName(Field=field, option=option, Direction=direction, memo=memo)
 
     def set_cur_metatag_name(self, tag):
         return self.hwp.SetCurMetatagName(tag=tag)
