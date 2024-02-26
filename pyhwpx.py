@@ -18,7 +18,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.6"
+__version__ = "0.10.7"
 
 # temp 폴더 삭제
 try:
@@ -1859,7 +1859,7 @@ class Hwp:
         print(os.path.join(os.getcwd(), filename))
         return None
 
-    def table_to_df(self, n="", startrow=0):
+    def table_to_df(self, n="", startrow=0, columns=[]):
         """
         한/글 문서의 n번째 표를 판다스 데이터프레임으로 리턴하는 메서드.
         n을 넣지 않는 경우, 캐럿이 셀에 있다면 해당 표를 df로,
@@ -1940,8 +1940,14 @@ class Hwp:
                 if start:
                     data.append(self.get_selected_text())
 
+        if startrow:
+            col_count -= 1
+            data = data[1:]
         array = np.array(data).reshape(-1, col_count)
-        df = pd.DataFrame(array[1:], columns=array[0])
+        if not columns:
+            df = pd.DataFrame(array[1:], columns=array[0])
+        else:
+            df = pd.DataFrame(array, columns=columns)
         self.hwp.SetPos(*start_pos)
         return df
 
