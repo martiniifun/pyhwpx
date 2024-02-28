@@ -45,7 +45,7 @@ hwp 문서업무 자동화에 많이 쓰이는 패턴들을
 ```python
 from pyhwpx import Hwp
 
-hwp = Hwp
+hwp = Hwp()
 
 # 텍스트 삽입
 hwp.insert_text("Hello world!")

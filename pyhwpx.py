@@ -2,6 +2,7 @@ import json
 import os
 import re
 import shutil
+import sys
 import tempfile
 import urllib.error
 import zipfile
@@ -18,7 +19,13 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.7"
+__version__ = "0.10.16"
+
+# for pyinstaller
+if getattr(sys, 'frozen', False):
+    pyinstaller_path = sys._MEIPASS
+else:
+    pyinstaller_path = os.path.dirname(os.path.abspath(__file__))
 
 # temp 폴더 삭제
 try:
@@ -72,10 +79,10 @@ class Hwp:
         return """
         파이썬으로 한/글 오토메이션API를 간편하게 사용하기 위한 메서드와 속성을 제공하는 클래스입니다.
         파이썬 콘솔 또는 쥬피터 노트북에서 아래와 같이 실행하여 한/글을 실행할 수 있습니다.
-        
+
         >>> from pyhwpx import Hwp
         >>> hwp = Hwp()
-        
+
         코드 실행 전에 한/글이 실행되어 있었다면 가장 최근에 조작(또는 포커스)했던 한/글 창에 연결됩니다. 
         """
 
@@ -428,8 +435,9 @@ class Hwp:
     def table_to_string(self, rowsep="", colsep="\r\n"):
         if not self.is_cell():
             raise AssertionError("캐럿이 표 안에 있지 않습니다.")
+
         def extract_content_from_table(sep):
-            pset =self.HParameterSet.HTableTblToStr
+            pset = self.HParameterSet.HTableTblToStr
             self.HAction.GetDefault("TableTableToString", pset.HSet)
             # <pset.DelimiterType>
             # 0: hwp.Delimiter("Tab")
@@ -450,7 +458,7 @@ class Hwp:
             self.insert_text(rowsep)
             self.SelectCtrlFront()
 
-    def get_table_height(self, as_:Literal["mm", "hwpunit", "point", "inch"] = "mm"):
+    def get_table_height(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
         """
         현재 캐럿이 속한 표의 너비(mm)를 리턴함
         :return: 표의 너비(mm)
@@ -466,7 +474,7 @@ class Hwp:
         else:
             raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
 
-    def get_row_height(self, as_:Literal["mm", "hwpunit", "point", "inch"] = "mm"):
+    def get_row_height(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
         """
         표 안에서 캐럿이 들어있는 행(row)의 높이를 리턴함.
         기본단위는 mm 이지만, HwpUnit이나 Point 등 보다 작은 단위를 사용할 수 있다.
@@ -525,7 +533,7 @@ class Hwp:
         else:
             raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
 
-    def set_col_width(self, width: int | float | list | tuple, as_:Literal["mm", "ratio"]="ratio"):
+    def set_col_width(self, width: int | float | list | tuple, as_: Literal["mm", "ratio"] = "ratio"):
         """
         칼럼의 너비를 변경할 수 있는 메서드.
         정수(int)나 부동소수점수(float) 입력시 현재 칼럼의 너비가 변경되며,
@@ -611,7 +619,8 @@ class Hwp:
         if not width:
             sec_def = self.hwp.HParameterSet.HSecDef
             self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
-            width = sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(2)
+            width = sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
+                2)
             if as_ == "mm":
                 width = self.HwpUnitToMili(width)
         table_width = self.get_table_width(as_=as_)
@@ -761,6 +770,7 @@ class Hwp:
         init_spacing과 init_ratio 파라미터를 통해
         자동자간조정을 실행하기 전에 모든 문서의 기본 자간장평을 설정할 수 있다.
         """
+
         def reset_para_spacing(init_spacing=init_spacing, init_ratio=init_ratio):
             self.MoveListEnd()
             self.MoveSelListBegin()
@@ -876,7 +886,8 @@ class Hwp:
                  Offset="",  # 글자위치-상하오프셋(-100 ~ 100)
                  OutLineType="",  # 외곽선타입(0~6)
                  Ratio="",  # 장평(50~200)
-                 ShadeColor="",  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+                 ShadeColor="",
+                 # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
                  ShadowColor="",  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
                  ShadowOffsetX="",  # 그림자 X오프셋(-100 ~ 100)
                  ShadowOffsetY="",  # 그림자 Y오프셋(-100 ~ 100)
@@ -884,7 +895,8 @@ class Hwp:
                  Size="",  # 글자크기 축소확대%(10~250)
                  SmallCaps="",  # 강조점
                  Spacing="",  # 자간(-50 ~ 50)
-                 StrikeOutColor="",  # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+                 StrikeOutColor="",
+                 # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
                  StrikeOutShape="",  # 취소선 모양(0~12, 0이 일반 취소선)
                  StrikeOutType="",  # 취소선 유무(True/False)
                  SubScript="",  # 아래첨자(True/False)
@@ -1043,7 +1055,7 @@ class Hwp:
                 ctrl = ctrl.Prev
         return False  # raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."  #                  f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
 
-    def set_row_height(self, height:int|float, as_:Literal["mm", "hwpunit"]="mm"):
+    def set_row_height(self, height: int | float, as_: Literal["mm", "hwpunit"] = "mm"):
         """
         캐럿이 표 안에 있는 경우
         캐럿이 위치한 행의 셀 높이를 조절하는 메서드(기본단위는 mm)
@@ -5833,7 +5845,38 @@ class Hwp:
                                                                               stderr=subprocess.DEVNULL).decode().split(
                     "\r\n") if i.startswith("Location: ")][0]
             except subprocess.CalledProcessError as e:
-                location = os.getcwd()
+                # FilePathCheckerModule.dll을 못 찾는 경우에는 아래 분기 중 하나를 실행
+                #
+                # 1. pyinstaller로 컴파일했고,
+                #    --add-binary="FilePathCheckerModule.dll:." 옵션을 추가한 경우
+                location = ""
+                for dirpath, dirnames, filenames in os.walk(pyinstaller_path):
+                    for filename in filenames:
+                        if filename == "FilePathCheckerModule.dll":
+                            location = dirpath
+                # 2. "FilePathCheckerModule.dll" 파일을 실행파일과 같은 경로에 둔 경우
+                if "FilePathCheckerModule.dll" in os.listdir(os.getcwd()):
+                    location = os.getcwd()
+
+                # 3. 위의 두 경우가 아닐 때, 인터넷에 연결되어 있는 경우에는
+                #    사용자 폴더(예: c:\\users\\user)에
+                #    FilePathCheckerModule.dll을 다운로드하기.
+                if not location:
+                    # pyhwpx가 설치되어 있지 않은 PC에서는,
+                    # 공식사이트에서 다운을 받게 하자.
+                    from zipfile import ZipFile
+                    print("downloading FilePathCheckerModule.dll to User Root")
+                    f = request.urlretrieve(
+                        "https://github.com/hancom-io/devcenter-archive/raw/main/hwp-automation/%EB%B3%B4%EC%95%88%EB%AA%A8%EB%93%88(Automation).zip",
+                        filename=os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
+                    with ZipFile(f[0]) as zf:
+                        zf.extract(
+                            "FilePathCheckerModuleExample.dll",
+                            os.path.join(os.environ["USERPROFILE"]))
+                    os.remove(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
+                    os.rename(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModuleExample.dll"),
+                              os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll"))
+                    location = os.environ["USERPROFILE"]
         winup_path = r"Software\HNC\HwpAutomation\Modules"
 
         # HKEY_LOCAL_MACHINE와 연결 생성 후 핸들 얻음
@@ -8012,7 +8055,7 @@ class Hwp:
         """
         return self.hwp.HAction.Run("ParagraphShapeWithNext")
 
-    def paste(self, option: Literal[0,1,2,3,4,5,6] = 4):
+    def paste(self, option: Literal[0, 1, 2, 3, 4, 5, 6] = 4):
         """
         붙여넣기 확장메서드. (참고로 paste가 아닌 Paste는 API 그대로 작동한다.)
         option 파라미터에 할당할 수 있는 값은 모두 7가지로,
@@ -9190,6 +9233,23 @@ class Hwp:
         self.HAction.GetDefault("TableRightCellAppend", pset.HSet)
         return self.HAction.Execute("TableRightCellAppend", pset.HSet)
 
+    def TableSplitCell(self, Rows=2, Cols=0, DistributeHeight=0, Merge=0):
+        """
+        셀 나누기. Run메서드 같아 보이지만,
+        엄연히 파라미터셋이 필수인 정통액션이다.
+
+        Rows: 나눌 행 수(기본값:2)
+        Cols: 나눌 열 수(기본값:0)
+        DistributeHeight: 줄 높이를 같게 나누기(0 or 1)
+        Merge: 셀을 합친 후 나누기(0 or 1)
+        """
+        pset = self.HParameterSet.HTableSplitCell
+        pset.Rows = Rows
+        pset.Cols = Cols
+        pset.DistributeHeight = DistributeHeight
+        pset.Merge = Merge
+        return self.HAction.Execute("TableSplitCell", pset.HSet)
+
     def TableSplitTable(self):
         """
         표 나누기
@@ -9816,7 +9876,7 @@ class Hwp:
             성공하면 True, 실패하면 False
         """
         self.hwp.SetPos(List=list, Para=para, pos=pos)
-        if para == self.get_pos()[1]:
+        if (list, para) == self.get_pos()[:2]:
             return True
         else:
             return False
