@@ -17,9 +17,9 @@ import pandas as pd
 import pyperclip as cb
 import pythoncom
 import win32com.client as win32
-from PIL import Image, ImageGrab
+from PIL import Image
 
-__version__ = "0.10.19"
+__version__ = "0.10.20"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
