@@ -17,9 +17,9 @@ import pandas as pd
 import pyperclip as cb
 import pythoncom
 import win32com.client as win32
-from PIL import Image
+from PIL import Image, ImageGrab
 
-__version__ = "0.10.16"
+__version__ = "0.10.19"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -38,6 +38,30 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
 # 헬퍼함수
+def rename_duplicates_in_list(file_list):
+    """
+    문서 내 이미지를 파일로 저장할 때,
+    동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 함수
+    """
+    # 딕셔너리를 사용하여 중복 횟수를 추적합니다.
+    counts = {}
+
+    # 리스트를 순회하며 중복 횟수를 계산합니다.
+    for i, item in enumerate(file_list):
+        # 중복된 아이템을 찾았을 경우
+        if item in counts:
+            counts[item] += 1
+            new_item = f"{os.path.splitext(item)[0]}({counts[item]}){os.path.splitext(item)[1]}"
+        else:
+            counts[item] = 0
+            new_item = item
+
+        # 리스트를 업데이트합니다.
+        file_list[i] = new_item
+
+    return file_list
+
+
 def check_tuple_of_ints(var):
     if isinstance(var, tuple):  # 먼저 변수가 튜플인지 확인
         return all(isinstance(item, int) for item in var)  # 모든 요소가 int인지 확인
@@ -432,6 +456,153 @@ class Hwp:
         return self.KeyIndicator()[3]
 
     # 커스텀 메서드
+    def save_image(self, ctrl, path="./img.png", format=""):
+        path = os.path.abspath("img.jpg")
+        self.find_ctrl()
+        if not self.CurSelectedCtrl.CtrlID == "gso":
+            raise AttributeError("캐럿이 이미지 앞에 있거나, 이미지를 선택한 상태여야 합니다.")
+        pset = self.HParameterSet.HShapeObjSaveAsPicture
+        self.HAction.GetDefault("PictureSave", pset.HSet)
+        pset.Path = path
+        pset.Ext = "BMP"
+        self.HAction.Execute("PictureSave", pset.HSet)
+        pset = self.HParameterSet.HShapeObject
+        self.HAction.GetDefault("ShapeObjDialog", pset.HSet)
+        pset.ShapeDrawImageAttr.Embedded = 1
+        pset.HSet.SetItem("ShapeType", 1)
+        try:
+            return self.HAction.Execute("ShapeObjDialog", pset.HSet)
+        finally:
+            if not os.path.exists(path):
+                file_list = os.listdir(os.path.dirname(path))
+                path_list = [os.path.join(os.path.dirname(path), i) for i in file_list]
+                temp_file = \
+                sorted([i for i in path_list if i.startswith(os.path.splitext(path))], key=os.path.getmtime)[-1]
+                Image.open(temp_file).save(path)
+                os.remove(temp_file)
+            print(f"image saved to {path}")
+
+    def NewNumberModify(self, new_number: int,
+                        num_type: Literal["Page", "Figure", "Footnote", "Table", "Endnote", "Equation"] = "Page"):
+        """
+        새 번호 조판을 수정할 수 있는 메서드.
+        실행 전 [새 번호] 조판 옆에 캐럿이 위치해 있어야 하며,
+        그렇지 않을 경우
+        (쪽번호 외에도 그림, 각주, 표, 미주, 수식 등)
+        다만, 주의할 점이 세 가지 있다.
+        1. 기존에 쪽번호가 없는 문서에서는 작동하지 않으므로
+           쪽번호가 정의되어 있어야 한다.
+           (쪽번호 정의는 PageNumPos 메서드 참조)
+        2. 새 번호를 지정한 페이지 및 이후 모든 페이지가
+           영향을 받는다.
+        3. NewNumber 실행시점의 캐럿위치 뒤쪽(해당 페이지 내)에
+           NewNumber 조판이 있는 경우, 삽입한 조판은 무효가 된다.
+           (페이지 맨 뒤쪽의 새 번호만 유효함)
+        Todo: 페이지 내에 캐럿 뒤쪽으로 [새번호]조판이 있는 경우 지워버리기
+
+        :param new_number:
+            새 번호
+        :param num_type:
+            타입 지정
+            "Page": 쪽(기본값)
+            "Figure": 그림
+            "Footnote": 각주
+            "Table": 표
+            "Endnote": 미주
+            "Equation": 수식
+        :return:
+            성공시 True, 실패시 False를 리턴
+        """
+        current_pos = self.GetPos()
+        current_page = self.PageCount
+        ctrl_name = self.FindCtrl()
+        if ctrl_name != "nwno" or self.PageCount != current_page:
+            self.SetPos(*current_pos)
+            return False
+        pset = self.HParameterSet.HAutoNum
+        self.HAction.GetDefault("NewNumberModify", pset.HSet)
+        pset.NumType = self.AutoNumType(num_type)
+        pset.NewNumber = new_number
+        return self.HAction.Execute("NewNumberModify", pset.HSet)
+
+    def NewNumber(self, new_number: int,
+                  num_type: Literal["Page", "Figure", "Footnote", "Table", "Endnote", "Equation"] = "Page"):
+        """
+        새 번호를 매길 수 있는 메서드.
+        (쪽번호 외에도 그림, 각주, 표, 미주, 수식 등)
+        다만, 주의할 점이 세 가지 있다.
+        1. 기존에 쪽번호가 없는 문서에서는 작동하지 않으므로
+           쪽번호가 정의되어 있어야 한다.
+           (쪽번호 정의는 PageNumPos 메서드 참조)
+        2. 새 번호를 지정한 페이지 및 이후 모든 페이지가
+           영향을 받는다.
+        3. NewNumber 실행시점의 캐럿위치 뒤쪽(해당 페이지 내)에
+           NewNumber 조판이 있는 경우, 삽입한 조판은 무효가 된다.
+           (페이지 맨 뒤쪽의 새 번호만 유효함)
+
+        :param new_number:
+            새 번호
+        :param num_type:
+            타입 지정
+            "Page": 쪽(기본값)
+            "Figure": 그림
+            "Footnote": 각주
+            "Table": 표
+            "Endnote": 미주
+            "Equation": 수식
+        :return:
+            성공시 True, 실패시 False를 리턴
+        """
+        pset = self.HParameterSet.HAutoNum
+        self.HAction.GetDefault("NewNumber", pset.HSet)
+        pset.NumType = self.AutoNumType(num_type)
+        pset.NewNumber = new_number
+        return self.HAction.Execute("NewNumber", pset.HSet)
+
+    def PageNumPos(self, global_start: int = 1, position: Literal[
+        "TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter",
+                   number_format: Literal[
+                       "Digit", "CircledDigit", "RomanCapital", "RomanSmall", "LatinCapital", "HangulSyllable", "Ideograph", "DecagonCircle", "DecagonCircleHanja"] = "Digit",
+                   side_char=True):
+        """
+        문서 전체에 쪽번호를 삽입하는 메서드.
+        :param global_start:
+            시작번호를 지정할 수 있음(새 번호 아님. 새 번호는 hwp.NewNumber(n)을 사용할 것)
+        :param position:
+            쪽번호 위치를 지정하는 파라미터
+            TopLeft, TopCenter, TopRight
+            BottomLeft, BottomCenter(기본값), BottomRight
+            InsideTop, OutsideTop, InsideBottom, OutsideBottom
+            None(쪽번호숨김과 유사)
+        :param number_format:
+            쪽번호 서식을 지정하는 파라미터
+	        "Digit": (1 2 3),
+	        "CircledDigit": (① ② ③),
+	        "RomanCapital":(I II III),
+	        "RomanSmall": (i ii iii) ,
+	        "LatinCapital": (A B C),
+	        "HangulSyllable":(가 나 다),
+	        "Ideograph": (一 二 三),
+	        "DecagonCircle": (갑 을 병),
+	        "DecagonCircleHanja": (甲 乙 丙),
+        :param side_char:
+            줄표 삽입 여부(bool)
+            True : 줄표 삽입(기본값)
+            False : 줄표 삽입하지 않음
+        :return:
+            성공시 True, 실패시 False를 리턴
+        """
+        pset = self.HParameterSet.HPageNumPos
+        self.HAction.GetDefault("PageNumPos", pset.HSet)
+        pset.DrawPos = self.PageNumPosition(position)
+        pset.NumberFormat = self.NumberFormat(number_format)
+        pset.NewNumber = global_start
+        if side_char:
+            pset.SideChar = 45
+        else:
+            pset.SideChar = 0
+        return self.HAction.Execute("PageNumPos", pset.HSet)
+
     def table_to_string(self, rowsep="", colsep="\r\n"):
         if not self.is_cell():
             raise AssertionError("캐럿이 표 안에 있지 않습니다.")
@@ -590,7 +761,7 @@ class Hwp:
                 self.TableRightCell()
             return self.set_pos(*cur_pos)
 
-    def get_table_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm") -> int:
+    def get_table_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
         """
         현재 캐럿이 속한 표의 너비(mm)를 리턴함.
         이 때 수치의 단위는 as_ 파라미터를 통해 변경 가능하며, "mm", "HwpUnit", "Pt", "Inch" 등을 쓸 수 있다.
@@ -706,7 +877,8 @@ class Hwp:
         """
         current_path = self.Path
         self.save_as("temp.zip", format="HWPX")
-        self.open(current_path)
+        if current_path:
+            self.open(current_path)
         with zipfile.ZipFile("./temp.zip", 'r') as zf:
             zf.extractall(path="./temp")
         os.remove("./temp.zip")
@@ -718,6 +890,7 @@ class Hwp:
         with open("./temp/Contents/section0.xml", encoding="utf-8") as f:
             content = f.read()
         bin_list = re.findall(r'원본 그림의 이름: (.*?\..+?)\n', content)
+        bin_list = rename_duplicates_in_list(bin_list)
         os.chdir(save_path)
         file_list = os.listdir()
         for i in file_list:
@@ -1582,6 +1755,33 @@ class Hwp:
                 self.set_cur_field_name(field_name, option=1, direction=direction, memo=memo)
             else:
                 pass
+
+    def find_replace(self, src, dst, regex=False, direction: Literal["Backward", "Forward", "AllDoc"] = "AllDoc"):
+        """
+        아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,
+        re=True로 설정하고 실행하면,
+        문단별로 잘라서 문서 전체를 순회하며
+        파이썬의 re.sub 함수를 실행한다.
+        """
+        if regex:
+            whole_text = self.get_text_file()
+            src_list = [i.group() for i in re.finditer(src, whole_text)]
+            dst_list = [re.sub(src, dst, i) for i in src_list]
+            for i, j in zip(src_list, dst_list):
+                return self.find_replace(i, j, direction=direction)
+
+        else:
+            pset = self.hwp.HParameterSet.HFindReplace
+            # self.hwp.HAction.GetDefault("AllReplace", pset.HSet)
+            pset.Direction = self.hwp.FindDir("AllDoc")
+            pset.FindString = src  # "\\r\\n"
+            pset.ReplaceString = dst  # "^n"
+            pset.ReplaceMode = 1
+            pset.IgnoreMessage = 1
+            pset.HanjaFromHangul = 1
+            pset.AutoSpell = 1
+            pset.FindType = 1
+            return self.hwp.HAction.Execute("ExecReplace", pset.HSet)
 
     def find_replace_all(self, src, dst, regex=False):
         """
@@ -5321,10 +5521,12 @@ class Hwp:
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.Open(filename=filename, Format=format, arg=arg)
 
-    def page_num_position(self, pagenumpos):
+    def page_num_position(self, pagenumpos: Literal[
+        "TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter"):
         return self.hwp.PageNumPosition(pagenumpos=pagenumpos)
 
-    def PageNumPosition(self, pagenumpos):
+    def PageNumPosition(self, pagenumpos: Literal[
+        "TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter"):
         return self.hwp.PageNumPosition(pagenumpos=pagenumpos)
 
     def page_type(self, page_type):
