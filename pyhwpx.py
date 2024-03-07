@@ -19,7 +19,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.20"
+__version__ = "0.10.22"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -477,7 +477,7 @@ class Hwp:
                 file_list = os.listdir(os.path.dirname(path))
                 path_list = [os.path.join(os.path.dirname(path), i) for i in file_list]
                 temp_file = \
-                sorted([i for i in path_list if i.startswith(os.path.splitext(path))], key=os.path.getmtime)[-1]
+                    sorted([i for i in path_list if i.startswith(os.path.splitext(path))], key=os.path.getmtime)[-1]
                 Image.open(temp_file).save(path)
                 os.remove(temp_file)
             print(f"image saved to {path}")
@@ -1658,13 +1658,11 @@ class Hwp:
         else:
             return False
 
-    def find(self, src, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex=False):
+    def find_backward(self, src, regex=False):
         """
-        캐럿 뒤의 특정 단어를 찾아가는 메서드.
+        문서 위쪽으로 find 메서드를 수행.
         해당 단어를 선택한 상태가 되며,
-        문서 끝에 도달시 문서 처음부터 탐색을 재개하고,
-        원래 캐럿위치까지 왔을 때 False를 리턴하므로
-        while문의 조건으로 사용할 수 있다.
+        문서 처음에 도달시 False 리턴
 
         :param src:
             찾을 단어
@@ -1672,7 +1670,72 @@ class Hwp:
             단어를 찾으면 찾아가서 선택한 후 True를 리턴,
             단어가 더이상 없으면 False를 리턴
         """
-        cwd = self.get_pos()
+        self.SetMessageBoxMode(0x2fff1)
+        init_pos = str(self.KeyIndicator())
+        pset = self.hwp.HParameterSet.HFindReplace
+        pset.MatchCase = 1
+        pset.SeveralWords = 1
+        pset.UseWildCards = 1
+        pset.AutoSpell = 1
+        pset.Direction = self.find_dir("Backward")
+        pset.FindString = src
+        pset.IgnoreMessage = 0
+        pset.HanjaFromHangul = 1
+        pset.FindRegExp = regex
+        try:
+            return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
+        finally:
+            self.SetMessageBoxMode(0xfffff)
+
+    def find_forward(self, src, regex=False):
+        """
+        문서 아래쪽으로 find를 수행하는 메서드.
+        해당 단어를 선택한 상태가 되며,
+        문서 끝에 도달시 False 리턴.
+
+        :param src:
+            찾을 단어
+        :return:
+            단어를 찾으면 찾아가서 선택한 후 True를 리턴,
+            단어가 더이상 없으면 False를 리턴
+        """
+        self.SetMessageBoxMode(0x2fff1)
+        init_pos = str(self.KeyIndicator())
+        pset = self.hwp.HParameterSet.HFindReplace
+        pset.MatchCase = 1
+        pset.SeveralWords = 1
+        pset.UseWildCards = 1
+        pset.AutoSpell = 1
+        pset.Direction = self.find_dir("Forward")
+        pset.FindString = src
+        pset.IgnoreMessage = 0
+        pset.HanjaFromHangul = 1
+        pset.FindRegExp = regex
+        try:
+            return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
+        finally:
+            self.SetMessageBoxMode(0xfffff)
+
+    def find(self, src, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex=False):
+        """
+        direction 방향으로 특정 단어를 찾아가는 메서드.
+        해당 단어를 선택한 상태가 되며,
+        탐색방향에 src 문자열이 없는 경우 False를 리턴
+
+        :param src:
+            찾을 단어
+        :param direction:
+            탐색방향
+            "Forward": 아래쪽으로
+            "Backward": 위쪽으로
+            "AllDoc": 아래쪽 우선으로 찾고 문서끝 도달시 처음으로 돌아감.
+
+        :return:
+            단어를 찾으면 찾아가서 선택한 후 True를 리턴,
+            단어가 더이상 없으면 False를 리턴
+        """
+        self.SetMessageBoxMode(0x2fff1)
+        init_pos = str(self.KeyIndicator())
         pset = self.hwp.HParameterSet.HFindReplace
         # self.hwp.HAction.GetDefault("RepeatFind", pset.HSet)
         pset.MatchCase = 1
@@ -1681,24 +1744,13 @@ class Hwp:
         pset.AutoSpell = 1
         pset.Direction = self.find_dir(direction)
         pset.FindString = src
-        pset.IgnoreMessage = 1
+        pset.IgnoreMessage = 0
         pset.HanjaFromHangul = 1
         pset.FindRegExp = regex
-        r = self.hwp.HAction.Execute("RepeatFind", pset.HSet)
-        if direction == "Forward":
-            if self.get_pos() > cwd or cwd[0]:
-                return True
-            else:
-                self.Cancel()
-                return False
-        elif direction == "Backward":
-            if self.get_pos() < cwd or self.get_pos()[0]:
-                return True
-            else:
-                self.Cancel()
-                return False
-        else:
-            return r
+        try:
+            return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
+        finally:
+            self.SetMessageBoxMode(0xfffff)
 
     def set_field_by_bracket(self):
         """
@@ -1756,32 +1808,39 @@ class Hwp:
             else:
                 pass
 
-    def find_replace(self, src, dst, regex=False, direction: Literal["Backward", "Forward", "AllDoc"] = "AllDoc"):
+    def find_replace(self, src, dst, regex=False, direction: Literal["Backward", "Forward", "AllDoc"] = "Forward"):
         """
         아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,
         re=True로 설정하고 실행하면,
         문단별로 잘라서 문서 전체를 순회하며
         파이썬의 re.sub 함수를 실행한다.
         """
+        self.SetMessageBoxMode(0x2fff1)
         if regex:
             whole_text = self.get_text_file()
             src_list = [i.group() for i in re.finditer(src, whole_text)]
             dst_list = [re.sub(src, dst, i) for i in src_list]
             for i, j in zip(src_list, dst_list):
-                return self.find_replace(i, j, direction=direction)
+                try:
+                    return self.find_replace(i, j, direction=direction)
+                finally:
+                    self.SetMessageBoxMode(0xfffff)
 
         else:
             pset = self.hwp.HParameterSet.HFindReplace
             # self.hwp.HAction.GetDefault("AllReplace", pset.HSet)
-            pset.Direction = self.hwp.FindDir("AllDoc")
+            pset.Direction = self.hwp.FindDir(direction)
             pset.FindString = src  # "\\r\\n"
             pset.ReplaceString = dst  # "^n"
             pset.ReplaceMode = 1
-            pset.IgnoreMessage = 1
+            pset.IgnoreMessage = 0
             pset.HanjaFromHangul = 1
             pset.AutoSpell = 1
             pset.FindType = 1
-            return self.hwp.HAction.Execute("ExecReplace", pset.HSet)
+            try:
+                return self.hwp.HAction.Execute("ExecReplace", pset.HSet)
+            finally:
+                self.SetMessageBoxMode(0xfffff)
 
     def find_replace_all(self, src, dst, regex=False):
         """
@@ -1790,6 +1849,7 @@ class Hwp:
         문단별로 잘라서 문서 전체를 순회하며
         파이썬의 re.sub 함수를 실행한다.
         """
+        self.SetMessageBoxMode(0x2fff1)
         if regex:
             whole_text = self.get_text_file()
             src_list = [i.group() for i in re.finditer(src, whole_text)]
@@ -1803,11 +1863,14 @@ class Hwp:
             pset.FindString = src  # "\\r\\n"
             pset.ReplaceString = dst  # "^n"
             pset.ReplaceMode = 1
-            pset.IgnoreMessage = 1
+            pset.IgnoreMessage = 0
             pset.HanjaFromHangul = 1
             pset.AutoSpell = 1
             pset.FindType = 1
-            return self.hwp.HAction.Execute("AllReplace", pset.HSet)
+            try:
+                return self.hwp.HAction.Execute("AllReplace", pset.HSet)
+            finally:
+                self.SetMessageBoxMode(0xfffff)
 
     def clipboard_to_pyfunc(self):
         """
@@ -10179,7 +10242,8 @@ class Hwp:
         """
         return self.hwp.SetPrivateInfoPassword(Password=password)
 
-    def set_text_file(self, data: str, format="HWPML2X", option=""):
+    def set_text_file(self, data: str, format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
+                      option="insertfile"):
         """
         문서를 문자열로 지정한다.
 
@@ -10201,7 +10265,8 @@ class Hwp:
         """
         return self.hwp.SetTextFile(data=data, Format=format, option=option)
 
-    def SetTextFile(self, data: str, format="HWPML2X", option=""):
+    def SetTextFile(self, data: str, format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
+                    option="insertfile"):
         """
         문서를 문자열로 지정한다.
 
