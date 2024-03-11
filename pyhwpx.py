@@ -19,7 +19,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.24"
+__version__ = "0.10.26"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -871,14 +871,21 @@ class Hwp:
         """
         현재 문서에 삽입된 모든 이미지들을
         삽입 당시 파일명으로 복원하여 저장.
-        기본 저장폴더명은 ./binData
+        단, 문서 안에서 복사했거나 중복삽입한 이미지는 한 개만 저장됨.
+        기본 저장폴더명은 ./binData이며
+        기존에 save_path가 존재하는 경우,
+        그 안의 파일들은 삭제되므로 유의해야 함.
+
         :param save_path:
+            저장할 하위경로 이름
         :return:
         """
         current_path = self.Path
+        if not current_path:
+            raise FileNotFoundError("저장 후 진행해주시기 바랍니다.")
         self.save_as("temp.zip", format="HWPX")
-        if current_path:
-            self.open(current_path)
+        self.open(current_path)
+
         with zipfile.ZipFile("./temp.zip", 'r') as zf:
             zf.extractall(path="./temp")
         os.remove("./temp.zip")
