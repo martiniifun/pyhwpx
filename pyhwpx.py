@@ -19,7 +19,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.22"
+__version__ = "0.10.24"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -456,23 +456,23 @@ class Hwp:
         return self.KeyIndicator()[3]
 
     # 커스텀 메서드
-    def save_image(self, ctrl, path="./img.png", format=""):
-        path = os.path.abspath("img.jpg")
+    def save_image(self, path="./img.png", ctrl="", format=""):
+        path = os.path.abspath(path)
+        if os.path.exists(path):
+            raise FileExistsError("해당 이름의 파일이 이미 존재합니다.")
+        if ctrl:
+            self.move_to_ctrl(ctrl)
         self.find_ctrl()
         if not self.CurSelectedCtrl.CtrlID == "gso":
-            raise AttributeError("캐럿이 이미지 앞에 있거나, 이미지를 선택한 상태여야 합니다.")
+            return False
         pset = self.HParameterSet.HShapeObjSaveAsPicture
         self.HAction.GetDefault("PictureSave", pset.HSet)
         pset.Path = path
         pset.Ext = "BMP"
-        self.HAction.Execute("PictureSave", pset.HSet)
-        pset = self.HParameterSet.HShapeObject
-        self.HAction.GetDefault("ShapeObjDialog", pset.HSet)
-        pset.ShapeDrawImageAttr.Embedded = 1
-        pset.HSet.SetItem("ShapeType", 1)
         try:
-            return self.HAction.Execute("ShapeObjDialog", pset.HSet)
+            self.HAction.Execute("PictureSave", pset.HSet)
         finally:
+            self.Undo()
             if not os.path.exists(path):
                 file_list = os.listdir(os.path.dirname(path))
                 path_list = [os.path.join(os.path.dirname(path), i) for i in file_list]
