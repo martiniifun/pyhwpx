@@ -19,7 +19,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.26"
+__version__ = "0.10.27"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -456,6 +456,22 @@ class Hwp:
         return self.KeyIndicator()[3]
 
     # 커스텀 메서드
+    def resize_image(self, width:int=None, height:int=None, unit:Literal["mm", "hwpunit"]="mm"):
+        """
+        이미지 또는 그리기 개체의 크기를 조절하는 메서드.
+        해당개체 선택 후 실행해야 함.
+        """
+        self.FindCtrl()
+        prop = self.CurSelectedCtrl.Properties
+        if width:
+            prop.SetItem("Width", width if unit=="hwpunit" else self.MiliToHwpUnit(width))
+        if height:
+            prop.SetItem("Height", height if unit=="hwpunit" else self.MiliToHwpUnit(height))
+        if width or height:
+            self.CurSelectedCtrl.Properties = prop
+            return True
+        return False
+
     def save_image(self, path="./img.png", ctrl="", format=""):
         path = os.path.abspath(path)
         if os.path.exists(path):
