@@ -19,7 +19,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.27"
+__version__ = "0.10.28"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -456,6 +456,35 @@ class Hwp:
         return self.KeyIndicator()[3]
 
     # 커스텀 메서드
+    def get_selected_range(self):
+        """
+        선택한 범위의 셀주소를
+        리스트로 리턴함
+        """
+        if not self.is_cell():
+            raise AttributeError("캐럿이 표 안에 있어야 합니다.")
+        pset = self.HParameterSet.HFieldCtrl
+        self.HAction.GetDefault("TableFormula", pset.HSet)
+        return pset.Command[2:-1].split(",")
+
+    def fill_addr_field(self):
+        if not self.is_cell():
+            raise AttributeError("캐럿이 표 안에 있어야 합니다.")
+        self.TableColBegin()
+        self.TableColPageUp()
+        self.set_cur_field_name("A1")
+        while self.TableRightCell():
+            self.set_cur_field_name(self.get_cell_addr())
+
+    def unfill_addr_field(self):
+        if not self.is_cell():
+            raise AttributeError("캐럿이 표 안에 있어야 합니다.")
+        self.TableColBegin()
+        self.TableColPageUp()
+        self.set_cur_field_name("")
+        while self.TableRightCell():
+            self.set_cur_field_name("")
+
     def resize_image(self, width:int=None, height:int=None, unit:Literal["mm", "hwpunit"]="mm"):
         """
         이미지 또는 그리기 개체의 크기를 조절하는 메서드.
@@ -472,7 +501,7 @@ class Hwp:
             return True
         return False
 
-    def save_image(self, path="./img.png", ctrl="", format=""):
+    def save_image(self, path="./img.png", ctrl=""):
         path = os.path.abspath(path)
         if os.path.exists(path):
             raise FileExistsError("해당 이름의 파일이 이미 존재합니다.")
