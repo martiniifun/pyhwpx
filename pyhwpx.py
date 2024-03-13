@@ -19,7 +19,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.28"
+__version__ = "0.10.29"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -2188,6 +2188,7 @@ class Hwp:
 
     def table_to_df(self, n="", startrow=0, columns=[]):
         """
+        (2024. 3. 14. for문 추출 구조에서, 한 번에 추출하는 방식으로 변경->속도개선)
         한/글 문서의 n번째 표를 판다스 데이터프레임으로 리턴하는 메서드.
         n을 넣지 않는 경우, 캐럿이 셀에 있다면 해당 표를 df로,
         캐럿이 표 밖에 있다면 첫 번째 표를 df로 리턴한다.
@@ -2251,30 +2252,20 @@ class Hwp:
                                  f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
             self.hwp.FindCtrl()
             self.ShapeObjTableSelCell()
-        data = [self.get_selected_text()]
-        col_count = 1
-        start = False
-        while self.TableRightCell():
-            # a.append(get_text().replace("\r\n", "\n"))
-            if not startrow:
-                if re.match(r"\([A-Z]+1\)", self.hwp.KeyIndicator()[-1]):
-                    col_count += 1
-                data.append(self.get_selected_text())
-            else:
-                if re.match(rf"\([A-Z]+{1 + startrow}\)", self.hwp.KeyIndicator()[-1]):
-                    col_count += 1
-                    start = True
-                if start:
-                    data.append(self.get_selected_text())
 
+        self.TableCellBlock()
+        self.TableCellBlockExtend()
+        self.TableCellBlockExtend()
+        rows = int(re.sub(r"[A-Z]+", "", self.get_cell_addr()))
+        arr = np.array(self.get_selected_text(as_="list")).reshape(rows, -1)
         if startrow:
-            col_count -= 1
-            data = data[1:]
-        array = np.array(data).reshape(-1, col_count)
-        if not columns:
-            df = pd.DataFrame(array[1:], columns=array[0])
+            arr = arr[startrow:]
+        if columns:
+            if len(columns) != len(arr[0]):
+                raise IndexError("columns의 길이가 열의 갯수와 맞지 않습니다.")
+            df = pd.DataFrame(arr, columns=columns)
         else:
-            df = pd.DataFrame(array, columns=columns)
+            df = pd.DataFrame(arr[1:], columns=arr[0])
         self.hwp.SetPos(*start_pos)
         return df
 
