@@ -19,7 +19,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.29"
+__version__ = "0.10.30"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -831,6 +831,13 @@ class Hwp:
         :return: 성공시 True
         """
         cur_pos = self.get_pos()
+        while self.TableRightCell():
+            if not self.get_cell_addr().endswith("1"):
+                break
+
+        if as_.lower() in ("hwpunit", "hu"):
+            width = self.hwp_unit_to_mili(width)
+
         self.TableColBegin()
         if not width:
             sec_def = self.hwp.HParameterSet.HSecDef
@@ -858,10 +865,7 @@ class Hwp:
             self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
             pset.HSet.SetItem("ShapeType", 3)
             pset.HSet.SetItem("ShapeCellSize", 1)
-            if as_.lower() == "mm":
-                pset.ShapeTableCell.Width = self.MiliToHwpUnit(i)
-            elif as_.lower() in ("hu", "hwpunit"):
-                pset.ShapeTableCell.Width = i
+            pset.ShapeTableCell.Width = self.MiliToHwpUnit(i)
             self.HAction.Execute("TablePropertyDialog", pset.HSet)
             self.TableRightCell()
         return self.set_pos(*cur_pos)
@@ -2185,6 +2189,95 @@ class Hwp:
         self.hwp.SetPos(*start_pos)
         print(os.path.join(os.getcwd(), filename))
         return None
+
+    def table_to_df_q(self, n="", startrow=0, columns=[]):
+        """
+        (2024. 3. 14. for문 추출 구조에서, 한 번에 추출하는 방식으로 변경->속도개선)
+        한/글 문서의 n번째 표를 판다스 데이터프레임으로 리턴하는 메서드.
+        n을 넣지 않는 경우, 캐럿이 셀에 있다면 해당 표를 df로,
+        캐럿이 표 밖에 있다면 첫 번째 표를 df로 리턴한다.
+        startrow는 표 제목에 일부 병합이 되어 있는 경우
+        df로 변환시작할 행을 특정할 때 사용된다.
+        :return:
+            pd.DataFrame
+        :example:
+            >>> from pyhwpx import Hwp
+            >>>
+            >>> hwp = Hwp()
+            >>> df = hwp.table_to_df(0)
+        """
+        start_pos = self.hwp.GetPos()
+        ctrl = self.hwp.HeadCtrl
+        if isinstance(n, type(ctrl)):
+            # 정수인덱스 대신 ctrl 객체를 넣은 경우
+            self.set_pos_by_set(n.GetAnchorPos(0))
+            self.find_ctrl()
+            self.ShapeObjTableSelCell()
+        elif n == "" and self.is_cell():
+            # 기본값은 현재위치의 표를 잡아오기
+            self.TableCellBlock()
+            self.TableColBegin()
+            self.TableColPageUp()
+        elif n == "" or isinstance(n, int):
+            if n == "":
+                n = 0
+            if n >= 0:
+                idx = 0
+            else:
+                idx = -1
+                ctrl = self.hwp.LastCtrl
+
+            while ctrl:
+                if ctrl.UserDesc == "표":
+                    if n in (0, -1):
+                        self.set_pos_by_set(ctrl.GetAnchorPos(0))
+                        self.hwp.FindCtrl()
+                        self.ShapeObjTableSelCell()
+                        break
+                    else:
+                        if idx == n:
+                            self.set_pos_by_set(ctrl.GetAnchorPos(0))
+                            self.hwp.FindCtrl()
+                            self.ShapeObjTableSelCell()
+                            break
+                        if n >= 0:
+                            idx += 1
+                        else:
+                            idx -= 1
+                if n >= 0:
+                    ctrl = ctrl.Next
+                else:
+                    ctrl = ctrl.Prev
+
+            try:
+                self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
+            except AttributeError:
+                raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
+                                 f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
+            self.hwp.FindCtrl()
+            self.ShapeObjTableSelCell()
+
+        if startrow:
+            while int(self.get_cell_addr()[1:]) - 1 != startrow:
+                self.TableRightCell()
+        self.TableCellBlock()
+        self.TableCellBlockExtend()
+        self.TableColPageDown()
+        self.TableColEnd()
+        # rows = int(re.sub(r"[A-Z]+", "", self.get_cell_addr()))
+        rows = int(re.sub(r"[A-Z]+", "", self.get_cell_addr())) - startrow
+
+        arr = np.array(self.get_selected_text(as_="list"), dtype=object).reshape(rows, -1)
+        # if startrow:
+        #     arr = arr[startrow:]
+        if columns:
+            if len(columns) != len(arr[0]):
+                raise IndexError("columns의 길이가 열의 갯수와 맞지 않습니다.")
+            df = pd.DataFrame(arr, columns=columns)
+        else:
+            df = pd.DataFrame(arr[1:], columns=arr[0])
+        self.hwp.SetPos(*start_pos)
+        return df
 
     def table_to_df(self, n="", startrow=0, columns=[]):
         """
