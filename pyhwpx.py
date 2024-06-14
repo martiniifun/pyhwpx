@@ -1823,6 +1823,7 @@ class Hwp:
         편의상 셀필드를 삽입하고 싶은 경우 "[[name]]"으로 지정하면 된다.
         :return:
         """
+        self.MoveDocBegin()
         while self.find("{{"):
             while True:
                 self.hwp.HAction.Run("MoveSelRight")
@@ -1842,6 +1843,7 @@ class Hwp:
             self.hwp.HAction.Run("Delete")
             self.create_field(field_name, direction, memo)
 
+        self.MoveDocBegin()
         while self.find("[["):
             while True:
                 self.hwp.HAction.Run("MoveSelRight")
