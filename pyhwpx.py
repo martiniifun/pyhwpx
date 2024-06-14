@@ -1291,7 +1291,7 @@ class Hwp:
         :param height_mili:
         :return:
         """
-        if not self.is_Cell():
+        if not self.is_cell():
             raise AssertionError("캐럿이 표 안에 있지 않습니다. 표 안에서 실행해주세요.")
         pset = self.hwp.HParameterSet.HShapeObject
         self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
