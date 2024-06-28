@@ -19,7 +19,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.16.2"
+__version__ = "0.16.3"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -6273,6 +6273,7 @@ class Hwp:
             except subprocess.CalledProcessError as e:
                 # FilePathCheckerModule.dll을 못 찾는 경우에는 아래 분기 중 하나를 실행
                 #
+
                 # 1. pyinstaller로 컴파일했고,
                 #    --add-binary="FilePathCheckerModule.dll:." 옵션을 추가한 경우
                 location = ""
@@ -6280,19 +6281,22 @@ class Hwp:
                     for filename in filenames:
                         if filename == "FilePathCheckerModule.dll":
                             location = dirpath
+
                 # 2. "FilePathCheckerModule.dll" 파일을 실행파일과 같은 경로에 둔 경우
                 if "FilePathCheckerModule.dll" in os.listdir(os.getcwd()):
                     location = os.getcwd()
-                elif "FilePathCheckerModule.dll" in os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll"):
+                elif os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
                     location = os.environ["USERPROFILE"]
+
                 # 3. 위의 두 경우가 아닐 때, 인터넷에 연결되어 있는 경우에는
                 #    사용자 폴더(예: c:\\users\\user)에
                 #    FilePathCheckerModule.dll을 다운로드하기.
                 if not location:
+                    print("not location")
                     # pyhwpx가 설치되어 있지 않은 PC에서는,
                     # 공식사이트에서 다운을 받게 하자.
                     from zipfile import ZipFile
-                    print("downloading FilePathCheckerModule.dll to User Root")
+                    print("downloading FilePathCheckerModule.dll to User Profile Folder")
                     f = request.urlretrieve(
                         "https://github.com/hancom-io/devcenter-archive/raw/main/hwp-automation/%EB%B3%B4%EC%95%88%EB%AA%A8%EB%93%88(Automation).zip",
                         filename=os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
