@@ -19,7 +19,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.10.30"
+__version__ = "0.16.2"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -689,6 +689,25 @@ class Hwp:
             return self.HwpUnitToInch(self.CellShape.Item("Height"))
         else:
             raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
+
+    def get_row_num(self):
+        """
+        캐럿이 표 안에 있을 때,
+        현재 표의 행의 갯수를 리턴
+        (일부 행병합이 있는 경우, 최대 행번호를 리턴)
+        * 단, 최대 행갯수가 최대 행번호와 다른 경우가 있으므로 유의할 것 *
+        :return:
+        """
+        if not self.is_cell():
+            raise AssertionError("현재 캐럿이 표 안에 있지 않습니다.")
+        cur_pos = self.get_pos()
+        self.TableColBegin()
+        self.TableColPageDown()
+        max_row_num = int(self.KeyIndicator()[-1][1:].split(")")[0][1:])
+        while self.TableRightCell():
+            max_row_num = max(max_row_num, int(self.KeyIndicator()[-1][1:].split(")")[0][1:]))
+        self.set_pos(*cur_pos)
+        return max_row_num
 
     def get_row_height(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
         """
@@ -4957,8 +4976,10 @@ class Hwp:
                              "단, 셀 안에 있는 경우에는 셀 너비에 맞게 이미지 크기를 자동으로 조절합니다.")
 
         if path.startswith("http"):
-            request.urlretrieve(path, os.path.join(os.getcwd(), "temp.jpg"))
-            path = os.path.join(os.getcwd(), "temp.jpg")
+            temp_path = tempfile.TemporaryFile().name
+            request.urlretrieve(path, temp_path)
+            path = temp_path
+            # request.urlretrieve(path, os.path.join(os.getcwd(), "temp.jpg"))
         elif path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
 
@@ -4995,11 +5016,11 @@ class Hwp:
             ctrl.Properties = pic_prop
             return ctrl
         finally:
-            if "temp.jpg" in os.listdir():
+            if os.path.basename(path).startswith("tmp"):
                 os.remove(path)
 
-    def InsertPicture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
-                      effect=0, width=0, height=0):
+    def insert_picture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
+                       effect=0, width=0, height=0):
         """
         현재 캐럿의 위치에 그림을 삽입한다.
         다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
@@ -5056,8 +5077,10 @@ class Hwp:
                              "단, 셀 안에 있는 경우에는 셀 너비에 맞게 이미지 크기를 자동으로 조절합니다.")
 
         if path.startswith("http"):
-            request.urlretrieve(path, os.path.join(os.getcwd(), "temp.jpg"))
-            path = os.path.join(os.getcwd(), "temp.jpg")
+            temp_path = tempfile.TemporaryFile().name
+            request.urlretrieve(path, temp_path)
+            path = temp_path
+            # request.urlretrieve(path, os.path.join(os.getcwd(), "temp.jpg"))
         elif path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
 
@@ -5094,7 +5117,7 @@ class Hwp:
             ctrl.Properties = pic_prop
             return ctrl
         finally:
-            if "temp.jpg" in os.listdir():
+            if os.path.basename(path).startswith("tmp"):
                 os.remove(path)
 
     def insert_random_picture(self, x: int = 200, y: int = 200):
@@ -6260,7 +6283,8 @@ class Hwp:
                 # 2. "FilePathCheckerModule.dll" 파일을 실행파일과 같은 경로에 둔 경우
                 if "FilePathCheckerModule.dll" in os.listdir(os.getcwd()):
                     location = os.getcwd()
-
+                elif "FilePathCheckerModule.dll" in os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll"):
+                    location = os.environ["USERPROFILE"]
                 # 3. 위의 두 경우가 아닐 때, 인터넷에 연결되어 있는 경우에는
                 #    사용자 폴더(예: c:\\users\\user)에
                 #    FilePathCheckerModule.dll을 다운로드하기.
@@ -6277,8 +6301,9 @@ class Hwp:
                             "FilePathCheckerModuleExample.dll",
                             os.path.join(os.environ["USERPROFILE"]))
                     os.remove(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
-                    os.rename(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModuleExample.dll"),
-                              os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll"))
+                    if not os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
+                        os.rename(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModuleExample.dll"),
+                                  os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll"))
                     location = os.environ["USERPROFILE"]
         winup_path = r"Software\HNC\HwpAutomation\Modules"
 
