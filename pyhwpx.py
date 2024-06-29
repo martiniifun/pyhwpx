@@ -19,7 +19,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.16.3"
+__version__ = "0.17.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -978,14 +978,35 @@ class Hwp:
         shutil.rmtree("./temp")
         return True
 
-    def select_ctrl(self, ctrl):
+    def select_ctrl(self, ctrl, anchor_type:Literal[0,1,2]=0):
         """
         인수로 넣은 컨트롤 오브젝트를 선택하는 메서드.
         :param ctrl:
+            선택하고자 하는 컨트롤
+        :param anchor_type:
+            컨트롤의 위치를 찾아갈 때 List, Para, Pos의 기준위치.
+            (아주 특수한 경우를 제외하면 기본값을 쓰면 된다.)
+            0: 바로 상위 리스트에서의 좌표(기본값)
+            1: 탑레벨 리스트에서의 좌표
+            2: 루트 리스트에서의 좌표
         :return:
         """
-        self.set_pos_by_set(ctrl.GetAnchorPos(0))
-        return self.SelectCtrlFront()
+        cur_view_state = self.ViewProperties.Item("OptionFlag")
+        if cur_view_state not in (2, 6):
+            prop = self.ViewProperties
+            prop.SetItem("OptionFlag", 6)
+            self.ViewProperties = prop
+
+        self.set_pos_by_set(ctrl.GetAnchorPos(anchor_type))
+        try:
+            if not self.SelectCtrlFront():
+                return self.SelectCtrlReverse()
+            else:
+                return True
+        finally:
+            prop = self.ViewProperties
+            prop.SetItem("OptionFlag", cur_view_state)
+            self.ViewProperties = prop
 
     def move_to_ctrl(self, ctrl):
         """
