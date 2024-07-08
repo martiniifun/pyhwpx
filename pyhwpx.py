@@ -19,7 +19,7 @@ import pythoncom
 import win32com.client as win32
 from PIL import Image
 
-__version__ = "0.17.0"
+__version__ = "0.18.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -825,6 +825,63 @@ class Hwp:
                 self.TableRightCell()
             return self.set_pos(*cur_pos)
 
+    def adjust_cellwidth(self, width: int | float | list | tuple, as_: Literal["mm", "ratio"] = "ratio"):
+        """
+        칼럼의 너비를 변경할 수 있는 메서드.
+        정수(int)나 부동소수점수(float) 입력시 현재 칼럼의 너비가 변경되며,
+        리스트나 튜플 등 iterable 타입 입력시에는 각 요소들의 비에 따라 칼럼들의 너비가 일괄변경된다.
+        예를 들어 3행 3열의 표 안에서 set_col_width([1,2,3]) 을 실행하는 경우
+        1열너비:2열너비:3열너비가 1:2:3으로 변경된다.
+        (표 전체의 너비가 148mm라면, 각각 24mm : 48mm : 72mm로 변경된다는 뜻이다.)
+
+        단, 열너비의 비가 아닌 "mm" 단위로 값을 입력하려면 as_="mm"로 파라미터를 수정하면 된다.
+        이 때, width에 정수 또는 부동소수점수를 입력하는 경우 as_="ratio"를 사용할 수 없다.
+
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.create_table(3,3)
+        >>> hwp.get_into_nth_table(0)
+        >>> hwp.adjust_cellwidth([1,2,3])
+        :param width: 열 너비
+        :param as_:
+        :return:
+        """
+        cur_pos = self.get_pos()
+        if type(width) in (int, float):
+            if as_ == "ratio":
+                raise TypeError('width에 int나 float 입력시 as_ 파라미터는 "mm"로 설정해주세요.')
+            self.TableColPageUp()
+            self.TableCellBlock()
+            self.TableCellBlockExtend()
+            self.TableColPageDown()
+            pset = self.HParameterSet.HShapeObject
+            self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+            pset.HSet.SetItem("ShapeType", 3)
+            pset.HSet.SetItem("ShapeCellSize", 1)
+            pset.ShapeTableCell.Width = self.MiliToHwpUnit(width)
+            try:
+                return self.HAction.Execute("TablePropertyDialog", pset.HSet)
+            finally:
+                self.set_pos(*cur_pos)
+        else:
+            if as_ == "ratio":
+                table_width = self.get_table_width()
+                width = [i / sum(width) * table_width for i in width]
+            self.TableColBegin()
+            for i in width:
+                self.TableColPageUp()
+                self.TableCellBlock()
+                self.TableCellBlockExtend()
+                self.TableColPageDown()
+                pset = self.HParameterSet.HShapeObject
+                self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+                pset.HSet.SetItem("ShapeType", 3)
+                pset.HSet.SetItem("ShapeCellSize", 1)
+                pset.ShapeTableCell.Width = self.MiliToHwpUnit(i)
+                self.HAction.Execute("TablePropertyDialog", pset.HSet)
+                self.TableRightCell()
+            return self.set_pos(*cur_pos)
+
     def get_table_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
         """
         현재 캐럿이 속한 표의 너비(mm)를 리턴함.
@@ -1149,7 +1206,7 @@ class Hwp:
                  Emboss="",  # 양각(True/False)
                  Engrave="",  # 음각(True/False)
                  FaceName="",  # 서체
-                 FontType="",  # 1(TTF),
+                 FontType=1,  # 1(TTF),
                  Height="",  # 글자크기(pt, 0.1 ~ 4096)
                  Italic="",  # 이탤릭(True/False)
                  Offset="",  # 글자위치-상하오프셋(-100 ~ 100)
@@ -2132,7 +2189,8 @@ class Hwp:
             else:
                 self.Select()
                 self.Select()
-        self.hwp.InitScan(Range=0xff)
+        if not self.hwp.InitScan(Range=0xff):
+            return ""
         if as_ == "list":
             result = []
         else:
