@@ -18,8 +18,9 @@ import pyperclip as cb
 import pythoncom
 import win32com.client as win32
 from PIL import Image
+import xml.etree.ElementTree as ET
 
-__version__ = "0.18.0"
+__version__ = "0.20.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -456,6 +457,62 @@ class Hwp:
         return self.KeyIndicator()[3]
 
     # 커스텀 메서드
+
+    def delete_style_by_name(self, src: int | str, dst: int | str):
+        """
+        **주의사항**
+        매번 메서드를 호출할 때마다 문서를 저장함(구현 편의를 위해ㅜ)!!!
+        다소 번거롭더라도 StyleDelete 액션을 직접 실행하는 것을 추천함.
+
+        특정 스타일을 이름이나 인덱스번호로 삭제하고
+        대체할 스타일 또한 이름이나 인덱스번호로 삭제해주는 메서드.
+        """
+        self.save()
+        style_dict = self.get_style_dict()
+        pset = self.HParameterSet.HStyleDelete
+        self.HAction.GetDefault("StyleDelete", pset.HSet)
+        if type(src) == int:
+            pset.Target = src
+        elif src in [style_dict[i]["name"] for i in style_dict]:
+            pset.Target = [i for i in style_dict if style_dict[i]["name"] == src][0]
+        else:
+            raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
+        if type(dst) == int:
+            pset.Alternation = dst
+        elif dst in [style_dict[i]["name"] for i in style_dict]:
+            pset.Alternation = [i for i in style_dict if style_dict[i]["name"] == dst][0]
+        else:
+            raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
+        self.HAction.Execute("StyleDelete", pset.HSet)
+
+    def get_style_dict(self):
+        """
+        **주의사항**
+        메서드 호출시 문서를 자동으로 저장함!
+
+        스타일 목록을 사전 데이터로 리턴하는 메서드
+        """
+        src = self.Path
+        self.save_as("temp.hwpx", "HWPX")
+        self.open(src)
+        with zipfile.ZipFile("temp.hwpx") as zf:
+            zf.extractall(path="./temp")
+        os.remove("temp.hwpx")
+
+        tree = ET.parse(os.path.join("temp", "Contents", "header.xml"))
+        root = tree.getroot()
+        ns = dict([i for _, i in ET.iterparse(os.path.join("temp", "Contents", "header.xml"), events=['start-ns'])])
+        style_list = {
+            int(style.get('id')): {
+                'type': style.get('type'),
+                'name': style.get('name'),
+                'engName': style.get('engName')
+            }
+            for style in root.findall('.//hh:style', ns)
+        }
+        shutil.rmtree(os.path.join(os.getcwd(), "temp"))
+        return style_list
+
     def get_selected_range(self):
         """
         선택한 범위의 셀주소를
@@ -5711,7 +5768,7 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
-        if filename.startswith("http"):
+        if filename and filename.startswith("http"):
             try:
                 # url 문자열 중 hwp 파일명이 포함되어 있는지 체크해서 해당 파일명을 사용.
                 hwp_name = [parse.unquote_plus(i) for i in re.split("[/?=&]", filename) if ".hwp" in i][0]
@@ -5720,7 +5777,7 @@ class Hwp:
                 hwp_name = "temp.hwp"
             request.urlretrieve(filename, os.path.join(os.getcwd(), hwp_name))
             filename = os.path.join(os.getcwd(), hwp_name)
-        elif filename.lower()[1] != ":":
+        elif filename.lower()[1] != ":" and os.path.exists(os.path.join(os.getcwd(), filename)):
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.Open(filename=filename, Format=format, arg=arg)
 
