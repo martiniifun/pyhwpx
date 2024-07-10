@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.21.0"  # 이번 버전에는 그놈의 CircularImport 오류메시지 제거
+__version__ = "0.22.0"  # 이번 버전에 kosohn님께서 큰 도움 주심!
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -479,10 +479,9 @@ class Hwp:
         매번 메서드를 호출할 때마다 문서를 저장함(구현 편의를 위해ㅜ)!!!
         다소 번거롭더라도 StyleDelete 액션을 직접 실행하는 것을 추천함.
 
-        특정 스타일을 이름이나 인덱스번호로 삭제하고
-        대체할 스타일 또한 이름이나 인덱스번호로 삭제해주는 메서드.
+        특정 스타일을 이름 (또는 인덱스번호)로 삭제하고
+        대체할 스타일 또한 이름 (또는 인덱스번호)로 지정해주는 메서드.
         """
-        self.save()
         style_dict = self.get_style_dict()
         pset = self.HParameterSet.HStyleDelete
         self.HAction.GetDefault("StyleDelete", pset.HSet)
@@ -502,30 +501,26 @@ class Hwp:
 
     def get_style_dict(self):
         """
-        **주의사항**
-        메서드 호출시 문서를 자동으로 저장함!
-
-        스타일 목록을 사전 데이터로 리턴하는 메서드
+        스타일 목록을 사전 데이터로 리턴하는 메서드.
+        도움 주신 kosohn님께 아주 큰 감사!!!
         """
-        src = self.Path
-        self.save_as("temp.hwpx", "HWPX")
-        self.open(src)
-        with zipfile.ZipFile("temp.hwpx") as zf:
-            zf.extractall(path="./temp")
-        os.remove("temp.hwpx")
+        cur_pos = self.get_pos()
+        if not self.MoveSelRight():
+            self.MoveSelLeft()
+        self.save_block_as("temp.xml", format="HWPML2X")
+        self.set_pos(*cur_pos)
 
-        tree = ET.parse(os.path.join("temp", "Contents", "header.xml"))
+        tree = ET.parse("temp.xml")
         root = tree.getroot()
-        ns = dict([i for _, i in ET.iterparse(os.path.join("temp", "Contents", "header.xml"), events=['start-ns'])])
         style_list = {
-            int(style.get('id')): {
-                'type': style.get('type'),
-                'name': style.get('name'),
-                'engName': style.get('engName')
+            int(style.get('Id')): {
+                'type': style.get('Type'),
+                'name': style.get('Name'),
+                'engName': style.get('EngName')
             }
-            for style in root.findall('.//hh:style', ns)
+            for style in root.findall('.//STYLE')
         }
-        shutil.rmtree(os.path.join(os.getcwd(), "temp"))
+        os.remove("temp.xml")
         return style_list
 
     def get_selected_range(self):
