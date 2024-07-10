@@ -16,11 +16,26 @@ import numpy as np
 import pandas as pd
 import pyperclip as cb
 import pythoncom
-import win32com.client as win32
+
 from PIL import Image
 import xml.etree.ElementTree as ET
 
-__version__ = "0.20.1"
+
+# CircularImport 오류 출력안함
+devnull = open(os.devnull, 'w')
+old_stdout = sys.stdout
+old_stderr = sys.stderr
+sys.stdout = devnull
+sys.stderr = devnull
+
+try:
+    import win32com.client as win32
+finally:
+    sys.stdout = old_stdout
+    sys.stderr = old_stderr
+    devnull.close()
+
+__version__ = "0.21.0"  # 이번 버전에는 그놈의 CircularImport 오류메시지 제거
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
