@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.24.0"
+__version__ = "0.26.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -741,6 +741,78 @@ class Hwp:
             self.insert_text(rowsep)
             self.SelectCtrlFront()
 
+    def get_table_outside_margin_left(self, as_:Literal["mm", "hwpunit"] = "mm"):
+        cur_pos = self.get_pos()
+        self.SelectCtrlFront()
+        prop = self.CurSelectedCtrl.Properties
+        margin = prop.Item("OutsideMarginLeft")
+        self.set_pos(*cur_pos)
+        return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
+
+    def get_table_outside_margin_right(self, as_:Literal["mm", "hwpunit"] = "mm"):
+        cur_pos = self.get_pos()
+        self.SelectCtrlFront()
+        prop = self.CurSelectedCtrl.Properties
+        margin = prop.Item("OutsideMarginRight")
+        self.set_pos(*cur_pos)
+        return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
+
+    def get_table_outside_margin_top(self, as_:Literal["mm", "hwpunit"] = "mm"):
+        cur_pos = self.get_pos()
+        self.SelectCtrlFront()
+        prop = self.CurSelectedCtrl.Properties
+        margin = prop.Item("OutsideMarginTop")
+        self.set_pos(*cur_pos)
+        return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
+
+    def get_table_outside_margin_bottom(self, as_:Literal["mm", "hwpunit"] = "mm"):
+        cur_pos = self.get_pos()
+        self.SelectCtrlFront()
+        prop = self.CurSelectedCtrl.Properties
+        margin = prop.Item("OutsideMarginBottom")
+        self.set_pos(*cur_pos)
+        return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
+
+    def set_table_outside_margin_left(self, val, as_:Literal["mm", "hwpunit"] = "mm"):
+        cur_pos = self.get_pos()
+        self.SelectCtrlFront()
+        prop = self.CurSelectedCtrl.Properties
+        if as_ == "mm":
+            val = self.mili_to_hwp_unit(val)
+        prop.SetItem("OutsideMarginLeft", val)
+        self.CurSelectedCtrl.Properties = prop
+        return self.set_pos(*cur_pos)
+
+    def set_table_outside_margin_right(self, val, as_: Literal["mm", "hwpunit"] = "mm"):
+        cur_pos = self.get_pos()
+        self.SelectCtrlFront()
+        prop = self.CurSelectedCtrl.Properties
+        if as_ == "mm":
+            val = self.mili_to_hwp_unit(val)
+        prop.SetItem("OutsideMarginRight", val)
+        self.CurSelectedCtrl.Properties = prop
+        return self.set_pos(*cur_pos)
+
+    def set_table_outside_margin_top(self, val, as_: Literal["mm", "hwpunit"] = "mm"):
+        cur_pos = self.get_pos()
+        self.SelectCtrlFront()
+        prop = self.CurSelectedCtrl.Properties
+        if as_ == "mm":
+            val = self.mili_to_hwp_unit(val)
+        prop.SetItem("OutsideMarginTop", val)
+        self.CurSelectedCtrl.Properties = prop
+        return self.set_pos(*cur_pos)
+
+    def set_table_outside_margin_bottom(self, val, as_: Literal["mm", "hwpunit"] = "mm"):
+        cur_pos = self.get_pos()
+        self.SelectCtrlFront()
+        prop = self.CurSelectedCtrl.Properties
+        if as_ == "mm":
+            val = self.mili_to_hwp_unit(val)
+        prop.SetItem("OutsideMarginBottom", val)
+        self.CurSelectedCtrl.Properties = prop
+        return self.set_pos(*cur_pos)
+
     def get_table_height(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
         """
         현재 캐럿이 속한 표의 너비(mm)를 리턴함
@@ -978,8 +1050,9 @@ class Hwp:
         if not width:
             sec_def = self.hwp.HParameterSet.HSecDef
             self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
-            width = sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
-                2)
+            width = self.hwp_unit_to_mili(
+                sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
+                    2))
         if as_ == "mm":
             width = self.mili_to_hwp_unit(width)
         ratio = width / self.get_table_width(as_="hwpunit")
