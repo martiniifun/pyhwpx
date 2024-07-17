@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.23.0"  # 이번 버전에 kosohn님께서 큰 도움 주심!
+__version__ = "0.24.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
