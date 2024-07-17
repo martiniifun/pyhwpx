@@ -33,7 +33,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.27.2"
+__version__ = "0.27.3"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1057,6 +1057,7 @@ class Hwp:
         ratio = width / self.get_table_width(as_="hwpunit")
         cur_pos = self.get_pos()
         self.SelectCtrlFront()
+        ctrl = self.CurSelectedCtrl
         t = self.GetTextFile("HWPML2X", "saveblock")
         root = ET.fromstring(t)
         table = root.find('.//TABLE')
@@ -1072,8 +1073,8 @@ class Hwp:
             prop = self.ViewProperties
             prop.SetItem("OptionFlag", 6)
             self.ViewProperties = prop
-        self.Cancel()
-        self.MoveSelLeft()
+        self.move_to_ctrl(ctrl)
+        self.MoveSelRight()
         self.SetTextFile(t, format="HWPML2X", option="insertfile")
         prop = self.ViewProperties
         prop.SetItem("OptionFlag", cur_view_state)
