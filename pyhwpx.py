@@ -975,6 +975,11 @@ class Hwp:
         :param as_: 단위("mm" or "hwpunit")
         :return: 성공시 True
         """
+        if not width:
+            sec_def = self.hwp.HParameterSet.HSecDef
+            self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
+            width = sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
+                2)
         if as_ == "mm":
             width = self.mili_to_hwp_unit(width)
         ratio = width / self.get_table_width(as_="hwpunit")
