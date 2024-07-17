@@ -970,49 +970,30 @@ class Hwp:
     def set_table_width(self, width: int = 0, as_: Literal["mm", "hwpunit", "hu"] = "mm"):
         """
         표 전체의 너비를 원래 열들의 비율을 유지하면서 조정하는 메서드.
+        내부적으로 xml 파싱을 사용하는 방식으로 변경.
         :param width: 너비(단위는 기본 mm이며, hwpunit으로 변경 가능)
         :param as_: 단위("mm" or "hwpunit")
         :return: 성공시 True
         """
+        if as_ == "mm":
+            width = self.mili_to_hwp_unit(width)
+        ratio = width / self.get_table_width(as_="hwpunit")
         cur_pos = self.get_pos()
-        while self.TableRightCell():
-            if not self.get_cell_addr().endswith("1"):
-                break
+        self.SelectCtrlFront()
+        t = self.GetTextFile("HWPML2X", "saveblock")
+        root = ET.fromstring(t)
+        table = root.find('.//TABLE')
 
-        if as_.lower() in ("hwpunit", "hu"):
-            width = self.hwp_unit_to_mili(width)
-
-        self.TableColBegin()
-        if not width:
-            sec_def = self.hwp.HParameterSet.HSecDef
-            self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
-            width = sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
-                2)
-            if as_ == "mm":
-                width = self.HwpUnitToMili(width)
-        table_width = self.get_table_width(as_=as_)
-        cur_col_widths = []
-        col_num = self.get_col_num()
-        for i in range(col_num):
-            cur_col_widths.append(self.get_col_width(as_=as_))
-            self.TableRightCell()
-
-        dst_col_widths = [i / table_width * width for i in cur_col_widths]
-
-        self.TableColBegin()
-        for i in dst_col_widths:
-            self.TableColPageUp()
-            self.TableCellBlock()
-            self.TableCellBlockExtend()
-            self.TableColPageDown()
-            pset = self.HParameterSet.HShapeObject
-            self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
-            pset.HSet.SetItem("ShapeType", 3)
-            pset.HSet.SetItem("ShapeCellSize", 1)
-            pset.ShapeTableCell.Width = self.MiliToHwpUnit(i)
-            self.HAction.Execute("TablePropertyDialog", pset.HSet)
-            self.TableRightCell()
-        return self.set_pos(*cur_pos)
+        # 첫 번째 TABLE 태그 하위의 모든 CELL 태그의 Width 속성 값 끝에 "0"을 추가
+        if table is not None:
+            for cell in table.findall('.//CELL'):
+                width = cell.get('Width')
+                if width:
+                    cell.set('Width', str(int(width) * ratio))
+        t = ET.tostring(root, encoding='UTF-16').decode('utf-16')
+        self.Delete()
+        self.SetTextFile(t, format="HWPML2X", option="insertfile")
+        self.set_pos(*cur_pos)
 
     def save_pdf_as_image(self, path: str = "", img_format="bmp"):
         """
