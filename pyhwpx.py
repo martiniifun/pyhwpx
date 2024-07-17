@@ -768,13 +768,13 @@ class Hwp:
         if not self.is_cell():
             raise AssertionError("현재 캐럿이 표 안에 있지 않습니다.")
         cur_pos = self.get_pos()
-        self.TableColBegin()
-        self.TableColPageDown()
-        max_row_num = int(self.KeyIndicator()[-1][1:].split(")")[0][1:])
-        while self.TableRightCell():
-            max_row_num = max(max_row_num, int(self.KeyIndicator()[-1][1:].split(")")[0][1:]))
+        self.SelectCtrlFront()
+        t = self.GetTextFile("HWPML2X", "saveblock")
+        root = ET.fromstring(t)
+        table = root.find('.//TABLE')
+        row_count = int(table.get('RowCount'))
         self.set_pos(*cur_pos)
-        return max_row_num
+        return row_count
 
     def get_row_height(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
         """
@@ -806,12 +806,13 @@ class Hwp:
         if not self.is_cell():
             raise AssertionError("현재 캐럿이 표 안에 있지 않습니다.")
         cur_pos = self.get_pos()
-        self.TableColPageUp()
-        self.TableColEnd()
-        try:
-            return ord(self.KeyIndicator()[-1][1:].split(")")[0][0]) - 64
-        finally:
-            self.set_pos(*cur_pos)
+        self.SelectCtrlFront()
+        t = self.GetTextFile("HWPML2X", "saveblock")
+        root = ET.fromstring(t)
+        table = root.find('.//TABLE')
+        col_count = int(table.get('ColCount'))
+        self.set_pos(*cur_pos)
+        return col_count
 
     def get_col_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
         """
