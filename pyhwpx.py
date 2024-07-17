@@ -12,6 +12,7 @@ from io import StringIO
 from time import sleep
 from typing import Literal, Union
 from urllib import request, parse
+from winreg import ConnectRegistry, HKEY_CURRENT_USER, KEY_READ, OpenKey, QueryValueEx, CloseKey
 
 import numpy as np
 import pandas as pd
@@ -33,7 +34,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.27.3"
+__version__ = "0.28.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -52,6 +53,26 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
 # 헬퍼함수
+def check_registry_key():
+    winup_path = r"Software\HNC\HwpAutomation\Modules"
+    alt_winup_path = r"Software\Hnc\HwpUserAction\Modules"
+    reg_handle = ConnectRegistry(None, HKEY_CURRENT_USER)
+
+    for path in [winup_path, alt_winup_path]:
+        try:
+            key = OpenKey(reg_handle, path, 0, KEY_READ)
+            try:
+                value, regtype = QueryValueEx(key, "FilePathCheckerModule")
+                if value:
+                    CloseKey(key)
+                    return True
+            except FileNotFoundError:
+                pass
+            CloseKey(key)
+        except FileNotFoundError:
+            pass
+    return False
+
 def rename_duplicates_in_list(file_list):
     """
     문서 내 이미지를 파일로 저장할 때,
@@ -153,8 +174,11 @@ class Hwp:
             self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
             self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
-        if register_module:
-            self.register_module()
+        if register_module and not check_registry_key():
+            try:
+                self.register_module()
+            except:
+                print("RegisterModule 액션을 실행할 수 없음")
 
     @property
     def Application(self):
@@ -813,8 +837,8 @@ class Hwp:
 
     def get_table_height(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
         """
-        현재 캐럿이 속한 표의 너비(mm)를 리턴함
-        :return: 표의 너비(mm)
+        현재 캐럿이 속한 표의 높이(mm)를 리턴함
+        :return: 표의 높이(mm)
         """
         if as_.lower() == "mm":
             return self.HwpUnitToMili(self.CellShape.Item("Height"))
@@ -830,10 +854,8 @@ class Hwp:
     def get_row_num(self):
         """
         캐럿이 표 안에 있을 때,
-        현재 표의 행의 갯수를 리턴
-        (일부 행병합이 있는 경우, 최대 행번호를 리턴)
-        * 단, 최대 행갯수가 최대 행번호와 다른 경우가 있으므로 유의할 것 *
-        :return:
+        현재 표의 행의 최대갯수를 리턴
+        :return: 최대 행갯수:int
         """
         if not self.is_cell():
             raise AssertionError("현재 캐럿이 표 안에 있지 않습니다.")
@@ -6476,6 +6498,8 @@ class Hwp:
         from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, KEY_WRITE, SetValueEx, REG_SZ, CloseKey
 
         try:
+            # pyhwpx가 설치된 파이썬 환경 또는 pyinstaller로 컴파일한 환경에서 pyhwpx 경로 찾기
+            # 살펴본 결과, FilePathCheckerModule.dll 파일은 pyinstaller 컴파일시 자동포함되지는 않는 것으로 확인..
             location = [i.split(": ")[1] for i in
                         subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode(
                             encoding="cp949").split("\r\n") if i.startswith("Location: ")][0]
@@ -6493,13 +6517,14 @@ class Hwp:
                 location = ""
                 for dirpath, dirnames, filenames in os.walk(pyinstaller_path):
                     for filename in filenames:
-                        if filename == "FilePathCheckerModule.dll":
+                        if filename.lower() == "FilePathCheckerModule.dll".lower():
                             location = dirpath
 
                 # 2. "FilePathCheckerModule.dll" 파일을 실행파일과 같은 경로에 둔 경우
-                if "FilePathCheckerModule.dll" in os.listdir(os.getcwd()):
+                if "FilePathCheckerModule.dll".lower() in [i.lower() for i in os.listdir(os.getcwd())]:
                     location = os.getcwd()
-                elif os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
+                # elif os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
+                elif "FilePathCheckerModule.dll".lower in [i.lower() for i in os.listdir(os.path.join(os.environ["USERPROFILE"]))]:
                     location = os.environ["USERPROFILE"]
 
                 # 3. 위의 두 경우가 아닐 때, 인터넷에 연결되어 있는 경우에는
