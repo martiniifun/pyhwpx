@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.26.0"
+__version__ = "0.27.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1050,10 +1050,9 @@ class Hwp:
         if not width:
             sec_def = self.hwp.HParameterSet.HSecDef
             self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
-            width = self.hwp_unit_to_mili(
-                sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
-                    2))
-        if as_ == "mm":
+            width = (sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen
+                - self.get_table_outside_margin_left(as_="hwpunit") - self.get_table_outside_margin_right(as_="hwpunit"))
+        elif as_ == "mm":
             width = self.mili_to_hwp_unit(width)
         ratio = width / self.get_table_width(as_="hwpunit")
         cur_pos = self.get_pos()
