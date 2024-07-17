@@ -5,6 +5,7 @@ import shutil
 import sys
 import tempfile
 import urllib.error
+import xml.etree.ElementTree as ET
 import zipfile
 from collections import defaultdict
 from io import StringIO
@@ -16,10 +17,7 @@ import numpy as np
 import pandas as pd
 import pyperclip as cb
 import pythoncom
-
 from PIL import Image
-import xml.etree.ElementTree as ET
-
 
 # CircularImport 오류 출력안함
 devnull = open(os.devnull, 'w')
@@ -35,7 +33,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.27.1"
+__version__ = "0.27.2"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -552,7 +550,7 @@ class Hwp:
         while self.TableRightCell():
             self.set_cur_field_name("")
 
-    def resize_image(self, width:int=None, height:int=None, unit:Literal["mm", "hwpunit"]="mm"):
+    def resize_image(self, width: int = None, height: int = None, unit: Literal["mm", "hwpunit"] = "mm"):
         """
         이미지 또는 그리기 개체의 크기를 조절하는 메서드.
         해당개체 선택 후 실행해야 함.
@@ -560,9 +558,9 @@ class Hwp:
         self.FindCtrl()
         prop = self.CurSelectedCtrl.Properties
         if width:
-            prop.SetItem("Width", width if unit=="hwpunit" else self.MiliToHwpUnit(width))
+            prop.SetItem("Width", width if unit == "hwpunit" else self.MiliToHwpUnit(width))
         if height:
-            prop.SetItem("Height", height if unit=="hwpunit" else self.MiliToHwpUnit(height))
+            prop.SetItem("Height", height if unit == "hwpunit" else self.MiliToHwpUnit(height))
         if width or height:
             self.CurSelectedCtrl.Properties = prop
             return True
@@ -741,7 +739,7 @@ class Hwp:
             self.insert_text(rowsep)
             self.SelectCtrlFront()
 
-    def get_table_outside_margin_left(self, as_:Literal["mm", "hwpunit"] = "mm"):
+    def get_table_outside_margin_left(self, as_: Literal["mm", "hwpunit"] = "mm"):
         cur_pos = self.get_pos()
         self.SelectCtrlFront()
         prop = self.CurSelectedCtrl.Properties
@@ -749,7 +747,7 @@ class Hwp:
         self.set_pos(*cur_pos)
         return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
 
-    def get_table_outside_margin_right(self, as_:Literal["mm", "hwpunit"] = "mm"):
+    def get_table_outside_margin_right(self, as_: Literal["mm", "hwpunit"] = "mm"):
         cur_pos = self.get_pos()
         self.SelectCtrlFront()
         prop = self.CurSelectedCtrl.Properties
@@ -757,7 +755,7 @@ class Hwp:
         self.set_pos(*cur_pos)
         return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
 
-    def get_table_outside_margin_top(self, as_:Literal["mm", "hwpunit"] = "mm"):
+    def get_table_outside_margin_top(self, as_: Literal["mm", "hwpunit"] = "mm"):
         cur_pos = self.get_pos()
         self.SelectCtrlFront()
         prop = self.CurSelectedCtrl.Properties
@@ -765,7 +763,7 @@ class Hwp:
         self.set_pos(*cur_pos)
         return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
 
-    def get_table_outside_margin_bottom(self, as_:Literal["mm", "hwpunit"] = "mm"):
+    def get_table_outside_margin_bottom(self, as_: Literal["mm", "hwpunit"] = "mm"):
         cur_pos = self.get_pos()
         self.SelectCtrlFront()
         prop = self.CurSelectedCtrl.Properties
@@ -773,7 +771,7 @@ class Hwp:
         self.set_pos(*cur_pos)
         return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
 
-    def set_table_outside_margin_left(self, val, as_:Literal["mm", "hwpunit"] = "mm"):
+    def set_table_outside_margin_left(self, val, as_: Literal["mm", "hwpunit"] = "mm"):
         cur_pos = self.get_pos()
         self.SelectCtrlFront()
         prop = self.CurSelectedCtrl.Properties
@@ -1050,8 +1048,10 @@ class Hwp:
         if not width:
             sec_def = self.hwp.HParameterSet.HSecDef
             self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
-            width = (sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen
-                - self.get_table_outside_margin_left(as_="hwpunit") - self.get_table_outside_margin_right(as_="hwpunit"))
+            width = (
+                    sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen
+                    - self.get_table_outside_margin_left(as_="hwpunit") - self.get_table_outside_margin_right(
+                as_="hwpunit"))
         elif as_ == "mm":
             width = self.mili_to_hwp_unit(width)
         ratio = width / self.get_table_width(as_="hwpunit")
@@ -1061,15 +1061,23 @@ class Hwp:
         root = ET.fromstring(t)
         table = root.find('.//TABLE')
 
-        # 첫 번째 TABLE 태그 하위의 모든 CELL 태그의 Width 속성 값 끝에 "0"을 추가
         if table is not None:
             for cell in table.findall('.//CELL'):
                 width = cell.get('Width')
                 if width:
                     cell.set('Width', str(int(width) * ratio))
         t = ET.tostring(root, encoding='UTF-16').decode('utf-16')
-        self.Delete()
+        cur_view_state = self.ViewProperties.Item("OptionFlag")
+        if cur_view_state not in (2, 6):
+            prop = self.ViewProperties
+            prop.SetItem("OptionFlag", 6)
+            self.ViewProperties = prop
+        self.Cancel()
+        self.MoveSelLeft()
         self.SetTextFile(t, format="HWPML2X", option="insertfile")
+        prop = self.ViewProperties
+        prop.SetItem("OptionFlag", cur_view_state)
+        self.ViewProperties = prop
         self.set_pos(*cur_pos)
 
     def save_pdf_as_image(self, path: str = "", img_format="bmp"):
@@ -1161,7 +1169,7 @@ class Hwp:
         shutil.rmtree("./temp")
         return True
 
-    def select_ctrl(self, ctrl, anchor_type:Literal[0,1,2]=0):
+    def select_ctrl(self, ctrl, anchor_type: Literal[0, 1, 2] = 0):
         """
         인수로 넣은 컨트롤 오브젝트를 선택하는 메서드.
         :param ctrl:
