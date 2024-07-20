@@ -1,3 +1,4 @@
+import win32gui
 import json
 import os
 import re
@@ -34,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.28.0"
+__version__ = "0.29.1",
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -494,6 +495,16 @@ class Hwp:
         return self.KeyIndicator()[3]
 
     # 커스텀 메서드
+
+    def maximize_window(self):
+        """현재 창 최대화"""
+        win32gui.ShowWindow(
+            self.XHwpWindows.Active_XHwpWindow.WindowHandle, 3)
+
+    def minimize_window(self):
+        """현재 창 최소화"""
+        win32gui.ShowWindow(
+            self.XHwpWindows.Active_XHwpWindow.WindowHandle, 6)
 
     def delete_style_by_name(self, src: int | str, dst: int | str):
         """
@@ -7353,6 +7364,13 @@ class Hwp:
         스타일 찾아가기. FindForeBackBookmark와 마찬가지로 사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
         """
         return self.hwp.HAction.Run("FindForeBackStyle")
+
+    def FrameFullScreen(self):
+        """
+        한/글 프로그램창 전체화면(창 최대화 아님).
+        전체화면 해제는 hwp.CloseEx() 실행
+        """
+        return self.HAction.Run("FrameFullScreen")
 
     def FrameStatusBar(self):
         """
