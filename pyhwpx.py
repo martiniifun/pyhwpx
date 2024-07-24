@@ -1,4 +1,3 @@
-import win32gui
 import json
 import os
 import re
@@ -19,6 +18,7 @@ import numpy as np
 import pandas as pd
 import pyperclip as cb
 import pythoncom
+import win32gui
 from PIL import Image
 
 # CircularImport 오류 출력안함
@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.30.1",
+__version__ = "0.30.2",
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -73,6 +73,7 @@ def check_registry_key():
         except FileNotFoundError:
             pass
     return False
+
 
 def rename_duplicates_in_list(file_list):
     """
@@ -2038,7 +2039,7 @@ class Hwp:
             self.SetMessageBoxMode(0xfffff)
 
     def find(self, src, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex=False, MatchCase=1,
-             SeveralWords=1, UseWildCards=1, AutoSpell=1, IgnoreMessage=0, HanjaFromHangul=1, AllWordForms=0,
+             SeveralWords=1, UseWildCards=1, AutoSpell=1, HanjaFromHangul=1, AllWordForms=0,
              FindStyle="", ReplaceStyle="", FindJaso=0):
         """
         direction 방향으로 특정 단어를 찾아가는 메서드.
@@ -2071,7 +2072,7 @@ class Hwp:
         pset.AutoSpell = AutoSpell
         pset.Direction = self.find_dir(direction)
         pset.FindString = src
-        pset.IgnoreMessage = IgnoreMessage
+        pset.IgnoreMessage = 0
         pset.HanjaFromHangul = HanjaFromHangul
         pset.AllWordForms = AllWordForms
         pset.FindJaso = FindJaso
@@ -2143,7 +2144,7 @@ class Hwp:
 
     def find_replace(self, src, dst, regex=False, direction: Literal["Backward", "Forward", "AllDoc"] = "Forward",
                      MatchCase=1, AllWordForms=0, SeveralWords=1, UseWildCards=1, WholeWordOnly=0, AutoSpell=1,
-                     IgnoreFindString=0, IgnoreReplaceString=0, ReplaceMode=1, IgnoreMessage=0, HanjaFromHangul=1,
+                     IgnoreFindString=0, IgnoreReplaceString=0, ReplaceMode=1, HanjaFromHangul=1,
                      FindJaso=0, FindStyle="", ReplaceStyle="", FindType=1):
         """
         아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,
@@ -2162,9 +2163,9 @@ class Hwp:
                                              SeveralWords=SeveralWords, UseWildCards=UseWildCards,
                                              WholeWordOnly=WholeWordOnly, AutoSpell=AutoSpell,
                                              IgnoreFindString=IgnoreFindString, IgnoreReplaceString=IgnoreReplaceString,
-                                             ReplaceMode=ReplaceMode, IgnoreMessage=IgnoreMessage,
-                                             HanjaFromHangul=HanjaFromHangul, FindJaso=FindJaso, FindStyle=FindStyle,
-                                             ReplaceStyle=ReplaceStyle, FindType=FindType)
+                                             ReplaceMode=ReplaceMode, HanjaFromHangul=HanjaFromHangul,
+                                             FindJaso=FindJaso,
+                                             FindStyle=FindStyle, ReplaceStyle=ReplaceStyle, FindType=FindType)
                 finally:
                     self.SetMessageBoxMode(0xfffff)
 
@@ -2183,7 +2184,7 @@ class Hwp:
             pset.FindString = src  # "\\r\\n"
             pset.ReplaceString = dst  # "^n"
             pset.ReplaceMode = ReplaceMode
-            pset.IgnoreMessage = IgnoreMessage
+            pset.IgnoreMessage = 0
             pset.HanjaFromHangul = HanjaFromHangul
             pset.FindJaso = FindJaso
             pset.FindRegExp = 0
@@ -2197,7 +2198,7 @@ class Hwp:
 
     def find_replace_all(self, src, dst, regex=False, MatchCase=1, AllWordForms=0, SeveralWords=1, UseWildCards=1,
                          WholeWordOnly=0, AutoSpell=1, IgnoreFindString=0, IgnoreReplaceString=0, ReplaceMode=1,
-                         IgnoreMessage=0, HanjaFromHangul=1, FindJaso=0, FindStyle="", ReplaceStyle="", FindType=1):
+                         HanjaFromHangul=1, FindJaso=0, FindStyle="", ReplaceStyle="", FindType=1):
         """
         아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,
         re=True로 설정하고 실행하면,
@@ -2213,14 +2214,13 @@ class Hwp:
                 self.find_replace_all(i, j, MatchCase=MatchCase, AllWordForms=AllWordForms, SeveralWords=SeveralWords,
                                       UseWildCards=UseWildCards, WholeWordOnly=WholeWordOnly, AutoSpell=AutoSpell,
                                       IgnoreFindString=IgnoreFindString, IgnoreReplaceString=IgnoreReplaceString,
-                                      ReplaceMode=ReplaceMode, IgnoreMessage=IgnoreMessage,
-                                      HanjaFromHangul=HanjaFromHangul, FindJaso=FindJaso, FindStyle=FindStyle,
-                                      ReplaceStyle=ReplaceStyle, FindType=FindType)
+                                      ReplaceMode=ReplaceMode, HanjaFromHangul=HanjaFromHangul, FindJaso=FindJaso,
+                                      FindStyle=FindStyle, ReplaceStyle=ReplaceStyle, FindType=FindType)
         else:
             pset = self.hwp.HParameterSet.HFindReplace
             # self.hwp.HAction.GetDefault("AllReplace", pset.HSet)
             pset.MatchCase = MatchCase
-            pset.AllWordForms = ALlWordForms
+            pset.AllWordForms = AllWordForms
             pset.SeveralWords = SeveralWords
             pset.UseWildCards = UseWildCards
             pset.WholeWordOnly = WholeWordOnly
@@ -6588,7 +6588,8 @@ class Hwp:
                 if "FilePathCheckerModule.dll".lower() in [i.lower() for i in os.listdir(os.getcwd())]:
                     location = os.getcwd()
                 # elif os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
-                elif "FilePathCheckerModule.dll".lower in [i.lower() for i in os.listdir(os.path.join(os.environ["USERPROFILE"]))]:
+                elif "FilePathCheckerModule.dll".lower in [i.lower() for i in
+                                                           os.listdir(os.path.join(os.environ["USERPROFILE"]))]:
                     location = os.environ["USERPROFILE"]
 
                 # 3. 위의 두 경우가 아닐 때, 인터넷에 연결되어 있는 경우에는
