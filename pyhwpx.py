@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.30.0",
+__version__ = "0.30.1",
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -2141,7 +2141,10 @@ class Hwp:
             else:
                 pass
 
-    def find_replace(self, src, dst, regex=False, direction: Literal["Backward", "Forward", "AllDoc"] = "Forward"):
+    def find_replace(self, src, dst, regex=False, direction: Literal["Backward", "Forward", "AllDoc"] = "Forward",
+                     MatchCase=1, AllWordForms=0, SeveralWords=1, UseWildCards=1, WholeWordOnly=0, AutoSpell=1,
+                     IgnoreFindString=0, IgnoreReplaceString=0, ReplaceMode=1, IgnoreMessage=0, HanjaFromHangul=1,
+                     FindJaso=0, FindStyle="", ReplaceStyle="", FindType=1):
         """
         아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,
         re=True로 설정하고 실행하면,
@@ -2155,27 +2158,46 @@ class Hwp:
             dst_list = [re.sub(src, dst, i) for i in src_list]
             for i, j in zip(src_list, dst_list):
                 try:
-                    return self.find_replace(i, j, direction=direction)
+                    return self.find_replace(i, j, direction=direction, MatchCase=MatchCase, AllWordForms=AllWordForms,
+                                             SeveralWords=SeveralWords, UseWildCards=UseWildCards,
+                                             WholeWordOnly=WholeWordOnly, AutoSpell=AutoSpell,
+                                             IgnoreFindString=IgnoreFindString, IgnoreReplaceString=IgnoreReplaceString,
+                                             ReplaceMode=ReplaceMode, IgnoreMessage=IgnoreMessage,
+                                             HanjaFromHangul=HanjaFromHangul, FindJaso=FindJaso, FindStyle=FindStyle,
+                                             ReplaceStyle=ReplaceStyle, FindType=FindType)
                 finally:
                     self.SetMessageBoxMode(0xfffff)
 
         else:
             pset = self.hwp.HParameterSet.HFindReplace
-            # self.hwp.HAction.GetDefault("AllReplace", pset.HSet)
+            # self.hwp.HAction.GetDefault("ExecReplace", pset.HSet)
+            pset.MatchCase = MatchCase
+            pset.AllWordForms = AllWordForms
+            pset.SeveralWords = SeveralWords
+            pset.UseWildCards = UseWildCards
+            pset.WholeWordOnly = WholeWordOnly
+            pset.AutoSpell = AutoSpell
             pset.Direction = self.hwp.FindDir(direction)
+            pset.IgnoreFindString = IgnoreFindString
+            pset.IgnoreReplaceString = IgnoreReplaceString
             pset.FindString = src  # "\\r\\n"
             pset.ReplaceString = dst  # "^n"
-            pset.ReplaceMode = 1
-            pset.IgnoreMessage = 0
-            pset.HanjaFromHangul = 1
-            pset.AutoSpell = 1
-            pset.FindType = 1
+            pset.ReplaceMode = ReplaceMode
+            pset.IgnoreMessage = IgnoreMessage
+            pset.HanjaFromHangul = HanjaFromHangul
+            pset.FindJaso = FindJaso
+            pset.FindRegExp = 0
+            pset.FindStyle = FindStyle
+            pset.ReplaceStyle = ReplaceStyle
+            pset.FindType = FindType
             try:
                 return self.hwp.HAction.Execute("ExecReplace", pset.HSet)
             finally:
                 self.SetMessageBoxMode(0xfffff)
 
-    def find_replace_all(self, src, dst, regex=False):
+    def find_replace_all(self, src, dst, regex=False, MatchCase=1, AllWordForms=0, SeveralWords=1, UseWildCards=1,
+                         WholeWordOnly=0, AutoSpell=1, IgnoreFindString=0, IgnoreReplaceString=0, ReplaceMode=1,
+                         IgnoreMessage=0, HanjaFromHangul=1, FindJaso=0, FindStyle="", ReplaceStyle="", FindType=1):
         """
         아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,
         re=True로 설정하고 실행하면,
@@ -2188,13 +2210,34 @@ class Hwp:
             src_list = [i.group() for i in re.finditer(src, whole_text)]
             dst_list = [re.sub(src, dst, i) for i in src_list]
             for i, j in zip(src_list, dst_list):
-                self.find_replace_all(i, j)
+                self.find_replace_all(i, j, MatchCase=MatchCase, AllWordForms=AllWordForms, SeveralWords=SeveralWords,
+                                      UseWildCards=UseWildCards, WholeWordOnly=WholeWordOnly, AutoSpell=AutoSpell,
+                                      IgnoreFindString=IgnoreFindString, IgnoreReplaceString=IgnoreReplaceString,
+                                      ReplaceMode=ReplaceMode, IgnoreMessage=IgnoreMessage,
+                                      HanjaFromHangul=HanjaFromHangul, FindJaso=FindJaso, FindStyle=FindStyle,
+                                      ReplaceStyle=ReplaceStyle, FindType=FindType)
         else:
             pset = self.hwp.HParameterSet.HFindReplace
             # self.hwp.HAction.GetDefault("AllReplace", pset.HSet)
+            pset.MatchCase = MatchCase
+            pset.AllWordForms = ALlWordForms
+            pset.SeveralWords = SeveralWords
+            pset.UseWildCards = UseWildCards
+            pset.WholeWordOnly = WholeWordOnly
+            pset.AutoSpell = AutoSpell
             pset.Direction = self.hwp.FindDir("AllDoc")
+            pset.IgnoreFindString = IgnoreFindString
+            pset.IgnoreReplaceString = IgnoreReplaceString
             pset.FindString = src  # "\\r\\n"
             pset.ReplaceString = dst  # "^n"
+            pset.ReplaceMode = ReplaceMode
+            pset.IgnoreMessage = IgnoreMessage
+            pset.HanjaFromHangul = HanjaFromHangul
+            pset.FindJaso = FindJaso
+            pset.FindRegExp = 0
+            pset.FindStyle = FindStyle
+            pset.ReplaceStyle = ReplaceStyle
+            pset.FindType = FindType
             pset.ReplaceMode = 1
             pset.IgnoreMessage = 0
             pset.HanjaFromHangul = 1
