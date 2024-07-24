@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.29.1",
+__version__ = "0.30.0",
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -2037,7 +2037,9 @@ class Hwp:
         finally:
             self.SetMessageBoxMode(0xfffff)
 
-    def find(self, src, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex=False):
+    def find(self, src, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex=False, MatchCase=1,
+             SeveralWords=1, UseWildCards=1, AutoSpell=1, IgnoreMessage=0, HanjaFromHangul=1, AllWordForms=0,
+             FindStyle="", ReplaceStyle="", FindJaso=0):
         """
         direction 방향으로 특정 단어를 찾아가는 메서드.
         해당 단어를 선택한 상태가 되며,
@@ -2050,6 +2052,10 @@ class Hwp:
             "Forward": 아래쪽으로
             "Backward": 위쪽으로
             "AllDoc": 아래쪽 우선으로 찾고 문서끝 도달시 처음으로 돌아감.
+            "MatchCase": 대소문자 구별
+            "SeveralWords": 여러 단어 찾기
+            "UseWildCards": 아무개 문자
+            "AutoSpell":
 
         :return:
             단어를 찾으면 찾아가서 선택한 후 True를 리턴,
@@ -2059,14 +2065,18 @@ class Hwp:
         init_pos = str(self.KeyIndicator())
         pset = self.hwp.HParameterSet.HFindReplace
         # self.hwp.HAction.GetDefault("RepeatFind", pset.HSet)
-        pset.MatchCase = 1
-        pset.SeveralWords = 1
-        pset.UseWildCards = 1
-        pset.AutoSpell = 1
+        pset.MatchCase = MatchCase
+        pset.SeveralWords = SeveralWords
+        pset.UseWildCards = UseWildCards
+        pset.AutoSpell = AutoSpell
         pset.Direction = self.find_dir(direction)
         pset.FindString = src
-        pset.IgnoreMessage = 0
-        pset.HanjaFromHangul = 1
+        pset.IgnoreMessage = IgnoreMessage
+        pset.HanjaFromHangul = HanjaFromHangul
+        pset.AllWordForms = AllWordForms
+        pset.FindJaso = FindJaso
+        pset.FindStyle = FindStyle
+        pset.ReplaceStyle = ReplaceStyle
         pset.FindRegExp = regex
         try:
             return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
