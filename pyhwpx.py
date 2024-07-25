@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.30.4",
+__version__ = "0.31.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -2233,7 +2233,7 @@ class Hwp:
             pset.FindString = src  # "\\r\\n"
             pset.ReplaceString = dst  # "^n"
             pset.ReplaceMode = ReplaceMode
-            pset.IgnoreMessage = IgnoreMessage
+            pset.IgnoreMessage = 0
             pset.HanjaFromHangul = HanjaFromHangul
             pset.FindJaso = FindJaso
             pset.FindRegExp = 0
@@ -6603,18 +6603,25 @@ class Hwp:
                     # 공식사이트에서 다운을 받게 하자.
                     from zipfile import ZipFile
                     print("downloading FilePathCheckerModule.dll to User Profile Folder")
-                    f = request.urlretrieve(
-                        "https://github.com/hancom-io/devcenter-archive/raw/main/hwp-automation/%EB%B3%B4%EC%95%88%EB%AA%A8%EB%93%88(Automation).zip",
-                        filename=os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
-                    with ZipFile(f[0]) as zf:
-                        zf.extract(
-                            "FilePathCheckerModuleExample.dll",
-                            os.path.join(os.environ["USERPROFILE"]))
-                    os.remove(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
-                    if not os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
-                        os.rename(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModuleExample.dll"),
-                                  os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll"))
-                    location = os.environ["USERPROFILE"]
+                    try:
+                        f = request.urlretrieve(
+                            "https://github.com/hancom-io/devcenter-archive/raw/main/hwp-automation/%EB%B3%B4%EC%95%88%EB%AA%A8%EB%93%88(Automation).zip",
+                            filename=os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
+                        with ZipFile(f[0]) as zf:
+                            zf.extract(
+                                "FilePathCheckerModuleExample.dll",
+                                os.path.join(os.environ["USERPROFILE"]))
+                        os.remove(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
+                        if not os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
+                            os.rename(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModuleExample.dll"),
+                                      os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll"))
+                        location = os.environ["USERPROFILE"]
+                    except urllib.error.URLError as e:
+                        # URLError를 처리합니다.
+                        print(f"아래와 같은 이유로 URL 에러가 발생하여 보안모듈 다운로드에 실패했습니다: \n{e.reason}")
+                    except Exception as e:
+                        # 기타 예외를 처리합니다.
+                        print(f"예기치 못한 오류가 발생했습니다. 아래 오류를 개발자에게 문의해주시기 바랍니다: \n{str(e)}")
         winup_path = r"Software\HNC\HwpAutomation\Modules"
 
         # HKEY_LOCAL_MACHINE와 연결 생성 후 핸들 얻음
