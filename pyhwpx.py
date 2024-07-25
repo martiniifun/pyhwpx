@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.30.2",
+__version__ = "0.30.4",
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -2039,8 +2039,8 @@ class Hwp:
             self.SetMessageBoxMode(0xfffff)
 
     def find(self, src, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex=False, MatchCase=1,
-             SeveralWords=1, UseWildCards=1, AutoSpell=1, HanjaFromHangul=1, AllWordForms=0,
-             FindStyle="", ReplaceStyle="", FindJaso=0):
+             SeveralWords=1, UseWildCards=1, WholeWordOnly=0, AutoSpell=1, HanjaFromHangul=1, AllWordForms=0,
+             FindStyle="", ReplaceStyle="", FindJaso=0, FindType=1):
         """
         direction 방향으로 특정 단어를 찾아가는 메서드.
         해당 단어를 선택한 상태가 되며,
@@ -2069,6 +2069,7 @@ class Hwp:
         pset.MatchCase = MatchCase
         pset.SeveralWords = SeveralWords
         pset.UseWildCards = UseWildCards
+        pset.WholeWordOnly = WholeWordOnly
         pset.AutoSpell = AutoSpell
         pset.Direction = self.find_dir(direction)
         pset.FindString = src
@@ -2079,6 +2080,7 @@ class Hwp:
         pset.FindStyle = FindStyle
         pset.ReplaceStyle = ReplaceStyle
         pset.FindRegExp = regex
+        pset.FindType = FindType
         try:
             return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
         finally:
