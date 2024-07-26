@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.32.0"
+__version__ = "0.32.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -54,6 +54,35 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
 # 헬퍼함수
+def cell_to_index(cell):
+    """ 엑셀 셀 주소를 행과 열 인덱스로 변환합니다. """
+    column = ord(cell[0]) - ord('A')  # 열 인덱스 (0-based)
+    row = int(cell[1:]) - 1           # 행 인덱스 (0-based)
+    return row, column
+
+
+def crop_data_from_selection(data, selection):
+    """ 리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출합니다. """
+    if not selection:
+        return []
+
+    # 셀 주소를 행과 열 인덱스로 변환
+    indices = [cell_to_index(cell) for cell in selection]
+
+    # 범위 계산
+    min_row = min(idx[0] for idx in indices)
+    max_row = max(idx[0] for idx in indices)
+    min_col = min(idx[1] for idx in indices)
+    max_col = max(idx[1] for idx in indices)
+
+    # 범위 추출
+    result = []
+    for row in range(min_row, max_row + 1):
+        result.append(data[row][min_col:max_col + 1])
+
+    return result
+
+
 def check_registry_key():
     winup_path = r"Software\HNC\HwpAutomation\Modules"
     alt_winup_path = r"Software\Hnc\HwpUserAction\Modules"
@@ -2609,52 +2638,54 @@ class Hwp:
             >>> df = hwp.table_to_df(0, cols=2)  # 문서의 첫 번째 표를 df로(2번인덱스행(3행)을 칼럼명으로, 그 아래(4행부터)를 값으로)
             >>>
         """
-        start_pos = self.hwp.GetPos()
-        ctrl = self.hwp.HeadCtrl
-        if isinstance(n, type(ctrl)):
-            # 정수인덱스 대신 ctrl 객체를 넣은 경우
-            self.set_pos_by_set(n.GetAnchorPos(0))
-            self.find_ctrl()
-        elif n == "" and self.is_cell():
-            self.TableCellBlock()
-            self.TableColBegin()
-            self.TableColPageUp()
-        elif n == "" or isinstance(n, int):
-            if n == "":
-                n = 0
-            if n >= 0:
-                idx = 0
-            else:
-                idx = -1
-                ctrl = self.hwp.LastCtrl
+        if self.SelectionMode != 19:
+            start_pos = self.hwp.GetPos()
+            ctrl = self.hwp.HeadCtrl
+            if isinstance(n, type(ctrl)):
+                # 정수인덱스 대신 ctrl 객체를 넣은 경우
+                self.set_pos_by_set(n.GetAnchorPos(0))
+                self.find_ctrl()
+            elif n == "" and self.is_cell():
+                self.TableCellBlock()
+                self.TableColBegin()
+                self.TableColPageUp()
+            elif n == "" or isinstance(n, int):
+                if n == "":
+                    n = 0
+                if n >= 0:
+                    idx = 0
+                else:
+                    idx = -1
+                    ctrl = self.hwp.LastCtrl
 
-            while ctrl:
-                if ctrl.UserDesc == "표":
-                    if n in (0, -1):
-                        self.set_pos_by_set(ctrl.GetAnchorPos(0))
-                        self.hwp.FindCtrl()
-                        break
-                    else:
-                        if idx == n:
+                while ctrl:
+                    if ctrl.UserDesc == "표":
+                        if n in (0, -1):
                             self.set_pos_by_set(ctrl.GetAnchorPos(0))
                             self.hwp.FindCtrl()
                             break
-                        if n >= 0:
-                            idx += 1
                         else:
-                            idx -= 1
-                if n >= 0:
-                    ctrl = ctrl.Next
-                else:
-                    ctrl = ctrl.Prev
+                            if idx == n:
+                                self.set_pos_by_set(ctrl.GetAnchorPos(0))
+                                self.hwp.FindCtrl()
+                                break
+                            if n >= 0:
+                                idx += 1
+                            else:
+                                idx -= 1
+                    if n >= 0:
+                        ctrl = ctrl.Next
+                    else:
+                        ctrl = ctrl.Prev
 
-            try:
-                self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
-            except AttributeError:
-                raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
-                                 f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
-            self.hwp.FindCtrl()
-
+                try:
+                    self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
+                except AttributeError:
+                    raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
+                                     f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
+                self.hwp.FindCtrl()
+        else:
+            selected_range = self.get_selected_range()
         xml_data = self.GetTextFile("HWPML2X", option="saveblock")
         root = ET.fromstring(xml_data)
 
@@ -2672,7 +2703,8 @@ class Hwp:
                     cell_text = cell_text[:-2]
                 row_data.append(cell_text)
             data.append(row_data)
-
+        if self.SelectionMode == 19:
+            data = crop_data_from_selection(data, selected_range)
         if type(cols) == int:
             columns = data[cols]
             data = data[cols + 1:]
@@ -2682,7 +2714,8 @@ class Hwp:
         try:
             return df
         finally:
-            self.set_pos(*start_pos)
+            if self.SelectionMode != 19:
+                self.set_pos(*start_pos)
 
     def table_to_bottom(self, offset=0.):
         """
