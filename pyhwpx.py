@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.31.0"
+__version__ = "0.32.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -80,12 +80,9 @@ def rename_duplicates_in_list(file_list):
     문서 내 이미지를 파일로 저장할 때,
     동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 함수
     """
-    # 딕셔너리를 사용하여 중복 횟수를 추적합니다.
     counts = {}
 
-    # 리스트를 순회하며 중복 횟수를 계산합니다.
     for i, item in enumerate(file_list):
-        # 중복된 아이템을 찾았을 경우
         if item in counts:
             counts[item] += 1
             new_item = f"{os.path.splitext(item)[0]}({counts[item]}){os.path.splitext(item)[1]}"
@@ -93,7 +90,6 @@ def rename_duplicates_in_list(file_list):
             counts[item] = 0
             new_item = item
 
-        # 리스트를 업데이트합니다.
         file_list[i] = new_item
 
     return file_list
@@ -151,22 +147,16 @@ class Hwp:
         self.hwp = 0
         context = pythoncom.CreateBindCtx(0)
 
-        # 현재 실행중인 프로세스를 가져옵니다.
         running_coms = pythoncom.GetRunningObjectTable()
         monikers = running_coms.EnumRunning()
 
         if not new:
             for moniker in monikers:
                 name = moniker.GetDisplayName(context, moniker)
-                # moniker의 DisplayName을 통해 한글을 가져옵니다
-                # 한글의 경우 HwpObject.버전으로 각 버전별 실행 이름을 설정합니다.
                 if name.startswith('!HwpObject.'):
-                    # 120은 한글 2022의 경우입니다.
-                    # 현재 moniker를 통해 ROT에서 한글의 object를 가져옵니다.
                     obj = running_coms.GetObject(moniker)
-                    # 가져온 object를 Dispatch를 통해 사용할수 있는 객체로 변환시킵니다.
                     self.hwp = win32.gencache.EnsureDispatch(
-                        obj.QueryInterface(pythoncom.IID_IDispatch))  # 그이후는 오토메이션 api를 사용할수 있습니다
+                        obj.QueryInterface(pythoncom.IID_IDispatch))
         if not self.hwp:
             self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
         try:
@@ -176,7 +166,7 @@ class Hwp:
             self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
             self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
-        if register_module and not check_registry_key():
+        if register_module: #  and not check_registry_key():
             try:
                 self.register_module()
             except:
@@ -2602,21 +2592,22 @@ class Hwp:
         self.hwp.SetPos(*start_pos)
         return df
 
-    def table_to_df(self, n="", startrow=0, columns=[]):
+    def table_to_df(self, n="", cols=0):
         """
-        (2024. 3. 14. for문 추출 구조에서, 한 번에 추출하는 방식으로 변경->속도개선)
+        (2024. 7. 26. xml파싱으로 방법 변경. 결국 기존 방법으로는 간단한 줄바꿈 이슈도 해결 못함.
+                      startrow와 columns가 뭔가 중복되는 개념이어서, cols로 통일. 파괴적 업데이트라 죄송..)
         한/글 문서의 n번째 표를 판다스 데이터프레임으로 리턴하는 메서드.
         n을 넣지 않는 경우, 캐럿이 셀에 있다면 해당 표를 df로,
         캐럿이 표 밖에 있다면 첫 번째 표를 df로 리턴한다.
-        startrow는 표 제목에 일부 병합이 되어 있는 경우
-        df로 변환시작할 행을 특정할 때 사용된다.
         :return:
             pd.DataFrame
         :example:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
-            >>> df = hwp.table_to_df(0)
+            >>> df = hwp.table_to_df()  # 현재 캐럿이 들어가 있는 표 전체를 df로(1행을 df의 칼럼으로)
+            >>> df = hwp.table_to_df(0, cols=2)  # 문서의 첫 번째 표를 df로(2번인덱스행(3행)을 칼럼명으로, 그 아래(4행부터)를 값으로)
+            >>>
         """
         start_pos = self.hwp.GetPos()
         ctrl = self.hwp.HeadCtrl
@@ -2624,9 +2615,7 @@ class Hwp:
             # 정수인덱스 대신 ctrl 객체를 넣은 경우
             self.set_pos_by_set(n.GetAnchorPos(0))
             self.find_ctrl()
-            self.ShapeObjTableSelCell()
         elif n == "" and self.is_cell():
-            # 기본값은 현재위치의 표를 잡아오기
             self.TableCellBlock()
             self.TableColBegin()
             self.TableColPageUp()
@@ -2644,13 +2633,11 @@ class Hwp:
                     if n in (0, -1):
                         self.set_pos_by_set(ctrl.GetAnchorPos(0))
                         self.hwp.FindCtrl()
-                        self.ShapeObjTableSelCell()
                         break
                     else:
                         if idx == n:
                             self.set_pos_by_set(ctrl.GetAnchorPos(0))
                             self.hwp.FindCtrl()
-                            self.ShapeObjTableSelCell()
                             break
                         if n >= 0:
                             idx += 1
@@ -2667,23 +2654,35 @@ class Hwp:
                 raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
                                  f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
             self.hwp.FindCtrl()
-            self.ShapeObjTableSelCell()
 
-        self.TableCellBlock()
-        self.TableCellBlockExtend()
-        self.TableCellBlockExtend()
-        rows = int(re.sub(r"[A-Z]+", "", self.get_cell_addr()))
-        arr = np.array(self.get_selected_text(as_="list")).reshape(rows, -1)
-        if startrow:
-            arr = arr[startrow:]
-        if columns:
-            if len(columns) != len(arr[0]):
-                raise IndexError("columns의 길이가 열의 갯수와 맞지 않습니다.")
-            df = pd.DataFrame(arr, columns=columns)
-        else:
-            df = pd.DataFrame(arr[1:], columns=arr[0])
-        self.hwp.SetPos(*start_pos)
-        return df
+        xml_data = self.GetTextFile("HWPML2X", option="saveblock")
+        root = ET.fromstring(xml_data)
+
+        data = []
+
+        for row in root.findall('.//ROW'):
+            row_data = []
+            for cell in row.findall('.//CELL'):
+                cell_text = ''
+                for text in cell.findall('.//TEXT'):
+                    for char in text.findall('.//CHAR'):
+                        cell_text += char.text
+                    cell_text += "\r\n"
+                if cell_text.endswith("\r\n"):
+                    cell_text = cell_text[:-2]
+                row_data.append(cell_text)
+            data.append(row_data)
+
+        if type(cols) == int:
+            columns = data[cols]
+            data = data[cols + 1:]
+            df = pd.DataFrame(data, columns=columns)
+        elif type(cols) in (list, tuple):
+            df = pd.DataFrame(data, columns=cols)
+        try:
+            return df
+        finally:
+            self.set_pos(*start_pos)
 
     def table_to_bottom(self, offset=0.):
         """
@@ -6523,7 +6522,8 @@ class Hwp:
             >>> hwp.register_module("FilePathChekDLL", "FilePathCheckerModule")
             True
         """
-        self.register_regedit()
+        if not check_registry_key():
+            self.register_regedit()
         return self.hwp.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
     def RegisterModule(self, module_type="FilePathCheckDLL", module_data="FilePathCheckerModule"):
@@ -6555,7 +6555,8 @@ class Hwp:
             >>> hwp.register_module("FilePathChekDLL", "FilePathCheckerModule")
             True
         """
-        self.register_regedit()
+        if not check_registry_key():
+            self.register_regedit()
         return self.hwp.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
     def register_regedit(self):
