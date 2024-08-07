@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.33.0"
+__version__ = "0.33.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -606,7 +606,7 @@ class Hwp:
         """
         pset = self.HParameterSet.HStyle
         if type(style) != int:
-            style_dict = self.get_style_dict()
+            style_dict = self.get_style_dict(as_=dict)
             for key, value in style_dict.items():
                 if value.get('name') == style:
                     style = key
