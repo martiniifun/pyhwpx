@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.32.1"
+__version__ = "0.33.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -552,7 +552,7 @@ class Hwp:
             raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
         self.HAction.Execute("StyleDelete", pset.HSet)
 
-    def get_style_dict(self):
+    def get_style_dict(self, as_: [list, dict] = list):
         """
         스타일 목록을 사전 데이터로 리턴하는 메서드.
         도움 주신 kosohn님께 아주 큰 감사!!!
@@ -565,16 +565,59 @@ class Hwp:
 
         tree = ET.parse("temp.xml")
         root = tree.getroot()
-        style_list = {
-            int(style.get('Id')): {
-                'type': style.get('Type'),
-                'name': style.get('Name'),
-                'engName': style.get('EngName')
+        if as_ == list:
+            styles = [
+                {
+                    'index': int(style.get("Id")),
+                    'type': style.get('Type'),
+                    'name': style.get('Name'),
+                    'engName': style.get('EngName')
+                }
+                for style in root.findall('.//STYLE')
+            ]
+        elif as_ == dict:
+            styles = {
+                int(style.get('Id')): {
+                    'type': style.get('Type'),
+                    'name': style.get('Name'),
+                    'engName': style.get('EngName')
+                }
+                for style in root.findall('.//STYLE')
             }
-            for style in root.findall('.//STYLE')
-        }
         os.remove("temp.xml")
-        return style_list
+        return styles
+
+    def get_style(self):
+        """
+        현재 캐럿이 위치한 문단의 스타일정보를 사전 형태로 리턴한다.
+        :return:
+        """
+        style_dict = self.get_style_dict(as_=list)
+        pset = self.HParameterSet.HStyle
+        self.HAction.GetDefault("Style", pset.HSet)
+        return style_dict[pset.Apply]
+
+    def set_style(self, style:[int, str]):
+        """
+        현재 캐럿이 위치한 문단의 스타일을 변경한다.
+        스타일 입력은 style 인수로 정수값(스타일번호) 또는 문자열(스타일이름)을 넣으면 된다.
+        :param style:
+        :return:
+        """
+        pset = self.HParameterSet.HStyle
+        if type(style) != int:
+            style_dict = self.get_style_dict()
+            for key, value in style_dict.items():
+                if value.get('name') == style:
+                    style = key
+                    break
+                else:
+                    continue
+            if style != key:
+                raise KeyError("해당하는 스타일이 없습니다.")
+        self.HAction.GetDefault("Style", pset.HSet)
+        pset.Apply = style
+        return self.HAction.Execute("Style", pset.HSet)
 
     def get_selected_range(self):
         """
@@ -7227,7 +7270,13 @@ class Hwp:
         """
         현재 리스트를 닫고 (최)상위 리스트로 이동하는 액션. 대표적인 예로, 메모나 각주 등을 작성한 후 본문으로 빠져나올 때, 혹은 여러 겹의 표 안에 있을 때 한 번에 표 밖으로 캐럿을 옮길 때 사용한다. 굉장히 자주 쓰이는 액션이며, 경우에 따라 Close가 아니라 CloseEx를 써야 하는 경우도 있다. 아래 영상의 캐럿 위치에 주목.
         """
-        return self.hwp.HAction.Run("Close")
+        cur_pos = self.GetPos()
+        self.hwp.HAction.Run("Close")
+        for _ in range(5):
+            if self.GetPos() != cur_pos:
+                break
+            else:
+                sleep(0.05)
 
     def CloseEx(self):
         """
