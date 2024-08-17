@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.34.3"
+__version__ = "0.34.4"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -7454,17 +7454,36 @@ class Hwp:
             finally:
                 self.set_message_box_mode(0xF000)
 
-    def Delete(self):
+    def Delete(self, delete_ctrl=True):
         """
-        삭제액션. 키보드의 Del 키를 눌렀을 때와 대부분 유사하다. 아주 사용빈도가 높은 액션이다.
+        삭제액션. 키보드의 Del 키를 눌렀을 때와 대부분(?) 유사하다. 아주 사용빈도가 높은 액션이다.
+        :param delete_ctrl: 컨트롤(표, 이미지, 겹침문자 등)을 삭제할 때 처리방법(True: 삭제, False: 삭제안함)
+        :return:
         """
-        return self.hwp.HAction.Run("Delete")
+        cur_mode = self.hwp.GetMessageBoxMode()
+        if delete_ctrl:
+            self.hwp.SetMessageBoxMode(0x10)
+        else:
+            self.hwp.SetMessageBoxMode(0x00)
+        try:
+            return self.hwp.HAction.Run("Delete")
+        finally:
+            self.hwp.SetMessageBoxMode(cur_mode)
 
-    def DeleteBack(self):
+
+    def DeleteBack(self, delete_ctrl=True):
         """
         Delete와 유사하지만, 이건 Backspace처럼 우측에서 좌측으로 삭제해준다. 많이 쓰인다.
         """
-        return self.hwp.HAction.Run("DeleteBack")
+        cur_mode = self.hwp.GetMessageBoxMode()
+        if delete_ctrl:
+            self.hwp.SetMessageBoxMode(0x10)
+        else:
+            self.hwp.SetMessageBoxMode(0x00)
+        try:
+            return self.hwp.HAction.Run("DeleteBack")
+        finally:
+            self.hwp.SetMessageBoxMode(cur_mode)
 
     def DeleteField(self):
         """
@@ -7478,17 +7497,45 @@ class Hwp:
         """
         return self.hwp.HAction.Run("DeleteFieldMemo")
 
-    def DeleteLine(self):
+    def DeleteLine(self, delete_ctrl=True):
         """
-        한 줄 지우기(Ctrl-Y) 액션. 문단나눔과 전혀 상관없이 딱 한 줄의 텍스트가 삭제된다. DeleteLine으로 표 등의 객체를 삭제하는 경우에는 팝업이 뜨므로 유의해야 한다. (hwp.SetMessageBoxMode 메서드를 추가로 사용하면 해결된다.)
-        """
-        return self.hwp.HAction.Run("DeleteLine")
+        한 줄 지우기(Ctrl-Y) 액션.
+        문단나눔과 전혀 상관없이 딱 한 줄의 텍스트가 삭제된다.
+        원래 액션과 달리 DeleteLine으로 표 등의 객체를 삭제하는 경우에
+        경고팝업이 뜨지 않으므로 유의해야 한다.
+        만약 컨트롤을 지우고 싶지 않다면 인수에 False를 넣으면 된다.
 
-    def DeleteLineEnd(self):
         """
-        현재 커서에서 줄 끝까지 지우기(Alt-Y). 수작업시에 굉장히 유용한 기능일 수 있지만, 자동화 작업시에는 DeleteLine이나 DeleteLineEnd 모두, 한 줄 안에 어떤 내용까지 있는지 파악하기 어려운 관계로, 자동화에 잘 쓰이지는 않는다.
+        cur_mode = self.hwp.GetMessageBoxMode()
+        if delete_ctrl:
+            self.hwp.SetMessageBoxMode(0x10)
+        else:
+            self.hwp.SetMessageBoxMode(0x00)
+        try:
+            return self.hwp.HAction.Run("DeleteLine")
+        finally:
+            self.hwp.SetMessageBoxMode(cur_mode)
+
+    def DeleteLineEnd(self, delete_ctrl=True):
         """
-        return self.hwp.HAction.Run("DeleteLineEnd")
+        현재 커서에서 줄 끝까지 지우기(Alt-Y).
+        수작업시에 굉장히 유용한 기능일 수 있지만,
+        자동화 작업시에는 DeleteLine이나 DeleteLineEnd 모두,
+        한 줄 안에 어떤 내용까지 있는지 파악하기 어려운 관계로,
+        자동화에 잘 쓰이지는 않는다.
+        원래 액션과 달리 DeleteLineEnd로 표 등의 객체를 삭제하는 경우에
+        경고팝업이 뜨지 않으므로 유의해야 한다.
+        만약 컨트롤을 지우고 싶지 않다면 인수에 False를 넣으면 된다.
+        """
+        cur_mode = self.hwp.GetMessageBoxMode()
+        if delete_ctrl:
+            self.hwp.SetMessageBoxMode(0x10)
+        else:
+            self.hwp.SetMessageBoxMode(0x00)
+        try:
+            return self.hwp.HAction.Run("DeleteLineEnd")
+        finally:
+            self.hwp.SetMessageBoxMode(cur_mode)
 
     def DeletePage(self):
         """
@@ -7496,17 +7543,33 @@ class Hwp:
         """
         return self.hwp.HAction.Run("DeletePage")
 
-    def DeleteWord(self):
+    def DeleteWord(self, delete_ctrl=True):
         """
         단어 지우기(Ctrl-T) 액션. 단, 커서 우측에 위치한 단어 한 개씩 삭제하며, 커서가 단어 중간에 있는 경우 우측 글자만 삭제한다.
         """
-        return self.hwp.HAction.Run("DeleteWord")
+        cur_mode = self.hwp.GetMessageBoxMode()
+        if delete_ctrl:
+            self.hwp.SetMessageBoxMode(0x10)
+        else:
+            self.hwp.SetMessageBoxMode(0x00)
+        try:
+            return self.hwp.HAction.Run("DeleteWord")
+        finally:
+            self.hwp.SetMessageBoxMode(cur_mode)
 
-    def DeleteWordBack(self):
+    def DeleteWordBack(self, delete_ctrl=True):
         """
         한 단어씩 좌측으로 삭제하는 액션(Ctrl-백스페이스). DeleteWord와 마찬가지로 커서가 단어 중간에 있는 경우 좌측 글자만 삭제한다.
         """
-        return self.hwp.HAction.Run("DeleteWordBack")
+        cur_mode = self.hwp.GetMessageBoxMode()
+        if delete_ctrl:
+            self.hwp.SetMessageBoxMode(0x10)
+        else:
+            self.hwp.SetMessageBoxMode(0x00)
+        try:
+            return self.hwp.HAction.Run("DeleteWordBack")
+        finally:
+            self.hwp.SetMessageBoxMode(cur_mode)
 
     def DrawObjCancelOneStep(self):
         """
