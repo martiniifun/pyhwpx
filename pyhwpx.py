@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.34.2"
+__version__ = "0.34.3"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -513,7 +513,7 @@ class Hwp:
         새쪽번호가 적용되어 있다면 그 번호를 리턴한다.
         :return:
         """
-        return self.KeyIndicator()[3]
+        return self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPrintPage
 
     @property
     def current_page_index(self):
