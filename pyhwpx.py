@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.34.4"
+__version__ = "0.34.5"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -2967,8 +2967,17 @@ class Hwp:
         """
         return self.hwp.XHwpDocuments.Active_XHwpDocument.Clear(option=option)
 
-    def close(self, is_dirty: bool = False):
-        return self.hwp.XHwpDocuments.Active_XHwpDocument.Close(isDirty=is_dirty)
+    def close(self, is_dirty: bool = False, interval=0.01):
+        """
+        문서를 버리고 닫은 후, 새 문서창을 여는 메서드.
+        굳이 새 문서파일이 필요한 게 아니라면
+        hwp.close 대신 hwp.clear를 사용할 것.
+        """
+        while True:
+            try:
+                return self.hwp.XHwpDocuments.Active_XHwpDocument.Close(isDirty=is_dirty)
+            except AttributeError:
+                sleep(interval)
 
     # Run 액션아이디의 Close와 중복되어 주석처리함. close로 실행가능
     # def Close(self, is_dirty: bool = False):
