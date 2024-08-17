@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.34.0"
+__version__ = "0.34.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -7345,6 +7345,29 @@ class Hwp:
         단어 그대로 숨은 설명을 수정하는 액션이다. 캐럿은 [숨은설명] 조판부호 바로 앞에 위치하고 있어야 한다.
         """
         return self.hwp.HAction.Run("CommentModify")
+
+    def ComposeChars(self, Chars: str|int = "", CharSize: int = -3, CheckCompose: int = 0, CircleType: int = 0, **kwargs):
+        """
+        글자 겹치기 메서드(원문자 만들기)
+        캐럿 위치의 서체를 따라가지만, 임의의 키워드로 폰트 수정 가능(예: Bold=True, Italic=True, TextColor=hwp.RGBColor(255,0,0) 등)
+
+        :param Chars: 겹칠 글자(정수도 문자열로 인식)
+        :param CharSize: 글자확대(2:150%, 1:140%, 0:130%, -1:120%, -2:110%, -3:100%, -4:90%, -5:80%, -6:70%, -7:60%, -8:50%)
+        :param CheckCompose: 모양 안에 글자 겹치기 여부(1이면 글자들끼리도 겹침)
+        :param CircleType: 테두리 모양(0:없음, 1:원, 2:반전원, 3:사각, 4:반전사각, 5:삼각, 6:반전삼각, 7:해, 8:마름모, 9:반전마름모, 10:뭉툭사각, 11:재활용빈화살표, 12:재활용화살표, 13:재활용채운화살표)
+        :param kwargs: 폰트 관련 키워드인자들(Bold, Italic, TextColor 등)
+        :return: 성공하면 True, 실패하면 False를 리턴
+        """
+        pset = self.HParameterSet.HChCompose
+        self.HAction.GetDefault("ComposeChars", pset.HSet)
+        pset.Chars = Chars
+        pset.CharSize = CharSize
+        pset.CheckCompose = CheckCompose
+        pset.CircleType = CircleType  # 0~13
+        for key in kwargs:
+            if kwargs[key] != "":
+                setattr(pset.CharShapes.CircleCharShape, key, kwargs[key])
+        return self.HAction.Execute("ComposeChars", pset.HSet)
 
     def Copy(self):
         """
