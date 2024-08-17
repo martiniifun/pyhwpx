@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.34.5"
+__version__ = "0.34.6"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1882,12 +1882,42 @@ class Hwp:
         pset.Attributes = attributes
         return self.hwp.HAction.Execute("FileSaveBlock_S", pset.HSet)
 
-    def goto_page(self, page_num):
+    def goto_page(self, page_num:int=1):
+        """
+        인쇄페이지 기준으로 해당 페이지로 이동
+        1페이지의 page_num은 1이다.
+        :param page_num: 이동할 페이지번호
+        :return: 성공시 True, 실패시 False를 리턴
+        """
         pset = self.hwp.HParameterSet.HGotoE
         self.hwp.HAction.GetDefault("Goto", pset.HSet)
         pset.HSet.SetItem("DialogResult", page_num)
         pset.SetSelectionIndex = 1
         return self.hwp.HAction.Execute("Goto", pset.HSet)
+
+    def goto_page_by_index(self, page_index:int|str=0):
+        """
+        새쪽번호와 관계없이 페이지 순서를 통해
+        특정 페이지를 찾아가는 메서드.
+        0이 1페이지임.
+        :param page_index:
+        :return: tuple(인쇄기준페이지, 페이지인덱스)
+        """
+        if int(page_index) + 1 > self.hwp.PageCount:
+            raise ValueError("입력한 페이지 인덱스가 문서 총 페이지보다 큽니다.")
+        elif int(page_index) < 0:
+            raise ValueError("0 이상의 값을 입력해야 합니다.")
+        self.goto_page(page_index + 1)
+        cur_page = self.current_page_index
+        if page_index == cur_page:
+            pass
+        elif page_index < cur_page:
+            for _ in range(cur_page - page_index):
+                self.MovePageUp()
+        else:
+            for _ in range(page_index - cur_page):
+                self.MovePageDown()
+        return self.current_page, self.current_page_index
 
     def table_from_data(self, data, transpose=False, header0="", treat_as_char=False, header=True, index=True,
                         cell_fill: bool | tuple[int, int, int] = False, header_bold=True):
