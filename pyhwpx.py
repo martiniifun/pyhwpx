@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.34.1"
+__version__ = "0.34.2"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -508,11 +508,23 @@ class Hwp:
     @property
     def current_page(self):
         """
-        현재 페이지 번호를 리턴.
+        현재 쪽번호를 리턴.
         1페이지에 있다면 1을 리턴한다.
+        새쪽번호가 적용되어 있다면 그 번호를 리턴한다.
         :return:
         """
         return self.KeyIndicator()[3]
+
+    @property
+    def current_page_index(self):
+        """
+        현재 페이지의 순서 번호를 리턴.
+        1페이지에 있다면 0을 리턴한다.
+        첫 페이지부터의 인덱스를 리턴하므로
+        새쪽번호 등과 무관하다.
+        :return:
+        """
+        return self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPage
 
     # 커스텀 메서드
 
