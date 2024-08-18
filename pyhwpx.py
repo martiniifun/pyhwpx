@@ -35,7 +35,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.34.7"
+__version__ = "0.34.8"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1908,8 +1908,8 @@ class Hwp:
             raise ValueError("입력한 페이지 인덱스가 문서 총 페이지보다 큽니다.")
         elif int(page_index) < 1:
             raise ValueError("1 이상의 값을 입력해야 합니다.")
-        self.goto_page(page_index)
-        cur_page = self.current_page_index
+        self.goto_printpage(page_index)
+        cur_page = self.current_page
         if page_index == cur_page:
             pass
         elif page_index < cur_page:
@@ -1918,7 +1918,7 @@ class Hwp:
         else:
             for _ in range(page_index - cur_page):
                 self.MovePageDown()
-        return self.current_page, self.current_page_index
+        return self.current_printpage, self.current_page
 
     def table_from_data(self, data, transpose=False, header0="", treat_as_char=False, header=True, index=True,
                         cell_fill: bool | tuple[int, int, int] = False, header_bold=True):
