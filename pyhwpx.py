@@ -4,6 +4,7 @@ import re
 import shutil
 import sys
 import tempfile
+import threading
 import urllib.error
 import xml.etree.ElementTree as ET
 import zipfile
@@ -18,7 +19,9 @@ import numpy as np
 import pandas as pd
 import pyperclip as cb
 import pythoncom
+import win32api
 import win32gui
+import win32con
 from PIL import Image
 
 # CircularImport 오류 출력안함
@@ -35,7 +38,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.34.8"
+__version__ = "0.35.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -54,15 +57,32 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
 # 헬퍼함수
+def _eq_create(hwp, visible):
+    pythoncom.CoInitialize()
+    hwp = Hwp(visible=visible)
+    hwp.HAction.Run("EquationCreate")
+    pythoncom.CoUninitialize()
+    return True
+
+
+def _close_eqedit():
+    hwnd = win32gui.FindWindow(None, "수식 편집기")
+    if hwnd:
+        win32gui.PostMessage(hwnd, 16, 0, 0)  # 16 == win32con.WM_CLOSE
+        return True
+    else:
+        return False
+
+
 def cell_to_index(cell):
-    """ 엑셀 셀 주소를 행과 열 인덱스로 변환합니다. """
+    """ 엑셀 셀 주소를 행과 열 인덱스로 변환"""
     column = ord(cell[0]) - ord('A')  # 열 인덱스 (0-based)
-    row = int(cell[1:]) - 1           # 행 인덱스 (0-based)
+    row = int(cell[1:]) - 1  # 행 인덱스 (0-based)
     return row, column
 
 
 def crop_data_from_selection(data, selection):
-    """ 리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출합니다. """
+    """ 리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출"""
     if not selection:
         return []
 
@@ -107,7 +127,7 @@ def check_registry_key():
 def rename_duplicates_in_list(file_list):
     """
     문서 내 이미지를 파일로 저장할 때,
-    동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 함수
+    동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 헬퍼함수
     """
     counts = {}
 
@@ -195,7 +215,7 @@ class Hwp:
             self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
             self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
-        if register_module: #  and not check_registry_key():
+        if register_module:  # and not check_registry_key():
             try:
                 self.register_module()
             except:
@@ -529,6 +549,78 @@ class Hwp:
 
     # 커스텀 메서드
 
+    def import_mathml(self, mml_path, delay=0.2):
+        """
+        MathML 포맷의 수식문서 파일경로를 입력하면
+        아래아한글 수식으로 삽입하는 함수
+        """
+
+        def open_dialog(hwnd, delay=delay):
+            win32gui.SetForegroundWindow(hwnd)
+            win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
+            win32api.keybd_event(ord("M"), 0, 0, 0)
+            win32api.keybd_event(ord("M"), 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0)
+            sleep(delay)
+
+        def close_dialog(hwnd, delay=delay):
+            win32gui.SetForegroundWindow(hwnd)
+            win32api.keybd_event(win32con.VK_SHIFT, 0, 0, 0)
+            win32api.keybd_event(win32con.VK_ESCAPE, 0, 0, 0)
+            win32api.keybd_event(win32con.VK_ESCAPE, 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(win32con.VK_SHIFT, 0, win32con.KEYEVENTF_KEYUP, 0)
+            sleep(delay)
+
+        def get_edit_text(hwnd, delay=delay):
+            sleep(delay)
+            length = win32gui.SendMessage(hwnd, win32con.WM_GETTEXTLENGTH) + 1
+            buffer = win32gui.PyMakeBuffer(length * 2)
+            win32gui.SendMessage(hwnd, win32con.WM_GETTEXT, length, buffer)
+            text = buffer[:length * 2].tobytes().decode('utf-16')[:-1]
+            return text
+
+        self.Cancel()
+        self.EquationCreate(True)
+
+        hwnd1 = 0
+        while not hwnd1:
+            hwnd1 = win32gui.FindWindow(None, "수식 편집기")
+            win32gui.ShowWindow(hwnd1, win32con.SW_HIDE)
+            sleep(delay)
+        open_dialog(hwnd1)
+        sleep(delay)
+
+        hwnd2 = 0
+        while not hwnd2:
+            open_dialog(hwnd1)
+            hwnd2 = win32gui.FindWindow(None, "MathML 파일 불러오기")
+            win32gui.ShowWindow(hwnd2, win32con.SW_HIDE)
+            sleep(delay)
+
+        sleep(delay)
+        child_hwnds = []
+        win32gui.EnumChildWindows(hwnd2, lambda hwnd, param: param.append(hwnd), child_hwnds)
+        for chwnd in child_hwnds:
+            class_name = win32gui.GetClassName(chwnd)
+            if class_name == "Edit":
+                while True:
+                    win32gui.SendMessage(chwnd, win32con.WM_SETTEXT, None, mml_path)
+                    if get_edit_text(chwnd) == mml_path:
+                        win32api.keybd_event(win32con.VK_EXECUTE, 0, 0, 0)
+                        sleep(delay)
+                        break
+                    sleep(delay)
+                break
+        close_dialog(hwnd1)
+        self.SelectCtrlReverse()
+        ctrl = self.CurSelectedCtrl
+        self.Cancel()
+        self.MoveRight()
+        prop = ctrl.Properties
+        text = prop.Item("String")
+        prop.SetItem("String", text)
+        ctrl.Properties = prop
+
     def maximize_window(self):
         """현재 창 최대화"""
         win32gui.ShowWindow(
@@ -610,7 +702,7 @@ class Hwp:
         self.HAction.GetDefault("Style", pset.HSet)
         return style_dict[pset.Apply]
 
-    def set_style(self, style:[int, str]):
+    def set_style(self, style: [int, str]):
         """
         현재 캐럿이 위치한 문단의 스타일을 변경한다.
         스타일 입력은 style 인수로 정수값(스타일번호) 또는 문자열(스타일이름)을 넣으면 된다.
@@ -1883,7 +1975,7 @@ class Hwp:
         pset.Attributes = attributes
         return self.hwp.HAction.Execute("FileSaveBlock_S", pset.HSet)
 
-    def goto_printpage(self, page_num:int=1):
+    def goto_printpage(self, page_num: int = 1):
         """
         인쇄페이지 기준으로 해당 페이지로 이동
         1페이지의 page_num은 1이다.
@@ -1896,7 +1988,7 @@ class Hwp:
         pset.SetSelectionIndex = 1
         return self.hwp.HAction.Execute("Goto", pset.HSet)
 
-    def goto_page(self, page_index:int|str=1):
+    def goto_page(self, page_index: int | str = 1) -> tuple[int, int]:
         """
         새쪽번호와 관계없이 페이지 순서를 통해
         특정 페이지를 찾아가는 메서드.
@@ -3447,8 +3539,20 @@ class Hwp:
     def EndStyle(self, end_style):
         return self.hwp.EndStyle(EndStyle=end_style)
 
-    def EquationCreate(self):
-        return self.hwp.HAction.Run("EquationCreate")
+    def EquationCreate(self, thread=False):
+        visible = self.hwp.XHwpWindows.Active_XHwpWindow.Visible
+        if thread:
+            if win32gui.FindWindow(None, "수식 편집기"):
+                return False
+            t = threading.Thread(target=_eq_create, args=(self, visible), name="eq_create")
+            t.start()
+            t.join(timeout=0)
+            return True
+        else:
+            return self.hwp.HAction.Run("EquationCreate")
+
+    def EquationClose(self):
+        return _close_eqedit()
 
     def EquationModify(self):
         return self.hwp.HAction.Run("EquationModify")
@@ -7398,7 +7502,8 @@ class Hwp:
         """
         return self.hwp.HAction.Run("CommentModify")
 
-    def ComposeChars(self, Chars: str|int = "", CharSize: int = -3, CheckCompose: int = 0, CircleType: int = 0, **kwargs):
+    def ComposeChars(self, Chars: str | int = "", CharSize: int = -3, CheckCompose: int = 0, CircleType: int = 0,
+                     **kwargs):
         """
         글자 겹치기 메서드(원문자 만들기)
         캐럿 위치의 서체를 따라가지만, 임의의 키워드로 폰트 수정 가능(예: Bold=True, Italic=True, TextColor=hwp.RGBColor(255,0,0) 등)
@@ -7509,7 +7614,6 @@ class Hwp:
             return self.hwp.HAction.Run("Delete")
         finally:
             self.hwp.SetMessageBoxMode(cur_mode)
-
 
     def DeleteBack(self, delete_ctrl=True):
         """
