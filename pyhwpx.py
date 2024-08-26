@@ -38,7 +38,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.35.5"
+__version__ = "0.35.7"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1865,9 +1865,13 @@ class Hwp:
         현재 선택된 영역의 형광펜 색(RGB)을 튜플로 리턴하는 메서드
         :return:
         """
+        if self.hwp.SelectionMode == 0:
+            self.hwp.HAction.Run("MoveNextChar")
+            self.hwp.HAction.Run("MoveSelPrevChar")
         with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as temp_file:
             temp_filename = temp_file.name
             self.save_block_as(temp_filename, format="HWPX")
+        self.HAction.Run("Cancel")
 
         # 임시 디렉토리 생성
         with tempfile.TemporaryDirectory() as temp_dir:
