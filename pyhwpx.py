@@ -38,7 +38,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.35.4"
+__version__ = "0.35.5"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1859,6 +1859,42 @@ class Hwp:
         elif type(pset) == type(self.HParameterSet.HCharShape):
             new_pset = pset
         return self.hwp.HAction.Execute("CharShape", new_pset.HSet)
+
+    def get_markpen_color(self):
+        """
+        현재 선택된 영역의 형광펜 색(RGB)을 튜플로 리턴하는 메서드
+        :return:
+        """
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as temp_file:
+            temp_filename = temp_file.name
+            self.save_block_as(temp_filename, format="HWPX")
+
+        # 임시 디렉토리 생성
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # ZIP 파일을 임시 디렉토리에 추출
+            with zipfile.ZipFile(temp_filename, 'r') as zf:
+                zf.extractall(path=temp_dir)
+
+            # section0.xml 파일 경로
+            section0_path = os.path.join(temp_dir, "Contents/section0.xml")
+
+            # XML 파일 열기
+            with open(section0_path, encoding="utf-8") as f:
+                content = f.read()
+
+            # 색상 정보 추출
+            hex_text = re.findall(r'<hp:markpenBegin color="#([A-F0-9]{6})"', content)
+            if not hex_text:
+                raise AssertionError("형광펜 속성을 찾을 수 없습니다.")
+
+            r = int("0x" + hex_text[0][:2], base=16)
+            g = int("0x" + hex_text[0][2:4], base=16)
+            b = int("0x" + hex_text[0][4:], base=16)
+            try:
+                return r, g, b
+            finally:
+                # 임시 ZIP 파일 삭제
+                os.remove(temp_filename)
 
     def get_pagedef(self):
         """
