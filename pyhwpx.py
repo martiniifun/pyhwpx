@@ -38,7 +38,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.35.0"
+__version__ = "0.35.4"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -3497,6 +3497,25 @@ class Hwp:
         """
         return self.hwp.DeleteCtrl(ctrl=ctrl)
 
+    def DeleteDocumentMasterPage(self):
+        self.hwp.HAction.Run("MasterPage")
+        cur_messagebox_mode = self.get_message_box_mode()
+        self.set_message_box_mode(0x10001)
+        try:
+            return self.hwp.HAction.Run("DeleteDocumentMasterPage")
+        finally:
+            self.set_message_box_mode(cur_messagebox_mode)
+
+    def DeleteSectionMasterPage(self):
+        self.hwp.HAction.Run("MasterPage")
+        cur_messagebox_mode = self.get_message_box_mode()
+        self.set_message_box_mode(0x10001)
+        try:
+            return self.hwp.HAction.Run("DeleteSectionMasterPage")
+        finally:
+            self.set_message_box_mode(cur_messagebox_mode)
+
+
     def delimiter(self, delimiter):
         return self.hwp.Delimiter(Delimiter=delimiter)
 
@@ -5819,6 +5838,12 @@ class Hwp:
 
     def MailType(self, mail_type):
         return self.hwp.MailType(MailType=mail_type)
+
+    def MarkPenNext(self):
+        return self.hwp.HAction.Run("MarkPenNext")
+
+    def MarkPenPrev(self):
+        return self.hwp.HAction.Run("MarkPenPrev")
 
     def metatag_exist(self, tag):
         return self.hwp.MetatagExist(tag=tag)
