@@ -2002,6 +2002,8 @@ class Hwp:
             return self.hwp.HAction.Execute("PageSetup", pset.HSet)
 
     def save_block_as(self, path, format="HWP", attributes=1):
+        if self.hwp.SelectionMode == 0:
+            return False
         if path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
         pset = self.hwp.HParameterSet.HFileOpenSave
