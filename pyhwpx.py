@@ -38,7 +38,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.36.0"
+__version__ = "0.36.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -548,13 +548,13 @@ class Hwp:
         """
         return self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPrintPage
 
-    @property
-    def current_font(self):
-        try:
-            return self.cur_font_ui.CurrentName
-        except AttributeError:
-            self.register_font_ui()
-            return self.cur_font_ui.CurrentName
+    # @property
+    # def current_font(self):  # 로딩이 느리고 불안정한 관계로 보류
+    #     try:
+    #         return self.cur_font_ui.CurrentName
+    #     except AttributeError:
+    #         self.register_font_ui()
+    #         return self.cur_font_ui.CurrentName
 
     # 커스텀 메서드
     def import_mathml(self, mml_path, delay=0.2):
@@ -665,26 +665,26 @@ class Hwp:
             raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
         self.HAction.Execute("StyleDelete", pset.HSet)
 
-    def register_font_ui(self):
-        """
-        FontNameComboImpl 요소의 폰트 이름을 추출하는 함수
-        :return: 폰트 이름 (str), 찾지 못하면 None 반환
-        """
-        from comtypes import CoCreateInstance
-        from comtypes.gen.UIAutomationClient import CUIAutomation, IUIAutomation
-
-        # UI Automation 객체 초기화
-        uia = CoCreateInstance(
-            CUIAutomation._reg_clsid_,
-            interface=IUIAutomation,
-        )
-
-        # 주어진 핸들로부터 시작하는 요소 가져오기
-        element = uia.ElementFromHandle(self.XHwpWindows.Active_XHwpWindow.WindowHandle)
-
-        # FontNameComboImpl 요소 찾기
-        font_cond = uia.CreatePropertyCondition(30012, "FontNameComboImpl")  # 30012는 UIA_ClassNamePropertyId
-        self.cur_font_ui = element.FindFirst(4, font_cond)  # 4는 TreeScope.Descendants에 해당
+    # def register_font_ui(self):  # 느리고 불안정한 관계로 도입 보류
+    #     """
+    #     FontNameComboImpl 요소의 폰트 이름을 추출하는 함수
+    #     :return: 폰트 이름 (str), 찾지 못하면 None 반환
+    #     """
+    #     from comtypes import CoCreateInstance
+    #     from comtypes.gen.UIAutomationClient import CUIAutomation, IUIAutomation
+    #
+    #     # UI Automation 객체 초기화
+    #     uia = CoCreateInstance(
+    #         CUIAutomation._reg_clsid_,
+    #         interface=IUIAutomation,
+    #     )
+    #
+    #     # 주어진 핸들로부터 시작하는 요소 가져오기
+    #     element = uia.ElementFromHandle(self.XHwpWindows.Active_XHwpWindow.WindowHandle)
+    #
+    #     # FontNameComboImpl 요소 찾기
+    #     font_cond = uia.CreatePropertyCondition(30012, "FontNameComboImpl")  # 30012는 UIA_ClassNamePropertyId
+    #     self.cur_font_ui = element.FindFirst(4, font_cond)  # 4는 TreeScope.Descendants에 해당
 
     def get_style_dict(self, as_: [list, dict] = list):
         """
