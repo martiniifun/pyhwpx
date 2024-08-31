@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.38.2"
+__version__ = "0.38.5"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -58,11 +58,31 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
 # 헬퍼함수
+def _open_dialog(hwnd, key="M", delay=0.2):
+    win32gui.SetForegroundWindow(hwnd)
+    win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
+    win32api.keybd_event(ord(key), 0, 0, 0)
+    win32api.keybd_event(ord(key), 0, win32con.KEYEVENTF_KEYUP, 0)
+    win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0)
+    sleep(delay)
+
+
+def _get_edit_text(hwnd, delay=0.2):
+    sleep(delay)
+    length = win32gui.SendMessage(hwnd, win32con.WM_GETTEXTLENGTH) + 1
+    buffer = win32gui.PyMakeBuffer(length * 2)
+    win32gui.SendMessage(hwnd, win32con.WM_GETTEXT, length, buffer)
+    text = buffer[:length * 2].tobytes().decode('utf-16')[:-1]
+    return text
+
+
 def _refresh_eq(hwnd, delay=0.1):
     """
     수식 새로고침을 위한 키 전송 함수.
     hwnd로 수식 편집기 창을 찾은 후 실행하면
     Ctrl-(Tab-Tab)을 전송한다.
+    EquationCreate 및 EquationModify에서
+    수식을 정리하기 위해 만들어놓은 헬퍼함수.
     """
     sleep(delay)
     win32gui.SetForegroundWindow(hwnd)
@@ -98,9 +118,32 @@ def _eq_modify(hwp, visible):
     """
     pythoncom.CoInitialize()
     hwp = Hwp(visible=visible)
-    hwp.HAction.Run("EquationModify")
+    hwp.hwp.HAction.Run("EquationModify")
     pythoncom.CoUninitialize()
     return True
+
+
+def _eq_refresh(hwnd, delay=0.1):
+    """
+    수식 새로고침(self.EquationRefresh)을 위한 키 전송 함수.
+    hwnd로 수식 편집기 창을 찾은 후 실행하면
+    Ctrl-(Tab-Tab)을 전송하고 Shift-Esc로 창을 닫는다.
+    순전히 EquationRefresh만을 위한 헬퍼함수임.
+    """
+    sleep(delay)
+    win32gui.SetForegroundWindow(hwnd)
+    win32api.keybd_event(win32con.VK_CONTROL, 0, 0, 0)
+    win32api.keybd_event(win32con.VK_TAB, 0, 0, 0)
+    win32api.keybd_event(win32con.VK_TAB, 0, 2, 0)
+    win32api.keybd_event(win32con.VK_TAB, 0, 0, 0)
+    win32api.keybd_event(win32con.VK_TAB, 0, 2, 0)
+    sleep(delay)
+    win32api.keybd_event(win32con.VK_CONTROL, 0, 2, 0)
+    win32api.keybd_event(win32con.VK_SHIFT, 0, 0, 0)
+    win32api.keybd_event(win32con.VK_ESCAPE, 0, 0, 0)
+    win32api.keybd_event(win32con.VK_ESCAPE, 0, win32con.KEYEVENTF_KEYUP, 0)
+    win32api.keybd_event(win32con.VK_SHIFT, 0, win32con.KEYEVENTF_KEYUP, 0)
+    sleep(delay)
 
 
 def _close_eqedit():
@@ -114,6 +157,19 @@ def _close_eqedit():
         return True
     else:
         return False
+
+
+def _save_eqedit(delay=0.2):
+    hwnd = 0
+    while not hwnd:
+        hwnd = win32gui.FindWindow(None, "수식 편집기")
+        sleep(delay)
+    win32gui.SetForegroundWindow(hwnd)
+    win32api.keybd_event(win32con.VK_SHIFT, 0, 0, 0)
+    win32api.keybd_event(win32con.VK_ESCAPE, 0, 0, 0)
+    win32api.keybd_event(win32con.VK_ESCAPE, 0, win32con.KEYEVENTF_KEYUP, 0)
+    win32api.keybd_event(win32con.VK_SHIFT, 0, win32con.KEYEVENTF_KEYUP, 0)
+    sleep(delay)
 
 
 def cell_to_index(cell):
@@ -609,34 +665,13 @@ class Hwp:
         아래아한글 수식으로 삽입하는 함수
         """
 
-        def open_dialog(hwnd, delay=delay):
-            win32gui.SetForegroundWindow(hwnd)
-            win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
-            win32api.keybd_event(ord("S"), 0, 0, 0)
-            win32api.keybd_event(ord("S"), 0, win32con.KEYEVENTF_KEYUP, 0)
-            win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0)
-            sleep(delay)
-
-        def close_dialog(hwnd, delay=delay):
-            win32gui.SetForegroundWindow(hwnd)
-            win32api.keybd_event(win32con.VK_SHIFT, 0, 0, 0)
-            win32api.keybd_event(win32con.VK_ESCAPE, 0, 0, 0)
-            win32api.keybd_event(win32con.VK_ESCAPE, 0, win32con.KEYEVENTF_KEYUP, 0)
-            win32api.keybd_event(win32con.VK_SHIFT, 0, win32con.KEYEVENTF_KEYUP, 0)
-            sleep(delay)
-
-        def get_edit_text(hwnd, delay=delay):
-            sleep(delay)
-            length = win32gui.SendMessage(hwnd, win32con.WM_GETTEXTLENGTH) + 1
-            buffer = win32gui.PyMakeBuffer(length * 2)
-            win32gui.SendMessage(hwnd, win32con.WM_GETTEXT, length, buffer)
-            text = buffer[:length * 2].tobytes().decode('utf-16')[:-1]
-            return text
-
         if self.SelectionMode != 4:
             raise AssertionError("추출할 수식을 먼저 선택해주세요.")
-        self.EquationModify(True)
+        self.EquationModify(thread=True)
 
+        mml_path = os.path.abspath(mml_path)
+        if not os.path.exists(os.path.dirname(mml_path)):
+            os.mkdir(os.path.dirname(mml_path))
         if os.path.exists(mml_path):
             os.remove(mml_path)
 
@@ -646,12 +681,12 @@ class Hwp:
             win32gui.ShowWindow(hwnd1, win32con.SW_HIDE)
             sleep(delay)  # 제거예정
         _refresh_eq(hwnd1, delay=delay)
-        open_dialog(hwnd1)
+        _open_dialog(hwnd=hwnd1, key="S")
         sleep(delay)
 
         hwnd2 = 0
         while not hwnd2:
-            open_dialog(hwnd1)
+            _open_dialog(hwnd1)
             hwnd2 = win32gui.FindWindow(None, "MathML 형식으로 내보내기")
             win32gui.ShowWindow(hwnd2, win32con.SW_HIDE)
             sleep(delay)
@@ -664,13 +699,13 @@ class Hwp:
             if class_name == "Edit":
                 while True:
                     win32gui.SendMessage(chwnd, win32con.WM_SETTEXT, None, mml_path)
-                    if get_edit_text(chwnd) == mml_path:
+                    if _get_edit_text(chwnd) == mml_path:
                         win32api.keybd_event(win32con.VK_EXECUTE, 0, 0, 0)
                         sleep(delay)
                         break
                     sleep(delay)
                 break
-        close_dialog(hwnd1)
+        self.EquationClose(save=True)
         self.Cancel()
 
     def import_mathml(self, mml_path, delay=0.2):
@@ -678,30 +713,10 @@ class Hwp:
         MathML 포맷의 수식문서 파일경로를 입력하면
         아래아한글 수식으로 삽입하는 함수
         """
-
-        def open_dialog(hwnd, delay=delay):
-            win32gui.SetForegroundWindow(hwnd)
-            win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
-            win32api.keybd_event(ord("M"), 0, 0, 0)
-            win32api.keybd_event(ord("M"), 0, win32con.KEYEVENTF_KEYUP, 0)
-            win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0)
-            sleep(delay)
-
-        def close_dialog(hwnd, delay=delay):
-            win32gui.SetForegroundWindow(hwnd)
-            win32api.keybd_event(win32con.VK_SHIFT, 0, 0, 0)
-            win32api.keybd_event(win32con.VK_ESCAPE, 0, 0, 0)
-            win32api.keybd_event(win32con.VK_ESCAPE, 0, win32con.KEYEVENTF_KEYUP, 0)
-            win32api.keybd_event(win32con.VK_SHIFT, 0, win32con.KEYEVENTF_KEYUP, 0)
-            sleep(delay)
-
-        def get_edit_text(hwnd, delay=delay):
-            sleep(delay)
-            length = win32gui.SendMessage(hwnd, win32con.WM_GETTEXTLENGTH) + 1
-            buffer = win32gui.PyMakeBuffer(length * 2)
-            win32gui.SendMessage(hwnd, win32con.WM_GETTEXT, length, buffer)
-            text = buffer[:length * 2].tobytes().decode('utf-16')[:-1]
-            return text
+        if os.path.exists(os.path.abspath(mml_path)):
+            mml_path = os.path.abspath(mml_path)
+        else:
+            raise AssertionError("mathml 파일을 찾을 수 없습니다. 경로를 다시 확인해주세요.")
 
         self.Cancel()
         self.EquationCreate(True)
@@ -711,12 +726,12 @@ class Hwp:
             hwnd1 = win32gui.FindWindow(None, "수식 편집기")
             win32gui.ShowWindow(hwnd1, win32con.SW_HIDE)
             sleep(delay)
-        open_dialog(hwnd1)
+        _open_dialog(hwnd=hwnd1, key="M")
         sleep(delay)
 
         hwnd2 = 0
         while not hwnd2:
-            open_dialog(hwnd1)
+            _open_dialog(hwnd1)
             hwnd2 = win32gui.FindWindow(None, "MathML 파일 불러오기")
             win32gui.ShowWindow(hwnd2, win32con.SW_HIDE)
             sleep(delay)
@@ -729,14 +744,14 @@ class Hwp:
             if class_name == "Edit":
                 while True:
                     win32gui.SendMessage(chwnd, win32con.WM_SETTEXT, None, mml_path)
-                    if get_edit_text(chwnd) == mml_path:
+                    if _get_edit_text(chwnd) == mml_path:
                         win32api.keybd_event(win32con.VK_EXECUTE, 0, 0, 0)
                         sleep(delay)
                         break
                     sleep(delay)
                 break
         _refresh_eq(hwnd1)  # Ctrl-(Tab-Tab)
-        close_dialog(hwnd1)  # Shift-Esc
+        self.EquationClose(save=True)
         return True
 
     def maximize_window(self):
@@ -3756,8 +3771,11 @@ class Hwp:
         else:
             return self.hwp.HAction.Run("EquationCreate")
 
-    def EquationClose(self):
-        return _close_eqedit()
+    def EquationClose(self, save=True):
+        if save:
+            return _save_eqedit()
+        else:
+            return _close_eqedit()
 
     def EquationModify(self, thread=False):
         visible = self.hwp.XHwpWindows.Active_XHwpWindow.Visible
@@ -3770,6 +3788,22 @@ class Hwp:
             return True
         else:
             return self.hwp.HAction.Run("EquationModify")
+
+    def EquationRefresh(self, delay=0.2):
+        self.EquationModify(thread=True)
+        sleep(delay)
+        hwnd = 0
+        while True:
+            hwnd = win32gui.FindWindow(None, "수식 편집기")
+            if hwnd:
+                break
+            else:
+                self.EquationModify(thread=True)
+                sleep(delay)
+        t = threading.Thread(target=_eq_refresh, args=(hwnd,), name="refresh_eq")
+        t.start()
+        t.join(timeout=0)
+        return True
 
     def export_style(self, sty_filepath: str) -> bool:
         """
