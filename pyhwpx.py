@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.38.5"
+__version__ = "0.38.8"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -3789,21 +3789,34 @@ class Hwp:
         else:
             return self.hwp.HAction.Run("EquationModify")
 
-    def EquationRefresh(self, delay=0.2):
-        self.EquationModify(thread=True)
-        sleep(delay)
-        hwnd = 0
-        while True:
-            hwnd = win32gui.FindWindow(None, "수식 편집기")
-            if hwnd:
-                break
-            else:
-                self.EquationModify(thread=True)
-                sleep(delay)
-        t = threading.Thread(target=_eq_refresh, args=(hwnd,), name="refresh_eq")
-        t.start()
-        t.join(timeout=0)
-        return True
+    def EquationRefresh(self):  #, delay=0.2):
+        """
+        kosohn님께서 도움 주셔서 만든 메서드.
+        수식을 정형화함.
+        :return:
+        """
+        # self.EquationModify(thread=True)
+        # sleep(delay)
+        # hwnd = 0
+        # while True:
+        #     hwnd = win32gui.FindWindow(None, "수식 편집기")
+        #     if hwnd:
+        #         sleep(delay)
+        #         break
+        #     else:
+        #         self.EquationModify(thread=True)
+        #         sleep(delay)
+        # t = threading.Thread(target=_eq_refresh, args=(hwnd,), name="refresh_eq")
+        # t.run()
+        # return True
+        pset = self.hwp.HParameterSet.HEqEdit
+        self.hwp.HAction.GetDefault("EquationModify", pset.HSet)
+        pset.string = pset.VisualString
+        pset.Version = "Equation Version 60"
+        try:
+            return self.hwp.HAction.Execute("EquationModify", pset.HSet)
+        finally:
+            self.hwp.HAction.Run("Cancel")
 
     def export_style(self, sty_filepath: str) -> bool:
         """
