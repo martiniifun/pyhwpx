@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.38.1"
+__version__ = "0.38.2"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -633,6 +633,8 @@ class Hwp:
             text = buffer[:length * 2].tobytes().decode('utf-16')[:-1]
             return text
 
+        if self.SelectionMode != 4:
+            raise AssertionError("추출할 수식을 먼저 선택해주세요.")
         self.EquationModify(True)
 
         if os.path.exists(mml_path):
