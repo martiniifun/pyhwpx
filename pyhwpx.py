@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.38.0"
+__version__ = "0.38.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -3757,8 +3757,17 @@ class Hwp:
     def EquationClose(self):
         return _close_eqedit()
 
-    def EquationModify(self):
-        return self.hwp.HAction.Run("EquationModify")
+    def EquationModify(self, thread=False):
+        visible = self.hwp.XHwpWindows.Active_XHwpWindow.Visible
+        if thread:
+            if win32gui.FindWindow(None, "수식 편집기"):
+                return False
+            t = threading.Thread(target=_eq_modify, args=(self, visible), name="eq_modify")
+            t.start()
+            t.join(timeout=0)
+            return True
+        else:
+            return self.hwp.HAction.Run("EquationModify")
 
     def export_style(self, sty_filepath: str) -> bool:
         """
