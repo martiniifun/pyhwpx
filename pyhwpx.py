@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.37.0"
+__version__ = "0.38.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -58,7 +58,30 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
 # 헬퍼함수
+def _refresh_eq(hwnd, delay=0.1):
+    """
+    수식 새로고침을 위한 키 전송 함수.
+    hwnd로 수식 편집기 창을 찾은 후 실행하면
+    Ctrl-(Tab-Tab)을 전송한다.
+    """
+    sleep(delay)
+    win32gui.SetForegroundWindow(hwnd)
+    win32api.keybd_event(win32con.VK_CONTROL, 0, 0, 0)
+    win32api.keybd_event(win32con.VK_TAB, 0, 0, 0)
+    win32api.keybd_event(win32con.VK_TAB, 0, 2, 0)
+    win32api.keybd_event(win32con.VK_TAB, 0, 0, 0)
+    win32api.keybd_event(win32con.VK_TAB, 0, 2, 0)
+    win32api.keybd_event(win32con.VK_CONTROL, 0, 2, 0)
+    sleep(delay)
+
+
 def _eq_create(hwp, visible):
+    """
+    멀티스레드 형태로 새 수식편집기를 실행하는 헬퍼함수
+    :param hwp:
+    :param visible:
+    :return:
+    """
     pythoncom.CoInitialize()
     hwp = Hwp(visible=visible)
     hwp.HAction.Run("EquationCreate")
@@ -66,7 +89,25 @@ def _eq_create(hwp, visible):
     return True
 
 
+def _eq_modify(hwp, visible):
+    """
+    멀티스레드 형태로 기존 수식에 대한 수식편집기를 실행하는 헬퍼함수
+    :param hwp:
+    :param visible:
+    :return:
+    """
+    pythoncom.CoInitialize()
+    hwp = Hwp(visible=visible)
+    hwp.HAction.Run("EquationModify")
+    pythoncom.CoUninitialize()
+    return True
+
+
 def _close_eqedit():
+    """
+    수식편집기를 저장하지 않고 닫는 헬퍼함수(Shift-Esc 대신 Esc를 누르는 방식)
+    :return:
+    """
     hwnd = win32gui.FindWindow(None, "수식 편집기")
     if hwnd:
         win32gui.PostMessage(hwnd, 16, 0, 0)  # 16 == win32con.WM_CLOSE
@@ -562,6 +603,74 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
+    def export_mathml(self, mml_path, delay=0.2):
+        """
+        MathML 포맷의 수식문서 파일경로를 입력하면
+        아래아한글 수식으로 삽입하는 함수
+        """
+
+        def open_dialog(hwnd, delay=delay):
+            win32gui.SetForegroundWindow(hwnd)
+            win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
+            win32api.keybd_event(ord("S"), 0, 0, 0)
+            win32api.keybd_event(ord("S"), 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0)
+            sleep(delay)
+
+        def close_dialog(hwnd, delay=delay):
+            win32gui.SetForegroundWindow(hwnd)
+            win32api.keybd_event(win32con.VK_SHIFT, 0, 0, 0)
+            win32api.keybd_event(win32con.VK_ESCAPE, 0, 0, 0)
+            win32api.keybd_event(win32con.VK_ESCAPE, 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(win32con.VK_SHIFT, 0, win32con.KEYEVENTF_KEYUP, 0)
+            sleep(delay)
+
+        def get_edit_text(hwnd, delay=delay):
+            sleep(delay)
+            length = win32gui.SendMessage(hwnd, win32con.WM_GETTEXTLENGTH) + 1
+            buffer = win32gui.PyMakeBuffer(length * 2)
+            win32gui.SendMessage(hwnd, win32con.WM_GETTEXT, length, buffer)
+            text = buffer[:length * 2].tobytes().decode('utf-16')[:-1]
+            return text
+
+        self.EquationModify(True)
+
+        if os.path.exists(mml_path):
+            os.remove(mml_path)
+
+        hwnd1 = 0
+        while not hwnd1:
+            hwnd1 = win32gui.FindWindow(None, "수식 편집기")
+            win32gui.ShowWindow(hwnd1, win32con.SW_HIDE)
+            sleep(delay)  # 제거예정
+        _refresh_eq(hwnd1, delay=delay)
+        open_dialog(hwnd1)
+        sleep(delay)
+
+        hwnd2 = 0
+        while not hwnd2:
+            open_dialog(hwnd1)
+            hwnd2 = win32gui.FindWindow(None, "MathML 형식으로 내보내기")
+            win32gui.ShowWindow(hwnd2, win32con.SW_HIDE)
+            sleep(delay)
+
+        sleep(delay)
+        child_hwnds = []
+        win32gui.EnumChildWindows(hwnd2, lambda hwnd, param: param.append(hwnd), child_hwnds)
+        for chwnd in child_hwnds:
+            class_name = win32gui.GetClassName(chwnd)
+            if class_name == "Edit":
+                while True:
+                    win32gui.SendMessage(chwnd, win32con.WM_SETTEXT, None, mml_path)
+                    if get_edit_text(chwnd) == mml_path:
+                        win32api.keybd_event(win32con.VK_EXECUTE, 0, 0, 0)
+                        sleep(delay)
+                        break
+                    sleep(delay)
+                break
+        close_dialog(hwnd1)
+        self.Cancel()
+
     def import_mathml(self, mml_path, delay=0.2):
         """
         MathML 포맷의 수식문서 파일경로를 입력하면
@@ -624,15 +733,9 @@ class Hwp:
                         break
                     sleep(delay)
                 break
-        close_dialog(hwnd1)
-        self.SelectCtrlReverse()
-        ctrl = self.CurSelectedCtrl
-        self.Cancel()
-        self.MoveRight()
-        prop = ctrl.Properties
-        text = prop.Item("String")
-        prop.SetItem("String", text)
-        ctrl.Properties = prop
+        _refresh_eq(hwnd1)  # Ctrl-(Tab-Tab)
+        close_dialog(hwnd1)  # Shift-Esc
+        return True
 
     def maximize_window(self):
         """현재 창 최대화"""
