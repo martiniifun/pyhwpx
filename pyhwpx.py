@@ -22,6 +22,7 @@ import pythoncom
 import win32api
 import win32gui
 import win32con
+import ctypes
 from PIL import Image
 
 # CircularImport 오류 출력안함
@@ -38,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.36.3"
+__version__ = "0.37.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -11139,7 +11140,7 @@ class Hwp:
         """
         return self.hwp.Save(save_if_dirty=save_if_dirty)
 
-    def save_as(self, path, format="HWP", arg=""):
+    def save_as(self, path, format="HWP", arg="", split_page=False):
         """
         현재 편집중인 문서를 지정한 이름으로 저장한다.
         format, arg의 일반적인 개념에 대해서는 Open()참조.
@@ -11167,10 +11168,143 @@ class Hwp:
         :return:
             성공하면 True, 실패하면 False
         """
+
         if path.lower()[1] != ":":
             path = os.path.abspath(path)
         ext = path.rsplit(".", maxsplit=1)[-1]
-        if ext.lower() == "pdf":
+        if format.lower() == "html+":  # 서식 있는 인터넷 문서
+            # 키 코드 상수
+            VK_SHIFT = 0x10  # Shift 키
+            VK_CONTROL = 0x11  # Ctrl 키
+            VK_MENU = 0x12  # Alt 키
+            VK_D = 0x44  # D 키
+            VK_LEFT = 0x25  # 왼쪽 화살표 키
+            VK_UP = 0x26  # 위쪽 화살표 키
+            VK_RIGHT = 0x27  # 오른쪽 화살표 키
+            VK_DOWN = 0x28  # 아래쪽 화살표 키
+
+            # SendInput 관련 구조체 정의는 이전 코드와 동일
+            PUL = ctypes.POINTER(ctypes.c_ulong)
+
+            class KeyBdInput(ctypes.Structure):
+                _fields_ = [("wVk", ctypes.c_ushort),
+                            ("wScan", ctypes.c_ushort),
+                            ("dwFlags", ctypes.c_ulong),
+                            ("time", ctypes.c_ulong),
+                            ("dwExtraInfo", PUL)]
+
+            class HardwareInput(ctypes.Structure):
+                _fields_ = [("uMsg", ctypes.c_ulong),
+                            ("wParamL", ctypes.c_short),
+                            ("wParamH", ctypes.c_ushort)]
+
+            class MouseInput(ctypes.Structure):
+                _fields_ = [("dx", ctypes.c_long),
+                            ("dy", ctypes.c_long),
+                            ("mouseData", ctypes.c_ulong),
+                            ("dwFlags", ctypes.c_ulong),
+                            ("time", ctypes.c_ulong),
+                            ("dwExtraInfo", PUL)]
+
+            class Input_I(ctypes.Union):
+                _fields_ = [("ki", KeyBdInput),
+                            ("mi", MouseInput),
+                            ("hi", HardwareInput)]
+
+            class Input(ctypes.Structure):
+                _fields_ = [("type", ctypes.c_ulong),
+                            ("ii", Input_I)]
+
+            # 키를 누르는 함수
+            def press_key(hexKeyCode):
+                extra = ctypes.c_ulong(0)
+                ii_ = Input_I()
+                ii_.ki = KeyBdInput(hexKeyCode, 0, 0, 0, ctypes.pointer(extra))
+                x = Input(ctypes.c_ulong(1), ii_)
+                ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
+
+            # 키를 떼는 함수
+            def release_key(hexKeyCode):
+                extra = ctypes.c_ulong(0)
+                ii_ = Input_I()
+                ii_.ki = KeyBdInput(hexKeyCode, 0, 0x0002, 0, ctypes.pointer(extra))
+                x = Input(ctypes.c_ulong(1), ii_)
+                ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
+
+            def find_window_and_send_key(window_name, key_code, retries=5, delay=0.1):
+                for attempt in range(retries):
+                    try:
+                        hwnd = win32gui.FindWindow(None, window_name)
+                        if hwnd == 0:
+                            raise Exception(f"{window_name} 창을 찾을 수 없습니다.")
+
+                        # 창을 포커스로 설정
+                        win32gui.SetForegroundWindow(hwnd)
+                        sleep(delay)  # 포커스 설정 후 약간의 지연
+
+                        # 키 입력 전송
+                        press_key(key_code)
+                        sleep(0.05)
+                        release_key(key_code)
+                        sleep(0.05)
+
+                        return True
+
+                    except Exception as e:
+                        # print(f"Attempt {attempt + 1} failed: {e}")
+                        sleep(delay)  # 다음 시도 전 지연
+
+                return False
+
+            def find_window_and_confirm(window_name, retries=5, delay=0.1):
+                key = "D"
+                for attempt in range(retries):
+                    try:
+                        hwnd = win32gui.FindWindow(None, window_name)
+                        if hwnd == 0:
+                            raise Exception("Window not found")
+
+                        # 창을 포커스로 설정
+                        win32gui.SetForegroundWindow(hwnd)
+                        sleep(delay)  # 포커스 설정 후 약간의 지연
+
+                        # 키 입력 전송
+                        for char in key:
+                            vk_code = ord(char.upper())  # 가상 키 코드로 변환
+                            press_key(vk_code)
+                            sleep(0.05)
+                            release_key(vk_code)
+                            sleep(0.05)
+
+                        return True
+
+                    except Exception as e:
+                        # print(f"Attempt {attempt + 1} failed: {e}")
+                        sleep(delay)  # 다음 시도 전 지연
+
+                return False
+
+            def save_as_html_plus(path, visible=True):
+                pythoncom.CoInitialize()
+                hwp = Hwp(visible=visible)
+                pset = hwp.HParameterSet.HFileOpenSave
+                hwp.HAction.GetDefault("FileSaveAs_S", pset.HSet)
+                pset.filename = path
+                pset.Format = "HTML+"
+                hwp.HAction.Execute("FileSaveAs_S", pset.HSet)
+                find_window_and_send_key("서식 있는 인터넷 문서 종류", VK_UP)
+                pythoncom.CoUninitialize()
+                return True
+
+            t = threading.Thread(target=save_as_html_plus, args=(path, True))
+            t.start()
+            t.join(timeout=0)
+            if split_page:
+                find_window_and_send_key("서식 있는 인터넷 문서 종류", VK_UP)
+            find_window_and_confirm("서식 있는 인터넷 문서 종류")
+            return True
+
+        if ext.lower() == "pdf" or format.lower() == "pdf":
             pset = self.HParameterSet.HFileOpenSave
             self.HAction.GetDefault("FileSaveAsPdf", pset.HSet)
             self.HParameterSet.HFileOpenSave.filename = path
