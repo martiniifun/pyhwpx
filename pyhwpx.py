@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.38.8"
+__version__ = "0.38.9"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -59,6 +59,11 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 # 헬퍼함수
 def _open_dialog(hwnd, key="M", delay=0.2):
+    # win32gui.SendMessage(hwnd, win32con.WM_KEYDOWN, win32con.VK_MENU, 0)
+    # win32gui.SendMessage(hwnd, win32con.WM_KEYDOWN, ord(key), 0)
+    # win32gui.SendMessage(hwnd, win32con.WM_KEYUP, ord(key), 0)
+    # win32gui.SendMessage(hwnd, win32con.WM_KEYUP, win32con.VK_MENU, 0)
+    # sleep(delay)
     win32gui.SetForegroundWindow(hwnd)
     win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
     win32api.keybd_event(ord(key), 0, 0, 0)
@@ -95,7 +100,7 @@ def _refresh_eq(hwnd, delay=0.1):
     sleep(delay)
 
 
-def _eq_create(hwp, visible):
+def _eq_create(visible):
     """
     멀티스레드 형태로 새 수식편집기를 실행하는 헬퍼함수
     :param hwp:
@@ -109,7 +114,7 @@ def _eq_create(hwp, visible):
     return True
 
 
-def _eq_modify(hwp, visible):
+def _eq_modify(visible):
     """
     멀티스레드 형태로 기존 수식에 대한 수식편집기를 실행하는 헬퍼함수
     :param hwp:
@@ -123,53 +128,24 @@ def _eq_modify(hwp, visible):
     return True
 
 
-def _eq_refresh(hwnd, delay=0.1):
-    """
-    수식 새로고침(self.EquationRefresh)을 위한 키 전송 함수.
-    hwnd로 수식 편집기 창을 찾은 후 실행하면
-    Ctrl-(Tab-Tab)을 전송하고 Shift-Esc로 창을 닫는다.
-    순전히 EquationRefresh만을 위한 헬퍼함수임.
-    """
-    sleep(delay)
-    win32gui.SetForegroundWindow(hwnd)
-    win32api.keybd_event(win32con.VK_CONTROL, 0, 0, 0)
-    win32api.keybd_event(win32con.VK_TAB, 0, 0, 0)
-    win32api.keybd_event(win32con.VK_TAB, 0, 2, 0)
-    win32api.keybd_event(win32con.VK_TAB, 0, 0, 0)
-    win32api.keybd_event(win32con.VK_TAB, 0, 2, 0)
-    sleep(delay)
-    win32api.keybd_event(win32con.VK_CONTROL, 0, 2, 0)
-    win32api.keybd_event(win32con.VK_SHIFT, 0, 0, 0)
-    win32api.keybd_event(win32con.VK_ESCAPE, 0, 0, 0)
-    win32api.keybd_event(win32con.VK_ESCAPE, 0, win32con.KEYEVENTF_KEYUP, 0)
-    win32api.keybd_event(win32con.VK_SHIFT, 0, win32con.KEYEVENTF_KEYUP, 0)
-    sleep(delay)
-
-
-def _close_eqedit():
-    """
-    수식편집기를 저장하지 않고 닫는 헬퍼함수(Shift-Esc 대신 Esc를 누르는 방식)
-    :return:
-    """
-    hwnd = win32gui.FindWindow(None, "수식 편집기")
-    if hwnd:
-        win32gui.PostMessage(hwnd, 16, 0, 0)  # 16 == win32con.WM_CLOSE
-        return True
-    else:
-        return False
-
-
-def _save_eqedit(delay=0.2):
+def _close_eqedit(save=False, delay=0.1):
     hwnd = 0
     while not hwnd:
         hwnd = win32gui.FindWindow(None, "수식 편집기")
         sleep(delay)
-    win32gui.SetForegroundWindow(hwnd)
-    win32api.keybd_event(win32con.VK_SHIFT, 0, 0, 0)
-    win32api.keybd_event(win32con.VK_ESCAPE, 0, 0, 0)
-    win32api.keybd_event(win32con.VK_ESCAPE, 0, win32con.KEYEVENTF_KEYUP, 0)
-    win32api.keybd_event(win32con.VK_SHIFT, 0, win32con.KEYEVENTF_KEYUP, 0)
+    win32gui.SendMessage(hwnd, win32con.WM_CLOSE, 0, 0)
     sleep(delay)
+    hwnd = win32gui.FindWindow(None, "수식")
+    if hwnd:
+        if save:
+            win32gui.SendMessage(hwnd, win32con.WM_KEYDOWN, ord("Y"), 0)
+            win32gui.SendMessage(hwnd, win32con.WM_KEYUP, ord("Y"), 0)
+        else:
+            win32gui.SendMessage(hwnd, win32con.WM_KEYDOWN, ord("N"), 0)
+            win32gui.SendMessage(hwnd, win32con.WM_KEYUP, ord("N"), 0)
+        return True
+    else:
+        return False
 
 
 def cell_to_index(cell):
@@ -667,6 +643,7 @@ class Hwp:
 
         if self.SelectionMode != 4:
             raise AssertionError("추출할 수식을 먼저 선택해주세요.")
+        self.EquationRefresh()
         self.EquationModify(thread=True)
 
         mml_path = os.path.abspath(mml_path)
@@ -680,7 +657,7 @@ class Hwp:
             hwnd1 = win32gui.FindWindow(None, "수식 편집기")
             win32gui.ShowWindow(hwnd1, win32con.SW_HIDE)
             sleep(delay)  # 제거예정
-        _refresh_eq(hwnd1, delay=delay)
+        # _refresh_eq(hwnd1, delay=delay)
         _open_dialog(hwnd=hwnd1, key="S")
         sleep(delay)
 
@@ -719,13 +696,11 @@ class Hwp:
             raise AssertionError("mathml 파일을 찾을 수 없습니다. 경로를 다시 확인해주세요.")
 
         self.Cancel()
-        self.EquationCreate(True)
+        self.EquationCreate(thread=True)
 
         hwnd1 = 0
         while not hwnd1:
             hwnd1 = win32gui.FindWindow(None, "수식 편집기")
-            win32gui.ShowWindow(hwnd1, win32con.SW_HIDE)
-            sleep(delay)
         _open_dialog(hwnd=hwnd1, key="M")
         sleep(delay)
 
@@ -750,8 +725,9 @@ class Hwp:
                         break
                     sleep(delay)
                 break
-        _refresh_eq(hwnd1)  # Ctrl-(Tab-Tab)
         self.EquationClose(save=True)
+        self.hwp.HAction.Run("SelectCtrlReverse")
+        self.EquationRefresh()
         return True
 
     def maximize_window(self):
@@ -3764,25 +3740,22 @@ class Hwp:
         if thread:
             if win32gui.FindWindow(None, "수식 편집기"):
                 return False
-            t = threading.Thread(target=_eq_create, args=(self, visible), name="eq_create")
+            t = threading.Thread(target=_eq_create, args=(visible,), name="eq_create")
             t.start()
             t.join(timeout=0)
             return True
         else:
             return self.hwp.HAction.Run("EquationCreate")
 
-    def EquationClose(self, save=True):
-        if save:
-            return _save_eqedit()
-        else:
-            return _close_eqedit()
+    def EquationClose(self, save=False, delay=0.1):
+            return _close_eqedit(save, delay)
 
     def EquationModify(self, thread=False):
         visible = self.hwp.XHwpWindows.Active_XHwpWindow.Visible
         if thread:
             if win32gui.FindWindow(None, "수식 편집기"):
                 return False
-            t = threading.Thread(target=_eq_modify, args=(self, visible), name="eq_modify")
+            t = threading.Thread(target=_eq_modify, args=(visible,), name="eq_modify")
             t.start()
             t.join(timeout=0)
             return True
@@ -3813,10 +3786,7 @@ class Hwp:
         self.hwp.HAction.GetDefault("EquationModify", pset.HSet)
         pset.string = pset.VisualString
         pset.Version = "Equation Version 60"
-        try:
-            return self.hwp.HAction.Execute("EquationModify", pset.HSet)
-        finally:
-            self.hwp.HAction.Run("Cancel")
+        return self.hwp.HAction.Execute("EquationModify", pset.HSet)
 
     def export_style(self, sty_filepath: str) -> bool:
         """
