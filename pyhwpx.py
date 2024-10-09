@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.39.1"
+__version__ = "0.39.2"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -3307,7 +3307,10 @@ class Hwp:
         :return:
             HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값
         """
-        return round(hwp_unit / 7200 * 25.4, 4)
+        if hwp_unit == 0:
+            return 0
+        else:
+            return round(hwp_unit / 7200 * 25.4, 4)
 
     def HwpUnitToMili(self, hwp_unit: int) -> float:
         """
@@ -3317,7 +3320,10 @@ class Hwp:
         :return:
             HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값
         """
-        return round(hwp_unit / 7200 * 25.4, 4)
+        if hwp_unit == 0:
+            return 0
+        else:
+            return round(hwp_unit / 7200 * 25.4, 4)
 
     def create_table(self, rows, cols, treat_as_char: bool = True, width_type=0, height_type=0, header=True, height=0):
         """
@@ -7178,10 +7184,16 @@ class Hwp:
         return HwpUnit * 100
 
     def hwp_unit_to_inch(self, HwpUnit):
-        return HwpUnit / 7200
+        if HwpUnit == 0:
+            return 0
+        else:
+            return HwpUnit / 7200
 
     def HwpUnitToInch(self, HwpUnit):
-        return HwpUnit / 7200
+        if HwpUnit == 0:
+            return 0
+        else:
+            return HwpUnit / 7200
 
     def inch_to_hwp_unit(self, inch):
         return inch * 7200
