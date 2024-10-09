@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.39.0"
+__version__ = "0.39.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1547,7 +1547,7 @@ class Hwp:
             pset.ShapeTableCell.MarginBottom = bottom
         return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
-    def get_cell_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> dict|False:
+    def get_cell_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> Union[dict, bool]:
         """
         표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 조회하는 메서드. (표 안에서만 실행가능)
         단, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 조회되지 않음.
@@ -1597,7 +1597,7 @@ class Hwp:
         pset.CellMarginBottom = bottom
         return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
-    def get_table_inside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> dict:
+    def get_table_inside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> Union[dict, bool]:
         if not self.is_cell():
             return False
         cur_pos = self.get_pos()
@@ -1623,7 +1623,7 @@ class Hwp:
                 "bottom": margin_bottom,
             }
 
-    def get_table_outside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> dict|False:
+    def get_table_outside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> Union[dict, bool]:
         if not self.is_cell():
             return False
         cur_pos = self.get_pos()
