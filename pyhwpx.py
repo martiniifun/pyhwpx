@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.40.5"
+__version__ = "0.40.6"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1099,11 +1099,13 @@ class Hwp:
         self.hwp.HAction.GetDefault("Goto", pset.HSet)
         pset.HSet.SetItem("DialogResult", style + 1)  # 스타일인덱스는 0부터지만 Goto는 1부터임
         pset.SetSelectionIndex = 4
-        cur_pos = self.hwp.GetPos()
-        self.hwp.HAction.Execute("Goto", pset.HSet)
-        if self.hwp.GetPos() == cur_pos:
-            return False
-        return True
+        cur_messagebox_mode = self.hwp.GetMessageBoxMode()
+        self.hwp.SetMessageBoxMode(0x20000)
+        try:
+            return self.hwp.HAction.Execute("Goto", pset.HSet)
+        finally:
+            self.hwp.SetMessageBoxMode(cur_messagebox_mode)
+
 
     def get_into_table_caption(self):
         """
