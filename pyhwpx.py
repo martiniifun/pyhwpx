@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.40.2"
+__version__ = "0.40.3"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1224,7 +1224,7 @@ class Hwp:
         특정 스타일을 이름 (또는 인덱스번호)로 삭제하고
         대체할 스타일 또한 이름 (또는 인덱스번호)로 지정해주는 메서드.
         """
-        style_dict = self.get_style_dict()
+        style_dict = self.get_style_dict(as_=dict)
         pset = self.HParameterSet.HStyleDelete
         self.HAction.GetDefault("StyleDelete", pset.HSet)
         if type(src) == int:
