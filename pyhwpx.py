@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.39.2"
+__version__ = "0.40.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1079,6 +1079,37 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
+    def move_to_caption(self):
+        """
+        표 캡션(정확히는 표번호가 있는 리스트공간)으로 이동하는 메서드.
+        (추후 개선예정 : 캡션 스타일로 찾아가기 기능 추가할 것)
+        :return: 성공시 True, 실패시 False를 리턴
+        """
+        pset = self.hwp.HParameterSet.HGotoE
+        pset.HSet.SetItem("DialogResult", 56)  # 표번호
+        pset.SetSelectionIndex = 5  # 조판부호
+        return self.hwp.HAction.Execute("Goto", pset.HSet)
+
+    def shape_copy_paste(self, Type: Literal["font", "para", "both"] = "both", cell_attr: bool = False,
+                         cell_border: bool = False, cell_fill: bool = False, cell_only: int = 0):
+        """
+        모양복사 메서드
+        :param Type: 글자, 문단, 글자&문단 중에서 택일
+        :param cell_attr: 셀 속성 복사여부
+        :param cell_border: 셀 선 복사여부
+        :param cell_fill: 셀 음영 복사여부
+        :param cell_only: 셀만 복사할지, 내용도 복사할지 여부
+        :return: 성공시 True, 실패시 False를 리턴
+        """
+        pset = self.hwp.HParameterSet.HShapeCopyPaste
+        pset.type = ["font", "para", "both"].index(Type)
+        if self.is_cell():
+            self.hwp.HParameterSet.HShapeCopyPaste.CellAttr = cell_attr
+            self.hwp.HParameterSet.HShapeCopyPaste.CellBorder = cell_border
+            self.hwp.HParameterSet.HShapeCopyPaste.CellFill = cell_fill
+            self.hwp.HParameterSet.HShapeCopyPaste.TypeBodyAndCellOnly = cell_only
+        return self.hwp.HAction.Execute("ShapeCopyPaste", pset.HSet)
+
     def export_mathml(self, mml_path, delay=0.2):
         """
         MathML 포맷의 수식문서 파일경로를 입력하면
