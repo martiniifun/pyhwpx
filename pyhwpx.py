@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.40.0"
+__version__ = "0.40.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1270,7 +1270,10 @@ class Hwp:
         cur_pos = self.get_pos()
         if not self.MoveSelRight():
             self.MoveSelLeft()
-        self.save_block_as("temp.xml", format="HWPML2X")
+        if not self.save_block_as("temp.xml", format="HWPML2X"):
+            self.SelectAll()
+            self.save_block_as("temp.xml", format="HWPML2X")
+            self.Cancel()
         self.set_pos(*cur_pos)
 
         tree = ET.parse("temp.xml")
