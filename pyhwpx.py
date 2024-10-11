@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.40.3"
+__version__ = "0.40.4"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1079,6 +1079,19 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
+    def goto_style(self, style: Union[int, str]):
+        if type(style) == str:
+            style_dict = self.get_style_dict(as_=dict)
+            if style in [style_dict[i]["name"] for i in style_dict]:
+                style = [i for i in style_dict if style_dict[i]["name"] == style][0]
+            else:
+                return False
+        pset = self.hwp.HParameterSet.HGotoE
+        self.hwp.HAction.GetDefault("Goto", pset.HSet)
+        pset.HSet.SetItem("DialogResult", style + 1)  # 스타일인덱스는 0부터지만 Goto는 1부터임
+        pset.SetSelectionIndex = 4
+        return self.hwp.HAction.Execute("Goto", pset.HSet)
+
     def get_into_table_caption(self):
         """
         표 캡션(정확히는 표번호가 있는 리스트공간)으로 이동하는 메서드.
