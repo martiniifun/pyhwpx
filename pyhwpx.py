@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.40.4"
+__version__ = "0.40.5"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1080,6 +1080,15 @@ class Hwp:
 
     # 커스텀 메서드
     def goto_style(self, style: Union[int, str]):
+        """
+        특정 스타일이 적용된 위치로 이동하는 메서드.
+        탐색은 문서아랫방향으로만 수행하며
+        현재위치 이후 해당 스타일이 없거나,
+        스타일이름/인덱스번호가 잘못된 경우
+        False를 리턴
+        :param style: 스타일이름 또는 스타일번호(일반적으로 "바탕글"이 1)
+        :return:
+        """
         if type(style) == str:
             style_dict = self.get_style_dict(as_=dict)
             if style in [style_dict[i]["name"] for i in style_dict]:
@@ -1090,7 +1099,11 @@ class Hwp:
         self.hwp.HAction.GetDefault("Goto", pset.HSet)
         pset.HSet.SetItem("DialogResult", style + 1)  # 스타일인덱스는 0부터지만 Goto는 1부터임
         pset.SetSelectionIndex = 4
-        return self.hwp.HAction.Execute("Goto", pset.HSet)
+        cur_pos = self.hwp.GetPos()
+        self.hwp.HAction.Execute("Goto", pset.HSet)
+        if self.hwp.GetPos() == cur_pos:
+            return False
+        return True
 
     def get_into_table_caption(self):
         """
