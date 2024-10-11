@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.40.1"
+__version__ = "0.40.2"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1079,7 +1079,7 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
-    def move_to_caption(self):
+    def get_into_table_caption(self):
         """
         표 캡션(정확히는 표번호가 있는 리스트공간)으로 이동하는 메서드.
         (추후 개선예정 : 캡션 스타일로 찾아가기 기능 추가할 것)
@@ -3778,10 +3778,10 @@ class Hwp:
             print("Error:", e.reason)
         return self.insert_text(response_text)
 
-    def move_caption(self, location: Literal["Top", "Bottom", "Left", "Right"] = "Bottom",
+    def move_all_caption(self, location: Literal["Top", "Bottom", "Left", "Right"] = "Bottom",
                      align: Literal["Left", "Center", "Right", "Distribute", "Division", "Justify"] = "Justify"):
         """
-        한/글 문서 내 모든 표의 주석 위치를 이동하는 메서드.
+        한/글 문서 내 모든 표, 그림의 주석 위치를 일괄 변경하는 메서드.
         """
         start_pos = self.hwp.GetPos()
         ctrl = self.HeadCtrl
