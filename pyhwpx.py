@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.40.6"
+__version__ = "0.41.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1079,6 +1079,26 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
+    def get_image_info(self, ctrl):
+        """
+        이미지 컨트롤의 원본 그림의 이름과
+        원본 그림의 크기 정보를 추출하는 메서드
+        :param ctrl: 아래아한글의 이미지 컨트롤
+        :return: dict["name", "size"]
+        """
+        hwp.select_ctrl(ctrl)
+        hwp.save_block_as("temp.xml", "HWPML2X")
+        tree = ET.parse('temp.xml')
+        root = tree.getroot()
+
+        for shapeobject in root.findall('.//SHAPEOBJECT'):
+            shapecmt = shapeobject.find('SHAPECOMMENT')
+            if shapecmt is not None and shapecmt.text:
+                info = shapecmt.text.split("\n")[1:]
+                return {"name": info[0].split(": ")[1],
+                        "size": [int(i) for i in info[1][14:-5].split("pixel, 세로 ")]}
+        return False
+
     def goto_style(self, style: Union[int, str]):
         """
         특정 스타일이 적용된 위치로 이동하는 메서드.
@@ -1086,23 +1106,35 @@ class Hwp:
         현재위치 이후 해당 스타일이 없거나,
         스타일이름/인덱스번호가 잘못된 경우
         False를 리턴
-        :param style: 스타일이름 또는 스타일번호(일반적으로 "바탕글"이 1)
+        참고사항 : API의 Goto는 1부터 시작하므로 메서드 내부에서 인덱스에 1을 더하고 있음
+        :param style: 스타일이름 또는 스타일번호(첫 번째 스타일이 0)
         :return:
         """
-        if type(style) == str:
+        if type(style) == int:
+            style_idx = style + 1
+        elif type(style) == str:
             style_dict = self.get_style_dict(as_=dict)
             if style in [style_dict[i]["name"] for i in style_dict]:
-                style = [i for i in style_dict if style_dict[i]["name"] == style][0]
+                style_idx = [i for i in style_dict if style_dict[i]["name"] == style][0] + 1
             else:
                 return False
         pset = self.hwp.HParameterSet.HGotoE
         self.hwp.HAction.GetDefault("Goto", pset.HSet)
-        pset.HSet.SetItem("DialogResult", style + 1)  # 스타일인덱스는 0부터지만 Goto는 1부터임
+        pset.HSet.SetItem("DialogResult", style_idx)
         pset.SetSelectionIndex = 4
         cur_messagebox_mode = self.hwp.GetMessageBoxMode()
         self.hwp.SetMessageBoxMode(0x20000)
         try:
-            return self.hwp.HAction.Execute("Goto", pset.HSet)
+            if style == "바탕글" or 0:
+                cur_pos = self.hwp.GetPos()
+                self.hwp.HAction.Execute("Goto", pset.HSet)
+                if self.hwp.GetPos() == cur_pos:
+                    self.hwp.SetPos(*cur_pos)
+                    return False
+                else:
+                    return True
+            else:
+                return self.hwp.HAction.Execute("Goto", pset.HSet)
         finally:
             self.hwp.SetMessageBoxMode(cur_messagebox_mode)
 
