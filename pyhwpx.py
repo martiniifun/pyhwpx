@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.41.0"
+__version__ = "0.41.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1086,8 +1086,8 @@ class Hwp:
         :param ctrl: 아래아한글의 이미지 컨트롤
         :return: dict["name", "size"]
         """
-        hwp.select_ctrl(ctrl)
-        hwp.save_block_as("temp.xml", "HWPML2X")
+        self.select_ctrl(ctrl)
+        self.save_block_as("temp.xml", "HWPML2X")
         tree = ET.parse('temp.xml')
         root = tree.getroot()
 
