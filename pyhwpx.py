@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.41.1"
+__version__ = "0.41.2"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -2881,9 +2881,11 @@ class Hwp:
         :return: tuple(인쇄기준페이지, 페이지인덱스)
         """
         if int(page_index) > self.hwp.PageCount:
-            raise ValueError("입력한 페이지 인덱스가 문서 총 페이지보다 큽니다.")
+            return False
+            # raise ValueError("입력한 페이지 인덱스가 문서 총 페이지보다 큽니다.")
         elif int(page_index) < 1:
-            raise ValueError("1 이상의 값을 입력해야 합니다.")
+            return False
+            # raise ValueError("1 이상의 값을 입력해야 합니다.")
         self.goto_printpage(page_index)
         cur_page = self.current_page
         if page_index == cur_page:
