@@ -52,7 +52,6 @@ hwp.insert_text("Hello world!")
 
 # 위의 코드는 아래처럼 win32com의 hwp 인스턴스처럼 실행 가능
 pset = hwp.HParameterSet.HInsertText
-hwp.HAction.GetDefault("InsertText", pset.HSet)
 pset.Text = "Hello world!"
 hwp.HAction.Execute("InsertText", pset.HSet)
 
