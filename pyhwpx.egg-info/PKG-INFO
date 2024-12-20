@@ -1,0 +1,91 @@
+Metadata-Version: 2.1
+Name: pyhwpx
+Version: 0.41.2
+Summary: 아래아한글 자동화를 위한 파이썬 모듈 pyhwpx입니다.
+Home-page: https://blog.naver.com/pythonrpa/
+Author: ilco
+Author-email: martinii.fun@gmail.com
+Requires-Python: >= 3.10
+Description-Content-Type: text/markdown
+License-File: license.txt
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: pywin32
+Requires-Dist: openpyxl
+Requires-Dist: pyperclip
+Requires-Dist: Pillow
+
+# 파이썬-아래아한글 자동화 모듈
+
+pywin32 패키지를 활용하여 
+
+아래아한글을 다루는 
+
+pyhwpx 모듈을 만들어보았습니다.
+
+pyhwpx 모듈 안에는 아직 Hwp라는 클래스만 
+
+하나 정의해놓았습니다.
+
+해당 클래스 안에 HwpAutomation에서 제공하는 
+
+모든 저수준 API메서드의 사용법과 
+
+파라미터, (필요한 경우) 예시코드 등을 
+
+docstring으로 추가하는 중입니다.
+
+틈틈이 유용한 커스텀 메서드를 
+
+추가할 예정입니다.
+
+아직은 오픈소스라고 부르기엔 
+
+다소 초라한 수준이지만,
+
+hwp 문서업무 자동화에 많이 쓰이는 패턴들을 
+
+추가하다보면?
+
+나름 유용한 모듈이 되지 않을까 
+
+생각해봅니다.
+
+두서없이 디스크립션을 적어보았습니다.
+
+행복한 하루 되세요!
+
+일코, 2023. 11. 30.
+
+# 사용법
+
+```python
+from pyhwpx import Hwp
+
+hwp = Hwp()
+
+# 텍스트 삽입
+hwp.insert_text("Hello world!")
+
+# 위의 코드는 아래처럼 win32com의 hwp 인스턴스처럼 실행 가능
+pset = hwp.HParameterSet.HInsertText
+hwp.HAction.GetDefault("InsertText", pset.HSet)
+pset.Text = "Hello world!"
+hwp.HAction.Execute("InsertText", pset.HSet)
+
+# 다른이름으로 저장
+hwp.save_as("./helloworld.hwp")
+
+# 한/글 종료
+hwp.quit()
+```
+
+이밖에 구체적인 pyhwpx 모듈 사용법과 주요업데이트는 
+
+https://blog.naver.com/pythonrpa/ 블로그에
+
+틈틈이 포스팅으로 남기겠습니다.
+
+방문해 주셔서 감사합니다.
+
+행복한 하루 되세요!!

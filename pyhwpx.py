@@ -871,7 +871,7 @@ class Hwp:
         >>> ctrl = hwp.HeadCtrl
         >>> while True:
         >>>     if ctrl.UserDesc == "표":
-        >>>         break
+        >>>         break  # 이제 ctrl 변수가 해당 표 컨트롤을 가리킴
         >>>     ctrl = ctrl.Next
         >>> print("표가 선택되었습니다.")
         """
@@ -9399,6 +9399,12 @@ class Hwp:
         """
         return self.hwp.HAction.Run("MarkTitle")
 
+    def MasterPage(self):
+        """
+        바탕쪽 진입
+        """
+        return self.hwp.HAction.Run("MasterPage")
+    
     def MasterPageDuplicate(self):
         """
         기존 바탕쪽과 겹침. 바탕쪽 편집상태가 활성화되어 있으며 [구역 마지막쪽], [구역임의 쪽]일 경우에만 사용 가능하다.

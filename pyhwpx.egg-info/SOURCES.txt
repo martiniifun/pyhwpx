@@ -1,0 +1,10 @@
+MANIFEST.in
+license.txt
+pyhwpx.py
+setup.py
+pyhwpx.egg-info/PKG-INFO
+pyhwpx.egg-info/SOURCES.txt
+pyhwpx.egg-info/dependency_links.txt
+pyhwpx.egg-info/not-zip-safe
+pyhwpx.egg-info/requires.txt
+pyhwpx.egg-info/top_level.txt
