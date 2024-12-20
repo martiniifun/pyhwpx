@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.41.3"
+__version__ = "0.41.4"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -2094,8 +2094,11 @@ class Hwp:
             width = self.mili_to_hwp_unit(width)
         ratio = width / self.get_table_width(as_="hwpunit")
         cur_pos = self.get_pos()
-        self.SelectCtrlFront()
-        ctrl = self.CurSelectedCtrl
+        while True:
+            self.SelectCtrlFront()
+            ctrl = self.CurSelectedCtrl
+            if ctrl.UserDesc == "표":
+                break
         t = self.GetTextFile("HWPML2X", "saveblock")
         root = ET.fromstring(t)
         table = root.find('.//TABLE')
