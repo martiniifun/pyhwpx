@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.41.2"
+__version__ = "0.41.3"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
