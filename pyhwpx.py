@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.41.5"
+__version__ = "0.41.8"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1082,14 +1082,13 @@ class Hwp:
     def get_field_info(self):
         txt = self.GetTextFile("HWPML2X")
         try:
-            root = ET.fromstring(t)
+            root = ET.fromstring(txt)
             results = []
             for field in root.findall(".//FIELDBEGIN"):
                 name_value = field.attrib.get("Name")
-                command_value = field.attrib.get("Command")
-                direction, memo = a[:-2].split("wstring:1:")[1].split(" HelpState:wstring:2:")
-                results.append({"field": name_value, "direction": direction, "memo": memo})
-            return results if results else False
+                command = re.split(r"(Clickhere:set:\d+:Direction:wstring:\d+:)|( HelpState:wstring:\d+:)", field.attrib.get("Command")[:-2])
+                results.append({"name": name_value, "direction": command[3], "memo": command[-1]})
+            return results
         except ET.ParseError as e:
             print("XML 파싱 오류:", e)
             return False
