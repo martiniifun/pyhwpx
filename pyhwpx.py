@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.41.4"
+__version__ = "0.41.5"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1079,6 +1079,24 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
+    def get_field_info(self):
+        txt = self.GetTextFile("HWPML2X")
+        try:
+            root = ET.fromstring(t)
+            results = []
+            for field in root.findall(".//FIELDBEGIN"):
+                name_value = field.attrib.get("Name")
+                command_value = field.attrib.get("Command")
+                direction, memo = a[:-2].split("wstring:1:")[1].split(" HelpState:wstring:2:")
+                results.append({"field": name_value, "direction": direction, "memo": memo})
+            return results if results else False
+        except ET.ParseError as e:
+            print("XML 파싱 오류:", e)
+            return False
+        except FileNotFoundError:
+            print("파일을 찾을 수 없습니다.")
+            return False
+
     def get_image_info(self, ctrl):
         """
         이미지 컨트롤의 원본 그림의 이름과
