@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.42.0"
+__version__ = "0.42.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1111,16 +1111,13 @@ class Hwp:
         init = self.get_pos()[0]
         try:
             if self.addr_info[0] == init:
-                print("if")
                 pass
             else:
                 refresh = True
                 self.addr_info = [init, []]
-                print("else")
         except AttributeError:
             refresh = True
             self.addr_info = [init, []]
-            print("except")
         
         if refresh:
             i = 0
