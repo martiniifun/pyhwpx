@@ -1129,6 +1129,7 @@ class Hwp:
         try:
             return self.set_pos(init + self.addr_info[1].index(addr), 0, 0)
         except ValueError:
+            hwp.HAction.Run("Cancel")
             return False
     
     def get_field_info(self):
