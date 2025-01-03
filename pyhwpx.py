@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.41.8"
+__version__ = "0.42.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -59,11 +59,6 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 # 헬퍼함수
 def _open_dialog(hwnd, key="M", delay=0.2):
-    # win32gui.SendMessage(hwnd, win32con.WM_KEYDOWN, win32con.VK_MENU, 0)
-    # win32gui.SendMessage(hwnd, win32con.WM_KEYDOWN, ord(key), 0)
-    # win32gui.SendMessage(hwnd, win32con.WM_KEYUP, ord(key), 0)
-    # win32gui.SendMessage(hwnd, win32con.WM_KEYUP, win32con.VK_MENU, 0)
-    # sleep(delay)
     win32gui.SetForegroundWindow(hwnd)
     win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
     win32api.keybd_event(ord(key), 0, 0, 0)
@@ -88,6 +83,7 @@ def _refresh_eq(hwnd, delay=0.1):
     Ctrl-(Tab-Tab)을 전송한다.
     EquationCreate 및 EquationModify에서
     수식을 정리하기 위해 만들어놓은 헬퍼함수.
+    (이런 기능은 넣는 게 아니었어ㅜㅜㅜ)
     """
     sleep(delay)
     win32gui.SetForegroundWindow(hwnd)
@@ -129,6 +125,9 @@ def _eq_modify(visible):
 
 
 def _close_eqedit(save=False, delay=0.1):
+    """
+    수식편집기를 억지로 닫는 헬퍼함수...
+    """
     hwnd = 0
     while not hwnd:
         hwnd = win32gui.FindWindow(None, "수식 편집기")
@@ -149,14 +148,19 @@ def _close_eqedit(save=False, delay=0.1):
 
 
 def cell_to_index(cell):
-    """ 엑셀 셀 주소를 행과 열 인덱스로 변환"""
+    """
+    엑셀 셀 주소를 행과 열 인덱스로 변환.
+    예 : 'A1' -> (0, 0), 'B2' -> (1, 1)
+    """
     column = ord(cell[0]) - ord('A')  # 열 인덱스 (0-based)
     row = int(cell[1:]) - 1  # 행 인덱스 (0-based)
     return row, column
 
 
 def crop_data_from_selection(data, selection):
-    """ 리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출"""
+    """
+    리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출하는 함수
+    """
     if not selection:
         return []
 
@@ -178,6 +182,9 @@ def crop_data_from_selection(data, selection):
 
 
 def check_registry_key():
+    """
+    아래아한글의 FilePathCheckerModule이 등록되어 있는지 확인하는 함수
+    """
     winup_path = r"Software\HNC\HwpAutomation\Modules"
     alt_winup_path = r"Software\Hnc\HwpUserAction\Modules"
     reg_handle = ConnectRegistry(None, HKEY_CURRENT_USER)
@@ -219,12 +226,18 @@ def rename_duplicates_in_list(file_list):
 
 
 def check_tuple_of_ints(var):
+    """
+    변수가 튜플이고 모든 요소가 int인지 확인하는 함수
+    """
     if isinstance(var, tuple):  # 먼저 변수가 튜플인지 확인
         return all(isinstance(item, int) for item in var)  # 모든 요소가 int인지 확인
     return False  # 변수가 튜플이 아니면 False 반환
 
 
 def excel_address_to_tuple_zero_based(address):
+    """
+    엑셀 셀 주소를 튜플로 변환하는 함수
+    """
     column = 0
     row = 0
     for char in address:
@@ -758,7 +771,7 @@ class Hwp:
     def CellShape(self):
         """
         셀(또는 표) 모양을 관리하는 파라미터셋 속성
-        :return:
+        :return: CellShape 파라미터셋
         """
         return self.hwp.CellShape
 
@@ -775,6 +788,8 @@ class Hwp:
     def CharShape(self):
         """
         글자모양 파라미터셋을 조회할 수 있는 파라미터셋 속성
+        CharShape 객체를 직접 조작하는 것보다,
+        hwp.set_font() 함수를 사용하는 것이 더 편리하다.
         :return:
         """
         return self.hwp.CharShape
@@ -807,7 +822,11 @@ class Hwp:
     @property
     def CurFieldState(self):
         """
-        현재 캐럿이 들어가 있는 필드의 상태를 조회할 수 있는 속성
+        현재 캐럿이 들어가 있는 필드의 상태를 조회할 수 있는 속성.
+        본문(캡션이나 주석 포함)이면 0, 
+        셀 안이면 1, 글상자 안이면 4를 리턴하며,
+        누름틀 안에 있으면 18, 셀필드 안에 있으면 17,
+        만약 셀필드 안의 누름틀 안에 있으면 누름틀을 무시하고 18을 리턴한다.
         :return:
         """
         return self.hwp.CurFieldState
@@ -1079,7 +1098,46 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
+    def goto_addr(self, addr: str):
+        """
+        셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
+        :param addr: 셀 주소 문자열
+        :return: 이동 성공 여부
+        """
+        refresh = False
+        self.SelectCtrlFront()
+        self.ShapeObjTextBoxEdit()
+        
+        init = self.get_pos()[0]
+        try:
+            if self.addr_info[0] == init:
+                print("if")
+                pass
+            else:
+                refresh = True
+                self.addr_info = [init, []]
+                print("else")
+        except AttributeError:
+            refresh = True
+            self.addr_info = [init, []]
+            print("except")
+        
+        if refresh:
+            i = 0
+            while self.set_pos(init + i, 0, 0):
+                self.addr_info[1].append(self.KeyIndicator()[-1][1:].split(")")[0])
+                i += 1
+        self.HAction.Run("TableCellBlockExtendAbs")
+        self.HAction.Run("TableCellBlockExtend")
+        try:
+            return self.set_pos(init + self.addr_info[1].index(addr), 0, 0)
+        except ValueError:
+            return False
+    
     def get_field_info(self):
+        """
+        문서 내의 모든 필드의 정보(지시문 및 메모)를 추출하는 메서드
+        """
         txt = self.GetTextFile("HWPML2X")
         try:
             root = ET.fromstring(txt)
@@ -12918,10 +12976,6 @@ class Hwp:
     def WindowNextTab(self):
         """다음 창 활성화"""
         return self.hwp.HAction.Run("WindowNextTab")
-
-    def WindowPrevTab(self):
-        """이전 창 활성화"""
-        return self.hwp.HAction.Run("WindowPrevTab")
 
     def WindowPrevTab(self):
         """이전 창 활성화"""
