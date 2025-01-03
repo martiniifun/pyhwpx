@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.42.1"
+__version__ = "0.42.3"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1129,7 +1129,7 @@ class Hwp:
         try:
             return self.set_pos(init + self.addr_info[1].index(addr), 0, 0)
         except ValueError:
-            hwp.Cancel()
+            self.Cancel()
             return False
     
     def get_field_info(self):
