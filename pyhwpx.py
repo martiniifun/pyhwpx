@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.42.3"
+__version__ = "0.42.4"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1114,15 +1114,18 @@ class Hwp:
                 pass
             else:
                 refresh = True
-                self.addr_info = [init, []]
+                self.addr_info = [init, ["A1"]]
         except AttributeError:
             refresh = True
-            self.addr_info = [init, []]
+            self.addr_info = [init, ["A1"]]
         
         if refresh:
-            i = 0
+            i = 1
             while self.set_pos(init + i, 0, 0):
-                self.addr_info[1].append(self.KeyIndicator()[-1][1:].split(")")[0])
+                addr = self.KeyIndicator()[-1][1:].split(")")[0]
+                if addr == "A1":
+                    break
+                self.addr_info[1].append(addr)
                 i += 1
         self.HAction.Run("TableCellBlockExtendAbs")
         self.HAction.Run("TableCellBlockExtend")
