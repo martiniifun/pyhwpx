@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.42.4"
+__version__ = "0.42.5"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1127,12 +1127,9 @@ class Hwp:
                     break
                 self.addr_info[1].append(addr)
                 i += 1
-        self.HAction.Run("TableCellBlockExtendAbs")
-        self.HAction.Run("TableCellBlockExtend")
         try:
             return self.set_pos(init + self.addr_info[1].index(addr), 0, 0)
         except ValueError:
-            self.Cancel()
             return False
     
     def get_field_info(self):
