@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.42.7"
+__version__ = "0.42.8"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1106,8 +1106,12 @@ class Hwp:
         :return: 이동 성공 여부(성공시 True/실패시 False)
         """
         refresh = False
-        self.SelectCtrlFront()
-        self.ShapeObjTextBoxEdit()
+        if self.CurFieldState not in (1, 17):
+            self.HAction.Run("SelectCtrlFront")
+            self.HAction.Run("ShapeObjTextBoxEdit")
+        else:
+            self.HAction.Run("TableColBegin")
+            self.HAction.Run("TableColPageUp")
         
         if addr.upper() == "A1":
             if select:
