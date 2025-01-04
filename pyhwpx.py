@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.42.5"
+__version__ = "0.42.6"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1098,17 +1098,23 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
-    def goto_addr(self, addr: str):
+    def goto_addr(self, addr: str="A1", select: bool=False):
         """
         셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
         :param addr: 셀 주소 문자열
-        :return: 이동 성공 여부
+        :param select: 이동 후 셀블록 선택 여부
+        :return: 이동 성공 여부(성공시 True/실패시 False)
         """
         refresh = False
         self.SelectCtrlFront()
         self.ShapeObjTextBoxEdit()
         
-        init = self.get_pos()[0]
+        if addr.upper() == "A1":
+            if select:
+                self.HAction.Run("TableCellBlock")
+            return True
+        
+        init = self.get_pos()[0]  # 무조건 A1
         try:
             if self.addr_info[0] == init:
                 pass
@@ -1122,14 +1128,17 @@ class Hwp:
         if refresh:
             i = 1
             while self.set_pos(init + i, 0, 0):
-                addr = self.KeyIndicator()[-1][1:].split(")")[0]
-                if addr == "A1":
+                cur_addr = self.KeyIndicator()[-1][1:].split(")")[0]
+                if cur_addr == "A1":
                     break
-                self.addr_info[1].append(addr)
+                self.addr_info[1].append(cur_addr)
                 i += 1
         try:
-            return self.set_pos(init + self.addr_info[1].index(addr), 0, 0)
+            if select:
+                self.HAction.Run("TableCellBlock")
+            return self.set_pos(init + self.addr_info[1].index(addr.upper()), 0, 0)
         except ValueError:
+            print("except-return")
             return False
     
     def get_field_info(self):
