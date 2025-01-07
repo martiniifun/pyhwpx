@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.42.8"
+__version__ = "0.42.9"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -58,6 +58,49 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
 # 헬퍼함수
+def addr_to_tuple(cell_address):
+    """
+    엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 (row, col) 튜플로 변환합니다.
+    예) "C3" -> (3, 3)
+
+    print(addr_to_tuple("C3"))        # (3, 3)
+    print(addr_to_tuple("AB10"))      # (10, 28)
+    print(addr_to_tuple("AAA100000")) # (100000, 703)
+    """
+    # 정규표현식을 이용해 문자 부분(열), 숫자 부분(행)을 분리
+    match = re.match(r"^([A-Z]+)(\d+)$", cell_address.upper())
+    if not match:
+        raise ValueError(f"잘못된 셀 주소 형식입니다: {cell_address}")
+
+    col_letters, row_str = match.groups()
+
+    # 문자 부분 -> 열 번호(col)로 변환
+    col = 0
+    for ch in col_letters:
+        col = col * 26 + (ord(ch) - ord('A') + 1)
+
+    # 숫자 부분 -> 행 번호(row)로 변환
+    row = int(row_str)
+
+    return row, col
+
+
+def tuple_to_addr(col, row):
+    """
+    (컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: "AAA3")을 반환합니다.
+    hwp.goto_addr(addr) 메서드 내부에서 활용됩니다.
+    """
+    letters = []
+    # 컬럼번호(col)를 "A"~"Z", "AA"~"ZZ", ... 형태로 변환
+    while col > 0:
+        col, remainder = divmod(col - 1, 26)
+        letters.append(chr(remainder + ord('A')))
+    letters.reverse()  # 스택처럼 뒤집어 넣었으므로 최종 결과는 reverse() 후 합침
+    col_str = "".join(letters)
+
+    return f"{col_str}{row}"
+
+
 def _open_dialog(hwnd, key="M", delay=0.2):
     win32gui.SetForegroundWindow(hwnd)
     win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
@@ -147,16 +190,6 @@ def _close_eqedit(save=False, delay=0.1):
         return False
 
 
-def cell_to_index(cell):
-    """
-    엑셀 셀 주소를 행과 열 인덱스로 변환.
-    예 : 'A1' -> (0, 0), 'B2' -> (1, 1)
-    """
-    column = ord(cell[0]) - ord('A')  # 열 인덱스 (0-based)
-    row = int(cell[1:]) - 1  # 행 인덱스 (0-based)
-    return row, column
-
-
 def crop_data_from_selection(data, selection):
     """
     리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출하는 함수
@@ -165,7 +198,7 @@ def crop_data_from_selection(data, selection):
         return []
 
     # 셀 주소를 행과 열 인덱스로 변환
-    indices = [cell_to_index(cell) for cell in selection]
+    indices = [addr_to_tuple(cell) for cell in selection]
 
     # 범위 계산
     min_row = min(idx[0] for idx in indices)
@@ -1098,13 +1131,16 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
-    def goto_addr(self, addr: str="A1", select: bool=False):
+    def goto_addr(self, addr: str|int = "A1", col: int=0, select: bool=False):
         """
         셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
         :param addr: 셀 주소 문자열
         :param select: 이동 후 셀블록 선택 여부
         :return: 이동 성공 여부(성공시 True/실패시 False)
         """
+        if type(addr) == int and col:
+            addr = addr_to_tuple(addr, col)
+
         refresh = False
         if self.CurFieldState not in (1, 17):
             self.HAction.Run("SelectCtrlFront")
@@ -1112,7 +1148,7 @@ class Hwp:
         else:
             self.HAction.Run("TableColBegin")
             self.HAction.Run("TableColPageUp")
-        
+
         if addr.upper() == "A1":
             if select:
                 self.HAction.Run("TableCellBlock")
@@ -1143,7 +1179,7 @@ class Hwp:
                 self.HAction.Run("TableCellBlock")
             return True
         except ValueError:
-            print("except-return")
+            self.set_pos(init, 0, 0)
             return False
     
     def get_field_info(self):
