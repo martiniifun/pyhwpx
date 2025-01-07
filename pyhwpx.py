@@ -58,7 +58,7 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
 # 헬퍼함수
-def addr_to_tuple(cell_address):
+def addr_to_tuple(cell_address:str):
     """
     엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 (row, col) 튜플로 변환합니다.
     예) "C3" -> (3, 3)
@@ -85,7 +85,7 @@ def addr_to_tuple(cell_address):
     return row, col
 
 
-def tuple_to_addr(col, row):
+def tuple_to_addr(col:int, row:int):
     """
     (컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: "AAA3")을 반환합니다.
     hwp.goto_addr(addr) 메서드 내부에서 활용됩니다.
@@ -1134,12 +1134,14 @@ class Hwp:
     def goto_addr(self, addr: str|int = "A1", col: int=0, select: bool=False):
         """
         셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
-        :param addr: 셀 주소 문자열
+        셀 주소는 "C3"처럼 문자열로 입력하거나,
+        :param addr: 셀 주소 문자열 또는 행번호(1~)
+        :param col: 셀 주소를 정수로 입력하는 경우 열번호(1~)
         :param select: 이동 후 셀블록 선택 여부
         :return: 이동 성공 여부(성공시 True/실패시 False)
         """
         if type(addr) == int and col:
-            addr = addr_to_tuple(addr, col)
+            addr = tuple_to_addr(addr, col)
 
         refresh = False
         if self.CurFieldState not in (1, 17):
