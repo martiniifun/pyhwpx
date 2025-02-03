@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.43.1"
+__version__ = "0.43.3"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1131,6 +1131,16 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
+    def is_empty_para(self):
+        self.MoveSelNextChar()
+        if self.get_pos()[2] == 0:  # 빈 문단이면?
+            self.Cancel()
+            self.MovePrevParaEnd()
+            return True
+        else:
+            self.MoveParaBegin()
+            return False
+
     def goto_addr(self, addr: str|int = "A1", col: int=0, select: bool=False):
         """
         셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
@@ -1447,7 +1457,7 @@ class Hwp:
     #     font_cond = uia.CreatePropertyCondition(30012, "FontNameComboImpl")  # 30012는 UIA_ClassNamePropertyId
     #     self.cur_font_ui = element.FindFirst(4, font_cond)  # 4는 TreeScope.Descendants에 해당
 
-    def get_style_dict(self, as_: [list, dict] = list):
+    def get_style_dict(self, as_: list | dict = list):
         """
         스타일 목록을 사전 데이터로 리턴하는 메서드.
         도움 주신 kosohn님께 아주 큰 감사!!!
@@ -1495,7 +1505,7 @@ class Hwp:
         self.HAction.GetDefault("Style", pset.HSet)
         return style_dict[pset.Apply]
 
-    def set_style(self, style: [int, str]):
+    def set_style(self, style: int|str):
         """
         현재 캐럿이 위치한 문단의 스타일을 변경한다.
         스타일 입력은 style 인수로 정수값(스타일번호) 또는 문자열(스타일이름)을 넣으면 된다.
