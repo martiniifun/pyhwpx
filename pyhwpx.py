@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.43.3"
+__version__ = "0.43.4"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1457,11 +1457,13 @@ class Hwp:
     #     font_cond = uia.CreatePropertyCondition(30012, "FontNameComboImpl")  # 30012는 UIA_ClassNamePropertyId
     #     self.cur_font_ui = element.FindFirst(4, font_cond)  # 4는 TreeScope.Descendants에 해당
 
-    def get_style_dict(self, as_: list | dict = list):
+    def get_style_dict(self, as_: list | dict = None):
         """
         스타일 목록을 사전 데이터로 리턴하는 메서드.
         도움 주신 kosohn님께 아주 큰 감사!!!
         """
+        if as_ is None:
+            as_ = list
         cur_pos = self.get_pos()
         if not self.MoveSelRight():
             self.MoveSelLeft()
@@ -2251,6 +2253,7 @@ class Hwp:
             self.ViewProperties = prop
         self.move_to_ctrl(ctrl)
         self.MoveSelRight()
+        self.HAction.Run("Delete")
         self.SetTextFile(t, format="HWPML2X", option="insertfile")
         prop = self.ViewProperties
         prop.SetItem("OptionFlag", cur_view_state)
