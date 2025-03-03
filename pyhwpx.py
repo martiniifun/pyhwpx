@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.44.0"
+__version__ = "0.44.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -760,29 +760,25 @@ class Hwp:
                        'FaceNameJapanese': 'HY둥근고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': 'HY둥근고딕',
                        'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2,
                        'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}}
-        pythoncom.CoInitialize()
-        try:
-            context = pythoncom.CreateBindCtx(0)
-            running_coms = pythoncom.GetRunningObjectTable()
-            monikers = running_coms.EnumRunning()
+        context = pythoncom.CreateBindCtx(0)
+        running_coms = pythoncom.GetRunningObjectTable()
+        monikers = running_coms.EnumRunning()
 
-            if not new:
-                for moniker in monikers:
-                    name = moniker.GetDisplayName(context, moniker)
-                    if name.startswith('!HwpObject.'):
-                        obj = running_coms.GetObject(moniker)
-                        self.hwp = win32.gencache.EnsureDispatch(
-                            obj.QueryInterface(pythoncom.IID_IDispatch))
-            if not self.hwp:
-                self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
-            try:
-                self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
-            except:
-                sleep(0.01)
-                self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
-                self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
-        finally:
-            pythoncom.CoUninitialize()
+        if not new:
+            for moniker in monikers:
+                name = moniker.GetDisplayName(context, moniker)
+                if name.startswith('!HwpObject.'):
+                    obj = running_coms.GetObject(moniker)
+                    self.hwp = win32.gencache.EnsureDispatch(
+                        obj.QueryInterface(pythoncom.IID_IDispatch))
+        if not self.hwp:
+            self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
+        try:
+            self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
+        except:
+            sleep(0.01)
+            self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
+            self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
         if register_module:  # and not check_registry_key():
             try:
