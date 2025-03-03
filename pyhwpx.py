@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.43.5"
+__version__ = "0.44.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -3835,10 +3835,9 @@ class Hwp:
         self.hwp.SetPos(*start_pos)
         return df
 
-    def table_to_df(self, n="", cols=0):
+    def table_to_df(self, n="", cols=0, selected_range=None, start_pos=None):
         """
-        (2024. 7. 26. xml파싱으로 방법 변경. 결국 기존 방법으로는 간단한 줄바꿈 이슈도 해결 못함.
-                      startrow와 columns가 뭔가 중복되는 개념이어서, cols로 통일. 파괴적 업데이트라 죄송..)
+        (2025. 3. 3. RowSpan이랑 ColSpan을 이용해서, 중복되는 값은 그냥 모든 셀에 넣어버림
         한/글 문서의 n번째 표를 판다스 데이터프레임으로 리턴하는 메서드.
         n을 넣지 않는 경우, 캐럿이 셀에 있다면 해당 표를 df로,
         캐럿이 표 밖에 있다면 첫 번째 표를 df로 리턴한다.
@@ -3903,28 +3902,64 @@ class Hwp:
         xml_data = self.GetTextFile("HWPML2X", option="saveblock")
         root = ET.fromstring(xml_data)
 
-        data = []
+        # TABLE 태그에 RowCount, ColCount가 있으면 사용하고, 없으면 ROW, CELL 수로 결정
+        table_el = root.find('.//TABLE')
+        if table_el is not None:
+            row_count = int(table_el.attrib.get("RowCount", "0"))
+            col_count = int(table_el.attrib.get("ColCount", "0"))
+        else:
+            rows = root.findall('.//ROW')
+            row_count = len(rows)
+            col_count = max(len(row.findall('.//CELL')) for row in rows)
 
+        # 결과를 저장할 2차원 리스트 초기화 (빈 문자열로 채움)
+        result = [["" for _ in range(col_count)] for _ in range(row_count)]
+
+        row_index = 0
         for row in root.findall('.//ROW'):
-            row_data = []
+            col_index = 0
             for cell in row.findall('.//CELL'):
+                # 이미 값이 채워진 셀이 있으면 건너뛰고 다음 빈 칸 찾기
+                while col_index < col_count and result[row_index][col_index] != "":
+                    col_index += 1
+                if col_index >= col_count:
+                    break
+
+                # CELL 내 텍스트 추출 (CHAR 태그의 텍스트 연결)
                 cell_text = ''
                 for text in cell.findall('.//TEXT'):
                     for char in text.findall('.//CHAR'):
-                        cell_text += char.text
+                        if char.text:
+                            cell_text += char.text
                     cell_text += "\r\n"
                 if cell_text.endswith("\r\n"):
                     cell_text = cell_text[:-2]
-                row_data.append(cell_text)
-            data.append(row_data)
+
+                # RowSpan과 ColSpan 값 읽기 (기본값은 1)
+                row_span = int(cell.attrib.get("RowSpan", "1"))
+                col_span = int(cell.attrib.get("ColSpan", "1"))
+
+                # 행과 열로 병합된 영역에 대해 값을 채워줌
+                for i in range(row_span):
+                    for j in range(col_span):
+                        if row_index + i < row_count and col_index + j < col_count:
+                            result[row_index + i][col_index + j] = cell_text
+                # 현재 셀이 차지한 열 수만큼 col_index를 이동
+                col_index += col_span
+            row_index += 1
+
+        # 선택 영역이 있을 경우 후처리
         if self.SelectionMode == 19:
-            data = crop_data_from_selection(data, selected_range)
+            result = crop_data_from_selection(result, selected_range)
+
+        # DataFrame 생성: cols가 int면 해당 인덱스 행을 header로 사용
         if type(cols) == int:
-            columns = data[cols]
-            data = data[cols + 1:]
+            columns = result[cols]
+            data = result[cols + 1:]
             df = pd.DataFrame(data, columns=columns)
         elif type(cols) in (list, tuple):
-            df = pd.DataFrame(data, columns=cols)
+            df = pd.DataFrame(result, columns=cols)
+
         try:
             return df
         finally:
