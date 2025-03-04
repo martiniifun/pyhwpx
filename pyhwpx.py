@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.44.1"
+__version__ = "0.44.2"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -761,6 +761,7 @@ class Hwp:
                        'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2,
                        'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}}
         context = pythoncom.CreateBindCtx(0)
+        pythoncom.CoInitialize()
         running_coms = pythoncom.GetRunningObjectTable()
         monikers = running_coms.EnumRunning()
 
