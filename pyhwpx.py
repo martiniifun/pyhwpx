@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.44.2"
+__version__ = "0.44.3"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1131,6 +1131,29 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
+    def get_linespacing(self, method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent") -> int:
+        """
+        현재 캐럿 위치의 줄간격(%) 리턴.
+        단, 줄간격 기준은 "글자에 따라(%)" 로 설정되어 있어야 함.
+        """
+        act = "ParagraphShape"
+        pset = self.hwp.HParameterSet.HParaShape
+        self.hwp.HAction.GetDefault(act, pset.HSet)
+        if pset.LineSpacingType == self.hwp.LineSpacingMethod(method):
+            return pset.LineSpacing
+        else:
+            return False
+
+    def set_linespacing(self, value:int=160, method:Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent") -> int:
+        """현재 캐럿 위치 또는 선택영역의 줄간격(%) 설정"""
+        act = "ParagraphShape"
+        pset = self.hwp.HParameterSet.HParaShape
+        self.hwp.HAction.GetDefault(act, pset.HSet)
+        pset.LineSpacingType = self.hwp.LineSpacingMethod(method)  # Percent
+        pset.LineSpacing = value
+        return self.hwp.HAction.Execute(act, pset.HSet)
+
+
     def is_empty_para(self):
         self.MoveSelNextChar()
         if self.get_pos()[2] == 0:  # 빈 문단이면?
