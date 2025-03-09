@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.44.3"
+__version__ = "0.44.4"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -3128,7 +3128,7 @@ class Hwp:
             if ctrl.CtrlID == "%clk":
                 self.hwp.DeleteCtrl(ctrl)
             ctrl = ctrl.Next
-        for field in self.get_field_list().split("\x02"):
+        for field in self.get_field_list().split("\x02")[::-1]:
             self.rename_field(field, "")
         return self.set_pos(*start_pos)
 
@@ -8625,6 +8625,7 @@ class Hwp:
         현재 리스트를 닫고 (최)상위 리스트로 이동하는 액션. 대표적인 예로, 메모나 각주 등을 작성한 후 본문으로 빠져나올 때, 혹은 여러 겹의 표 안에 있을 때 한 번에 표 밖으로 캐럿을 옮길 때 사용한다. 굉장히 자주 쓰이는 액션이며, 경우에 따라 Close가 아니라 CloseEx를 써야 하는 경우도 있다.
         (레퍼런스 포인트가 등록되어 있으면 그 포인트로, 없으면 루트 리스트로 이동한다. 나머지 특성은 MoveRootList와 동일)
         명령이 누락되는 경우가 있어 0.05초 인터벌로 최대 5회 재시도.
+        간혹 오류가 나므로, 가급적 hwp.clear() 사용을 권장
         """
         cur_pos = self.GetPos()
         self.hwp.HAction.Run("Close")
