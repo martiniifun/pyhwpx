@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.44.7"
+__version__ = "0.44.8"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1513,62 +1513,74 @@ class Hwp:
             self.MoveParaBegin()
             return False
 
-    def goto_addr(self, addr: str|int = "A1", col: int=0, select_cell: bool=False):
-        """
-        셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
-        셀 주소는 "C3"처럼 문자열로 입력하거나,
-        :param addr: 셀 주소 문자열 또는 행번호(1부터)
-        :param col: 셀 주소를 정수로 입력하는 경우 열번호(1부터)
-        :param select_cell: 이동 후 셀블록 선택 여부
-        :return: 이동 성공 여부(성공시 True/실패시 False)
-        """
-        if not self.is_cell():
-            return False  # 표 안에 있지 않으면 False 리턴(종료)
-        if type(addr) == int and col:  # "A1" 대신 (1, 1) 처럼 tuple(int, int) 방식일 경우
-            addr = tuple_to_addr(addr, col)  # 문자열 "A1" 방식으로 우선 변환
-
-        refresh = False
-
-        # 우선 A1 셀로 이동 시도
-        self.HAction.Run("TableColBegin")
-        self.HAction.Run("TableColPageUp")
-
-        if addr.upper() == "A1":  # A1 셀이 맞으면!
-            if select_cell:
-                self.HAction.Run("TableCellBlock")
-            return True
-        
-        init = self.get_pos()[0]  # 무조건 A1임.
-        try:
-            if self.addr_info[0] == init:
-                pass
-            else:
-                refresh = True
-                self.addr_info = [init, ["A1"]]
-        except AttributeError:
-            refresh = True
-            self.addr_info = [init, ["A1"]]
-        
-        if refresh:
-            i = 1
-            while self.set_pos(init + i, 0, 0):
-                cur_addr = self.KeyIndicator()[-1][1:].split(")")[0]
-                if cur_addr == "A1":
-                    break
-                self.addr_info[1].append(cur_addr)
-                i += 1
-        try:
-            self.set_pos(init + self.addr_info[1].index(addr.upper()), 0, 0)
-            if select_cell:
-                self.HAction.Run("TableCellBlock")
-            return True
-        except ValueError:
-            self.set_pos(init, 0, 0)
-            return False
+    # Deprecated!
+    # def goto_addr(self, addr: str|int = "A1", col: int=0, select_cell: bool=False):
+    #     """
+    #     셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
+    #     셀 주소는 "C3"처럼 문자열로 입력하거나,
+    #     :param addr: 셀 주소 문자열 또는 행번호(1부터)
+    #     :param col: 셀 주소를 정수로 입력하는 경우 열번호(1부터)
+    #     :param select_cell: 이동 후 셀블록 선택 여부
+    #     :return: 이동 성공 여부(성공시 True/실패시 False)
+    #     """
+    #     if not self.is_cell():
+    #         return False  # 표 안에 있지 않으면 False 리턴(종료)
+    #     if type(addr) == int and col:  # "A1" 대신 (1, 1) 처럼 tuple(int, int) 방식일 경우
+    #         addr = tuple_to_addr(addr, col)  # 문자열 "A1" 방식으로 우선 변환
+    #
+    #     refresh = False
+    #
+    #     # 우선 A1 셀로 이동 시도
+    #     self.HAction.Run("TableColBegin")
+    #     self.HAction.Run("TableColPageUp")
+    #
+    #     if addr.upper() == "A1":  # A1 셀이 맞으면!
+    #         if select_cell:
+    #             self.HAction.Run("TableCellBlock")
+    #         return True
+    #
+    #     init = self.get_pos()[0]  # 무조건 A1임.
+    #     try:
+    #         if self.addr_info[0] == init:
+    #             pass
+    #         else:
+    #             refresh = True
+    #             self.addr_info = [init, ["A1"]]
+    #     except AttributeError:
+    #         refresh = True
+    #         self.addr_info = [init, ["A1"]]
+    #
+    #     if refresh:
+    #         i = 1
+    #         while self.set_pos(init + i, 0, 0):
+    #             cur_addr = self.KeyIndicator()[-1][1:].split(")")[0]
+    #             if cur_addr == "A1":
+    #                 break
+    #             self.addr_info[1].append(cur_addr)
+    #             i += 1
+    #     try:
+    #         self.set_pos(init + self.addr_info[1].index(addr.upper()), 0, 0)
+    #         if select_cell:
+    #             self.HAction.Run("TableCellBlock")
+    #         return True
+    #     except ValueError:
+    #         self.set_pos(init, 0, 0)
+    #         return False
     
     def get_field_info(self):
         """
-        문서 내의 모든 필드의 정보(지시문 및 메모)를 추출하는 메서드
+        문서 내의 모든 누름틀의 정보(지시문 및 메모)를 추출하는 메서드.
+        셀필드는 지시문과 메모가 없으므로 이 메서드에서는 추출하지 않는다.
+        만약 셀필드를 포함하여 모든 필드의 이름만 추출하고 싶다면
+        hwp.get_field_list().split("\r\n") 메서드를 쓰면 된다.
+        :return: [{'name': 'zxcv', 'direction': 'adsf', 'memo': 'qwer'}] 형식의 사전 리스트
+        :rtype: list[dict]
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.get_field_info()
+        [{'name': '누름틀1', 'direction': '안내문1', 'memo': '메모1'},
+         {'name': '누름틀2', 'direction': '안내문2', 'memo': '메모2'}]
         """
         txt = self.GetTextFile("HWPML2X")
         try:
@@ -1586,15 +1598,36 @@ class Hwp:
             print("파일을 찾을 수 없습니다.")
             return False
 
-    def get_image_info(self, ctrl):
+    def get_image_info(self, ctrl:Any=None):
         """
         이미지 컨트롤의 원본 그림의 이름과
         원본 그림의 크기 정보를 추출하는 메서드
-        :param ctrl: 아래아한글의 이미지 컨트롤
-        :return: dict["name", "size"]
+        :param ctrl: 아래아한글의 이미지 컨트롤. ctrl을 지정하지 않으면 현재 선택된 이미지의 정보를 추출
+        :return: 해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트
+        :rtype: dict["name":str, "size":list[int, int]]
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> # 이미지 선택 상태에서
+        >>> hwp.get_image_info()
+        {'name': 'tmpmj2md6uy', 'size': [200, 200]}
+        >>> # 문서 마지막그림 정보
+        >>> ctrl = [i for i in hwp.ctrl_list if i.UserDesc == "그림"][-1]
+        >>> hwp.get_image_info(ctrl)
+        {'name': 'tmpxk_5noth', 'size': [1920, 1080]}
         """
+        if ctrl is None:
+            ctrl = self.CurSelectedCtrl
+
+        if not ctrl or ctrl.UserDesc != "그림":
+            return False
         self.select_ctrl(ctrl)
-        self.save_block_as("temp.xml", "HWPML2X")
+        block = self.GetTextFile("HWPML2X", option="saveblock:true")
+        self.add_tab()
+        self.SetTextFile(block, "HWPML2X")
+        self.save_as("temp.xml", "HWPML2X")
+        self.clear()
+        self.FileClose()
         tree = ET.parse('temp.xml')
         root = tree.getroot()
 
@@ -1602,8 +1635,11 @@ class Hwp:
             shapecmt = shapeobject.find('SHAPECOMMENT')
             if shapecmt is not None and shapecmt.text:
                 info = shapecmt.text.split("\n")[1:]
-                return {"name": info[0].split(": ")[1],
-                        "size": [int(i) for i in info[1][14:-5].split("pixel, 세로 ")]}
+                try:
+                    return {"name": info[0].split(": ")[1],
+                            "size": [int(i) for i in info[1][14:-5].split("pixel, 세로 ")]}
+                finally:
+                    os.remove("temp.xml")
         return False
 
     def goto_style(self, style: Union[int, str]):
