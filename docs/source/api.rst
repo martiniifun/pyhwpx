@@ -8,3 +8,5 @@ API
 .. automodule:: pyhwpx.Hwp
    :members:
    :show-inheritance:
+
+   pyhwpx.Hwp
