@@ -13,11 +13,11 @@ jobs:
         python-version: '3.x'
 
     - name: Install Sphinx & Dependencies
-      run: pip install sphinx sphinx_markdown_builder sphinx_rtd_theme
+      run: pip install sphinx sphinx_markdown_builder sphinx_rtd_theme furo
     - name: Build Documentation
-      run: cd "$GITHUB_WORKSPACE/doc" && make html
+      run: cd "$GITHUB_WORKSPACE/docs" && make html
 
     - uses: actions/upload-artifact@v4
       with:
         name: Documentation
-        path: "$GITHUB_WORKSPACE/doc/_build/html/"
+        path: "$GITHUB_WORKSPACE/docs/build/html/"
