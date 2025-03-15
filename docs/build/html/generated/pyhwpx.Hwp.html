@@ -2034,7 +2034,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>칸 블록 선택 (F4 Key를 누른 효과)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../api.html#pyhwpx.Hwp.SelectCtrl" title="pyhwpx.Hwp.SelectCtrl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SelectCtrl</span></code></a>(ctrllist[, option])</p></td>
-<td><p>한글2024 이상의 버전에서 사용 가능한 API 기반의 신규 메서드. 가급적 hwp.select_ctrl(ctrl)을 실행할 것을 추천. :param ctrllist:     특정 컨트롤의 인스턴스 아이디(11자리 정수 또는 문자열). 인스턴스아이디는 <cite>ctrl.GetCtrlInstID()</cite> 로 구할 수 있으며     이는 한/글 2024부터 반영된 개념(2022 이하에서는 제공하지 않음) :type ctrllist: str|int :param option: int     특정 컨트롤(들)을 선택하고 있는 상태에서, 추가선택할 수 있는 옵션. 0: 추가선택     1: 기존 선택해제 후 컨트롤 선택 :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt; hwp = Hwp().</p></td>
+<td><p>한글2024 이상의 버전에서 사용 가능한 API 기반의 신규 메서드.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#pyhwpx.Hwp.SelectCtrlFront" title="pyhwpx.Hwp.SelectCtrlFront"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SelectCtrlFront</span></code></a>()</p></td>
 <td><p>개체선택 정방향</p></td>
@@ -2937,7 +2937,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>현재 캐럿이 위치하는 곳의 필드이름을 구한다.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#pyhwpx.Hwp.get_cur_metatag_name" title="pyhwpx.Hwp.get_cur_metatag_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cur_metatag_name</span></code></a>()</p></td>
-<td><p>현재 캐럿위치의 메타태그 이름을 리턴하는 메서드. :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; # &quot;#test&quot;라는 메타태그 이름이 부여된 표를 선택한 상태에서     &gt;&gt;&gt; hwp.get_cur_metatag_name() #test.</p></td>
+<td><p>현재 캐럿위치의 메타태그 이름을 리턴하는 메서드.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../api.html#pyhwpx.Hwp.get_field_info" title="pyhwpx.Hwp.get_field_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_field_info</span></code></a>()</p></td>
 <td><p>문서 내의 모든 누름틀의 정보(지시문 및 메모)를 추출하는 메서드.</p></td>
@@ -2958,7 +2958,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>현재 커서가 위치한 문단의 글머리표/문단번호/개요번호를 추출한다.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../api.html#pyhwpx.Hwp.get_image_info" title="pyhwpx.Hwp.get_image_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_image_info</span></code></a>([ctrl])</p></td>
-<td><p>이미지 컨트롤의 원본 그림의 이름과 원본 그림의 크기 정보를 추출하는 메서드 :param ctrl: 아래아한글의 이미지 컨트롤. ctrl을 지정하지 않으면 현재 선택된 이미지의 정보를 추출 :return: 해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트 :rtype: dict[&quot;name&quot;:str, &quot;size&quot;:list[int, int]] :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; # 이미지 선택 상태에서     &gt;&gt;&gt; hwp.get_image_info() {'name': 'tmpmj2md6uy', 'size': [200, 200]}     &gt;&gt;&gt; # 문서 마지막그림 정보     &gt;&gt;&gt; ctrl = [i for i in hwp.ctrl_list if i.UserDesc == &quot;그림&quot;][-1]     &gt;&gt;&gt; hwp.get_image_info(ctrl) {'name': 'tmpxk_5noth', 'size': [1920, 1080]}.</p></td>
+<td><p>이미지 컨트롤의 원본 그림의 이름과 원본 그림의 크기 정보를 추출하는 메서드 :param ctrl: 아래아한글의 이미지 컨트롤. ctrl을 지정하지 않으면 현재 선택된 이미지의 정보를 추출 :return: 해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트 :rtype: dict[&quot;name&quot;:str, &quot;size&quot;:list[int, int]] :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; # 이미지 선택 상태에서     &gt;&gt;&gt; hwp.get_image_info()     {'name': 'tmpmj2md6uy', 'size': [200, 200]}     &gt;&gt;&gt; # 문서 마지막그림 정보     &gt;&gt;&gt; ctrl = [i for i in hwp.ctrl_list if i.UserDesc == &quot;그림&quot;][-1]     &gt;&gt;&gt; hwp.get_image_info(ctrl)     {'name': 'tmpxk_5noth', 'size': [1920, 1080]}.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#pyhwpx.Hwp.get_into_nth_table" title="pyhwpx.Hwp.get_into_nth_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_into_nth_table</span></code></a>([n, select_cell])</p></td>
 <td><p>문서 n번째 표의 첫 번째 셀로 이동하는 함수.</p></td>
@@ -3546,7 +3546,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>한/글 문서의 idx번째 표를 현재 폴더에 filename으로 csv포맷으로 저장한다. filename을 지정하지 않는 경우 &quot;./result.csv&quot;가 기본값이다. :return:     None :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt;     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; hwp.table_to_csv(1, &quot;table.csv&quot;).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../api.html#pyhwpx.Hwp.table_to_df" title="pyhwpx.Hwp.table_to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_to_df</span></code></a>([n, cols, selected_range, start_pos])</p></td>
-<td><p>(2025. 3. 3. RowSpan이랑 ColSpan을 이용해서, 중복되는 값은 그냥 모든 셀에 넣어버림 한/글 문서의 n번째 표를 판다스 데이터프레임으로 리턴하는 메서드. n을 넣지 않는 경우, 캐럿이 셀에 있다면 해당 표를 df로, 캐럿이 표 밖에 있다면 첫 번째 표를 df로 리턴한다. :return:     pd.DataFrame :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt;     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; df = hwp.table_to_df()  # 현재 캐럿이 들어가 있는 표 전체를 df로(1행을 df의 칼럼으로)     &gt;&gt;&gt; df = hwp.table_to_df(0, cols=2)  # 문서의 첫 번째 표를 df로(2번인덱스행(3행)을 칼럼명으로, 그 아래(4행부터)를 값으로)     &gt;&gt;&gt;.</p></td>
+<td><p>(2025. 3. 3. RowSpan이랑 ColSpan을 이용해서, 중복되는 값은 그냥 모든 셀에 넣어버림 한/글 문서의 n번째 표를 판다스 데이터프레임으로 리턴하는 메서드. n을 넣지 않는 경우, 캐럿이 셀에 있다면 해당 표를 df로, 캐럿이 표 밖에 있다면 첫 번째 표를 df로 리턴한다. :return:     pd.DataFrame :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt;     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; df = hwp.table_to_df()  # 현재 캐럿이 들어가 있는 표 전체를 df로(1행을 df의 칼럼으로)     &gt;&gt;&gt; df = hwp.table_to_df(0, cols=2)  # 문서의 첫 번째 표를 df로(2번인덱스행(3행)을 칼럼명으로, 그 아래(4행부터)를 값으로).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#pyhwpx.Hwp.table_to_df_q" title="pyhwpx.Hwp.table_to_df_q"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_to_df_q</span></code></a>([n, startrow, columns])</p></td>
 <td><p>(2024. 3. 14. for문 추출 구조에서, 한 번에 추출하는 방식으로 변경-&gt;속도개선) 한/글 문서의 n번째 표를 판다스 데이터프레임으로 리턴하는 메서드. n을 넣지 않는 경우, 캐럿이 셀에 있다면 해당 표를 df로, 캐럿이 표 밖에 있다면 첫 번째 표를 df로 리턴한다. startrow는 표 제목에 일부 병합이 되어 있는 경우 df로 변환시작할 행을 특정할 때 사용된다. :return:     pd.DataFrame :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt;     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; df = hwp.table_to_df(0).</p></td>
@@ -3652,10 +3652,10 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>문서의 가장 마지막 컨트롤 객체를 리턴한다.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#pyhwpx.Hwp.PageCount" title="pyhwpx.Hwp.PageCount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PageCount</span></code></a></p></td>
-<td><p>현재 문서의 총 페이지 수를 리턴. :return: 현재 문서의 총 페이지 수 :rtype: int :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; hwp.open(&quot;./example.hwpx&quot;)     &gt;&gt;&gt; print(f&quot;현재 이 문서의 총 페이지 수는 {hwp.PageCount}입니다.&quot;) 현재 이 문서의 총 페이지 수는 20입니다.</p></td>
+<td><p>현재 문서의 총 페이지 수를 리턴.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../api.html#pyhwpx.Hwp.ParaShape" title="pyhwpx.Hwp.ParaShape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParaShape</span></code></a></p></td>
-<td><p>CharShape, CellShape과 함께 가장 많이 사용되는 단축Shape 삼대장 중 하나. 현재 캐럿이 위치한, 혹은 선택한 문단(블록)의 문단모양 파라미터셋을 리턴한다. :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; hwp.open(&quot;./example.hwp&quot;)     &gt;&gt;&gt; # 현재 캐럿위치의 줄간격 조회     &gt;&gt;&gt; val = hwp.ParaShape.Item(&quot;LineSpacing&quot;)     &gt;&gt;&gt; print(f&quot;현재 문단의 줄간격은 {val}%입니다.&quot;) 현재 문단의 줄간격은 160%입니다.</p></td>
+<td><p>CharShape, CellShape과 함께 가장 많이 사용되는 단축Shape 삼대장 중 하나.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#pyhwpx.Hwp.ParentCtrl" title="pyhwpx.Hwp.ParentCtrl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParentCtrl</span></code></a></p></td>
 <td><p>현재 선택되어 있거나, 캐럿이 들어있는 컨트롤을 포함하는 상위 컨트롤을 리턴한다.</p></td>
