@@ -41,17 +41,16 @@ language = 'ko'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "sphinx_rtd_theme" # 'furo'  # 'alabaster'
-html_static_path = ['source/_static']  # docs/source/_static, docs/build/html/_static
+html_static_path = ['docs/source/_static']  # docs/source/_static, docs/build/html/_static
 # autodoc_preserve_defaults = True
 # autodoc_member_order = 'bysource'
 # autoclass_member_order = 'bysource'
 autosummary_generate = True
 autodoc_inherit_docstrings = True
-on_rtd = os.environ.get('READTHEDOCS') == 'True'
-if on_rtd:
-    autodoc_mock_imports = ["win32com", "numpy"]
+# on_rtd = os.environ.get('READTHEDOCS') == 'True'
+# if on_rtd:
+#     autodoc_mock_imports = ["win32com", "numpy"]
 
-# autodoc_mock_imports = ["pyhwpx"]
 autosummary_ignore_module_all = False
 autodoc_default_options = {
     "members": True,
