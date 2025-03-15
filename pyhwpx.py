@@ -1041,6 +1041,11 @@ class Hwp:
         일반적으로 자동화에 쓸 일이 없으므로 무시해도 됩니다.
         :return: 편집모드는 1을, 읽기전용인 경우 0을 리턴
         :rtype: int
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.EditMode
+        1
         """
         return self.hwp.EditMode
 
@@ -1078,11 +1083,12 @@ class Hwp:
         >>> # "Hello world!" 문자열을 입력하는 액션
         >>> pset = hwp.HParameterSet.HInsertText
         >>> act_id = "InsertText"
-        >>> pset.Text = "Hello world!\r\n"  # 줄바꿈 포함
+        >>> pset.Text = "Hello world!\\r\\n"  # 줄바꿈 포함
         >>> hwp.HAction.Execute(act_id, pset.HSet)
         >>> # 위 네 줄의 명령어는 아래 방법으로도 실행 가능
         >>> hwp.insert_text("Hello world!")
         >>> hwp.BreakPara()  # 줄바꿈 메서드
+        True
         """
         return self.hwp.HAction
 
@@ -1090,87 +1096,150 @@ class Hwp:
     def HeadCtrl(self):
         """
         문서의 첫 번째 컨트롤을 리턴한다.
-        거의 모든 경우 HeadCtrl은 구역 정의(Section Definition, secd)를 리턴한다.
-        사용법은 아래와 같다.
-
-        >>> # 문서에 첫 번째로 삽입된 표의 컨트롤을 탐색하여 선택하는 방법
+        문서의 첫 번째, 두 번째 컨트롤은 항상 "구역 정의"와 "단 정의"이다. (이 둘은 숨겨져 있음)
+        그러므로 `hwp.HeadCtrl`은 항상 구역정의(secd: section definition)이며,
+        `hwp.HeadCtrl.Next`는 단 정의(cold: column definition)이다.
+        사용자가 삽입한 첫 번째 컨트롤은 항상 `hwp.HeadCtrl.Next.Next`이다.
+        HeadCtrl과 반대로 문서의 가장 마지막 컨트롤은 hwp.LastCtrl이며, 이전 컨트롤로 순회하려면
+        `.Next` 대신 `.Prev`를 사용하면 된다.
+        hwp.HeadCtrl의 기본적인 사용법은 아래와 같다.
+        :example:
+        >>> # 문서에 삽입된 모든 표의 "글자처럼 취급" 속성을 해제하는 코드
         >>> from pyhwpx import Hwp
         >>> hwp = Hwp()
         >>> ctrl = hwp.HeadCtrl
-        >>> while True:
-        >>>     if ctrl.UserDesc == "표":
-        >>>         break  # 이제 ctrl 변수가 해당 표 컨트롤을 가리킴
-        >>>     ctrl = ctrl.Next
-        >>> print("표가 선택되었습니다.")
+        >>> while ctrl:
+        ...     if ctrl.UserDesc == "표":  # 이제 ctrl 변수가 해당 표 컨트롤을 가리키고 있으므로
+        ...         prop = ctrl.Properties
+        ...         prop.SetItem("TreatAsChar", True)
+        ...         ctrl.Properties = prop
+        ...     ctrl = ctrl.Next
+        >>> print("모든 표의 글자처럼 취급 속성 해제작업이 완료되었습니다.")
+        모든 표의 글자처럼 취급 속성 해제작업이 완료되었습니다.
         """
         return self.hwp.HeadCtrl
 
     @property
     def HParameterSet(self):
         """
-        한/글에서 실행되는 대부분의 액션에 필요한
-        다양한 파라미터셋을 제공해주는 속성.
-        사용법은 아래와 같다.
-
+        한/글에서 실행되는 대부분의 액션을 설정하는 데 필요한 파라미터셋들이 들어있는 속성.
+        HAction과 HParameterSet을 조합하면 어떤 복잡한 동작이라도 구현해낼 수 있지만
+        공식 API 문서를 읽으며 코딩하기보다는, 해당 동작을 한/글 내에서 스크립트매크로로 녹화하고
+        녹화된 매크로에서 액션아이디와 파라미터셋을 참고하는 방식이 훨씬 효율적이다.
+        HParameterSet을 활용하는 예시코드는 아래와 같다.
+        :example:
         >>> from pyhwpx import Hwp
         >>> hwp = Hwp()
         >>> pset = hwp.HParameterSet.HInsertText
         >>> pset.Text = "Hello world!"
         >>> hwp.HAction.Execute("InsertText", pset.HSet)
-
-        :return:
+        True
         """
         return self.hwp.HParameterSet
 
     @property
     def IsEmpty(self) -> bool:
         """
-        아무 내용도 들어있지 않은 빈 문서인지 여부를 나타낸다. 읽기전용
+        아무 내용도 들어있지 않은 빈 문서인지 여부를 나타낸다. 읽기전용임
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> # 특정 문서를 열고, 비어있는지 확인
+        >>> hwp.open("./example.hwpx")
+        >>> if hwp.IsEmpty:
+        ...     print("빈 문서입니다.")
+        ... else:
+        ...     print("빈 문서가 아닙니다.")
+        빈 문서가 아닙니다.
         """
         return self.hwp.IsEmpty
 
     @property
     def IsModified(self) -> bool:
         """
-        최근 저장 또는 생성 이후 수정이 있는지 여부를 나타낸다. 읽기전용
+        최근 저장 또는 생성 이후 수정이 있는지 여부를 나타낸다. 읽기전용이며,
+        자동화에 활용하는 경우는 거의 없다. 패스~
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.open("./example.hwpx")
+        >>> # 신나게 작업을 마친 후, 종료하기 직전, 혹시 하는 마음에
+        >>> # 수정사항이 있으면 저장하고 끄기 & 수정사항이 없으면 그냥 한/글 종료하기
+        >>> if hwp.IsModified:
+        ...     hwp.save()
+        ... hwp.quit()
         """
         return self.hwp.IsModified
 
     @property
     def IsPrivateInfoProtected(self):
+        """모름. 패스~"""
         return self.hwp.IsPrivateInfoProtected
 
     @property
     def IsTrackChangePassword(self):
+        """모름. 패스~"""
         return self.hwp.IsTrackChangePassword
 
     @property
     def IsTrackChange(self):
+        """패스"""
         return self.hwp.IsTrackChange
 
     @property
     def LastCtrl(self):
         """
         문서의 가장 마지막 컨트롤 객체를 리턴한다.
-        연결리스트 타입이므로, HeadCtrl부터 LastCtrl까지 모두 연결되어 있고
+        연결리스트 타입으로, HeadCtrl부터 LastCtrl까지 모두 연결되어 있고
         LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색이 가능하다.
-        :return:
+        혹자는 `hwp.HeadCtrl`만 있으면 되는 거 아닌가 생각할 수 있지만,
+        특정 조건의 컨트롤을 삭제!!하는 경우 삭제한 컨트롤 이후의 모든 컨트롤의 인덱스가 변경되어버리므로
+        이런 경우에는 LastCtrl에서 역순으로 진행해야 한다. (HeadCtrl부터 Next 작업을 하면 인덱스 꼬임)
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> # 문서 내의 모든 그림 삭제하기
+        >>> ctrl = hwp.LastCtrl  # <---
+        >>> while ctrl:
+        ...     if ctrl.UserDesc == "그림":
+        ...         hwp.DeleteCtrl(ctrl)
+        ...     ctrl = ctrl.Prev
+        ... print("모든 그림을  삭제하였습니다.")
+        모든 그림의 `글자처럼 취급` 속성을 활성화하였습니다.
+        >>> # 아래처럼 for문과 hwp.ctrl_list로도 구현할 수 있음
+        >>> for ctrl in [i for i in hwp.ctrl_list if i.UserDesc == "그림"][::-1]:  # 역순 아니어도 무관.
+        ...     hwp.DeleteCtrl(ctrl)
         """
         return self.hwp.LastCtrl
 
     @property
-    def PageCount(self):
+    def PageCount(self) -> int:
         """
-        현재 문서의 총 페이지 수를 리턴한다.
-        :return:
+        현재 문서의 총 페이지 수를 리턴.
+        :return: 현재 문서의 총 페이지 수
+        :rtype: int
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.open("./example.hwpx")
+        >>> print(f"현재 이 문서의 총 페이지 수는 {hwp.PageCount}입니다.")
+        현재 이 문서의 총 페이지 수는 20입니다.
         """
         return self.hwp.PageCount
 
     @property
     def ParaShape(self):
         """
-        현재 캐럿이 위치한 문단의 문단모양 파라미터셋을 리턴하는 속성.
-        :return:
+        CharShape, CellShape과 함께 가장 많이 사용되는 단축Shape 삼대장 중 하나.
+        현재 캐럿이 위치한, 혹은 선택한 문단(블록)의 문단모양 파라미터셋을 리턴한다.
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.open("./example.hwp")
+        >>> # 현재 캐럿위치의 줄간격 조회
+        >>> val = hwp.ParaShape.Item("LineSpacing")
+        >>> print(f"현재 문단의 줄간격은 {val}%입니다.")
+        현재 문단의 줄간격은 160%입니다.
         """
         return self.hwp.ParaShape
 
@@ -1178,8 +1247,17 @@ class Hwp:
     def ParaShape(self, prop):
         """
         문단모양 파라미터셋을 수정하기 위한 세터 프로퍼티
-        :param prop:
-        :return:
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.open("./example.hwp")
+        >>> # 본문 모든 문단의 줄간격을 200%로 수정하기
+        >>> hwp.SelectAll()  # 전체선택
+        >>> prop = hwp.ParaShape
+        >>> prop.SetItem("LineSpacing", 200)
+        >>> hwp.ParaShape = prop
+        >>> print("본문 전체의 줄간격을 200%로 수정하였습니다.")
+        본문 전체의 줄간격을 200%로 수정하였습니다.
         """
         self.hwp.ParaShape = prop
 
