@@ -9,4 +9,4 @@ API
 .. autosummary::
    :toctree: generated
 
-   pyhwpx.Hwp
+   pyhwpx

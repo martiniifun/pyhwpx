@@ -10,16 +10,17 @@ import os
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-sys.path.insert(0, os.path.abspath("."))
+# sys.path.insert(0, os.path.abspath("."))
 
 
 
 project = 'pyhwpx'
 copyright = '2025, ilco'
 author = 'ilco'
-release = '0.44.8'
+release = '0.44.9'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -29,6 +30,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.autosummary',
+    'sphinx.ext.autoclass',
 ]
 templates_path = ['_templates']
 exclude_patterns = []
