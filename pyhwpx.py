@@ -14,7 +14,6 @@ from io import StringIO
 from time import sleep
 from typing import Literal, Union, Any
 from urllib import request, parse
-from winreg import ConnectRegistry, HKEY_CURRENT_USER, KEY_READ, OpenKey, QueryValueEx, CloseKey
 
 import numpy as np
 import pandas as pd
@@ -39,7 +38,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.44.8"
+__version__ = "0.44.9"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -8389,14 +8388,6 @@ class Hwp:
 
         :return:
             추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
-
-        :example:
-            >>> from pyhwpx import Hwp
-            >>> hwp = Hwp()
-            >>> # 사전에 레지스트리에 보안모듈이 등록되어 있어야 한다.
-            >>> # 보다 자세한 설명은 공식문서 참조
-            >>> hwp.register_module("FilePathChekDLL", "FilePathCheckerModule")
-            True
         """
         if not check_registry_key():
             self.register_regedit()
