@@ -3,5 +3,8 @@ API
 
 .. autoclass:: pyhwpx.Hwp
    :members:
-   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyhwpx.Hwp
+   :members:
    :show-inheritance:
