@@ -46,3 +46,4 @@ autodoc_preserve_defaults = True
 # autoclass_member_order = 'bysource'
 autosummary_generate = True
 # autodoc_inherit_docstrings = False
+autodoc_mock_imports = ["pyhwpx"]
