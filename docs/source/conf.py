@@ -49,7 +49,7 @@ autosummary_generate = True
 autodoc_inherit_docstrings = True
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 if on_rtd:
-    autodoc_mock_imports = ["pywin32", "win32com", "numpy", "pandas", "pyperclip", "pillow"]
+    autodoc_mock_imports = ["win32com", "numpy", "pandas", "pyperclip", "pillow"]
 
 autosummary_ignore_module_all = False
 autodoc_default_options = {
