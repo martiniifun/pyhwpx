@@ -48,8 +48,8 @@ html_static_path = ['_static']  # docs/source/_static, docs/build/html/_static
 autosummary_generate = True
 autodoc_inherit_docstrings = True
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
-if on_rtd:
-    autodoc_mock_imports = ["win32com", "numpy", "pandas", "pyperclip", "pillow"]
+# if on_rtd:
+autodoc_mock_imports = ["pywin32", "numpy", "pandas", "pyperclip", "pillow"]
 
 autosummary_ignore_module_all = False
 autodoc_default_options = {
