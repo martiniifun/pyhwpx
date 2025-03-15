@@ -1,9 +1,7 @@
-.. :currentmodule:: pyhwpx
-
 API
 ===
 
-.. autoclass:: Hwp
+.. autoclass:: pyhwpx.Hwp
    :module: pyhwpx
    :members:
    :show-inheritance:
