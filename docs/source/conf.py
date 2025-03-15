@@ -8,6 +8,7 @@
 
 import os
 import sys
+from unittest.mock import MagicMock
 from pathlib import Path
 
 
@@ -49,6 +50,8 @@ autosummary_generate = True
 autodoc_inherit_docstrings = True
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 # if on_rtd:
+MOCK_MODULES = ["win32com", "win32com.client", "pythoncom", "pywintypes"]
+sys.modules.update((mod_name, MagicMock()) for mod_name in MOCK_MODULES)
 autodoc_mock_imports = ["pywin32", "numpy", "pandas", "pyperclip", "pillow"]
 
 autosummary_ignore_module_all = False
