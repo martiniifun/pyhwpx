@@ -12,7 +12,7 @@ import zipfile
 from collections import defaultdict
 from io import StringIO
 from time import sleep
-from typing import Literal, Union
+from typing import Literal, Union, Any
 from urllib import request, parse
 from winreg import ConnectRegistry, HKEY_CURRENT_USER, KEY_READ, OpenKey, QueryValueEx, CloseKey
 
@@ -60,12 +60,21 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 # 헬퍼함수
 def addr_to_tuple(cell_address:str):
     """
-    엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 (row, col) 튜플로 변환합니다.
-    예) "C3" -> (3, 3)
+    엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 (row, col) 튜플로 변환하는 헬퍼함수입니다.
+    예를 들어 `addr_to_tuple("C3")`을 실행하면 `(3, 3)`을 리턴하는 식입니다.
+    pyhwpx 일부 메서드의 내부 연산에 사용됩니다.
 
-    print(addr_to_tuple("C3"))        # (3, 3)
-    print(addr_to_tuple("AB10"))      # (10, 28)
-    print(addr_to_tuple("AAA100000")) # (100000, 703)
+    :param cell_address: 엑셀 방식의 "셀주소" 문자열
+    :type cell_address: str
+    :return: (row, column) 형식의 주소 튜플
+    :rtype: (int, int)
+    :example:
+    >>> print(addr_to_tuple("C3"))
+    (3, 3)
+    >>> print(addr_to_tuple("AB10"))
+    (10, 28)
+    >>> print(addr_to_tuple("AAA100000"))
+    (100000, 703)
     """
     # 정규표현식을 이용해 문자 부분(열), 숫자 부분(행)을 분리
     match = re.match(r"^([A-Z]+)(\d+)$", cell_address.upper())
@@ -89,6 +98,16 @@ def tuple_to_addr(col:int, row:int):
     """
     (컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: "AAA3")을 반환합니다.
     hwp.goto_addr(addr) 메서드 내부에서 활용됩니다.
+
+    :param col: 열(칼럼) 번호(1부터 시작)
+    :type col: int
+    :param row: 행(로우) 번호(1부터 시작)
+    :type row: int
+    :return: 엑셀 형식의 주소 문자열
+    :rtype: str
+    :example:
+    >>> print(tuple_to_addr(1, 2))
+    "B1"
     """
     letters = []
     # 컬럼번호(col)를 "A"~"Z", "AA"~"ZZ", ... 형태로 변환
@@ -102,6 +121,9 @@ def tuple_to_addr(col:int, row:int):
 
 
 def _open_dialog(hwnd, key="M", delay=0.2):
+    """
+    수식컨트롤 관련 헬퍼함수. 직접 사용하지 말 것.
+    """
     win32gui.SetForegroundWindow(hwnd)
     win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
     win32api.keybd_event(ord(key), 0, 0, 0)
@@ -110,7 +132,10 @@ def _open_dialog(hwnd, key="M", delay=0.2):
     sleep(delay)
 
 
-def _get_edit_text(hwnd, delay=0.2):
+def _get_edit_text(hwnd:int, delay:int=0.2):
+    """
+    수식컨트롤 관련 헬퍼함수. 직접 사용하지 말 것.
+    """
     sleep(delay)
     length = win32gui.SendMessage(hwnd, win32con.WM_GETTEXTLENGTH) + 1
     buffer = win32gui.PyMakeBuffer(length * 2)
@@ -119,11 +144,10 @@ def _get_edit_text(hwnd, delay=0.2):
     return text
 
 
-def _refresh_eq(hwnd, delay=0.1):
+def _refresh_eq(hwnd:int, delay:int=0.1):
     """
     수식 새로고침을 위한 키 전송 함수.
-    hwnd로 수식 편집기 창을 찾은 후 실행하면
-    Ctrl-(Tab-Tab)을 전송한다.
+    hwnd로 수식 편집기 창을 찾아놓은 후 실행하면 Ctrl-(Tab-Tab)을 전송한다.
     EquationCreate 및 EquationModify에서
     수식을 정리하기 위해 만들어놓은 헬퍼함수.
     (이런 기능은 넣는 게 아니었어ㅜㅜㅜ)
@@ -139,12 +163,13 @@ def _refresh_eq(hwnd, delay=0.1):
     sleep(delay)
 
 
-def _eq_create(visible):
+def _eq_create(visible:bool):
     """
     멀티스레드 형태로 새 수식편집기를 실행하는 헬퍼함수
-    :param hwp:
-    :param visible:
-    :return:
+    :param visible: 아래아한글을 백그라운드에서 실행할지(False), 혹은 화면에 보이게 할지(True) 결정하는 파라미터
+    :type visible: bool
+    :return: 무조건 True를 리턴함
+    :rtype: bool
     """
     pythoncom.CoInitialize()
     hwp = Hwp(visible=visible)
@@ -155,10 +180,11 @@ def _eq_create(visible):
 
 def _eq_modify(visible):
     """
-    멀티스레드 형태로 기존 수식에 대한 수식편집기를 실행하는 헬퍼함수
-    :param hwp:
-    :param visible:
-    :return:
+    멀티스레드 형태로 기존 수식에 대한 수식편집기를 실행하는 헬퍼함수.
+    :param visible: 아래아한글을 백그라운드에서 실행할지(False), 혹은 화면에 보이게 할지(True) 결정하는 파라미터
+    :type visible: bool
+    :return: 무조건 True를 리턴
+    :rtype: bool
     """
     pythoncom.CoInitialize()
     hwp = Hwp(visible=visible)
@@ -167,9 +193,15 @@ def _eq_modify(visible):
     return True
 
 
-def _close_eqedit(save=False, delay=0.1):
+def _close_eqedit(save:bool=False, delay:float=0.1):
     """
-    수식편집기를 억지로 닫는 헬퍼함수...
+    멀티스레드로 열린 수식편집기를 억지로 찾아 닫는 헬퍼함수
+    :param save: 수식편집기를 닫기 전에 저장할지 결정
+    :type save: bool
+    :param delay: 실행 지연시간
+    :type delay: float
+    :return: 성공시 True, 실패시 False
+    :rtype: bool
     """
     hwnd = 0
     while not hwnd:
@@ -192,7 +224,8 @@ def _close_eqedit(save=False, delay=0.1):
 
 def crop_data_from_selection(data, selection):
     """
-    리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출하는 함수
+    리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출하는 함수.
+    pyhwpx 내부적으로만 사용됨
     """
     if not selection:
         return []
@@ -216,7 +249,10 @@ def crop_data_from_selection(data, selection):
 
 def check_registry_key():
     """
-    아래아한글의 FilePathCheckerModule이 등록되어 있는지 확인하는 함수
+    아래아한글의 보안모듈 FilePathCheckerModule의 레지스트리에 등록여부 체크
+
+    :return: 등록되어 있는 경우 True, 미등록인 경우 False
+    :rtype: bool
     """
     winup_path = r"Software\HNC\HwpAutomation\Modules"
     alt_winup_path = r"Software\Hnc\HwpUserAction\Modules"
@@ -238,10 +274,15 @@ def check_registry_key():
     return False
 
 
-def rename_duplicates_in_list(file_list):
+def rename_duplicates_in_list(file_list:list[str]):
     """
     문서 내 이미지를 파일로 저장할 때,
     동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 헬퍼함수
+
+    :param file_list: 문서 내 이미지 파일명 목록
+    :type file_list: list[str]
+    :return: 중복된 이름이 두 개 이상 있는 경우 뒤에 "(2)", "(3)"을 붙인 새로운 문자열 리스트
+    :rtype: list[str]
     """
     counts = {}
 
@@ -258,9 +299,14 @@ def rename_duplicates_in_list(file_list):
     return file_list
 
 
-def check_tuple_of_ints(var):
+def check_tuple_of_ints(var:tuple):
     """
-    변수가 튜플이고 모든 요소가 int인지 확인하는 함수
+    변수가 튜플이고 모든 요소가 int인지 확인하는 헬퍼함수
+
+    :param var: 이터러블 자료형
+    :type var: tuple
+    :return: 튜플이면서, 요소들이 모두 int인 경우 True를 리턴, 그렇지 않으면 False
+    :rtype: bool
     """
     if isinstance(var, tuple):  # 먼저 변수가 튜플인지 확인
         return all(isinstance(item, int) for item in var)  # 모든 요소가 int인지 확인
@@ -269,7 +315,7 @@ def check_tuple_of_ints(var):
 
 def excel_address_to_tuple_zero_based(address):
     """
-    엑셀 셀 주소를 튜플로 변환하는 함수
+    엑셀 셀 주소를 튜플로 변환하는 헬퍼함수
     """
     column = 0
     row = 0
@@ -286,18 +332,22 @@ def excel_address_to_tuple_zero_based(address):
 # 아래아한글 오토메이션 클래스 정의
 class Hwp:
     """
-    아래아한글 인스턴스를 실행한다.
+    아래아한글 인스턴스를 실행합니다.
 
     :param new:
-        new=True인 경우, 기존에 열려 있는 한/글 인스턴스와 무관한 새 인스턴스를 생성한다.
-        new=False(기본값)인 경우, 기존에 열려 있는 한/글 인스턴스를 조작하게 된다.
+        `new=True`인 경우, 기존에 열려 있는 한/글 인스턴스와 무관한 새 인스턴스를 생성하게 됩니다.
+        `new=False`(기본값)인 경우, 우선적으로 기존에 열려 있는 한/글 창에 연결을 시도합니다. (연결되지 않기도 합니다.)
+    :type new: bool
     :param visible:
-        한/글 인스턴스를 백그라운드에서 실행할지, 화면에 나타낼지 선택한다.
-        기본값은 True로, 화면에 나타나게 된다.
-        visible=False일 경우 백그라운드에서 작업할 수 있다.
+        한/글 인스턴스를 백그라운드에서 실행할지, 화면에 나타낼지 선택합니다.
+        기본값은 `True`이며, 한/글 창이 화면에 나타나게 됩니다.
+        `visible=False` 파라미터를 추가할 경우 한/글 창이 보이지 않는 상태로 백그라운드에서 작업할 수 있습니다.
+    :type visible: bool
     :param register_module:
-        기존의 hwp__.RegisterModule("FilePathCheckDLL", "FilePathCheckerModule") 메서드를 실행한다.
-        레지스트리 키를 직접 추가(수정)한다.
+        보안모듈을 Hwp 클래스에서 직접 실행하게 허용합니다. 기본값은 `True`입니다.
+        hwp.RegisterModule("FilePathCheckDLL", "FilePathCheckerModule") 메서드를 직접 실행하는 것과 동일합니다.
+    :type register_module: bool
+    :return: 아래아한글 인스턴스가 생성됩니다.
     """
 
     def __repr__(self):
@@ -309,10 +359,10 @@ class Hwp:
         >>> from pyhwpx import Hwp
         >>> hwp = Hwp()
 
-        코드 실행 전에 한/글이 실행되어 있었다면 가장 최근에 조작(또는 포커스)했던 한/글 창에 연결됩니다. 
+        코드 실행 전에 한/글이 실행되어 있었다면 가장 최근에 조작(또는 포커스)했던 한/글 창에 연결을 먼저 시도합니다. 
         """
 
-    def __init__(self, new=False, visible=True, register_module=True):
+    def __init__(self, new:bool=False, visible:bool=True, register_module:bool=True):
         self.hwp = 0
         # self.htf_fonts = {'중간공한': {'FaceNameHangul': '중간공한', 'FaceNameHanja': '한양신명조', 'FaceNameJapanese': '한양신명조', 'FaceNameLatin': '중간공한', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '굵은공한': {'FaceNameHangul': '굵은공한', 'FaceNameHanja': '한양신명조', 'FaceNameJapanese': '한양신명조', 'FaceNameLatin': '굵은공한', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '가는한': {'FaceNameHangul': '가는한', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '가는한', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '중간한': {'FaceNameHangul': '중간한', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '중간한', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '굵은한': {'FaceNameHangul': '굵은한', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '굵은한', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '복숭아': {'FaceNameHangul': '복숭아', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '한양중고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '옥수수': {'FaceNameHangul': '옥수수', 'FaceNameHanja': '한양신명조', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '옥수수', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '오이': {'FaceNameHangul': '오이', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '오이', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '가지': {'FaceNameHangul': '가지', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '오이', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '강낭콩': {'FaceNameHangul': '강낭콩', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '오이', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '딸기': {'FaceNameHangul': '딸기', 'FaceNameHanja': '한양신명조', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '옥수수', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '타이프': {'FaceNameHangul': '타이프', 'FaceNameHanja': '한양신명조', 'FaceNameJapanese': '한양신명조', 'FaceNameLatin': '타이프', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '헤드라인': {'FaceNameHangul': '태 헤드라인T', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '한양견고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '가는헤드라인': {'FaceNameHangul': '태 가는 헤드라인T', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': 'HCI Hollyhock', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '헤드라인D': {'FaceNameHangul': '태 헤드라인D', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': 'Blippo Blk BT', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '가는헤드라인D': {'FaceNameHangul': '태 가는 헤드라인D', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': 'Hobo BT', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '양재 다운명조M': {'FaceNameHangul': '양재 다운명조M', 'FaceNameHanja': '한양신명조', 'FaceNameJapanese': '한양신명조', 'FaceNameLatin': '양재 다운명조M', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '양재 본목각M': {'FaceNameHangul': '양재 본목각M', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '양재 본목각M', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '양재 소슬': {'FaceNameHangul': '양재 소슬', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '양재 소슬', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '양재 튼튼B': {'FaceNameHangul': '양재 튼튼B', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '양재 튼튼B', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '양재 참숯B': {'FaceNameHangul': '양재 참숯B', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '양재 참숯B', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '양재 둘기': {'FaceNameHangul': '양재 둘기', 'FaceNameHanja': '한양신명조', 'FaceNameJapanese': '한양신명조', 'FaceNameLatin': '양재 둘기', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '양재 매화': {'FaceNameHangul': '양재 매화', 'FaceNameHanja': '한양신명조', 'FaceNameJapanese': '한양신명조', 'FaceNameLatin': '양재 매화', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '양재 샤넬': {'FaceNameHangul': '양재 샤넬', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '양재 샤넬', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '양재 와당': {'FaceNameHangul': '양재 와당', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '양재 와당', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '양재 이니셜': {'FaceNameHangul': '양재 이니셜', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '양재 이니셜', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 세명조': {'FaceNameHangul': '신명 세명조', 'FaceNameHanja': '신명 세명조', 'FaceNameJapanese': '신명 신명조', 'FaceNameLatin': '신명 세명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 신명조': {'FaceNameHangul': '신명 신명조', 'FaceNameHanja': '신명 세명조', 'FaceNameJapanese': '신명 신명조', 'FaceNameLatin': '신명 신명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 신신명조': {'FaceNameHangul': '신명 신신명조', 'FaceNameHanja': '신명 세명조', 'FaceNameJapanese': '신명 신명조', 'FaceNameLatin': '신명 신신명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 중명조': {'FaceNameHangul': '신명 중명조', 'FaceNameHanja': '신명 중명조', 'FaceNameJapanese': '신명 신명조', 'FaceNameLatin': '신명 중명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 태명조': {'FaceNameHangul': '신명 태명조', 'FaceNameHanja': '신명 태명조', 'FaceNameJapanese': '신명 태명조', 'FaceNameLatin': '신명 태명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '신명 견명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 견명조': {'FaceNameHangul': '신명 견명조', 'FaceNameHanja': '신명 견명조', 'FaceNameJapanese': '신명 견명조', 'FaceNameLatin': '신명 견명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '신명 견명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 신문명조': {'FaceNameHangul': '신명 신문명조', 'FaceNameHanja': '신명 신문명조', 'FaceNameJapanese': '신명 신명조', 'FaceNameLatin': '신명 신문명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 순명조': {'FaceNameHangul': '신명 순명조', 'FaceNameHanja': '신명 중명조', 'FaceNameJapanese': '신명 태명조', 'FaceNameLatin': '신명 순명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 세고딕': {'FaceNameHangul': '신명 세고딕', 'FaceNameHanja': '신명 세고딕', 'FaceNameJapanese': '신명 중고딕', 'FaceNameLatin': '신명 세고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 중고딕': {'FaceNameHangul': '신명 중고딕', 'FaceNameHanja': '신명 중고딕', 'FaceNameJapanese': '신명 중고딕', 'FaceNameLatin': '신명 중고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 태고딕': {'FaceNameHangul': '신명 태고딕', 'FaceNameHanja': '신명 태고딕', 'FaceNameJapanese': '신명 태고딕', 'FaceNameLatin': '신명 태고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '신명 태그래픽', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 견고딕': {'FaceNameHangul': '신명 견고딕', 'FaceNameHanja': '신명 견고딕', 'FaceNameJapanese': '신명 태고딕', 'FaceNameLatin': '신명 견고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '신명 견고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 세나루': {'FaceNameHangul': '신명 세나루', 'FaceNameHanja': '신명 중고딕', 'FaceNameJapanese': '신명 중고딕', 'FaceNameLatin': '신명 세나루', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 디나루': {'FaceNameHangul': '신명 디나루', 'FaceNameHanja': '신명 중고딕', 'FaceNameJapanese': '신명 중고딕', 'FaceNameLatin': '신명 디나루', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 신그래픽': {'FaceNameHangul': '신명 신그래픽', 'FaceNameHanja': '신명 중고딕', 'FaceNameJapanese': '신명 중고딕', 'FaceNameLatin': '신명 신그래픽', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 태그래픽': {'FaceNameHangul': '신명 태그래픽', 'FaceNameHanja': '신명 중고딕', 'FaceNameJapanese': '신명 태고딕', 'FaceNameLatin': '신명 태그래픽', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '신명 태그래픽', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명 궁서': {'FaceNameHangul': '신명 궁서', 'FaceNameHanja': '신명 궁서', 'FaceNameJapanese': '신명 신명조', 'FaceNameLatin': '신명 궁서', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#세명조': {'FaceNameHangul': '#세명조', 'FaceNameHanja': '#신명조', 'FaceNameJapanese': '#세명조', 'FaceNameLatin': '#세명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#세명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신명조': {'FaceNameHangul': '#신명조', 'FaceNameHanja': '#신명조', 'FaceNameJapanese': '#세명조', 'FaceNameLatin': '#신명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#중명조': {'FaceNameHangul': '#중명조', 'FaceNameHanja': '#중명조', 'FaceNameJapanese': '#세명조', 'FaceNameLatin': '#중명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#중명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신중명조': {'FaceNameHangul': '#신중명조', 'FaceNameHanja': '#중명조', 'FaceNameJapanese': '#세명조', 'FaceNameLatin': '#신중명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#중명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#화명조A': {'FaceNameHangul': '#화명조A', 'FaceNameHanja': '#중명조', 'FaceNameJapanese': '#세명조', 'FaceNameLatin': '#화명조A', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#중명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#화명조B': {'FaceNameHangul': '#화명조B', 'FaceNameHanja': '#중명조', 'FaceNameJapanese': '#세명조', 'FaceNameLatin': '#화명조B', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#중명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#태명조': {'FaceNameHangul': '#태명조', 'FaceNameHanja': '#태명조', 'FaceNameJapanese': '#태명조', 'FaceNameLatin': '#태명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#태명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신태명조': {'FaceNameHangul': '#신태명조', 'FaceNameHanja': '#태명조', 'FaceNameJapanese': '#태명조', 'FaceNameLatin': '#신태명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#신태명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#태신명조': {'FaceNameHangul': '#태신명조', 'FaceNameHanja': '#태명조', 'FaceNameJapanese': '#태명조', 'FaceNameLatin': '#태신명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#태신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#견명조': {'FaceNameHangul': '#견명조', 'FaceNameHanja': '#견명조', 'FaceNameJapanese': '#태명조', 'FaceNameLatin': '#견명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#견명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신문명조': {'FaceNameHangul': '#신문명조', 'FaceNameHanja': '#신문명조', 'FaceNameJapanese': '#세명조', 'FaceNameLatin': '#신문명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#신문명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신문태명': {'FaceNameHangul': '#신문태명', 'FaceNameHanja': '#태명조', 'FaceNameJapanese': '#태명조', 'FaceNameLatin': '#신문태명', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#태명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신문견명': {'FaceNameHangul': '#신문견명', 'FaceNameHanja': '#신문견명', 'FaceNameJapanese': '#태명조', 'FaceNameLatin': '#신문견명', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#견명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#세고딕': {'FaceNameHangul': '#세고딕', 'FaceNameHanja': '#신세고딕', 'FaceNameJapanese': '#세고딕', 'FaceNameLatin': '#세고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#세고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신세고딕': {'FaceNameHangul': '#신세고딕', 'FaceNameHanja': '#신세고딕', 'FaceNameJapanese': '#세고딕', 'FaceNameLatin': '#신세고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#신세고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#중고딕': {'FaceNameHangul': '#중고딕', 'FaceNameHanja': '#중고딕', 'FaceNameJapanese': '#중고딕', 'FaceNameLatin': '#중고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#태고딕': {'FaceNameHangul': '#태고딕', 'FaceNameHanja': '#태고딕', 'FaceNameJapanese': '#태고딕', 'FaceNameLatin': '#태고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#태고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#견고딕': {'FaceNameHangul': '#견고딕', 'FaceNameHanja': '#견고딕', 'FaceNameJapanese': '#태고딕', 'FaceNameLatin': '#견고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#견고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신문고딕': {'FaceNameHangul': '#신문고딕', 'FaceNameHanja': '#신문고딕', 'FaceNameJapanese': '#중고딕', 'FaceNameLatin': '#신문고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#신문고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신문태고': {'FaceNameHangul': '#신문태고', 'FaceNameHanja': '#태고딕', 'FaceNameJapanese': '#중고딕', 'FaceNameLatin': '#신문태고', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#태고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신문견고': {'FaceNameHangul': '#신문견고', 'FaceNameHanja': '#신문견고', 'FaceNameJapanese': '#태고딕', 'FaceNameLatin': '#신문견고', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#견고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#세나루': {'FaceNameHangul': '#세나루', 'FaceNameHanja': '#신세나루', 'FaceNameJapanese': '#세고딕', 'FaceNameLatin': '#세나루', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#세나루', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신세나루': {'FaceNameHangul': '#신세나루', 'FaceNameHanja': '#신세나루', 'FaceNameJapanese': '#세고딕', 'FaceNameLatin': '#신세나루', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#신세나루', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#디나루': {'FaceNameHangul': '#디나루', 'FaceNameHanja': '#신디나루', 'FaceNameJapanese': '#태고딕', 'FaceNameLatin': '#디나루', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#디나루', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신디나루': {'FaceNameHangul': '#신디나루', 'FaceNameHanja': '#신디나루', 'FaceNameJapanese': '#태고딕', 'FaceNameLatin': '#신디나루', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#신디나루', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#그래픽': {'FaceNameHangul': '#그래픽', 'FaceNameHanja': '#신세고딕', 'FaceNameJapanese': '#중고딕', 'FaceNameLatin': '#그래픽', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#그래픽', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#신그래픽': {'FaceNameHangul': '#신그래픽', 'FaceNameHanja': '#중고딕', 'FaceNameJapanese': '#중고딕', 'FaceNameLatin': '#신그래픽', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#신그래픽', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#태그래픽': {'FaceNameHangul': '#태그래픽', 'FaceNameHanja': '#태고딕', 'FaceNameJapanese': '#태고딕', 'FaceNameLatin': '#태그래픽', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#태그래픽', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#궁서': {'FaceNameHangul': '#궁서', 'FaceNameHanja': '#궁서', 'FaceNameJapanese': '#세명조', 'FaceNameLatin': '#궁서', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#궁서', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#공작': {'FaceNameHangul': '#공작', 'FaceNameHanja': '#중고딕', 'FaceNameJapanese': '#중고딕', 'FaceNameLatin': '#공작', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#공작', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#수암A': {'FaceNameHangul': '#수암A', 'FaceNameHanja': '#태고딕', 'FaceNameJapanese': '#태고딕', 'FaceNameLatin': '#수암A', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#수암A', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#수암B': {'FaceNameHangul': '#수암B', 'FaceNameHanja': '#태고딕', 'FaceNameJapanese': '#태고딕', 'FaceNameLatin': '#수암B', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#수암A', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '#빅': {'FaceNameHangul': '#빅', 'FaceNameHanja': '#견고딕', 'FaceNameJapanese': '#태고딕', 'FaceNameLatin': '#빅', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '#빅', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '시스템': {'FaceNameHangul': '시스템', 'FaceNameHanja': '시스템', 'FaceNameJapanese': '시스템', 'FaceNameLatin': '시스템', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '시스템', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '시스템 약자': {'FaceNameHangul': '시스템', 'FaceNameHanja': '시스템 약자', 'FaceNameJapanese': '시스템', 'FaceNameLatin': '시스템', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '시스템', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '시스템 간자': {'FaceNameHangul': '시스템', 'FaceNameHanja': '시스템 간자', 'FaceNameJapanese': '시스템', 'FaceNameLatin': '시스템', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '시스템', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, 'HY둥근고딕': {'FaceNameHangul': 'HY둥근고딕', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': 'HY둥근고딕', 'FaceNameLatin': 'HY둥근고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': 'HY둥근고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '명조': {'FaceNameHangul': '명조', 'FaceNameHanja': '명조', 'FaceNameJapanese': '명조', 'FaceNameLatin': '명조', 'FaceNameOther': '명조', 'FaceNameSymbol': '명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '고딕': {'FaceNameHangul': '고딕', 'FaceNameHanja': '명조', 'FaceNameJapanese': '고딕', 'FaceNameLatin': '고딕', 'FaceNameOther': '명조', 'FaceNameSymbol': '명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '샘물': {'FaceNameHangul': '샘물', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '산세리프', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '필기': {'FaceNameHangul': '필기', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '필기', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명조': {'FaceNameHangul': '한양신명조', 'FaceNameHanja': '한양신명조', 'FaceNameJapanese': '한양신명조', 'FaceNameLatin': '한양신명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '견명조': {'FaceNameHangul': '한양견명조', 'FaceNameHanja': '한양신명조', 'FaceNameJapanese': '한양신명조', 'FaceNameLatin': '한양견명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명조 약자': {'FaceNameHangul': '한양신명조', 'FaceNameHanja': '신명조 약자', 'FaceNameJapanese': '한양신명조V', 'FaceNameLatin': '한양신명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '신명조 간자': {'FaceNameHangul': '한양신명조', 'FaceNameHanja': '신명조 간자', 'FaceNameJapanese': '한양신명조V', 'FaceNameLatin': '한양신명조', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '중고딕': {'FaceNameHangul': '한양중고딕', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '한양중고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '중고딕 약자': {'FaceNameHangul': '한양중고딕', 'FaceNameHanja': '중고딕 약자', 'FaceNameJapanese': '한양중고딕V', 'FaceNameLatin': '한양중고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '중고딕 간자': {'FaceNameHangul': '한양중고딕', 'FaceNameHanja': '중고딕 간자', 'FaceNameJapanese': '한양중고딕V', 'FaceNameLatin': '한양중고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '견고딕': {'FaceNameHangul': '한양견고딕', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '한양견고딕', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '그래픽': {'FaceNameHangul': '한양그래픽', 'FaceNameHanja': '한양중고딕', 'FaceNameJapanese': '한양중고딕', 'FaceNameLatin': '한양그래픽', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양중고딕', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '해서 약자': {'FaceNameHangul': '한양궁서', 'FaceNameHanja': '해서 약자', 'FaceNameJapanese': '한양신명조V', 'FaceNameLatin': '한양궁서', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '해서 간자': {'FaceNameHangul': '한양궁서', 'FaceNameHanja': '해서 간자', 'FaceNameJapanese': '한양신명조V', 'FaceNameLatin': '한양궁서', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}, '가는공한': {'FaceNameHangul': '가는공한', 'FaceNameHanja': '한양신명조', 'FaceNameJapanese': '한양신명조', 'FaceNameLatin': '가는공한', 'FaceNameOther': '한양신명조', 'FaceNameSymbol': '한양신명조', 'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2, 'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}}
         self.htf_fonts = {
@@ -761,7 +811,7 @@ class Hwp:
                        'FaceNameUser': '명조', 'FontTypeHangul': 2, 'FontTypeHanja': 2, 'FontTypeJapanese': 2,
                        'FontTypeLatin': 2, 'FontTypeOther': 2, 'FontTypeSymbol': 2, 'FontTypeUser': 2}}
         context = pythoncom.CreateBindCtx(0)
-        pythoncom.CoInitialize()
+        pythoncom.CoInitialize()  # 이걸 꼭 실행해야 하는가? 왜 Pycharm이나 주피터에서는 괜찮고, vscode에서는 CoInitialize 오류가 나는지?
         running_coms = pythoncom.GetRunningObjectTable()
         monikers = running_coms.EnumRunning()
 
@@ -773,10 +823,11 @@ class Hwp:
                     self.hwp = win32.gencache.EnsureDispatch(
                         obj.QueryInterface(pythoncom.IID_IDispatch))
         if not self.hwp:
-            self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
+            self.hwp = win32.gencache.EnsureDispatch("hwpframe.object")
         try:
             self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
-        except:
+        except Exception as e:
+            print(e)
             sleep(0.01)
             self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
             self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
@@ -784,36 +835,51 @@ class Hwp:
         if register_module:  # and not check_registry_key():
             try:
                 self.register_module()
-            except:
-                print("RegisterModule 액션을 실행할 수 없음")
+            except Exception as e:
+                print(e, "RegisterModule 액션을 실행할 수 없음. 개발자에게 문의해주세요.")
 
     @property
     def Application(self):
         """
-        저수준의 아래아한글 오토메이션API에 직접 접근하기 위한 속성
-        사용예시는 아래와 같다.
+        저수준의 아래아한글 오토메이션API에 직접 접근하기 위한 속성입니다.
+        `hwp.Application.~~~`로 실행 가능한 모든 속성은, 간단히 `hwp.~~~`로 실행할 수도 있지만
+        pyhwpx와 API의 작동방식을 동일하게 하기 위해 구현해 두었습니다.
 
+        :return: HwpApplication 객체
+        :rtype: HwpApplication
+        :example:
         >>> from pyhwpx import Hwp
         >>> hwp = Hwp()
         >>> hwp.Application.XHwpWindows.Item(0).Visible = True
-        :return: HwpApplication 객체
         """
         return self.hwp.Application
 
     @property
-    def CellShape(self):
+    def CellShape(self) -> Any:
         """
-        셀(또는 표) 모양을 관리하는 파라미터셋 속성
+        셀(또는 표) 모양을 관리하는 파라미터셋 속성입니다.
         :return: CellShape 파라미터셋
+        :rtype: CellShape
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.CellShape.Item("Height")  # 현재 표의 높이를 HwpUnit 단위로 리턴
+        6410
+        >>> hwp.HwpUnitToMili(hwp.CellShape.Item("Height"))
+        22.6131
+        >>> hwp.get_table_height()  # 위와 동일한 값을 리턴함
+        22.6131
+        >>> hwp.get_row_height()  # 현재 셀의 높이를 밀리미터 단위로 리턴
+        4.5226
         """
         return self.hwp.CellShape
 
     @CellShape.setter
-    def CellShape(self, prop):
+    def CellShape(self, prop: Any) -> None:
         """
         셀(또는 표) 모양 파라미터셋을 변경할 수 있는 setter 속성
-        :param prop:
-        :return:
+        :param prop: CellShape 파라미터셋(IDHwpParameterSet)
+        :type prop: IDHwpParameterSet
         """
         self.hwp.CellShape = prop
 
@@ -823,24 +889,28 @@ class Hwp:
         글자모양 파라미터셋을 조회할 수 있는 파라미터셋 속성
         CharShape 객체를 직접 조작하는 것보다,
         hwp.set_font() 함수를 사용하는 것이 더 편리하다.
-        :return:
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.HwpUnitToPoint(hwp.CharShape.Item("Height"))  # 현재 캐럿위치 또는 선택영역의 글자크기를 포인트단위로 출력
+        10
         """
         return self.hwp.CharShape
 
     @CharShape.setter
-    def CharShape(self, prop):
+    def CharShape(self, prop: Any) -> None:
         """
         글자모양 파라미터셋을 변경할 수 있는 setter 속성
-        :param prop:
-        :return:
+        :param prop: hwp.CharShape
+        :type prop: IDHwpParameterSet
+        :return: None
         """
         self.hwp.CharShape = prop
 
     @property
     def CLSID(self):
         """
-        클래스아이디를 리턴하는 속성
-        :return:
+        파라미터셋의 CLSID(클래스아이디)를 리턴하는 속성. 잘 사용하지 않음
         """
         return self.hwp.CLSID
 
@@ -7466,35 +7536,35 @@ class Hwp:
     def PlacementType(self, restart):
         return self.hwp.PlacementType(Restart=restart)
 
-    def point_to_hwp_unit(self, point):
+    def point_to_hwp_unit(self, point:float) -> int:
         return self.hwp.PointToHwpUnit(Point=point)
 
-    def PointToHwpUnit(self, point):
+    def PointToHwpUnit(self, point:float) -> int:
         return self.hwp.PointToHwpUnit(Point=point)
 
-    def hwp_unit_to_point(self, HwpUnit: int):
-        return HwpUnit * 100
+    def hwp_unit_to_point(self, HwpUnit:int) -> float:
+        return HwpUnit / 100
 
-    def HwpUnitToPoint(self, HwpUnit: int):
-        return HwpUnit * 100
+    def HwpUnitToPoint(self, HwpUnit:int) -> float:
+        return HwpUnit / 100
 
-    def hwp_unit_to_inch(self, HwpUnit):
+    def hwp_unit_to_inch(self, HwpUnit:int) -> float:
         if HwpUnit == 0:
             return 0
         else:
             return HwpUnit / 7200
 
-    def HwpUnitToInch(self, HwpUnit):
+    def HwpUnitToInch(self, HwpUnit:int) -> float:
         if HwpUnit == 0:
             return 0
         else:
             return HwpUnit / 7200
 
-    def inch_to_hwp_unit(self, inch):
-        return inch * 7200
+    def inch_to_hwp_unit(self, inch) -> int:
+        return int(inch * 7200)
 
-    def InchToHwpUnit(self, inch):
-        return inch * 7200
+    def InchToHwpUnit(self, inch) -> int:
+        return int(inch * 7200)
 
     def present_effect(self, prsnteffect):
         return self.hwp.PresentEffect(prsnteffect=prsnteffect)
