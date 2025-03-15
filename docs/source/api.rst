@@ -6,7 +6,4 @@ API
    :show-inheritance:
    :member-order: bysource
 
-.. autosummary::
-   :toctree: generated
-
-   pyhwpx
+   pyhwpx.Hwp
