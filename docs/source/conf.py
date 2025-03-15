@@ -14,7 +14,7 @@ from pathlib import Path
 # sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("../.."))
 
 
 
@@ -40,7 +40,7 @@ language = 'ko'
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'furo'  # 'alabaster'
+html_theme = "sphinx_rtd_theme" # 'furo'  # 'alabaster'
 html_static_path = ['build/html/_static']
 # autodoc_preserve_defaults = True
 # autodoc_member_order = 'bysource'
