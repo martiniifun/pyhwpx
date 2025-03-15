@@ -14,7 +14,7 @@ from pathlib import Path
 # sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-sys.path.insert(0, os.path.abspath("."))
+sys.path.insert(0, os.path.abspath(".."))
 
 
 
@@ -29,8 +29,8 @@ release = '0.44.9'
 extensions = [
     'sphinx.ext.duration',
     'sphinx.ext.autodoc',
-    'sphinx.ext.todo',
     'sphinx.ext.autosummary',
+    'sphinx.ext.todo',
 ]
 templates_path = ['_templates']
 exclude_patterns = []
@@ -47,6 +47,10 @@ html_static_path = ['_static']
 # autoclass_member_order = 'bysource'
 autosummary_generate = True
 autodoc_inherit_docstrings = True
+on_rtd = os.environ.get('READTHEDOCS') == 'True'
+if on_rtd:
+    autodoc_mock_imports = ["win32com", "numpy"]
+
 # autodoc_mock_imports = ["pyhwpx"]
 autosummary_ignore_module_all = False
 autodoc_default_options = {
