@@ -41,7 +41,7 @@ language = 'ko'
 
 html_theme = 'furo'  # 'alabaster'
 html_static_path = ['_static']
-autodoc_preserve_defaults = True
+# autodoc_preserve_defaults = True
 # autodoc_member_order = 'bysource'
 # autoclass_member_order = 'bysource'
 autosummary_generate = True
