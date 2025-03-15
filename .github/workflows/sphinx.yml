@@ -5,22 +5,19 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
     - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v3
       with:
-        persist-credentials: false
-    - name: Build HTML
-      uses: ammaraskar/sphinx-action#5@master
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+        python-version: '3.x'
+
+    - name: Install Sphinx & Dependencies
+      run: pip install sphinx sphinx_markdown_builder sphinx_rtd_theme
+    - name: Build Documentation
+      run: cd "$GITHUB_WORKSPACE/doc" && make html
+
+    - uses: actions/upload-artifact@v3
       with:
-        name: html-docs
-        path: docs/build/html/
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
-      if: github.ref == 'refs/heads/main'
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: docs/build/html
+        name: Documentation
+        path: "$GITHUB_WORKSPACE/doc/_build/html/"
