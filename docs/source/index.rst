@@ -10,7 +10,6 @@ Welcome to pyhwpx documentation!
    :doc:`usage` 섹션에서 기본적인 사용법을 확인해주세요. 보다 자세한 명령어 목록은 API 메뉴에서 확인하실 수 있습니다.
 
 .. toctree::
-   :maxdepth: 2
-   usage
-   api
-   generated/pyhwpx.Hwp
+
+    usage
+    api
