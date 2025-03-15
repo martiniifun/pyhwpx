@@ -34,7 +34,7 @@ jobs:
         working-directory: ./docs
         run: |
           make html
-          echo. > build\html\.nojekyll
+          touch build/html/.nojekyll
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3
