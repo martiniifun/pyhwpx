@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="furo 재적용 업데이트" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "martiniifun"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/martiniifun/pyhwpx.git",
+    "accountId": "6cf2f6e6-407c-4468-bd77-7820f7221bd9"
+  }
+}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;c4bb56b3&quot;
+}</component>
+  <component name="ProjectId" id="2uJQs4IDnMgVsOCHIuLYayGIkAW" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python 문서.api.rst 내 Docutils 작업.executor": "Run",
+    "Python 테스트.pyhwpx 내 Doctests.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/user/PycharmProjects/pyhwpx",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/새 스크래치 파일": [
+      "TEXT",
+      "Jupyter"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\user\PycharmProjects\pyhwpx" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\user\PycharmProjects\v" />
+      <recent name="C:\Users\user\PycharmProjects\pyhwpx\docs" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-PY-243.25659.43" />
+        <option value="bundled-python-sdk-181015f7ab06-4df51de95216-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.25659.43" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="" />
+      <created>1741964400396</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1741964400396</updated>
+      <workItem from="1741964401522" duration="246000" />
+      <workItem from="1741998176476" duration="890000" />
+      <workItem from="1742002379028" duration="22398000" />
+      <workItem from="1742034802256" duration="28095000" />
+    </task>
+    <task id="LOCAL-00028" summary="왜 모듈을 체크해?">
+      <option name="closed" value="true" />
+      <created>1742049499285</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1742049499285</updated>
+    </task>
+    <task id="LOCAL-00029" summary="added winreg on req">
+      <option name="closed" value="true" />
+      <created>1742050428768</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1742050428768</updated>
+    </task>
+    <task id="LOCAL-00030" summary="문서화 끝나간다!">
+      <option name="closed" value="true" />
+      <created>1742050627863</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1742050627863</updated>
+    </task>
+    <task id="LOCAL-00031" summary="api.rst에 목차는 자동추가 안 되나?">
+      <option name="closed" value="true" />
+      <created>1742050795170</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1742050795170</updated>
+    </task>
+    <task id="LOCAL-00032" summary="sys.path에 이것저것 추가해보기">
+      <option name="closed" value="true" />
+      <created>1742051006610</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1742051006610</updated>
+    </task>
+    <task id="LOCAL-00033" summary="autoclass 제거후 빌드">
+      <option name="closed" value="true" />
+      <created>1742051070500</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1742051070500</updated>
+    </task>
+    <task id="LOCAL-00034" summary="이상하다... pyhwpx도 거시기해야 하 나?">
+      <option name="closed" value="true" />
+      <created>1742051699273</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1742051699273</updated>
+    </task>
+    <task id="LOCAL-00035" summary="pyhwpx만 다시 빼고 시도">
+      <option name="closed" value="true" />
+      <created>1742051787569</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1742051787569</updated>
+    </task>
+    <task id="LOCAL-00036" summary="sphinx 관련도 다 빼고 재시도">
+      <option name="closed" value="true" />
+      <created>1742051846511</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1742051846511</updated>
+    </task>
+    <task id="LOCAL-00037" summary="autodoc_mock_imports 추가(될 듯)">
+      <option name="closed" value="true" />
+      <created>1742051960965</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1742051960967</updated>
+    </task>
+    <task id="LOCAL-00038" summary="또 미궁으로.. api.rst에서 autodoc 라인 제거해봄">
+      <option name="closed" value="true" />
+      <created>1742052124342</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1742052124342</updated>
+    </task>
+    <task id="LOCAL-00039" summary="뭘 바꿨지ㅜ">
+      <option name="closed" value="true" />
+      <created>1742052434751</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1742052434751</updated>
+    </task>
+    <task id="LOCAL-00040" summary="로컬에선 된다.">
+      <option name="closed" value="true" />
+      <created>1742053349825</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1742053349825</updated>
+    </task>
+    <task id="LOCAL-00041" summary="autodoc_mock_imports에 &quot;pyhwpx 추가해봄&quot;">
+      <option name="closed" value="true" />
+      <created>1742053870376</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1742053870376</updated>
+    </task>
+    <task id="LOCAL-00042" summary="auto-module 추가해봄">
+      <option name="closed" value="true" />
+      <created>1742054112075</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1742054112075</updated>
+    </task>
+    <task id="LOCAL-00043" summary=".readthedocs.yaml에서 python-install을 빼보았다">
+      <option name="closed" value="true" />
+      <created>1742055002485</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1742055002485</updated>
+    </task>
+    <task id="LOCAL-00044" summary="제발돼라2">
+      <option name="closed" value="true" />
+      <created>1742055769517</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1742055769517</updated>
+    </task>
+    <task id="LOCAL-00045" summary="html_static_path 이상해">
+      <option name="closed" value="true" />
+      <created>1742055884925</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1742055884925</updated>
+    </task>
+    <task id="LOCAL-00046" summary="yaml에 python-install 추가">
+      <option name="closed" value="true" />
+      <created>1742055999801</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1742055999803</updated>
+    </task>
+    <task id="LOCAL-00047" summary="automodule:: pyhwpx.Hwp 추가">
+      <option name="closed" value="true" />
+      <created>1742056124619</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1742056124619</updated>
+    </task>
+    <task id="LOCAL-00048" summary="added pyhwpx.Hwp 라인">
+      <option name="closed" value="true" />
+      <created>1742056192710</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1742056192710</updated>
+    </task>
+    <task id="LOCAL-00049" summary="theme changed">
+      <option name="closed" value="true" />
+      <created>1742057034170</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1742057034170</updated>
+    </task>
+    <task id="LOCAL-00050" summary="pyhwpx.Hwp -&gt; pyhwpx&#10;html_static_path 원래대로">
+      <option name="closed" value="true" />
+      <created>1742057314035</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1742057314035</updated>
+    </task>
+    <task id="LOCAL-00051" summary="메인프로젝트 req 추가">
+      <option name="closed" value="true" />
+      <created>1742057746602</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1742057746602</updated>
+    </task>
+    <task id="LOCAL-00052" summary="_static">
+      <option name="closed" value="true" />
+      <created>1742058011041</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1742058011041</updated>
+    </task>
+    <task id="LOCAL-00053" summary="docs/source/_static">
+      <option name="closed" value="true" />
+      <created>1742058073261</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1742058073261</updated>
+    </task>
+    <task id="LOCAL-00054" summary="html/_static">
+      <option name="closed" value="true" />
+      <created>1742058142928</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1742058142928</updated>
+    </task>
+    <task id="LOCAL-00055" summary="build/html/_static">
+      <option name="closed" value="true" />
+      <created>1742058200625</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1742058200625</updated>
+    </task>
+    <task id="LOCAL-00056" summary="docs/build/html/_static">
+      <option name="closed" value="true" />
+      <created>1742058261287</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1742058261287</updated>
+    </task>
+    <task id="LOCAL-00057" summary="api.rst에 :module: 추가">
+      <option name="closed" value="true" />
+      <created>1742058458409</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1742058458409</updated>
+    </task>
+    <task id="LOCAL-00058" summary="api.rst 바꿔봄">
+      <option name="closed" value="true" />
+      <created>1742058601839</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1742058601839</updated>
+    </task>
+    <task id="LOCAL-00059" summary="할루시네이션...ㅜ">
+      <option name="closed" value="true" />
+      <created>1742058675123</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1742058675123</updated>
+    </task>
+    <task id="LOCAL-00060" summary="numpy를 docs/req에 추가">
+      <option name="closed" value="true" />
+      <created>1742058807248</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1742058807248</updated>
+    </task>
+    <task id="LOCAL-00061" summary="pandas pyperclip pywin32 pillow 전부 추가함를 docs/req에 추가">
+      <option name="closed" value="true" />
+      <created>1742058911894</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1742058911894</updated>
+    </task>
+    <task id="LOCAL-00062" summary="mock_imports에도 추가">
+      <option name="closed" value="true" />
+      <created>1742059037190</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1742059037190</updated>
+    </task>
+    <task id="LOCAL-00063" summary="api.rst 소폭 수정">
+      <option name="closed" value="true" />
+      <created>1742059237364</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1742059237364</updated>
+    </task>
+    <task id="LOCAL-00064" summary="mock이 희망이다">
+      <option name="closed" value="true" />
+      <created>1742059328053</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1742059328053</updated>
+    </task>
+    <task id="LOCAL-00065" summary="req에서 pywin32를 빼보았다">
+      <option name="closed" value="true" />
+      <created>1742059403048</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1742059403048</updated>
+    </task>
+    <task id="LOCAL-00066" summary="pyhwpx도 드디어 만지는구나... 다 돼 간다">
+      <option name="closed" value="true" />
+      <created>1742059707374</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1742059707374</updated>
+    </task>
+    <task id="LOCAL-00067" summary="이젠 정말 모르겠다. 잠도 오지 않네...">
+      <option name="closed" value="true" />
+      <created>1742060239924</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1742060239924</updated>
+    </task>
+    <task id="LOCAL-00068" summary="마지막 방법이다.">
+      <option name="closed" value="true" />
+      <created>1742060647176</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1742060647176</updated>
+    </task>
+    <task id="LOCAL-00069" summary="깃헙페이지로 간다.">
+      <option name="closed" value="true" />
+      <created>1742060866913</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1742060866913</updated>
+    </task>
+    <task id="LOCAL-00070" summary="자기가 자기 오점을 찾아 고치는 게 신기하네">
+      <option name="closed" value="true" />
+      <created>1742061276008</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1742061276008</updated>
+    </task>
+    <task id="LOCAL-00071" summary="static.yml 추가">
+      <option name="closed" value="true" />
+      <created>1742061826008</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1742061826008</updated>
+    </task>
+    <task id="LOCAL-00072" summary="html 순서를 바꾸고 싶다.">
+      <option name="closed" value="true" />
+      <created>1742062135296</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1742062135296</updated>
+    </task>
+    <task id="LOCAL-00073" summary=".nojekyll 추가">
+      <option name="closed" value="true" />
+      <created>1742062359698</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1742062359698</updated>
+    </task>
+    <task id="LOCAL-00074" summary="o1 제안해준 코드 한 번 믿고 써본다!">
+      <option name="closed" value="true" />
+      <created>1742062578799</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1742062578799</updated>
+    </task>
+    <task id="LOCAL-00075" summary="furo 재적용">
+      <option name="closed" value="true" />
+      <created>1742062855460</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1742062855460</updated>
+    </task>
+    <task id="LOCAL-00076" summary="furo 재적용 업데이트">
+      <option name="closed" value="true" />
+      <created>1742062891979</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1742062891979</updated>
+    </task>
+    <option name="localTasksCounter" value="77" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="_static" />
+    <MESSAGE value="docs/source/_static" />
+    <MESSAGE value="html/_static" />
+    <MESSAGE value="build/html/_static" />
+    <MESSAGE value="docs/build/html/_static" />
+    <MESSAGE value="api.rst에 :module: 추가" />
+    <MESSAGE value="api.rst 바꿔봄" />
+    <MESSAGE value="할루시네이션...ㅜ" />
+    <MESSAGE value="numpy를 docs/req에 추가" />
+    <MESSAGE value="pandas pyperclip pywin32 pillow 전부 추가함를 docs/req에 추가" />
+    <MESSAGE value="mock_imports에도 추가" />
+    <MESSAGE value="api.rst 소폭 수정" />
+    <MESSAGE value="mock이 희망이다" />
+    <MESSAGE value="req에서 pywin32를 빼보았다" />
+    <MESSAGE value="pyhwpx도 드디어 만지는구나... 다 돼 간다" />
+    <MESSAGE value="이젠 정말 모르겠다. 잠도 오지 않네..." />
+    <MESSAGE value="마지막 방법이다." />
+    <MESSAGE value="깃헙페이지로 간다." />
+    <MESSAGE value="자기가 자기 오점을 찾아 고치는 게 신기하네" />
+    <MESSAGE value="static.yml 추가" />
+    <MESSAGE value="html 순서를 바꾸고 싶다." />
+    <MESSAGE value=".nojekyll 추가" />
+    <MESSAGE value="o1 제안해준 코드 한 번 믿고 써본다!" />
+    <MESSAGE value="furo 재적용" />
+    <MESSAGE value="furo 재적용 업데이트" />
+    <option name="LAST_COMMIT_MESSAGE" value="furo 재적용 업데이트" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/pyhwpx$pyhwpx__Doctests.coverage" NAME="pyhwpx 내 Doctests 커버리지 결과" MODIFIED="1742038027100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
