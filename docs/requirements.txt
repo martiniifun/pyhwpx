@@ -1,1 +1,6 @@
 furo
+pyhwpx
+-e .
+sphinx
+sphinx-rtd-theme
+sphinx-autodoc-typehints
