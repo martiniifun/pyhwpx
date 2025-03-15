@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.44.6"
+__version__ = "0.44.7"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -823,13 +823,13 @@ class Hwp:
                     self.hwp = win32.gencache.EnsureDispatch(
                         obj.QueryInterface(pythoncom.IID_IDispatch))
         if not self.hwp:
-            self.hwp = win32.gencache.EnsureDispatch("hwpframe.object")
+            self.hwp = win32.gencache.EnsureDispatch("HWPFrame.HwpObject")
         try:
             self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
         except Exception as e:
             print(e)
             sleep(0.01)
-            self.hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")
+            self.hwp = win32.gencache.EnsureDispatch("HWPFrame.HwpObject")
             self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
         if register_module:  # and not check_registry_key():
@@ -1338,10 +1338,10 @@ class Hwp:
     def ctrl_list(self):
         """
         문서 내 모든 ctrl를 리스트로 반환한다.
-        단, 기본으로 삽입되고 선택 불가능한
-        두 개의 컨트롤인 secd(섹션정의)와 cold(단정의) 두 개는
+        단, 기본으로 삽입되어 있는 두 개의 컨트롤인
+        secd(섹션정의)와 cold(단정의) 두 개는 어차피 선택불가하므로
         ctrl_list에서 제외했다.
-        (모든 컨트롤을 제거하는 등의 경우 편의를 위함)
+        (모든 컨트롤을 제거하는 등의 경우, 편의를 위함)
         :return:
         """
         c_list = []
@@ -1385,30 +1385,125 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
-    def get_linespacing(self, method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent") -> int:
+    def get_ctrl_pos(self, ctrl:Any=None, option:Literal[0, 1]=0, as_tuple:bool=True):
+        """
+        특정 컨트롤의 앵커(빨간 조판부호) 좌표를 리턴하는 메서드.
+        한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함
+        :param ctrl: 컨트롤 오브젝트. 특정하지 않으면 현재 선택된 컨트롤의 좌표를 리턴
+        :type ctrl: Any
+        :param option:
+            "표안의 표"처럼 컨트롤이 중첩된 경우에 어느 좌표를 리턴할지 결정할 수 있음
+            0: 현재 컨트롤이 포함된 리스트 기준으로 좌표 리턴
+            1: 현재 컨트롤을 포함하는 최상위 컨트롤 기준의 좌표 리턴
+        :type option: int
+        :param as_tuple:
+            리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True
+            `as_tuple=False`의 경우에는 ListParaPos 파라미터셋 자체를 리턴
+        :type as_tuple: bool
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> # 2x2표의 A1셀 안에 2x2표를 삽입하고, 표안의 표를 선택한 상태에서
+        >>> # 컨트롤이 포함된 영역의 좌표를 리턴하려면(가장 많이 쓰임)
+        >>> hwp.get_ctrl_pos()
+        (3, 0, 0)
+        >>> # 현재컨트롤을 포함한 최상위컨트롤의 본문기준 좌표를 리턴하려면
+        >>> hwp.get_ctrl_pos(option=1)
+        (0, 0, 16)
+        >>> # 특정 컨트롤의 위치를 저장해 뒀다가 해당 위치로 이동하고 싶은 경우
+        >>> pos = hwp.get_ctrl_pos(hwp.CurSelectedCtrl)  # 좌표 저장
+        >>> # 모종의 작업으로 컨트롤 위치가 바뀌더라도, 컨트롤을 찾아갈 수 있음
+        >>> hwp.set_pos(*pos)  # 해당 컨트롤 앞으로 이동함
+        True
+        >>> # 특정 컨트롤 위치 앞으로 이동하기 액션은 아래처럼도 실행 가능
+        >>> hwp.move_to_ctrl(hwp.ctrl_list[-1])
+        True
+        """
+        if ctrl is None:  # 컨트롤을 지정하지 않으면
+            ctrl = self.CurSelectedCtrl  # 현재 선택중인 컨트롤
+        if as_tuple:
+            return (
+                ctrl.GetAnchorPos(option).Item("List"),
+                ctrl.GetAnchorPos(option).Item("Para"),
+                ctrl.GetAnchorPos(option).Item("Pos"),
+            )
+        else:
+            return ctrl.GetAnchorPos(option)
+
+
+    def get_linespacing(self, method:Literal["Fixed", "Percent", "BetweenLines", "AtLeast"]="Percent") -> int|float:
         """
         현재 캐럿 위치의 줄간격(%) 리턴.
-        단, 줄간격 기준은 "글자에 따라(%)" 로 설정되어 있어야 함.
+        단, 줄간격 기준은 "글자에 따라(%)" 로 설정되어 있어야 하며,
+        "글자에 따라"가 아닌 경우에는 method 파라미터를 실제 옵션과 일치시켜야 함.
+        :param method:
+            줄간격 단위기준. 일치하지 않아도 값은 출력되지만, 단위를 모르게 됨..
+            Fixed: 고정값(포인트 단위)
+            Percent: 글자에 따라(기본값, %)
+            BetweenLines: 여백만 지정(포인트 단위)
+            AtLeast: 최소(포인트 단위)
+        :type method: str
+        :return: 현재 캐럿이 위치한 문단의 줄간격(% 또는 Point)
+        :rtype: int
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.get_linespacing()
+        160
+        >>> # 줄간격을 "최소" 기준 17.0point로 설정했다면, 아래처럼 실행해야 함
+        >>> hwp.get_linespacing("AtLeast")
+        170
         """
         act = "ParagraphShape"
         pset = self.hwp.HParameterSet.HParaShape
         self.hwp.HAction.GetDefault(act, pset.HSet)
         if pset.LineSpacingType == self.hwp.LineSpacingMethod(method):
             return pset.LineSpacing
-        else:
-            return False
+        else:  # 어찌됐든 포인트 단위로 리턴
+            return self.HwpUnitToPoint(pset.LineSpacing / 2)  # 이상하게 1/2 곱해야 맞다.
 
-    def set_linespacing(self, value:int=160, method:Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent") -> int:
-        """현재 캐럿 위치 또는 선택영역의 줄간격(%) 설정"""
+    def set_linespacing(self, value:int|float=160, method:Literal["Fixed", "Percent", "BetweenLines", "AtLeast"]="Percent") -> bool:
+        """
+        현재 캐럿 위치의 문단 또는 선택 블록의 줄간격(%) 설정
+        :param value: 줄간격 값("Percent"인 경우에는 %, 그 외에는 point 값으로 적용됨). 기본값은 160(%)
+        :type value: int|float
+        :param method:
+            줄간격 단위기준. method가 일치해야 정상적으로 적용됨.
+            Fixed: 고정값(포인트 단위)
+            Percent: 글자에 따라(기본값, %)
+            BetweenLines: 여백만 지정(포인트 단위)
+            AtLeast: 최소(포인트 단위)
+        :type method: str
+        :return: 성공시 True, 실패시 False를 리턴
+        :rtype: bool
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.SelectAll()  # 전체선택
+        >>> hwp.set_linespacing(160)  # 본문 모든 문단의 줄간격을 160%로 변경
+        True
+        >>> hwp.set_linespacing(20, method="BetweenLines")  # 본문 모든 문단의 줄간격을 "여백만 지정"으로 20pt 적용
+        True
+        """
         act = "ParagraphShape"
         pset = self.hwp.HParameterSet.HParaShape
         self.hwp.HAction.GetDefault(act, pset.HSet)
         pset.LineSpacingType = self.hwp.LineSpacingMethod(method)  # Percent
-        pset.LineSpacing = value
+        if method == "Percent":
+            pset.LineSpacing = value  # %값 그대로 넣으면 됨
+        else:  # # 그 외에는 입력한 값을 아래아한글이 HwpUnit 단위라고 간주하므로
+            pset.LineSpacing = value * 200  # HwpUnit 단위로 변환 후
         return self.hwp.HAction.Execute(act, pset.HSet)
 
 
-    def is_empty_para(self):
+    def is_empty_para(self) -> bool:
+        """
+        본문의 문단을 순회하면서 특정 서식을 적용할 때
+        빈 문단에서 MoveNext~ 또는 MovePrev~ 등의 액션이 오작동하므로 이를 방지하기 위한 개발자용 헬퍼메서드.
+        단독으로는 활용하지 말 것.
+        :return: 빈 문단일 경우 제자리에서 True, 비어있지 않은 경우 False를 리턴
+        :rtype: bool
+        """
         self.MoveSelNextChar()
         if self.get_pos()[2] == 0:  # 빈 문단이면?
             self.Cancel()
@@ -1418,32 +1513,32 @@ class Hwp:
             self.MoveParaBegin()
             return False
 
-    def goto_addr(self, addr: str|int = "A1", col: int=0, select: bool=False):
+    def goto_addr(self, addr: str|int = "A1", col: int=0, select_cell: bool=False):
         """
         셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
         셀 주소는 "C3"처럼 문자열로 입력하거나,
-        :param addr: 셀 주소 문자열 또는 행번호(1~)
-        :param col: 셀 주소를 정수로 입력하는 경우 열번호(1~)
-        :param select: 이동 후 셀블록 선택 여부
+        :param addr: 셀 주소 문자열 또는 행번호(1부터)
+        :param col: 셀 주소를 정수로 입력하는 경우 열번호(1부터)
+        :param select_cell: 이동 후 셀블록 선택 여부
         :return: 이동 성공 여부(성공시 True/실패시 False)
         """
-        if type(addr) == int and col:
-            addr = tuple_to_addr(addr, col)
+        if not self.is_cell():
+            return False  # 표 안에 있지 않으면 False 리턴(종료)
+        if type(addr) == int and col:  # "A1" 대신 (1, 1) 처럼 tuple(int, int) 방식일 경우
+            addr = tuple_to_addr(addr, col)  # 문자열 "A1" 방식으로 우선 변환
 
         refresh = False
-        if self.CurFieldState not in (1, 17):
-            self.HAction.Run("SelectCtrlFront")
-            self.HAction.Run("ShapeObjTextBoxEdit")
-        else:
-            self.HAction.Run("TableColBegin")
-            self.HAction.Run("TableColPageUp")
 
-        if addr.upper() == "A1":
-            if select:
+        # 우선 A1 셀로 이동 시도
+        self.HAction.Run("TableColBegin")
+        self.HAction.Run("TableColPageUp")
+
+        if addr.upper() == "A1":  # A1 셀이 맞으면!
+            if select_cell:
                 self.HAction.Run("TableCellBlock")
             return True
         
-        init = self.get_pos()[0]  # 무조건 A1
+        init = self.get_pos()[0]  # 무조건 A1임.
         try:
             if self.addr_info[0] == init:
                 pass
@@ -1464,7 +1559,7 @@ class Hwp:
                 i += 1
         try:
             self.set_pos(init + self.addr_info[1].index(addr.upper()), 0, 0)
-            if select:
+            if select_cell:
                 self.HAction.Run("TableCellBlock")
             return True
         except ValueError:
@@ -2626,9 +2721,33 @@ class Hwp:
         shutil.rmtree("./temp")
         return True
 
-    def select_ctrl(self, ctrl, anchor_type: Literal[0, 1, 2] = 0):
+    def SelectCtrl(self, ctrllist:str|int, option:Literal[0, 1]=1):
         """
-        인수로 넣은 컨트롤 오브젝트를 선택하는 메서드.
+        한글2024 이상의 버전에서 사용 가능한 API 기반의 신규 메서드.
+        가급적 hwp.select_ctrl(ctrl)을 실행할 것을 추천.
+        :param ctrllist:
+            특정 컨트롤의 인스턴스 아이디(11자리 정수 또는 문자열).
+            인스턴스아이디는 `ctrl.GetCtrlInstID()`로 구할 수 있으며
+            이는 한/글 2024부터 반영된 개념(2022 이하에서는 제공하지 않음)
+        :type ctrllist: str|int
+        :param option: int
+            특정 컨트롤(들)을 선택하고 있는 상태에서, 추가선택할 수 있는 옵션.
+            0: 추가선택
+            1: 기존 선택해제 후 컨트롤 선택
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+
+        """
+        if int(self.Version.split(", ")[0]) >= 13:  # 한/글2024 이상이면
+            return self.hwp.SelectCtrl(ctrllist=ctrllist, option=option)
+        else:
+            raise NotImplementedError("아래아한글 버전이 2024 미만입니다. hwp.select_ctrl()을 대신 사용하셔야 합니다.")
+
+
+    def select_ctrl(self, ctrl:Any, anchor_type:Literal[0, 1, 2]=0, option:int=1):
+        """
+        인수로 넣은 컨트롤 오브젝트를 선택하는 pyhwpx 전용 메서드.
         :param ctrl:
             선택하고자 하는 컨트롤
         :param anchor_type:
@@ -2639,30 +2758,32 @@ class Hwp:
             2: 루트 리스트에서의 좌표
         :return:
         """
-        cur_view_state = self.ViewProperties.Item("OptionFlag")
-        if cur_view_state not in (2, 6):
-            prop = self.ViewProperties
-            prop.SetItem("OptionFlag", 6)
-            self.ViewProperties = prop
+        if int(self.Version.split(", ")[0]) >= 13:  # 한/글2024 이상이면
+            self.hwp.SelectCtrl(ctrl.GetCtrlInstID(), option=option)
+        else:  # 이하 버전이면
+            cur_view_state = self.ViewProperties.Item("OptionFlag")
+            if cur_view_state not in (2, 6):
+                prop = self.ViewProperties
+                prop.SetItem("OptionFlag", 6)
+                self.ViewProperties = prop
+            self.set_pos_by_set(ctrl.GetAnchorPos(anchor_type))
+            try:
+                if not self.SelectCtrlFront():
+                    return self.SelectCtrlReverse()
+                else:
+                    return True
+            finally:
+                prop = self.ViewProperties
+                prop.SetItem("OptionFlag", cur_view_state)
+                self.ViewProperties = prop
 
-        self.set_pos_by_set(ctrl.GetAnchorPos(anchor_type))
-        try:
-            if not self.SelectCtrlFront():
-                return self.SelectCtrlReverse()
-            else:
-                return True
-        finally:
-            prop = self.ViewProperties
-            prop.SetItem("OptionFlag", cur_view_state)
-            self.ViewProperties = prop
-
-    def move_to_ctrl(self, ctrl):
+    def move_to_ctrl(self, ctrl:Any, option:Literal[0, 1, 2]=0):
         """
-        인수로 넣은 컨트롤 오브젝트의 조판 앞으로 이동하는 메서드
+        메서드에 넣은 ctrl의 조판부호 앞으로 이동하는 메서드.
         :param ctrl:
         :return:
         """
-        return self.set_pos_by_set(ctrl.GetAnchorPos(0))
+        return self.set_pos_by_set(ctrl.GetAnchorPos(option))
 
     def set_visible(self, visible):
         """
@@ -2929,7 +3050,7 @@ class Hwp:
                 result[i] *= max_len
         return result
 
-    def get_into_nth_table(self, n=0, select=False):
+    def get_into_nth_table(self, n=0, select_cell=False):
         """
         문서 n번째 표의 첫 번째 셀로 이동하는 함수.
         첫 번째 표의 인덱스가 0이며, 음수인덱스 사용 가능.
@@ -2945,9 +3066,10 @@ class Hwp:
             # 정수인덱스 대신 ctrl 객체를 넣은 경우
             self.set_pos_by_set(n.GetAnchorPos(0))
             self.hwp.FindCtrl()
-            self.ShapeObjTableSelCell()
-            if not select:
-                self.Cancel()
+            if select_cell:
+                self.ShapeObjTableSelCell()
+            else:
+                self.ShapeObjTextBoxEdit()
             return ctrl
 
         while ctrl:
@@ -8907,7 +9029,14 @@ class Hwp:
 
     def CloseEx(self):
         """
-        현재 리스트를 닫고 상위 리스트로 이동하는 액션. Close와 유사하나 두 가지 차이점이 있다. 첫 번째로는 여러 계층의 표 안에서 CloseEx 실행시 본문이 아니라 상위의 표(셀)로 캐럿이 이동한다는 점. Close는 무조건 본문으로 나간다. 두 번째로, CloseEx에는 전체화면(최대화 말고)을 해제하는 기능이 있다. Close로는 전체화면 해제가 되지 않는다. 사용빈도가 가장 높은 액션 중의 하나라고 생각한다.
+        현재 리스트를 닫고 상위 리스트로 이동하는 액션.
+        Close와 유사하나 두 가지 차이점이 있다.
+        첫 번째로는 여러 계층의 표 안에서 CloseEx 실행시
+        본문이 아니라 상위의 표(셀)로 캐럿이 단계적으로 이동한다는 점.
+        Close는 무조건 본문으로 나간다.
+        두 번째로, CloseEx에는 전체화면(최대화 말고)을 해제하는 기능이 있다.
+        Close로는 전체화면 해제가 되지 않는다.
+        사용빈도가 가장 높은 액션 중의 하나라고 생각한다.
         """
         return self.hwp.HAction.Run("CloseEx")
 
