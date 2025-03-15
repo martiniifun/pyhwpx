@@ -41,7 +41,7 @@ language = 'ko'
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "sphinx_rtd_theme" # 'furo'  # 'alabaster'
+html_theme = "furo"  # sphinx_rtd_theme" # 'alabaster'
 html_static_path = ['_static']  # docs/source/_static, docs/build/html/_static
 html_theme_options = {
     'collapse_navigation': False,
