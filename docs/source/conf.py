@@ -45,5 +45,10 @@ html_static_path = ['_static']
 # autodoc_member_order = 'bysource'
 # autoclass_member_order = 'bysource'
 autosummary_generate = True
-# autodoc_inherit_docstrings = False
-autodoc_mock_imports = ["pyhwpx"]
+autodoc_inherit_docstrings = True
+# autodoc_mock_imports = ["pyhwpx", "numpy"]
+autosummary_ignore_module_all = False
+autodoc_default_options = {
+    "members": True,
+    "show-inheritance": True,
+}
