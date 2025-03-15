@@ -30,7 +30,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.autosummary',
-    'sphinx.ext.autoclass',
 ]
 templates_path = ['_templates']
 exclude_patterns = []
