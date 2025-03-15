@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="furo unversioned static and theme">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/static.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/static.yml" afterDir="false" />
+    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="echo 대신 touch">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,6 +15,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory"><![CDATA[{
   "lastFilter": {
@@ -86,31 +88,7 @@
       <workItem from="1741964401522" duration="246000" />
       <workItem from="1741998176476" duration="890000" />
       <workItem from="1742002379028" duration="22398000" />
-      <workItem from="1742034802256" duration="28409000" />
-    </task>
-    <task id="LOCAL-00029" summary="added winreg on req">
-      <option name="closed" value="true" />
-      <created>1742050428768</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1742050428768</updated>
-    </task>
-    <task id="LOCAL-00030" summary="문서화 끝나간다!">
-      <option name="closed" value="true" />
-      <created>1742050627863</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1742050627863</updated>
-    </task>
-    <task id="LOCAL-00031" summary="api.rst에 목차는 자동추가 안 되나?">
-      <option name="closed" value="true" />
-      <created>1742050795170</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1742050795170</updated>
+      <workItem from="1742034802256" duration="30749000" />
     </task>
     <task id="LOCAL-00032" summary="sys.path에 이것저것 추가해보기">
       <option name="closed" value="true" />
@@ -480,7 +458,31 @@
       <option name="project" value="LOCAL" />
       <updated>1742063193951</updated>
     </task>
-    <option name="localTasksCounter" value="78" />
+    <task id="LOCAL-00078" summary="main -&gt; master">
+      <option name="closed" value="true" />
+      <created>1742063482335</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1742063482335</updated>
+    </task>
+    <task id="LOCAL-00079" summary="static에서 win32com 삭제">
+      <option name="closed" value="true" />
+      <created>1742063559941</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1742063559941</updated>
+    </task>
+    <task id="LOCAL-00080" summary="echo 대신 touch">
+      <option name="closed" value="true" />
+      <created>1742063716847</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1742063716847</updated>
+    </task>
+    <option name="localTasksCounter" value="81" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -498,9 +500,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="docs/source/_static" />
-    <MESSAGE value="html/_static" />
-    <MESSAGE value="build/html/_static" />
     <MESSAGE value="docs/build/html/_static" />
     <MESSAGE value="api.rst에 :module: 추가" />
     <MESSAGE value="api.rst 바꿔봄" />
@@ -523,7 +522,10 @@
     <MESSAGE value="furo 재적용" />
     <MESSAGE value="furo 재적용 업데이트" />
     <MESSAGE value="furo unversioned static and theme" />
-    <option name="LAST_COMMIT_MESSAGE" value="furo unversioned static and theme" />
+    <MESSAGE value="main -&gt; master" />
+    <MESSAGE value="static에서 win32com 삭제" />
+    <MESSAGE value="echo 대신 touch" />
+    <option name="LAST_COMMIT_MESSAGE" value="echo 대신 touch" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/pyhwpx$pyhwpx__Doctests.coverage" NAME="pyhwpx 내 Doctests 커버리지 결과" MODIFIED="1742038027100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

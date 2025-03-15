@@ -1217,7 +1217,7 @@ class Hwp:
             ...         hwp.DeleteCtrl(ctrl)
             ...     ctrl = ctrl.Prev
             ... print("모든 그림을  삭제하였습니다.")
-            모든 그림의 `글자처럼 취급` 속성을 활성화하였습니다.
+            모든 그림을 삭제하였습니다.
             >>> # 아래처럼 for문과 hwp.ctrl_list로도 구현할 수 있음
             >>> for ctrl in [i for i in hwp.ctrl_list if i.UserDesc == "그림"][::-1]:  # 역순 아니어도 무관.
             ...     hwp.DeleteCtrl(ctrl)
@@ -1236,7 +1236,7 @@ class Hwp:
             >>> hwp = Hwp()
             >>> hwp.open("./example.hwpx")
             >>> print(f"현재 이 문서의 총 페이지 수는 {hwp.PageCount}입니다.")
-        현재 이 문서의 총 페이지 수는 20입니다.
+            현재 이 문서의 총 페이지 수는 20입니다.
         """
         return self.hwp.PageCount
 
@@ -1254,31 +1254,26 @@ class Hwp:
             >>> val = hwp.ParaShape.Item("LineSpacing")
             >>> print(f"현재 문단의 줄간격은 {val}%입니다.")
             현재 문단의 줄간격은 160%입니다.
-        """
-        return self.hwp.ParaShape
-
-    @ParaShape.setter
-    def ParaShape(self, prop):
-        """
-        문단모양 파라미터셋을 수정하기 위한 세터 프로퍼티
-        :example:
-            >>> from pyhwpx import Hwp
-            >>> hwp = Hwp()
-            >>> hwp.open("./example.hwp")
+            >>>
             >>> # 본문 모든 문단의 줄간격을 200%로 수정하기
             >>> hwp.SelectAll()  # 전체선택
             >>> prop = hwp.ParaShape
             >>> prop.SetItem("LineSpacing", 200)
             >>> hwp.ParaShape = prop
             >>> print("본문 전체의 줄간격을 200%로 수정하였습니다.")
-        본문 전체의 줄간격을 200%로 수정하였습니다.
+            본문 전체의 줄간격을 200%로 수정하였습니다.
         """
+        return self.hwp.ParaShape
+
+    @ParaShape.setter
+    def ParaShape(self, prop):
         self.hwp.ParaShape = prop
 
     @property
     def ParentCtrl(self):
         """
         현재 선택되어 있거나, 캐럿이 들어있는 컨트롤을 포함하는 상위 컨트롤을 리턴한다.
+
         :return:
         """
         return self.hwp.ParentCtrl
@@ -1287,7 +1282,15 @@ class Hwp:
     def Path(self):
         """
         현재 빈 문서가 아닌 경우, 열려 있는 문서의 파일명을 포함한 전체경로를 리턴한다.
-        :return:
+
+        :return: 현재 문서의 전체경로
+        :rtype: str
+        :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.open("./example.hwpx")
+            >>> hwp.Path
+            C:\Users\User\desktop\example.hwpx
         """
         return self.hwp.Path
 
@@ -1295,6 +1298,7 @@ class Hwp:
     def SelectionMode(self):
         """
         현재 선택모드가 어떤 상태인지 리턴한다.
+
         :return:
         """
         return self.hwp.SelectionMode
@@ -1303,6 +1307,7 @@ class Hwp:
     def Version(self):
         """
         아래아한글 프로그램의 버전을 문자열로 리턴한다.
+
         :return:
         """
         return self.hwp.Version
@@ -1311,23 +1316,20 @@ class Hwp:
     def ViewProperties(self):
         """
         현재 한/글 프로그램의 보기 속성 파라미터셋을 리턴한다.
+
         :return:
         """
         return self.hwp.ViewProperties
 
     @ViewProperties.setter
     def ViewProperties(self, prop):
-        """
-        현재 한/글 프로그램의 보기 속성 파라미터셋을 수정하는 세터 프로퍼티.
-        :param prop:
-        :return:
-        """
         self.hwp.ViewProperties = prop
 
     @property
     def XHwpDocuments(self):
         """
         HwpApplication의 XHwpDocuments 객체를 리턴한다.
+
         :return:
         """
         return self.hwp.XHwpDocuments
@@ -1336,6 +1338,7 @@ class Hwp:
     def XHwpMessageBox(self):
         """
         메시지박스 객체 리턴
+
         :return:
         """
         return self.hwp.XHwpMessageBox
@@ -1356,6 +1359,7 @@ class Hwp:
         secd(섹션정의)와 cold(단정의) 두 개는 어차피 선택불가하므로
         ctrl_list에서 제외했다.
         (모든 컨트롤을 제거하는 등의 경우, 편의를 위함)
+
         :return:
         """
         c_list = []
@@ -1372,6 +1376,7 @@ class Hwp:
         1페이지에 있다면 1을 리턴한다.
         새쪽번호가 적용되어 있어도
         페이지의 인덱스를 리턴한다.
+
         :return:
         """
         return self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPage + 1
@@ -1383,6 +1388,7 @@ class Hwp:
         1페이지에 있다면 1을 리턴한다.
         새쪽번호가 적용되어 있다면
         수정된 쪽번호를 리턴한다.
+
         :return:
         """
         return self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPrintPage
@@ -1403,6 +1409,7 @@ class Hwp:
         """
         특정 컨트롤의 앵커(빨간 조판부호) 좌표를 리턴하는 메서드.
         한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함
+
         :param ctrl: 컨트롤 오브젝트. 특정하지 않으면 현재 선택된 컨트롤의 좌표를 리턴
         :type ctrl: Any
         :param option:
@@ -1420,18 +1427,18 @@ class Hwp:
             >>> # 2x2표의 A1셀 안에 2x2표를 삽입하고, 표안의 표를 선택한 상태에서
             >>> # 컨트롤이 포함된 영역의 좌표를 리턴하려면(가장 많이 쓰임)
             >>> hwp.get_ctrl_pos()
-        (3, 0, 0)
+            (3, 0, 0)
             >>> # 현재컨트롤을 포함한 최상위컨트롤의 본문기준 좌표를 리턴하려면
             >>> hwp.get_ctrl_pos(option=1)
-        (0, 0, 16)
+            (0, 0, 16)
             >>> # 특정 컨트롤의 위치를 저장해 뒀다가 해당 위치로 이동하고 싶은 경우
             >>> pos = hwp.get_ctrl_pos(hwp.CurSelectedCtrl)  # 좌표 저장
             >>> # 모종의 작업으로 컨트롤 위치가 바뀌더라도, 컨트롤을 찾아갈 수 있음
             >>> hwp.set_pos(*pos)  # 해당 컨트롤 앞으로 이동함
-        True
+            True
             >>> # 특정 컨트롤 위치 앞으로 이동하기 액션은 아래처럼도 실행 가능
             >>> hwp.move_to_ctrl(hwp.ctrl_list[-1])
-        True
+            True
         """
         if ctrl is None:  # 컨트롤을 지정하지 않으면
             ctrl = self.CurSelectedCtrl  # 현재 선택중인 컨트롤
@@ -1450,6 +1457,7 @@ class Hwp:
         현재 캐럿 위치의 줄간격(%) 리턴.
         단, 줄간격 기준은 "글자에 따라(%)" 로 설정되어 있어야 하며,
         "글자에 따라"가 아닌 경우에는 method 파라미터를 실제 옵션과 일치시켜야 함.
+
         :param method:
             줄간격 단위기준. 일치하지 않아도 값은 출력되지만, 단위를 모르게 됨..
             Fixed: 고정값(포인트 단위)
@@ -1463,10 +1471,10 @@ class Hwp:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.get_linespacing()
-        160
+            160
             >>> # 줄간격을 "최소" 기준 17.0point로 설정했다면, 아래처럼 실행해야 함
             >>> hwp.get_linespacing("AtLeast")
-        170
+            170
         """
         act = "ParagraphShape"
         pset = self.hwp.HParameterSet.HParaShape
@@ -1480,6 +1488,7 @@ class Hwp:
                         method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent") -> bool:
         """
         현재 캐럿 위치의 문단 또는 선택 블록의 줄간격(%) 설정
+
         :param value: 줄간격 값("Percent"인 경우에는 %, 그 외에는 point 값으로 적용됨). 기본값은 160(%)
         :type value: int|float
         :param method:
@@ -1496,9 +1505,9 @@ class Hwp:
             >>> hwp = Hwp()
             >>> hwp.SelectAll()  # 전체선택
             >>> hwp.set_linespacing(160)  # 본문 모든 문단의 줄간격을 160%로 변경
-        True
+            True
             >>> hwp.set_linespacing(20, method="BetweenLines")  # 본문 모든 문단의 줄간격을 "여백만 지정"으로 20pt 적용
-        True
+            True
         """
         act = "ParagraphShape"
         pset = self.hwp.HParameterSet.HParaShape
@@ -1515,6 +1524,7 @@ class Hwp:
         본문의 문단을 순회하면서 특정 서식을 적용할 때
         빈 문단에서 MoveNext~ 또는 MovePrev~ 등의 액션이 오작동하므로 이를 방지하기 위한 개발자용 헬퍼메서드.
         단독으로는 활용하지 말 것.
+
         :return: 빈 문단일 경우 제자리에서 True, 비어있지 않은 경우 False를 리턴
         :rtype: bool
         """
@@ -1618,6 +1628,7 @@ class Hwp:
         """
         이미지 컨트롤의 원본 그림의 이름과
         원본 그림의 크기 정보를 추출하는 메서드
+
         :param ctrl: 아래아한글의 이미지 컨트롤. ctrl을 지정하지 않으면 현재 선택된 이미지의 정보를 추출
         :return: 해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트
         :rtype: dict["name":str, "size":list[int, int]]
@@ -1666,6 +1677,7 @@ class Hwp:
         스타일이름/인덱스번호가 잘못된 경우
         False를 리턴
         참고사항 : API의 Goto는 1부터 시작하므로 메서드 내부에서 인덱스에 1을 더하고 있음
+
         :param style: 스타일이름 또는 스타일번호(첫 번째 스타일이 0)
         :return:
         """
@@ -1701,6 +1713,7 @@ class Hwp:
         """
         표 캡션(정확히는 표번호가 있는 리스트공간)으로 이동하는 메서드.
         (추후 개선예정 : 캡션 스타일로 찾아가기 기능 추가할 것)
+
         :return: 성공시 True, 실패시 False를 리턴
         """
         pset = self.hwp.HParameterSet.HGotoE
@@ -1712,6 +1725,7 @@ class Hwp:
                          cell_border: bool = False, cell_fill: bool = False, cell_only: int = 0):
         """
         모양복사 메서드
+
         :param Type: 글자, 문단, 글자&문단 중에서 택일
         :param cell_attr: 셀 속성 복사여부
         :param cell_border: 셀 선 복사여부
