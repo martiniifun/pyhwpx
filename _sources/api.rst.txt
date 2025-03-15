@@ -1,17 +1,7 @@
 API
 ===
 
-.. automodule:: pyhwpx
-   :members:
-   :show-inheritance:
-
 .. autoclass:: pyhwpx.Hwp
    :members:
+   :undoc-members:
    :show-inheritance:
-   :member-order: bysource
-
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
-
-   pyhwpx.Hwp
