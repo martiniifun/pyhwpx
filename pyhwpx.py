@@ -18,27 +18,29 @@ from urllib import request, parse
 import numpy as np
 import pandas as pd
 import pyperclip as cb
-import pythoncom
-import win32api
-import win32con
-import win32gui
 from PIL import Image
 
-# CircularImport 오류 출력안함
-devnull = open(os.devnull, 'w')
-old_stdout = sys.stdout
-old_stderr = sys.stderr
-sys.stdout = devnull
-sys.stderr = devnull
+if sys.platform == 'win32':
+    import pythoncom
+    import win32api
+    import win32con
+    import win32gui
 
-try:
-    import win32com.client as win32
-finally:
-    sys.stdout = old_stdout
-    sys.stderr = old_stderr
-    devnull.close()
+    # CircularImport 오류 출력안함
+    devnull = open(os.devnull, 'w')
+    old_stdout = sys.stdout
+    old_stderr = sys.stderr
+    sys.stdout = devnull
+    sys.stderr = devnull
 
-__version__ = "0.44.9"
+    try:
+        import win32com.client as win32
+    finally:
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
+        devnull.close()
+
+__version__ = "0.44.10"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
