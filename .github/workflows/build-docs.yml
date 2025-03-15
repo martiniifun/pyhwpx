@@ -1,0 +1,38 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build-docs:
+    runs-on: windows-latest  # 윈도우 환경에서 실행됨!
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 파이썬 설치
+      # 윈도우 환경에서 최신 Python 버전 사용
+  - uses: actions/setup-python@v5
+    with:
+      python-version: '3.12'
+
+  - name: Install dependencies
+    run: |
+      python -m pip install --upgrade pip
+      pip install sphinx sphinx-rtd-theme pywin32 -r requirements.txt
+
+  - name: Build documentation
+    working-directory: ./docs
+    run: |
+      make html
+
+  - name: Deploy to GitHub Pages
+    uses: peaceiris/actions-gh-pages@v4
+    with:
+      github_token: ${{ secrets.GITHUB_TOKEN }}
+      publish_dir: docs/build/html
