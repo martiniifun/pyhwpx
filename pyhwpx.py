@@ -69,12 +69,12 @@ def addr_to_tuple(cell_address: str):
     :return: (row, column) 형식의 주소 튜플
     :rtype: (int, int)
     :example:
-    >>> print(addr_to_tuple("C3"))
-    (3, 3)
-    >>> print(addr_to_tuple("AB10"))
-    (10, 28)
-    >>> print(addr_to_tuple("AAA100000"))
-    (100000, 703)
+        >>> print(addr_to_tuple("C3"))
+        (3, 3)
+        >>> print(addr_to_tuple("AB10"))
+        (10, 28)
+        >>> print(addr_to_tuple("AAA100000"))
+        (100000, 703)
     """
     # 정규표현식을 이용해 문자 부분(열), 숫자 부분(행)을 분리
     match = re.match(r"^([A-Z]+)(\d+)$", cell_address.upper())
@@ -105,11 +105,10 @@ def tuple_to_addr(col: int, row: int):
     :type row: int
     :return: 엑셀 형식의 주소 문자열
     :rtype: str
-
     :example:
-    >>> from pyhwpx import tuple_to_addr
-    >>> print(tuple_to_addr(1, 2))
-    B1
+        >>> from pyhwpx import tuple_to_addr
+        >>> print(tuple_to_addr(1, 2))
+        B1
     """
     letters = []
     # 컬럼번호(col)를 "A"~"Z", "AA"~"ZZ", ... 형태로 변환
@@ -1228,6 +1227,7 @@ class Hwp:
     def PageCount(self) -> int:
         """
         현재 문서의 총 페이지 수를 리턴.
+
         :return: 현재 문서의 총 페이지 수
         :rtype: int
         :example:
@@ -1244,6 +1244,7 @@ class Hwp:
         """
         CharShape, CellShape과 함께 가장 많이 사용되는 단축Shape 삼대장 중 하나.
         현재 캐럿이 위치한, 혹은 선택한 문단(블록)의 문단모양 파라미터셋을 리턴한다.
+
         :example:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -1251,7 +1252,7 @@ class Hwp:
             >>> # 현재 캐럿위치의 줄간격 조회
             >>> val = hwp.ParaShape.Item("LineSpacing")
             >>> print(f"현재 문단의 줄간격은 {val}%입니다.")
-        현재 문단의 줄간격은 160%입니다.
+            현재 문단의 줄간격은 160%입니다.
         """
         return self.hwp.ParaShape
 
@@ -1585,14 +1586,15 @@ class Hwp:
         셀필드는 지시문과 메모가 없으므로 이 메서드에서는 추출하지 않는다.
         만약 셀필드를 포함하여 모든 필드의 이름만 추출하고 싶다면
         hwp.get_field_list().split("\r\n") 메서드를 쓰면 된다.
+
         :return: [{'name': 'zxcv', 'direction': 'adsf', 'memo': 'qwer'}] 형식의 사전 리스트
         :rtype: list[dict]
         :example:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.get_field_info()
-        [{'name': '누름틀1', 'direction': '안내문1', 'memo': '메모1'},
-         {'name': '누름틀2', 'direction': '안내문2', 'memo': '메모2'}]
+            [{'name': '누름틀1', 'direction': '안내문1', 'memo': '메모1'},
+            {'name': '누름틀2', 'direction': '안내문2', 'memo': '메모2'}]
         """
         txt = self.GetTextFile("HWPML2X")
         try:
@@ -1623,11 +1625,11 @@ class Hwp:
             >>> hwp = Hwp()
             >>> # 이미지 선택 상태에서
             >>> hwp.get_image_info()
-        {'name': 'tmpmj2md6uy', 'size': [200, 200]}
+            {'name': 'tmpmj2md6uy', 'size': [200, 200]}
             >>> # 문서 마지막그림 정보
             >>> ctrl = [i for i in hwp.ctrl_list if i.UserDesc == "그림"][-1]
             >>> hwp.get_image_info(ctrl)
-        {'name': 'tmpxk_5noth', 'size': [1920, 1080]}
+            {'name': 'tmpxk_5noth', 'size': [1920, 1080]}
         """
         if ctrl is None:
             ctrl = self.CurSelectedCtrl
@@ -2516,14 +2518,18 @@ class Hwp:
         단, 열너비의 비가 아닌 "mm" 단위로 값을 입력하려면 as_="mm"로 파라미터를 수정하면 된다.
         이 때, width에 정수 또는 부동소수점수를 입력하는 경우 as_="ratio"를 사용할 수 없다.
 
+        :param width: 열 너비
+        :param `as_`: 단위
+        :return: 성공시 True, 실패시 False를 리턴
+        :example:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.create_table(3,3)
+            True
             >>> hwp.get_into_nth_table(0)
+            True
             >>> hwp.set_col_width([1,2,3])
-        :param width: 열 너비
-        :param `as_`:
-        :return:
+            True
         """
         cur_pos = self.get_pos()
         if type(width) in (int, float):
@@ -2573,14 +2579,15 @@ class Hwp:
         단, 열너비의 비가 아닌 "mm" 단위로 값을 입력하려면 as_="mm"로 파라미터를 수정하면 된다.
         이 때, width에 정수 또는 부동소수점수를 입력하는 경우 as_="ratio"를 사용할 수 없다.
 
+        :param width: 열 너비
+        :param `as_`: 단위
+        :return: 성공시 True
+        :example:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.create_table(3,3)
             >>> hwp.get_into_nth_table(0)
             >>> hwp.adjust_cellwidth([1,2,3])
-        :param width: 열 너비
-        :param `as_`:
-        :return:
         """
         cur_pos = self.get_pos()
         if type(width) in (int, float):
@@ -2776,6 +2783,7 @@ class Hwp:
         """
         한글2024 이상의 버전에서 사용 가능한 API 기반의 신규 메서드.
         가급적 hwp.select_ctrl(ctrl)을 실행할 것을 추천.
+
         :param ctrllist:
             특정 컨트롤의 인스턴스 아이디(11자리 정수 또는 문자열).
             인스턴스아이디는 `ctrl.GetCtrlInstID()` 로 구할 수 있으며
@@ -2787,8 +2795,9 @@ class Hwp:
             1: 기존 선택해제 후 컨트롤 선택
         :example:
             >>> from pyhwpx import Hwp
-            >>> hwp = Hwp()
-
+            >>> hwp = Hwp()  # 한글2024 이상의 버전
+            >>> # 문서 마지막 컨트롤 선택하기
+            >>> hwp.SelectCtrl(hwp.LastCtrl.GetCtrlInstID(), 0)
         """
         if int(self.Version.split(", ")[0]) >= 13:  # 한/글2024 이상이면
             return self.hwp.SelectCtrl(ctrllist=ctrllist, option=option)
@@ -4295,7 +4304,6 @@ class Hwp:
             >>> hwp = Hwp()
             >>> df = hwp.table_to_df()  # 현재 캐럿이 들어가 있는 표 전체를 df로(1행을 df의 칼럼으로)
             >>> df = hwp.table_to_df(0, cols=2)  # 문서의 첫 번째 표를 df로(2번인덱스행(3행)을 칼럼명으로, 그 아래(4행부터)를 값으로)
-            >>>
         """
         if self.SelectionMode != 19:
             start_pos = self.hwp.GetPos()
@@ -4671,7 +4679,6 @@ class Hwp:
             >>> cs.SetItem("Height", hwp.point_to_hwp_unit(20))
             >>> act.Execute(cs)
             True
-
         """
         return self.hwp.CreateAction(actidstr=actidstr)
 
@@ -4705,7 +4712,6 @@ class Hwp:
             >>> cs.SetItem("Height", hwp.point_to_hwp_unit(20))
             >>> act.Execute(cs)
             True
-
         """
         return self.hwp.CreateAction(actidstr=actidstr)
 
@@ -5392,6 +5398,7 @@ class Hwp:
     def get_cur_metatag_name(self) -> str:
         """
         현재 캐럿위치의 메타태그 이름을 리턴하는 메서드.
+
         :example:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
