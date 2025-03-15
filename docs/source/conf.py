@@ -44,8 +44,8 @@ language = 'ko'
 html_theme = "sphinx_rtd_theme" # 'furo'  # 'alabaster'
 html_static_path = ['_static']  # docs/source/_static, docs/build/html/_static
 # autodoc_preserve_defaults = True
-# autodoc_member_order = 'bysource'
-# autoclass_member_order = 'bysource'
+autodoc_member_order = 'bysource'
+autoclass_member_order = 'bysource'
 autosummary_generate = True
 autodoc_inherit_docstrings = True
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
