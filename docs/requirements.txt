@@ -1,2 +1,2 @@
-sphinx==8.2.3
+sphinx
 furo==2024.08.06
