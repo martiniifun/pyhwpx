@@ -39,7 +39,7 @@ finally:
     sys.stderr = old_stderr
     devnull.close()
 
-__version__ = "0.44.4"
+__version__ = "0.44.5"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -886,97 +886,203 @@ class Hwp:
     @property
     def CharShape(self):
         """
-        글자모양 파라미터셋을 조회할 수 있는 파라미터셋 속성
-        CharShape 객체를 직접 조작하는 것보다,
-        hwp.set_font() 함수를 사용하는 것이 더 편리하다.
+        글자모양 파라미터셋을 조회할 수 있는 파라미터셋 속성.
+        여러 속성값을 조회하고 싶은 경우에는 hwp.CharShape 대신
+        `hwp.get_charshape_as_dict()` 메서드를 사용하면 편리합니다.
         :example:
         >>> from pyhwpx import Hwp
         >>> hwp = Hwp()
-        >>> hwp.HwpUnitToPoint(hwp.CharShape.Item("Height"))  # 현재 캐럿위치 또는 선택영역의 글자크기를 포인트단위로 출력
-        10
+        >>> # 현재 캐럿위치 또는 선택영역의 글자크기를 포인트단위로 출력
+        >>> hwp.HwpUnitToPoint(hwp.CharShape.Item("Height"))
+        10.0
+        >>> # 여러 속성값을 확인하고 싶은 경우에는 아래처럼~
+        >>> hwp.get_charshape_as_dict()
+        {'Bold': 0,
+         'BorderFill': <win32com.gen_py.HwpObject 1.0 Type Library.IDHwpParameterSet instance at 0x2267681890512>,
+         'DiacSymMark': 0,
+         'Emboss': 0,
+         'Engrave': 0,
+         'FaceNameHangul': '함초롬바탕',
+         'FaceNameHanja': '함초롬바탕',
+         'FaceNameJapanese': '함초롬바탕',
+         'FaceNameLatin': '함초롬바탕',
+         'FaceNameOther': '함초롬바탕',
+         'FaceNameSymbol': '함초롬바탕',
+         'FaceNameUser': '함초롬바탕',
+         'FontTypeHangul': 1,
+         'FontTypeHanja': 1,
+         'FontTypeJapanese': 1,
+         'FontTypeLatin': 1,
+         'FontTypeOther': 1,
+         'FontTypeSymbol': 1,
+         'FontTypeUser': 1,
+         'HSet': None,
+         'Height': 2000,
+         'Italic': 0,
+         'OffsetHangul': 0,
+         'OffsetHanja': 0,
+         'OffsetJapanese': 0,
+        ...
+         'UnderlineColor': 0,
+         'UnderlineShape': 0,
+         'UnderlineType': 0,
+         'UseFontSpace': 0,
+         'UseKerning': 0}
         """
         return self.hwp.CharShape
 
     @CharShape.setter
     def CharShape(self, prop: Any) -> None:
         """
-        글자모양 파라미터셋을 변경할 수 있는 setter 속성
+        글자모양 파라미터셋을 변경할 수 있는 setter 속성.
+        CharShape 객체를 직접 조작하는 대신, 아래 예시처럼
+        hwp.set_font() 함수를 사용하는 것을 추천합니다.
         :param prop: hwp.CharShape
         :type prop: IDHwpParameterSet
         :return: None
+        :rtype: None
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> # 현재 캐럿위치 또는 선택영역의 글자크기를 20으로 변경
+        >>> prop = hwp.CharShape  # 글자속성 개체를 복사한 후
+        >>> prop.SetItem("Height", hwp.PointToHwpUnit(20))  # 파라미터 아이템 변경 후
+        >>> hwp.CharShape = prop  # 글자속성을 prop으로 업데이트
+        >>> # 위 세 줄의 코드는 간단히 아래 단축메서드로도 실행가능
+        >>> hwp.set_font(Height=30)  # 글자크기를 30으로 변경
         """
         self.hwp.CharShape = prop
 
     @property
     def CLSID(self):
         """
-        파라미터셋의 CLSID(클래스아이디)를 리턴하는 속성. 잘 사용하지 않음
+        파라미터셋의 CLSID(클래스아이디)를 조회(읽기전용). 사용하지 않음.
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.CharShape.CLSID
+        IID('{599CBB08-7780-4F3B-8ADA-7F2ECFB57181}')
         """
         return self.hwp.CLSID
 
     @property
     def coclass_clsid(self):
         """
-        coclass의 clsid를 리턴하는 속성
-        :return:
+        coclass의 clsid를 리턴하는 읽기전용 속성. 사용하지 않음.
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.coclass_clsid
+        IID('{2291CF00-64A1-4877-A9B4-68CFE89612D6}')
         """
         return self.hwp.coclass_clsid
 
     @property
     def CurFieldState(self):
         """
-        현재 캐럿이 들어가 있는 필드의 상태를 조회할 수 있는 속성.
-        본문(캡션이나 주석 포함)이면 0, 
-        셀 안이면 1, 글상자 안이면 4를 리턴하며,
-        누름틀 안에 있으면 18, 셀필드 안에 있으면 17,
-        만약 셀필드 안의 누름틀 안에 있으면 누름틀을 무시하고 18을 리턴한다.
-        :return:
+        현재 캐럿이 들어있는 영역의 상태를 조회할 수 있는 속성.
+        필드 안에 들어있지 않으면(본문, 캡션이나 주석 포함) 0을 리턴하며,
+        셀 안이면 1, 글상자 안이면 4를 리턴합니다.
+        셀필드 안에 있으면 17, 누름틀 안에 있으면 18을 리턴합니다.
+        셀필드 안의 누름틀 안에서도 누름틀과 동일하게 18을 리턴하는 점에 유의하세요.
+        정수값에 따라 현재 캐럿의 위치를 파악할 수 있기 때문에 다양하게 활용할 수 있습니다.
+        예를 들어 필드와 무관하게 "캐럿이 셀 안에 있는가"를 알고 싶은 경우에도
+        `hwp.CurFieldState`가 1을 리턴하는지 확인하는 방식을 사용할 수 있습니다.
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> 캐럿이 현재 표 안에 들어있는지 확인하고 싶은 경우
+        >>> if hwp.CurFieldState == 1:
+        ...     print("캐럿이 셀 안에 들어있습니다.")
+        ... else:
+        ...     print("캐럿이 셀 안에 들어있지 않습니다.")
+        캐럿이 셀 안에 들어있습니다.
         """
         return self.hwp.CurFieldState
 
     @property
-    def CurMetatagState(self):
+    def CurMetatagState(self) -> int:
         """
-        현재 캐럿이 들어가 있는 메타태그 상태를 조회할 수 있는 속성
+        현재 캐럿이 들어가 있는 메타태그 상태를 조회할 수 있는 속성.
         :return:
+             1: 셀 메타태그 영역에 들어있음
+             4: 메타태그가 부여된 글상자 또는 그리기개체 컨트롤 내부의 텍스트 공간에 있음
+             8: 메타태그가 부여된 이미지 또는 글맵시, 글상자 등의 컨트롤 선택상태임
+            16: 메타태그가 부여된 표 컨트롤 선택 상태임
+            32: 메타태그 영역에 들어있지 않음
+            40: 컨트롤을 선택하고 있긴 한데, 메타태그는 지정되어 있지 않은 상태(8+32)
+            64: 본문 메타태그 영역에 들어있음
+        :rtype: int
         """
         return self.hwp.CurMetatagState
 
     @property
     def CurSelectedCtrl(self):
         """
-        현재 선택된 컨트롤을 리턴하는 속성
-        :return:
+        현재 선택된 오브젝트의 컨트롤을 리턴하는 속성
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> # 문서의 첫 번째 표를 선택하고 "글자처럼 취급" 속성 켜기
+        >>> hwp.get_into_nth_table()  # 문서 첫 번째 표의 A1 셀로 이동
+        >>> hwp.SelectCtrlFront()  # 표 오브젝트 선택
+        >>> ctrl = hwp.CurSelectedCtrl  # <-- 표 오브젝트의 컨트롤정보 변수지정
+        >>> prop = ctrl.Properties  # 컨트롤정보의 속성(일종의 파라미터셋) 변수지정
+        >>> prop.SetItem("TreatAsChar", True)  # 복사한 파라미터셋의 글자처럼취급 아이템값을 True로 변경
+        >>> ctrl.Properties = prop  # 파라미터셋 속성을 표 오브젝트 컨트롤에 적용
+        >>> hwp.Cancel()  # 적용을 마쳤으면 표선택 해제(권장)
         """
         return self.hwp.CurSelectedCtrl
 
     @property
-    def EditMode(self):
+    def EditMode(self) -> int:
         """
-        현재 편집모드를 리턴하는 속성
-        :return:
+        현재 편집모드(a.k.a. 읽기전용)를 리턴하는 속성.
+        일반적으로 자동화에 쓸 일이 없으므로 무시해도 됩니다.
+        :return: 편집모드는 1을, 읽기전용인 경우 0을 리턴
+        :rtype: int
         """
         return self.hwp.EditMode
 
     @EditMode.setter
-    def EditMode(self, prop):
+    def EditMode(self, prop:int):
         """
-        현재 편집모드를 수정하기 위한 setter 속성
-        :param prop:
-        :return:
+        현재 편집모드를 수정하기 위한 setter 속성. 쓰지 않을 것.
+        :param prop: 편집모드로 변경하고 싶으면 1, 읽기전용으로 변경하고 싶으면 0 대입
+        :type param: int
+        :return: None
+        :rtype: None
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> # example.hwpx 문서를 열고, 읽기전용 활성화
+        >>> hwp.open("./example.hwpx")
+        >>> hwp.EditMode = 0
         """
         self.hwp.EditMode = prop
 
     @property
     def EngineProperties(self):
+        """모르므로 패스"""
         return self.hwp.EngineProperties
 
     @property
     def HAction(self):
         """
         한/글의 액션을 설정하고 실행하기 위한 속성.
-        GetDefalut, Execute, Run 등의 메서드를 가지고 있다.
-        :return:
+        GetDefalut, Execute, Run 등의 메서드를 가지고 있습니다.
+        저수준의 액션과 파라미터셋을 조합하여 기능을 실행할 때에 필요합니다.
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> # "Hello world!" 문자열을 입력하는 액션
+        >>> pset = hwp.HParameterSet.HInsertText
+        >>> act_id = "InsertText"
+        >>> pset.Text = "Hello world!\r\n"  # 줄바꿈 포함
+        >>> hwp.HAction.Execute(act_id, pset.HSet)
+        >>> # 위 네 줄의 명령어는 아래 방법으로도 실행 가능
+        >>> hwp.insert_text("Hello world!")
+        >>> hwp.BreakPara()  # 줄바꿈 메서드
         """
         return self.hwp.HAction
 
@@ -4991,7 +5097,7 @@ class Hwp:
         """
         return self.hwp.GetBinDataPath(binid=binid)
 
-    def get_cur_field_name(self, option=0):
+    def get_cur_field_name(self, option=0) -> str:
         """
         현재 캐럿이 위치하는 곳의 필드이름을 구한다.
         이 함수를 통해 현재 필드가 셀필드인지 누름틀필드인지 구할 수 있다.
@@ -5012,7 +5118,7 @@ class Hwp:
         """
         return self.hwp.GetCurFieldName(option=option)
 
-    def GetCurFieldName(self, option=0):
+    def GetCurFieldName(self, option=0) -> str:
         """
         현재 캐럿이 위치하는 곳의 필드이름을 구한다.
         이 함수를 통해 현재 필드가 셀필드인지 누름틀필드인지 구할 수 있다.
@@ -5033,11 +5139,27 @@ class Hwp:
         """
         return self.hwp.GetCurFieldName(option=option)
 
-    def get_cur_metatag_name(self):
-        return self.hwp.GetCurMetatagName()
+    def get_cur_metatag_name(self) -> str:
+        """
+        현재 캐럿위치의 메타태그 이름을 리턴하는 메서드.
+        :example:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> # "#test"라는 메타태그 이름이 부여된 표를 선택한 상태에서
+        >>> hwp.get_cur_metatag_name()
+        #test
+        """
+        try:
+            return self.hwp.GetCurMetatagName()
+        except pythoncom.com_error as e:
+            print(e, "메타태그명을 출력할 수 없습니다.")
 
     def GetCurMetatagName(self):
-        return self.hwp.GetCurMetatagName()
+        try:
+            return self.hwp.GetCurMetatagName()
+        except pythoncom.com_error as e:
+            # 가끔 com_error 발생한다. (대부분 최초 실행시?)
+            print(e, "메타태그명을 출력할 수 없습니다.")
 
     def get_field_list(self, number=1, option=0):
         """

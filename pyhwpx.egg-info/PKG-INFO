@@ -1,6 +1,6 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.2
 Name: pyhwpx
-Version: 0.44.3
+Version: 0.44.5
 Summary: 아래아한글 자동화를 위한 파이썬 모듈 pyhwpx입니다.
 Home-page: https://blog.naver.com/pythonrpa/
 Author: ilco
@@ -14,51 +14,49 @@ Requires-Dist: pywin32
 Requires-Dist: openpyxl
 Requires-Dist: pyperclip
 Requires-Dist: Pillow
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
 
-# 파이썬-아래아한글 자동화 모듈
+## 🐍 PyHWPX: Python 기본 아래아한글 자동화 모듈
 
-pywin32 패키지를 활용하여 
+**PyHWPX**는 `pywin32` 패키지를 활용하여 아래아한글(HWP) 문서를 자동화할 수 있는 Python 모듈입니다.  
+현재 **`Hwp`** 클래스가 포함되어 있으며, **HwpAutomation에서 제공하는 모든 저수준 API 메서드의 사용법, 파라미터 및 예시 코드**를 추가하는 작업이 진행 중입니다.  
 
-아래아한글을 다루는 
+👉 한글 문서 업무 자동화에 많이 사용되는 **패턴들을 추가**하며, 보다 **실용적인 오픈소스 라이브러리**로 발전시킬 계획입니다.  
+💡 유용한 **컴즐 메서드**도 지적적으로 업데이트할 예정입니다.
 
-pyhwpx 모듈을 만들어보았습니다.
+---
 
-pyhwpx 모듈 안에는 아직 Hwp라는 클래스만 
+## **📌 주요 기능**
+- **아래아한글 문서 조작**: 텍스트 삽입, 저장, 문서 편집 자동화
+- **HwpAutomation API 래핑**: `pywin32`를 사용하여 Hwp 명령 실행
+- **집권적인 인턴턴스**: 기존 `win32com` 방식보다 쉬욤 사용법 제공
+- **컴즐 기능 추가 예정**: 문서 서식 설정, 표 삽입 등 기능 확장 가능  
 
-하나 정의해놓았습니다.
+---
 
-해당 클래스 안에 HwpAutomation에서 제공하는 
+## **🚀 설치 방법**
+PyHWPX는 **PyPI(Python Package Index)**에 등록되어 있으며, 아래 명령에서 간편하게 설치할 수 있습니다.
 
-모든 저수준 API메서드의 사용법과 
+```bash
+pip install pyhwpx
+```
 
-파라미터, (필요한 경우) 예시코드 등을 
+> ⚠️ **주의:** PyHWPX는 **Windows** 환경에서 작동하며, **한/글이 설치되어 있어야** 합니다.  
+> 💡 `pywin32`가 필요하며, `pip install pywin32`로 별도로 설치할 수도 있습니다.
+> ✨ **Python 3.10 이상이 필요합니다.**
 
-docstring으로 추가하는 중입니다.
+설치가 완료되면 Python에서 보복 없이 `import`하여 사용할 수 있습니다.
 
-틈틈이 유용한 커스텀 메서드를 
+---
 
-추가할 예정입니다.
-
-아직은 오픈소스라고 부르기엔 
-
-다소 초라한 수준이지만,
-
-hwp 문서업무 자동화에 많이 쓰이는 패턴들을 
-
-추가하다보면?
-
-나름 유용한 모듈이 되지 않을까 
-
-생각해봅니다.
-
-두서없이 디스크립션을 적어보았습니다.
-
-행복한 하루 되세요!
-
-일코, 2023. 11. 30.
-
-# 사용법
-
+## **💡 사용법 예제**
 ```python
 from pyhwpx import Hwp
 
@@ -67,24 +65,15 @@ hwp = Hwp()
 # 텍스트 삽입
 hwp.insert_text("Hello world!")
 
-# 위의 코드는 아래처럼 win32com의 hwp 인스턴스처럼 실행 가능
+# win32com 방식으로 실행
 pset = hwp.HParameterSet.HInsertText
 pset.Text = "Hello world!"
 hwp.HAction.Execute("InsertText", pset.HSet)
 
-# 다른이름으로 저장
+# 문서 저장
 hwp.save_as("./helloworld.hwp")
 
 # 한/글 종료
 hwp.quit()
 ```
 
-이밖에 구체적인 pyhwpx 모듈 사용법과 주요업데이트는 
-
-https://blog.naver.com/pythonrpa/ 블로그에
-
-틈틈이 포스팅으로 남기겠습니다.
-
-방문해 주셔서 감사합니다.
-
-행복한 하루 되세요!!
