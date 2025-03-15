@@ -1,6 +1,10 @@
 API
 ===
 
+.. automodule:: pyhwpx
+   :members:
+   :show-inheritance:
+
 .. autoclass:: pyhwpx.Hwp
    :members:
    :show-inheritance:
@@ -8,5 +12,6 @@ API
 
 .. autosummary::
    :toctree: generated
+   :nosignatures:
 
    pyhwpx.Hwp

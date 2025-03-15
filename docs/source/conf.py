@@ -46,7 +46,7 @@ html_static_path = ['_static']
 # autoclass_member_order = 'bysource'
 autosummary_generate = True
 autodoc_inherit_docstrings = True
-autodoc_mock_imports = ["pyhwpx"]
+# autodoc_mock_imports = ["pyhwpx"]
 autosummary_ignore_module_all = False
 autodoc_default_options = {
     "members": True,
