@@ -40,7 +40,7 @@ if sys.platform == 'win32':
         sys.stderr = old_stderr
         devnull.close()
 
-__version__ = "0.44.10"
+__version__ = "0.44.2"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1948,6 +1948,7 @@ class Hwp:
         """
         현재 캐럿이 위치한 문단의 스타일을 변경한다.
         스타일 입력은 style 인수로 정수값(스타일번호) 또는 문자열(스타일이름)을 넣으면 된다.
+
         :param style:
         :return:
         """
@@ -1978,6 +1979,9 @@ class Hwp:
         return pset.Command[2:-1].split(",")
 
     def fill_addr_field(self):
+        """
+        현재 표 안에서 모든 셀에 엑셀 셀주소 스타일("A1")의 셀필드를 채우는 메서드
+        """
         if not self.is_cell():
             raise AttributeError("캐럿이 표 안에 있어야 합니다.")
         self.TableColBegin()
@@ -1987,6 +1991,9 @@ class Hwp:
             self.set_cur_field_name(self.get_cell_addr())
 
     def unfill_addr_field(self):
+        """
+        현재 캐럿이 들어있는 표의 셀필드를 모두 제거하는 메서드
+        """
         if not self.is_cell():
             raise AttributeError("캐럿이 표 안에 있어야 합니다.")
         self.TableColBegin()
@@ -7065,6 +7072,107 @@ class Hwp:
         """
         return self.hwp.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
+    # def insert_picture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
+    #                    effect=0, width=0, height=0):
+    #     """
+    #     현재 캐럿의 위치에 그림을 삽입한다.
+    #     다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
+    #     이런 작업을 원하는 경우에는 그림을 클립보드로 복사하고,
+    #     Ctrl-V로 붙여넣기를 하는 수 밖에 없다.
+    #     또한, 셀의 크기를 조절할 때 이미지의 크기도 따라 변경되게 하고 싶다면
+    #     insert_background_picture 함수를 사용하는 것도 좋다.
+    #
+    #     :param path:
+    #         삽입할 이미지 파일의 전체경로
+    #
+    #     :param embedded:
+    #         이미지 파일을 문서 내에 포함할지 여부 (True/False). 생략하면 True
+    #
+    #     :param sizeoption:
+    #         삽입할 그림의 크기를 지정하는 옵션. 기본값은 2
+    #         0: 이미지 원래의 크기로 삽입한다. width와 height를 지정할 필요 없다.(realSize)
+    #         1: width와 height에 지정한 크기로 그림을 삽입한다.(specificSize)
+    #         2: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞게 자동 조절하여 삽입한다. (종횡비 유지안함)(cellSize)
+    #            캐럿이 셀 안에 있지 않으면 이미지의 원래 크기대로 삽입된다.
+    #         3: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞추어 원본 이미지의 가로 세로의 비율이 동일하게 확대/축소하여 삽입한다.(cellSizeWithSameRatio)
+    #
+    #     :param reverse: 이미지의 반전 유무 (True/False). 기본값은 False
+    #
+    #     :param watermark: watermark효과 유무 (True/False). 기본값은 False
+    #
+    #     :param effect:
+    #         그림 효과
+    #         0: 실제 이미지 그대로
+    #         1: 그레이 스케일
+    #         2: 흑백효과
+    #
+    #     :param width:
+    #         그림의 가로 크기 지정. 단위는 mm(HWPUNIT 아님!)
+    #
+    #     :param height:
+    #         그림의 높이 크기 지정. 단위는 mm
+    #
+    #     :return:
+    #         생성된 컨트롤 object.
+    #
+    #     :example:
+    #         >>> from pyhwpx import Hwp
+    #         >>> hwp = Hwp()
+    #         >>> path = "C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg"
+    #         >>> ctrl = hwp.insert_picture(path)  # 삽입한 이미지 객체를 리턴함.
+    #         >>> pset = ctrl.Properties  # == hwp.create_set("ShapeObject")
+    #         >>> pset.SetItem("TreatAsChar", False)  # 글자처럼취급 해제
+    #         >>> pset.SetItem("TextWrap", 2)  # 그림을 글 뒤로
+    #         >>> ctrl.Properties = pset  # 설정한 값 적용(간단!)
+    #     """
+    #     if sizeoption == 1 and not all([width, height]) and not self.is_cell():
+    #         raise ValueError("sizeoption이 1일 때에는 width와 height를 지정해주셔야 합니다.\n"
+    #                          "단, 셀 안에 있는 경우에는 셀 너비에 맞게 이미지 크기를 자동으로 조절합니다.")
+    #
+    #     if path.startswith("http"):
+    #         temp_path = tempfile.TemporaryFile().name
+    #         request.urlretrieve(path, temp_path)
+    #         path = temp_path
+    #         # request.urlretrieve(path, os.path.join(os.getcwd(), "temp.jpg"))
+    #     elif path.lower()[1] != ":":
+    #         path = os.path.join(os.getcwd(), path)
+    #
+    #     try:
+    #         ctrl = self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption, Reverse=reverse,
+    #                                       watermark=watermark, Effect=effect, Width=width, Height=height)
+    #         pic_prop = ctrl.Properties
+    #         if not all([width, height]) and self.is_cell():
+    #             cell_param = self.hwp.HParameterSet.HShapeObject
+    #             self.hwp.HAction.GetDefault("TablePropertyDialog", cell_param.HSet)
+    #             cell_width = cell_param.ShapeTableCell.Width
+    #             dst_height = pic_prop.Item("Height") / pic_prop.Item("Width") * cell_width
+    #             pic_prop.SetItem("Width", cell_width)
+    #             pic_prop.SetItem("Height", round(dst_height))
+    #         else:
+    #             sec_def = self.HParameterSet.HSecDef
+    #             self.HAction.GetDefault("PageSetup", sec_def.HSet)
+    #             page_width = (
+    #                     sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen)
+    #             page_height = (
+    #                     sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen - sec_def.PageDef.FooterLen)
+    #             pic_width = pic_prop.Item("Width")
+    #             pic_height = pic_prop.Item("Height")
+    #             if pic_width > page_width or pic_height > page_height:
+    #                 width_shrink_ratio = page_width / pic_width
+    #                 height_shrink_ratio = page_height / pic_height
+    #                 if width_shrink_ratio <= height_shrink_ratio:
+    #                     pic_prop.SetItem("Width", page_width)
+    #                     pic_prop.SetItem("Height", pic_height * width_shrink_ratio)
+    #                 else:
+    #                     pic_prop.SetItem("Width", pic_width * height_shrink_ratio)
+    #                     pic_prop.SetItem("Height", page_height)
+    #         pic_prop.SetItem("TreatAsChar", treat_as_char)
+    #         ctrl.Properties = pic_prop
+    #         return ctrl
+    #     finally:
+    #         if os.path.basename(path).startswith("tmp"):
+    #             os.remove(path)
+
     def insert_picture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
                        effect=0, width=0, height=0):
         """
@@ -7137,108 +7245,7 @@ class Hwp:
             if not all([width, height]) and self.is_cell():
                 cell_param = self.hwp.HParameterSet.HShapeObject
                 self.hwp.HAction.GetDefault("TablePropertyDialog", cell_param.HSet)
-                cell_width = cell_param.ShapeTableCell.Width
-                dst_height = pic_prop.Item("Height") / pic_prop.Item("Width") * cell_width
-                pic_prop.SetItem("Width", cell_width)
-                pic_prop.SetItem("Height", round(dst_height))
-            else:
-                sec_def = self.HParameterSet.HSecDef
-                self.HAction.GetDefault("PageSetup", sec_def.HSet)
-                page_width = (
-                        sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen)
-                page_height = (
-                        sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen - sec_def.PageDef.FooterLen)
-                pic_width = pic_prop.Item("Width")
-                pic_height = pic_prop.Item("Height")
-                if pic_width > page_width or pic_height > page_height:
-                    width_shrink_ratio = page_width / pic_width
-                    height_shrink_ratio = page_height / pic_height
-                    if width_shrink_ratio <= height_shrink_ratio:
-                        pic_prop.SetItem("Width", page_width)
-                        pic_prop.SetItem("Height", pic_height * width_shrink_ratio)
-                    else:
-                        pic_prop.SetItem("Width", pic_width * height_shrink_ratio)
-                        pic_prop.SetItem("Height", page_height)
-            pic_prop.SetItem("TreatAsChar", treat_as_char)
-            ctrl.Properties = pic_prop
-            return ctrl
-        finally:
-            if os.path.basename(path).startswith("tmp"):
-                os.remove(path)
-
-    def insert_picture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
-                       effect=0, width=0, height=0):
-        """
-        현재 캐럿의 위치에 그림을 삽입한다.
-        다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
-        이런 작업을 원하는 경우에는 그림을 클립보드로 복사하고,
-        Ctrl-V로 붙여넣기를 하는 수 밖에 없다.
-        또한, 셀의 크기를 조절할 때 이미지의 크기도 따라 변경되게 하고 싶다면
-        insert_background_picture 함수를 사용하는 것도 좋다.
-
-        :param path:
-            삽입할 이미지 파일의 전체경로
-
-        :param embedded:
-            이미지 파일을 문서 내에 포함할지 여부 (True/False). 생략하면 True
-
-        :param sizeoption:
-            삽입할 그림의 크기를 지정하는 옵션. 기본값은 2
-            0: 이미지 원래의 크기로 삽입한다. width와 height를 지정할 필요 없다.(realSize)
-            1: width와 height에 지정한 크기로 그림을 삽입한다.(specificSize)
-            2: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞게 자동 조절하여 삽입한다. (종횡비 유지안함)(cellSize)
-               캐럿이 셀 안에 있지 않으면 이미지의 원래 크기대로 삽입된다.
-            3: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞추어 원본 이미지의 가로 세로의 비율이 동일하게 확대/축소하여 삽입한다.(cellSizeWithSameRatio)
-
-        :param reverse: 이미지의 반전 유무 (True/False). 기본값은 False
-
-        :param watermark: watermark효과 유무 (True/False). 기본값은 False
-
-        :param effect:
-            그림 효과
-            0: 실제 이미지 그대로
-            1: 그레이 스케일
-            2: 흑백효과
-
-        :param width:
-            그림의 가로 크기 지정. 단위는 mm(HWPUNIT 아님!)
-
-        :param height:
-            그림의 높이 크기 지정. 단위는 mm
-
-        :return:
-            생성된 컨트롤 object.
-
-        :example:
-            >>> from pyhwpx import Hwp
-            >>> hwp = Hwp()
-            >>> path = "C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg"
-            >>> ctrl = hwp.insert_picture(path)  # 삽입한 이미지 객체를 리턴함.
-            >>> pset = ctrl.Properties  # == hwp.create_set("ShapeObject")
-            >>> pset.SetItem("TreatAsChar", False)  # 글자처럼취급 해제
-            >>> pset.SetItem("TextWrap", 2)  # 그림을 글 뒤로
-            >>> ctrl.Properties = pset  # 설정한 값 적용(간단!)
-        """
-        if sizeoption == 1 and not all([width, height]) and not self.is_cell():
-            raise ValueError("sizeoption이 1일 때에는 width와 height를 지정해주셔야 합니다.\n"
-                             "단, 셀 안에 있는 경우에는 셀 너비에 맞게 이미지 크기를 자동으로 조절합니다.")
-
-        if path.startswith("http"):
-            temp_path = tempfile.TemporaryFile().name
-            request.urlretrieve(path, temp_path)
-            path = temp_path
-            # request.urlretrieve(path, os.path.join(os.getcwd(), "temp.jpg"))
-        elif path.lower()[1] != ":":
-            path = os.path.join(os.getcwd(), path)
-
-        try:
-            ctrl = self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption, Reverse=reverse,
-                                          watermark=watermark, Effect=effect, Width=width, Height=height)
-            pic_prop = ctrl.Properties
-            if not all([width, height]) and self.is_cell():
-                cell_param = self.hwp.HParameterSet.HShapeObject
-                self.hwp.HAction.GetDefault("TablePropertyDialog", cell_param.HSet)
-                cell_width = cell_param.ShapeTableCell.Width
+                cell_width = cell_param.ShapeTableCell.Width - cell_param.ShapeTableCell.MarginLeft - cell_param.ShapeTableCell.MarginRight
                 dst_height = pic_prop.Item("Height") / pic_prop.Item("Width") * cell_width
                 pic_prop.SetItem("Width", cell_width)
                 pic_prop.SetItem("Height", round(dst_height))
