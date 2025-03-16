@@ -41,7 +41,7 @@ if sys.platform == 'win32':
         sys.stderr = old_stderr
         devnull.close()
 
-__version__ = "0.45.4"
+__version__ = "0.45.5"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -8311,6 +8311,20 @@ class Hwp:
     def PutMetatagNameText(self, tag, text):
         return self.hwp.PutMetatagNameText(tag=tag, Text=text)
 
+    def PutParaNumber(self):
+        """
+        문단번호 삽입/제거 토글
+        """
+        return self.hwp.HAction.Run("PutParaNumber")
+
+    def PutOutlinleNumber(self):
+        """
+        개요번호 삽입/제거 토글
+        """
+        return self.hwp.HAction.Run("PutOutlineNumber")
+
+
+
     def quit(self):
         """
         한/글을 종료한다.
@@ -9106,10 +9120,10 @@ class Hwp:
     def CloseEx(self):
         """
         현재 리스트를 닫고 상위 리스트로 이동하는 액션.
-        Close와 유사하나 두 가지 차이점이 있다.
+        Close와 CloseEx는 유사하나 두 가지 차이점이 있다.
         첫 번째로는 여러 계층의 표 안에서 CloseEx 실행시
         본문이 아니라 상위의 표(셀)로 캐럿이 단계적으로 이동한다는 점.
-        Close는 무조건 본문으로 나간다.
+        반면 Close는 무조건 본문으로 나간다.
         두 번째로, CloseEx에는 전체화면(최대화 말고)을 해제하는 기능이 있다.
         Close로는 전체화면 해제가 되지 않는다.
         사용빈도가 가장 높은 액션 중의 하나라고 생각한다.
@@ -10298,7 +10312,12 @@ class Hwp:
 
     def MoveNextPosEx(self):
         """
-        한 글자 뒤로 이동. 서브 리스트를 옮겨 다닐 수 있다. (머리말, 꼬리말, 각주, 미주, 글상자 포함)
+        한 글자 뒤로 이동. 서브 리스트를 옮겨 다닐 수 있다.
+        (머리말, 꼬리말, 각주, 미주, 글상자 포함)
+        예를 들어, 문단 중간에 글상자가 (글자처럼취급 꺼진상태로) 떠있다면
+        MoveNextPos는 글상자를 패스하고 본문만 통과해서 지나가는데,
+        MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 들어갔다 나온다.
+        문서 전체를 훑어야 하는 경우에는 굉장히 유용하게 쓰일 듯.
         """
         cwd = self.get_pos()
         self.hwp.HAction.Run("MoveNextPosEx")
@@ -10432,7 +10451,8 @@ class Hwp:
 
     def MovePrevPosEx(self):
         """
-        한 글자 앞으로 이동. 서브 리스트를 옮겨 다닐 수 있다. (머리말, 꼬리말, 각주, 미주, 글상자 포함)
+        한 글자 앞으로 이동. 서브 리스트를 옮겨 다닐 수 있다.
+        (머리말, 꼬리말, 각주, 미주, 글상자 포함)
         """
         cwd = self.get_pos()
         self.hwp.HAction.Run("MovePrevPosEx")
