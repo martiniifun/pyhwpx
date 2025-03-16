@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="api.rst를 이것저것 더해봄">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/api.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/api.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/environment.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/environment.pickle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/generated/pyhwpx.Hwp.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/generated/pyhwpx.Hwp.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/source/generated/pyhwpx.Hwp.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/generated/pyhwpx.Hwp.rst" afterDir="false" />
-    </list>
+    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="api.rst를 이것저것 더해봄" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -102,7 +95,7 @@
       <workItem from="1742034802256" duration="31839000" />
       <workItem from="1742094814127" duration="59000" />
       <workItem from="1742105095476" duration="6755000" />
-      <workItem from="1742117554060" duration="467000" />
+      <workItem from="1742117554060" duration="785000" />
     </task>
     <task id="LOCAL-00042" summary="auto-module 추가해봄">
       <option name="closed" value="true" />
