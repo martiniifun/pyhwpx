@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="set_cell_margin의 HasMargin 속성을 없애면 안 되는구나!">
+    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="버전업">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyhwpx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -91,31 +90,7 @@
       <workItem from="1742002379028" duration="22398000" />
       <workItem from="1742034802256" duration="31839000" />
       <workItem from="1742094814127" duration="59000" />
-      <workItem from="1742105095476" duration="5115000" />
-    </task>
-    <task id="LOCAL-00038" summary="또 미궁으로.. api.rst에서 autodoc 라인 제거해봄">
-      <option name="closed" value="true" />
-      <created>1742052124342</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1742052124342</updated>
-    </task>
-    <task id="LOCAL-00039" summary="뭘 바꿨지ㅜ">
-      <option name="closed" value="true" />
-      <created>1742052434751</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1742052434751</updated>
-    </task>
-    <task id="LOCAL-00040" summary="로컬에선 된다.">
-      <option name="closed" value="true" />
-      <created>1742053349825</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1742053349825</updated>
+      <workItem from="1742105095476" duration="6446000" />
     </task>
     <task id="LOCAL-00041" summary="autodoc_mock_imports에 &quot;pyhwpx 추가해봄&quot;">
       <option name="closed" value="true" />
@@ -485,7 +460,31 @@
       <option name="project" value="LOCAL" />
       <updated>1742107408196</updated>
     </task>
-    <option name="localTasksCounter" value="87" />
+    <task id="LOCAL-00087" summary="개요번호, 문단번호 토글 메서드 추가">
+      <option name="closed" value="true" />
+      <created>1742113589457</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1742113589457</updated>
+    </task>
+    <task id="LOCAL-00088" summary="문서페이지 업데이트">
+      <option name="closed" value="true" />
+      <created>1742113646226</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1742113646226</updated>
+    </task>
+    <task id="LOCAL-00089" summary="버전업">
+      <option name="closed" value="true" />
+      <created>1742113676395</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
+      <option name="project" value="LOCAL" />
+      <updated>1742113676395</updated>
+    </task>
+    <option name="localTasksCounter" value="90" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -503,9 +502,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="mock_imports에도 추가" />
-    <MESSAGE value="api.rst 소폭 수정" />
-    <MESSAGE value="mock이 희망이다" />
     <MESSAGE value="req에서 pywin32를 빼보았다" />
     <MESSAGE value="pyhwpx도 드디어 만지는구나... 다 돼 간다" />
     <MESSAGE value="이젠 정말 모르겠다. 잠도 오지 않네..." />
@@ -528,7 +524,10 @@
     <MESSAGE value="독스트링의 \U가 문제가 되는구나ㅜ" />
     <MESSAGE value="get_into_nth_table의 select 파라미터를 select_cell로 바꿨습니다ㅜ 오류가 막 나고 그러진 않겠지요ㅜ" />
     <MESSAGE value="set_cell_margin의 HasMargin 속성을 없애면 안 되는구나!" />
-    <option name="LAST_COMMIT_MESSAGE" value="set_cell_margin의 HasMargin 속성을 없애면 안 되는구나!" />
+    <MESSAGE value="개요번호, 문단번호 토글 메서드 추가" />
+    <MESSAGE value="문서페이지 업데이트" />
+    <MESSAGE value="버전업" />
+    <option name="LAST_COMMIT_MESSAGE" value="버전업" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/pyhwpx$pyhwpx__Doctests.coverage" NAME="pyhwpx 내 Doctests 커버리지 결과" MODIFIED="1742038027100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

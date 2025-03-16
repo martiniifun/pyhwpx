@@ -11898,7 +11898,7 @@ class Hwp:
 
     def SoftKeyboard(self):
         """
-        보기
+        소프트키보드 보기 토글
         """
         return self.hwp.HAction.Run("Soft Keyboard")
 
@@ -12011,7 +12011,9 @@ class Hwp:
         return self.hwp.HAction.Run("StyleShortcut10")
 
     def TabClose(self):
-        """현재탭 닫기"""
+        """
+        현재탭 닫기
+        """
         return self.hwp.HAction.Run("TabClose")
 
     def TableAppendRow(self):
@@ -12373,6 +12375,9 @@ class Hwp:
         return self.hwp.HAction.Run("TableResizeExRight")
 
     def TableResizeExUp(self):
+        """
+        셀 크기 변경: 셀 위쪽. TebleResizeUp과 다른 점은 셀 블록 상태가 아니어도 동작한다는 점이다.
+        """
         return self.hwp.HAction.Run("TableResizeExUp")
 
     def TableResizeLeft(self):
@@ -12440,10 +12445,10 @@ class Hwp:
         셀 나누기. Run메서드 같아 보이지만,
         엄연히 파라미터셋이 필수인 정통액션이다.
 
-        Rows: 나눌 행 수(기본값:2)
-        Cols: 나눌 열 수(기본값:0)
-        DistributeHeight: 줄 높이를 같게 나누기(0 or 1)
-        Merge: 셀을 합친 후 나누기(0 or 1)
+        :param Rows: 나눌 행 수(기본값:2)
+        :param Cols: 나눌 열 수(기본값:0)
+        :param DistributeHeight: 줄 높이를 같게 나누기(0 or 1)
+        :param Merge: 셀을 합친 후 나누기(0 or 1)
         """
         pset = self.HParameterSet.HTableSplitCell
         pset.Rows = Rows
@@ -12548,13 +12553,13 @@ class Hwp:
 
     def ViewOptionPaper(self):
         """
-        쪽 윤곽 보기
+        쪽 윤곽 보기/숨기기
         """
         return self.hwp.HAction.Run("ViewOptionPaper")
 
     def ViewOptionParaMark(self):
         """
-        문단 부호
+        문단 부호 보기/숨기기
         """
         return self.hwp.HAction.Run("ViewOptionParaMark")
 
@@ -12896,13 +12901,10 @@ class Hwp:
 
         :param path:
             문서 파일의 전체경로
-
         :param format:
             문서 형식. 생략하면 "HWP"가 지정된다.
-
         :param arg:
             세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
-
         :return:
             성공하면 True, 실패하면 False
         """
@@ -12917,6 +12919,10 @@ class Hwp:
         return self.hwp.ScanFont()
 
     def select_text_by_get_pos(self, s_getpos, e_getpos):
+        """
+        hwp.get_pos()로 얻은 두 튜플 사이의 텍스트를 선택하는 메서드.
+        의외로 유용하지 않다!
+        """
         self.set_pos(s_getpos[0], 0, 0)
         return self.hwp.SelectText(spara=s_getpos[1], spos=s_getpos[2], epara=e_getpos[1], epos=e_getpos[2])
 
@@ -12927,16 +12933,12 @@ class Hwp:
 
         :param spara:
             블록 시작 위치의 문단 번호.
-
         :param spos:
             블록 시작 위치의 문단 중에서 문자의 위치.
-
         :param epara:
             블록 끝 위치의 문단 번호.
-
         :param epos:
             블록 끝 위치의 문단 중에서 문자의 위치.
-
         :return:
             성공하면 True, 실패하면 False
         """
@@ -12956,16 +12958,12 @@ class Hwp:
 
         :param spara:
             블록 시작 위치의 문단 번호.
-
         :param spos:
             블록 시작 위치의 문단 중에서 문자의 위치.
-
         :param epara:
             블록 끝 위치의 문단 번호.
-
         :param epos:
             블록 끝 위치의 문단 중에서 문자의 위치.
-
         :return:
             성공하면 True, 실패하면 False
         """
@@ -12979,36 +12977,13 @@ class Hwp:
             return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
 
     def set_bar_code_image(self, lp_image_path, pgno, index, x, y, width, height):
-        """
-        작동하지 않는다.
-
-        :param lp_image_path:
-        :param pgno:
-        :param index:
-        :param x:
-        :param y:
-        :param width:
-        :param height:
-        :return:
-        """
+        # 작동하지 않는다.
         if lp_image_path.lower()[1] != ":":
             lp_image_path = os.path.join(os.getcwd(), lp_image_path)
         return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index, X=x, Y=y, Width=width,
                                         Height=height)
 
     def SetBarCodeImage(self, lp_image_path, pgno, index, x, y, width, height):
-        """
-        작동하지 않는다.
-
-        :param lp_image_path:
-        :param pgno:
-        :param index:
-        :param x:
-        :param y:
-        :param width:
-        :param height:
-        :return:
-        """
         if lp_image_path.lower()[1] != ":":
             lp_image_path = os.path.join(os.getcwd(), lp_image_path)
         return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index, X=x, Y=y, Width=width,
@@ -13019,21 +12994,16 @@ class Hwp:
         현재 캐럿이 위치하는 곳의 필드이름을 설정한다.
         GetFieldList()의 옵션 중에 4(hwpFieldSelection) 옵션은 사용하지 않는다.
         (표의 셀에 셀필드를 매기고 싶은 경우 사용한다.)
-
         :param field:
             데이터 필드 이름
-
         :param option:
             다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
             1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
             2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
-
         :param direction:
             누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다.
-
         :param memo:
             누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
-
         :return:
             성공하면 True, 실패하면 False
         """
@@ -13057,18 +13027,14 @@ class Hwp:
 
         :param field:
             데이터 필드 이름
-
         :param option:
             다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
             1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
             2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
-
         :param direction:
             누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다.
-
         :param memo:
             누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
-
         :return:
             성공하면 True, 실패하면 False
         """
@@ -13188,31 +13154,57 @@ class Hwp:
 
         :param mode:
             // 메시지 박스의 종류
+
             #define MB_MASK						0x00FFFFFF
+
             // 1. 확인(MB_OK) : IDOK(1)
+
             #define MB_OK_IDOK						0x00000001
+
             #define MB_OK_MASK						0x0000000F
+
             // 2. 확인/취소(MB_OKCANCEL) : IDOK(1), IDCANCEL(2)
+
             #define MB_OKCANCEL_IDOK					0x00000010
+
             #define MB_OKCANCEL_IDCANCEL				0x00000020
+
             #define MB_OKCANCEL_MASK					0x000000F0
+
             // 3. 종료/재시도/무시(MB_ABORTRETRYIGNORE) : IDABORT(3), IDRETRY(4), IDIGNORE(5)
+
             #define MB_ABORTRETRYIGNORE_IDABORT			0x00000100
+
             #define MB_ABORTRETRYIGNORE_IDRETRY			0x00000200
+
             #define MB_ABORTRETRYIGNORE_IDIGNORE			0x00000400
+
             #define MB_ABORTRETRYIGNORE_MASK				0x00000F00
+
             // 4. 예/아니오/취소(MB_YESNOCANCEL) : IDYES(6), IDNO(7), IDCANCEL(2)
+
             #define MB_YESNOCANCEL_IDYES				0x00001000
+
             #define MB_YESNOCANCEL_IDNO				0x00002000
+
             #define MB_YESNOCANCEL_IDCANCEL				0x00004000
+
             #define MB_YESNOCANCEL_MASK				0x0000F000
+
             // 5. 예/아니오(MB_YESNO) : IDYES(6), IDNO(7)
+
             #define MB_YESNO_IDYES					0x00010000
+
             #define MB_YESNO_IDNO					0x00020000
+
             #define MB_YESNO_MASK					0x000F0000
+
             // 6. 재시도/취소(MB_RETRYCANCEL) : IDRETRY(4), IDCANCEL(2)
+
             #define MB_RETRYCANCEL_IDRETRY				0x00100000
+
             #define MB_RETRYCANCEL_IDCANCEL				0x00200000
+
             #define MB_RETRYCANCEL_MASK				0x00F00000
 
         :return:
@@ -13227,14 +13219,11 @@ class Hwp:
 
         :param list:
             캐럿이 위치한 문서 내 list ID
-
         :param para:
             캐럿이 위치한 문단 ID. 음수거나, 범위를 넘어가면 문서의 시작으로 이동하며, pos는 무시한다.
-
         :param pos:
             캐럿이 위치한 문단 내 글자 위치. -1을 주면 해당문단의 끝으로 이동한다.
             단 para가 범위 밖일 경우 pos는 무시되고 문서의 시작으로 캐럿을 옮긴다.
-
         :return:
             성공하면 True, 실패하면 False
         """
@@ -13251,14 +13240,11 @@ class Hwp:
 
         :param list:
             캐럿이 위치한 문서 내 list ID
-
         :param para:
             캐럿이 위치한 문단 ID. 음수거나, 범위를 넘어가면 문서의 시작으로 이동하며, pos는 무시한다.
-
         :param pos:
             캐럿이 위치한 문단 내 글자 위치. -1을 주면 해당문단의 끝으로 이동한다.
             단 para가 범위 밖일 경우 pos는 무시되고 문서의 시작으로 캐럿을 옮긴다.
-
         :return:
             성공하면 True, 실패하면 False
         """
@@ -13274,11 +13260,11 @@ class Hwp:
 
         :param disp_val:
             캐럿을 옮길 위치에 대한 ParameterSet 정보
-
         :return:
             성공하면 True, 실패하면 False
-
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> start_pos = hwp.GetPosBySet()  # 현재 위치를 저장하고,
             >>> hwp.set_pos_by_set(start_pos)  # 특정 작업 후에 저장위치로 재이동
         """
@@ -13290,11 +13276,11 @@ class Hwp:
 
         :param disp_val:
             캐럿을 옮길 위치에 대한 ParameterSet 정보
-
         :return:
             성공하면 True, 실패하면 False
-
         :example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> start_pos = hwp.GetPosBySet()  # 현재 위치를 저장하고,
             >>> hwp.set_pos_by_set(start_pos)  # 특정 작업 후에 저장위치로 재이동
         """
@@ -13311,7 +13297,6 @@ class Hwp:
 
         :param password:
             새 암호
-
         :return:
             정상적으로 암호가 설정되면 true를 반환한다.
             암호설정에 실패하면 false를 반환한다. false를 반환하는 경우는 다음과 같다
@@ -13331,7 +13316,6 @@ class Hwp:
 
         :param password:
             새 암호
-
         :return:
             정상적으로 암호가 설정되면 true를 반환한다.
             암호설정에 실패하면 false를 반환한다. false를 반환하는 경우는 다음과 같다
@@ -13354,10 +13338,8 @@ class Hwp:
             "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
             "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장
             "TEXT": 일반 텍스트, 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
-
         :param option:
             "insertfile": 현재커서 이후에 지정된 파일 삽입
-
         :return:
             성공이면 1을, 실패하면 0을 반환한다.
         """
@@ -13377,10 +13359,8 @@ class Hwp:
             "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
             "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장
             "TEXT": 일반 텍스트, 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
-
         :param option:
             "insertfile": 현재커서 이후에 지정된 파일 삽입
-
         :return:
             성공이면 1을, 실패하면 0을 반환한다.
         """
@@ -13394,7 +13374,6 @@ class Hwp:
 
         :param title:
             변경할 타이틀 문자열
-
         :return:
             성공시 True
         """
@@ -13408,7 +13387,6 @@ class Hwp:
 
         :param title:
             변경할 타이틀 문자열
-
         :return:
             성공시 True
         """
@@ -13531,9 +13509,15 @@ class Hwp:
         return self.hwp.TextWrapType(TextWrap=text_wrap)
 
     def un_select_ctrl(self):
+        """
+        선택중인 컨트롤 선택해제
+        """
         return self.hwp.UnSelectCtrl()
 
     def UnSelectCtrl(self):
+        """
+        선택중인 컨트롤 선택해제
+        """
         return self.hwp.UnSelectCtrl()
 
     def v_align(self, v_align):
