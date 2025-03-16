@@ -530,6 +530,8 @@
       ~Hwp.PstSetupPrevSec
       ~Hwp.PutFieldText
       ~Hwp.PutMetatagNameText
+      ~Hwp.PutOutlinleNumber
+      ~Hwp.PutParaNumber
       ~Hwp.QuickCommandRun
       ~Hwp.QuickCorrect
       ~Hwp.QuickCorrectRun
