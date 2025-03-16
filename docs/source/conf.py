@@ -43,22 +43,22 @@ language = 'ko'
 
 html_theme = "furo" # "alabaster" # "sphinx_rtd_theme" # 'alabaster'
 html_static_path = ['_static']  # docs/source/_static, docs/build/html/_static
-html_theme_options = {
-    'collapse_navigation': True,
-    'sticky_navigation': True,
-    'navigation_depth': 4,
-    'style_external_links': True
-}
-html_sidebars = {
-    "**": [
-        "sidebar/scroll-start.html",
-        "sidebar/brand.html",
-        "sidebar/search.html",
-        "sidebar/navigation.html",
-        "sidebar/ethical-ads.html",
-        "sidebar/scroll-end.html",
-    ]
-}
+# html_theme_options = {
+#     'collapse_navigation': True,
+#     'sticky_navigation': True,
+#     'navigation_depth': 4,
+#     'style_external_links': True
+# }
+# html_sidebars = {
+#     "**": [
+#         "sidebar/scroll-start.html",
+#         "sidebar/brand.html",
+#         "sidebar/search.html",
+#         "sidebar/navigation.html",
+#         "sidebar/ethical-ads.html",
+#         "sidebar/scroll-end.html",
+#     ]
+# }
 # autodoc_preserve_defaults = True
 autodoc_member_order = 'bysource'
 autoclass_member_order = 'bysource'
