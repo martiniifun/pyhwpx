@@ -41,7 +41,7 @@ if sys.platform == 'win32':
         sys.stderr = old_stderr
         devnull.close()
 
-__version__ = "0.45.8"
+__version__ = "0.45.9"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -2022,7 +2022,7 @@ class Hwp:
             return True
         return False
 
-    def save_image(self, path="./img.png", ctrl=""):
+    def save_image(self, path:str="./img.png", ctrl:Any=None):
         path = os.path.abspath(path)
         if os.path.exists(path):
             os.remove(path)
