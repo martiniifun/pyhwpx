@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="버전업">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyhwpx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.py" afterDir="false" />
-    </list>
+    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="문서페이지 업데이트" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -90,15 +87,7 @@
       <workItem from="1742002379028" duration="22398000" />
       <workItem from="1742034802256" duration="31839000" />
       <workItem from="1742094814127" duration="59000" />
-      <workItem from="1742105095476" duration="6446000" />
-    </task>
-    <task id="LOCAL-00041" summary="autodoc_mock_imports에 &quot;pyhwpx 추가해봄&quot;">
-      <option name="closed" value="true" />
-      <created>1742053870376</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1742053870376</updated>
+      <workItem from="1742105095476" duration="6755000" />
     </task>
     <task id="LOCAL-00042" summary="auto-module 추가해봄">
       <option name="closed" value="true" />
@@ -484,7 +473,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742113676395</updated>
     </task>
-    <option name="localTasksCounter" value="90" />
+    <task id="LOCAL-00090" summary="문서페이지 업데이트">
+      <option name="closed" value="true" />
+      <created>1742114991600</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1742114991600</updated>
+    </task>
+    <option name="localTasksCounter" value="91" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -525,9 +522,9 @@
     <MESSAGE value="get_into_nth_table의 select 파라미터를 select_cell로 바꿨습니다ㅜ 오류가 막 나고 그러진 않겠지요ㅜ" />
     <MESSAGE value="set_cell_margin의 HasMargin 속성을 없애면 안 되는구나!" />
     <MESSAGE value="개요번호, 문단번호 토글 메서드 추가" />
-    <MESSAGE value="문서페이지 업데이트" />
     <MESSAGE value="버전업" />
-    <option name="LAST_COMMIT_MESSAGE" value="버전업" />
+    <MESSAGE value="문서페이지 업데이트" />
+    <option name="LAST_COMMIT_MESSAGE" value="문서페이지 업데이트" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/pyhwpx$pyhwpx__Doctests.coverage" NAME="pyhwpx 내 Doctests 커버리지 결과" MODIFIED="1742038027100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
