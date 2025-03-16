@@ -1,10 +1,11 @@
 Metadata-Version: 2.2
 Name: pyhwpx
-Version: 0.44.8
+Version: 0.45.0
 Summary: 아래아한글 자동화를 위한 파이썬 모듈 pyhwpx입니다.
 Home-page: https://blog.naver.com/pythonrpa/
 Author: ilco
 Author-email: martinii.fun@gmail.com
+Classifier: Operating System :: Microsoft :: Windows
 Requires-Python: >= 3.10
 Description-Content-Type: text/markdown
 License-File: license.txt
@@ -16,6 +17,7 @@ Requires-Dist: pyperclip
 Requires-Dist: Pillow
 Dynamic: author
 Dynamic: author-email
+Dynamic: classifier
 Dynamic: description
 Dynamic: description-content-type
 Dynamic: home-page
@@ -36,7 +38,7 @@ Dynamic: summary
 ## **📌 주요 기능**
 - **아래아한글 문서 조작**: 텍스트 삽입, 저장, 문서 편집 자동화
 - **HwpAutomation API 래핑**: `pywin32`를 사용하여 Hwp 명령 실행
-- **집권적인 인턴턴스**: 기존 `win32com` 방식보다 쉬욤 사용법 제공
+- **집권적인 인스턴스**: 기존 `win32com` 방식보다 쉬욤 사용법 제공
 - **컴즐 기능 추가 예정**: 문서 서식 설정, 표 삽입 등 기능 확장 가능  
 
 ---

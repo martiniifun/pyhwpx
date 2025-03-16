@@ -4,20 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="문서 개선">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/api.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/api.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/environment.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/environment.pickle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/generated/pyhwpx.Hwp.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/generated/pyhwpx.Hwp.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/.buildinfo.bak" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/.buildinfo.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/api.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/api.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/generated/pyhwpx.Hwp.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/generated/pyhwpx.Hwp.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/genindex.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/genindex.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/objects.inv" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/objects.inv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/searchindex.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/searchindex.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/source/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/conf.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyhwpx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.py" afterDir="false" />
+    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="insert_picture 업데이트 정도면 0.45로 버전업 해도 되지.">
+      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,23 +89,7 @@
       <workItem from="1742002379028" duration="22398000" />
       <workItem from="1742034802256" duration="31839000" />
       <workItem from="1742094814127" duration="59000" />
-      <workItem from="1742105095476" duration="325000" />
-    </task>
-    <task id="LOCAL-00033" summary="autoclass 제거후 빌드">
-      <option name="closed" value="true" />
-      <created>1742051070500</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1742051070500</updated>
-    </task>
-    <task id="LOCAL-00034" summary="이상하다... pyhwpx도 거시기해야 하 나?">
-      <option name="closed" value="true" />
-      <created>1742051699273</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1742051699273</updated>
+      <workItem from="1742105095476" duration="635000" />
     </task>
     <task id="LOCAL-00035" summary="pyhwpx만 다시 빼고 시도">
       <option name="closed" value="true" />
@@ -495,7 +467,23 @@
       <option name="project" value="LOCAL" />
       <updated>1742066001944</updated>
     </task>
-    <option name="localTasksCounter" value="82" />
+    <task id="LOCAL-00082" summary="셀 안에서 insert_picture 메서드 실행시, 셀의 안여백을 고려하여 이미지를 조절하는 코드 추가">
+      <option name="closed" value="true" />
+      <created>1742105640296</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1742105640296</updated>
+    </task>
+    <task id="LOCAL-00083" summary="insert_picture 업데이트 정도면 0.45로 버전업 해도 되지.">
+      <option name="closed" value="true" />
+      <created>1742105706856</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1742105706856</updated>
+    </task>
+    <option name="localTasksCounter" value="84" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -513,8 +501,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="api.rst에 :module: 추가" />
-    <MESSAGE value="api.rst 바꿔봄" />
     <MESSAGE value="할루시네이션...ㅜ" />
     <MESSAGE value="numpy를 docs/req에 추가" />
     <MESSAGE value="pandas pyperclip pywin32 pillow 전부 추가함를 docs/req에 추가" />
@@ -538,7 +524,9 @@
     <MESSAGE value="static에서 win32com 삭제" />
     <MESSAGE value="echo 대신 touch" />
     <MESSAGE value="문서 개선" />
-    <option name="LAST_COMMIT_MESSAGE" value="문서 개선" />
+    <MESSAGE value="셀 안에서 insert_picture 메서드 실행시, 셀의 안여백을 고려하여 이미지를 조절하는 코드 추가" />
+    <MESSAGE value="insert_picture 업데이트 정도면 0.45로 버전업 해도 되지." />
+    <option name="LAST_COMMIT_MESSAGE" value="insert_picture 업데이트 정도면 0.45로 버전업 해도 되지." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/pyhwpx$pyhwpx__Doctests.coverage" NAME="pyhwpx 내 Doctests 커버리지 결과" MODIFIED="1742038027100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

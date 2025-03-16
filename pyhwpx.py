@@ -40,7 +40,7 @@ if sys.platform == 'win32':
         sys.stderr = old_stderr
         devnull.close()
 
-__version__ = "0.45.0"
+__version__ = "0.45.1"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -1290,7 +1290,7 @@ class Hwp:
             >>> hwp = Hwp()
             >>> hwp.open("./example.hwpx")
             >>> hwp.Path
-            C:\Users\User\desktop\example.hwpx
+            C:/Users/User/desktop/example.hwpx
         """
         return self.hwp.Path
 
