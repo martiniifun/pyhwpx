@@ -40,7 +40,7 @@ if sys.platform == 'win32':
         sys.stderr = old_stderr
         devnull.close()
 
-__version__ = "0.44.2"
+__version__ = "0.45.0"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
