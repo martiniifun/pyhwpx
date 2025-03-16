@@ -31,12 +31,11 @@ extensions = [
     'sphinx.ext.duration',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinx.ext.todo',
 ]
 templates_path = ['_templates']
 exclude_patterns = []
 
-language = 'ko'
+language = 'en'
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

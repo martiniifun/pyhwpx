@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="api.rst를 이것저것 더해봄">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/source/api.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/api.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/source/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/conf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

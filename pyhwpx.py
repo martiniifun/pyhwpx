@@ -41,7 +41,7 @@ if sys.platform == 'win32':
         sys.stderr = old_stderr
         devnull.close()
 
-__version__ = "0.45.5"
+__version__ = "0.45.6"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -78,6 +78,7 @@ def addr_to_tuple(cell_address: str):
         >>> print(addr_to_tuple("AAA100000"))
         (100000, 703)
     """
+
     # 정규표현식을 이용해 문자 부분(열), 숫자 부분(행)을 분리
     match = re.match(r"^([A-Z]+)(\d+)$", cell_address.upper())
     if not match:
@@ -2200,6 +2201,7 @@ class Hwp:
         표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 지정하는 메서드. (표 안에서만 실행가능)
         단, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 적용되지 않음.
         차례대로 왼쪽, 오른쪽, 상단, 하단의 여백을 밀리미터(기본값) 또는 HwpUnit 단위로 지정.
+
         :param left: 셀의 좌측 안여백
         :param right: 셀의 우측 안여백
         :param top: 셀의 상단 안여백
@@ -2231,6 +2233,7 @@ class Hwp:
         표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 조회하는 메서드. (표 안에서만 실행가능)
         단, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 조회되지 않음.
         차례대로 왼쪽, 오른쪽, 상단, 하단의 여백을 밀리미터로 지정.
+
         :param as_: 리턴값의 단위("mm" 또는 "hwpunit" 중 지정가능. 기본값은 "mm")
         :return: dict
         """
@@ -2258,6 +2261,7 @@ class Hwp:
         """
         표 내부 모든 셀의 안여백을 일괄설정하는 메서드.
         표 전체를 선택하지 않고 표 내부에 커서가 있기만 하면 모든 셀에 적용됨.
+
         :param left: 모든 셀의 좌측여백(mm)
         :param right: 모든 셀의 우측여백(mm)
         :param top: 모든 셀의 상단여백(mm)
