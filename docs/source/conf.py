@@ -42,30 +42,14 @@ language = 'ko'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "furo" # "alabaster" # "sphinx_rtd_theme" # 'alabaster'
+html_theme_options = {"base_url": "https://martiniifun.github.io/pyhwpx/"}
+html_baseurl = "https://martiniifun.github.io/pyhwpx/"
 html_static_path = ['_static']  # docs/source/_static, docs/build/html/_static
-# html_theme_options = {
-#     'collapse_navigation': True,
-#     'sticky_navigation': True,
-#     'navigation_depth': 4,
-#     'style_external_links': True
-# }
-# html_sidebars = {
-#     "**": [
-#         "sidebar/scroll-start.html",
-#         "sidebar/brand.html",
-#         "sidebar/search.html",
-#         "sidebar/navigation.html",
-#         "sidebar/ethical-ads.html",
-#         "sidebar/scroll-end.html",
-#     ]
-# }
-# autodoc_preserve_defaults = True
 autodoc_member_order = 'bysource'
 autoclass_member_order = 'bysource'
 autosummary_generate = True
 autodoc_inherit_docstrings = True
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
-# if on_rtd:
 MOCK_MODULES = ["win32com", "win32com.client", "pythoncom", "pywintypes"]
 sys.modules.update((mod_name, MagicMock()) for mod_name in MOCK_MODULES)
 autodoc_mock_imports = ["pywin32", "numpy", "pandas", "pyperclip", "pillow"]
