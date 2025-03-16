@@ -1,6 +1,0 @@
-numpy
-pandas
-pywin32
-openpyxl
-pyperclip
-Pillow
