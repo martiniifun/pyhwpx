@@ -187,7 +187,7 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><div class="sidebar-scroll"><a class="sidebar-brand" href="index.html">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
   <span class="sidebar-brand-text">pyhwpx 0.45.5 문서</span>
@@ -197,7 +197,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
-<div id="searchbox"></div><div class="sidebar-tree">
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="usage.html">기본 사용법</a></li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -208,6 +208,7 @@
 
 </div>
 </div>
+
       </div>
       
     </div>
@@ -1313,13 +1314,21 @@ False : 줄표 삽입하지 않음</p></li>
 <span class="sig-name descname"><span class="pre">set_cell_margin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'mm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hwpunit'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mm'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyhwpx.Hwp.set_cell_margin" title="Link to this definition">¶</a></dt>
 <dd><p>표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 지정하는 메서드. (표 안에서만 실행가능)
 단, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 적용되지 않음.
-차례대로 왼쪽, 오른쪽, 상단, 하단의 여백을 밀리미터(기본값) 또는 HwpUnit 단위로 지정.
-:param left: 셀의 좌측 안여백
-:param right: 셀의 우측 안여백
-:param top: 셀의 상단 안여백
-:param bottom: 셀의 하단 안여백
-:param <a href="#id5"><span class="problematic" id="id6">as_</span></a>: 입력단위. [“mm”, “hwpunit”] 중 기본값은 “mm”
-:return: 성공시 True, 실패시 False를 리턴함</p>
+차례대로 왼쪽, 오른쪽, 상단, 하단의 여백을 밀리미터(기본값) 또는 HwpUnit 단위로 지정.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – 셀의 좌측 안여백</p></li>
+<li><p><strong>right</strong> – 셀의 우측 안여백</p></li>
+<li><p><strong>top</strong> – 셀의 상단 안여백</p></li>
+<li><p><strong>bottom</strong> – 셀의 하단 안여백</p></li>
+<li><p><strong>as</strong> – 입력단위. [“mm”, “hwpunit”] 중 기본값은 “mm”</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>성공시 True, 실패시 False를 리턴함</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1327,22 +1336,36 @@ False : 줄표 삽입하지 않음</p></li>
 <span class="sig-name descname"><span class="pre">get_cell_margin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'mm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hwpunit'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mm'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></span><a class="headerlink" href="#pyhwpx.Hwp.get_cell_margin" title="Link to this definition">¶</a></dt>
 <dd><p>표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 조회하는 메서드. (표 안에서만 실행가능)
 단, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 조회되지 않음.
-차례대로 왼쪽, 오른쪽, 상단, 하단의 여백을 밀리미터로 지정.
-:param <a href="#id7"><span class="problematic" id="id8">as_</span></a>: 리턴값의 단위(“mm” 또는 “hwpunit” 중 지정가능. 기본값은 “mm”)
-:return: dict</p>
+차례대로 왼쪽, 오른쪽, 상단, 하단의 여백을 밀리미터로 지정.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>as</strong> – 리턴값의 단위(“mm” 또는 “hwpunit” 중 지정가능. 기본값은 “mm”)</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.set_table_inside_margin">
 <span class="sig-name descname"><span class="pre">set_table_inside_margin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'mm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hwpunit'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mm'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyhwpx.Hwp.set_table_inside_margin" title="Link to this definition">¶</a></dt>
 <dd><p>표 내부 모든 셀의 안여백을 일괄설정하는 메서드.
-표 전체를 선택하지 않고 표 내부에 커서가 있기만 하면 모든 셀에 적용됨.
-:param left: 모든 셀의 좌측여백(mm)
-:param right: 모든 셀의 우측여백(mm)
-:param top: 모든 셀의 상단여백(mm)
-:param bottom: 모든 셀의 하단여백(mm)
-:param <cite>as_</cite>: 입력단위. “mm”, “hwpunit” 중 택일. 기본값은 “mm”
-:return: 성공시 True, 실패시 False를 리턴</p>
+표 전체를 선택하지 않고 표 내부에 커서가 있기만 하면 모든 셀에 적용됨.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – 모든 셀의 좌측여백(mm)</p></li>
+<li><p><strong>right</strong> – 모든 셀의 우측여백(mm)</p></li>
+<li><p><strong>top</strong> – 모든 셀의 상단여백(mm)</p></li>
+<li><p><strong>bottom</strong> – 모든 셀의 하단여백(mm)</p></li>
+<li><p><strong>as_</strong> – 입력단위. “mm”, “hwpunit” 중 택일. 기본값은 “mm”</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>성공시 True, 실패시 False를 리턴</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1395,7 +1418,7 @@ False : 줄표 삽입하지 않음</p></li>
 <dt class="sig sig-object py" id="pyhwpx.Hwp.get_col_width">
 <span class="sig-name descname"><span class="pre">get_col_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'mm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hwpunit'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'point'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'inch'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.get_col_width" title="Link to this definition">¶</a></dt>
 <dd><p>현재 캐럿이 위치한 셀(칼럼)의 너비를 리턴하는 메서드.
-기본 단위는 mm이지만, <a href="#id9"><span class="problematic" id="id10">as_</span></a> 파라미터를 사용하여 단위를 hwpunit이나 point, inch 등으로 변경 가능하다.
+기본 단위는 mm이지만, <a href="#id5"><span class="problematic" id="id6">as_</span></a> 파라미터를 사용하여 단위를 hwpunit이나 point, inch 등으로 변경 가능하다.
 :param <cite>as_</cite>: 리턴값의 단위(mm, HwpUnit, Pt, Inch 등 4종류)
 :return:</p>
 </dd></dl>
@@ -1473,7 +1496,7 @@ False : 줄표 삽입하지 않음</p></li>
 <dt class="sig sig-object py" id="pyhwpx.Hwp.get_table_width">
 <span class="sig-name descname"><span class="pre">get_table_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'mm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hwpunit'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'point'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'inch'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.get_table_width" title="Link to this definition">¶</a></dt>
 <dd><p>현재 캐럿이 속한 표의 너비(mm)를 리턴함.
-이 때 수치의 단위는 <a href="#id11"><span class="problematic" id="id12">as_</span></a> 파라미터를 통해 변경 가능하며, “mm”, “HwpUnit”, “Pt”, “Inch” 등을 쓸 수 있다.
+이 때 수치의 단위는 <a href="#id7"><span class="problematic" id="id8">as_</span></a> 파라미터를 통해 변경 가능하며, “mm”, “HwpUnit”, “Pt”, “Inch” 등을 쓸 수 있다.
 :return: 표의 너비(mm)</p>
 </dd></dl>
 
@@ -1760,7 +1783,7 @@ get_pagedef_as_dict 메서드를 추천한다.</p>
 <dd><p>현재 페이지의 용지정보를 dict 형태로 리턴한다.
 dict의 각 값은 밀리미터 단위로 변환된 값이며,
 set_pagedef 실행시 내부적으로 HWPUnit으로 자동변환하여 적용한다.
-(<a href="#id13"><span class="problematic" id="id14">as_</span></a> 파라미터를 “eng”로 변경하면 원래 영문 아이템명의 사전을 리턴한다.)
+(<a href="#id9"><span class="problematic" id="id10">as_</span></a> 파라미터를 “eng”로 변경하면 원래 영문 아이템명의 사전을 리턴한다.)
 :return:</p>
 <blockquote>
 <div><p>현재 페이지의 용지정보(dict)
