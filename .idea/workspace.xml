@@ -4,8 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment=".gitignore 업데이트! 전부 푸쉬해!">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="save_image 수정(img.png 기본값으로, 기본동작은 덮어쓰기, find_ctrl 대신 select_ctrl로.">
+      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/SOURCES.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/dependency_links.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/dependency_links.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/requires.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/requires.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/top_level.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/top_level.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,14 +103,7 @@
       <workItem from="1742094814127" duration="59000" />
       <workItem from="1742105095476" duration="6755000" />
       <workItem from="1742117554060" duration="785000" />
-    </task>
-    <task id="LOCAL-00043" summary=".readthedocs.yaml에서 python-install을 빼보았다">
-      <option name="closed" value="true" />
-      <created>1742055002485</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
-      <option name="project" value="LOCAL" />
-      <updated>1742055002485</updated>
+      <workItem from="1742143739098" duration="611000" />
     </task>
     <task id="LOCAL-00044" summary="제발돼라2">
       <option name="closed" value="true" />
@@ -491,7 +489,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742122803226</updated>
     </task>
-    <option name="localTasksCounter" value="92" />
+    <task id="LOCAL-00092" summary="save_image 수정(img.png 기본값으로, 기본동작은 덮어쓰기, find_ctrl 대신 select_ctrl로.">
+      <option name="closed" value="true" />
+      <created>1742143906972</created>
+      <option name="number" value="00092" />
+      <option name="presentableId" value="LOCAL-00092" />
+      <option name="project" value="LOCAL" />
+      <updated>1742143906973</updated>
+    </task>
+    <option name="localTasksCounter" value="93" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -512,7 +518,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/docs/build/html" />
     </ignored-roots>
-    <MESSAGE value="pyhwpx도 드디어 만지는구나... 다 돼 간다" />
     <MESSAGE value="이젠 정말 모르겠다. 잠도 오지 않네..." />
     <MESSAGE value="마지막 방법이다." />
     <MESSAGE value="깃헙페이지로 간다." />
@@ -537,7 +542,8 @@
     <MESSAGE value="버전업" />
     <MESSAGE value="문서페이지 업데이트" />
     <MESSAGE value="작은 수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="작은 수정" />
+    <MESSAGE value="save_image 수정(img.png 기본값으로, 기본동작은 덮어쓰기, find_ctrl 대신 select_ctrl로." />
+    <option name="LAST_COMMIT_MESSAGE" value="save_image 수정(img.png 기본값으로, 기본동작은 덮어쓰기, find_ctrl 대신 select_ctrl로." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/pyhwpx$pyhwpx__Doctests.coverage" NAME="pyhwpx 내 Doctests 커버리지 결과" MODIFIED="1742038027100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
