@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="색인" href="../genindex.html" /><link rel="search" title="검색" href="../search.html" />
+<link rel="index" title="색인" href="../genindex.html" /><link rel="search" title="검색" href="../search.html" /><link rel="prev" title="API" href="../api.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>pyhwpx.Hwp - pyhwpx 0.44.9 문서</title>
+        <title>pyhwpx.Hwp - pyhwpx 0.45.5 문서</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">pyhwpx 0.44.9 문서</div></a>
+      <a href="../index.html"><div class="brand">pyhwpx 0.45.5 문서</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">pyhwpx 0.44.9 문서</span>
+  <span class="sidebar-brand-text">pyhwpx 0.45.5 문서</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="검색" name="q" aria-label="검색">
@@ -198,9 +198,12 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">기본 사용법</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../api.html">API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">pyhwpx.Hwp</a></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -1836,6 +1839,12 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PutMetatagNameText</span></code>(tag, text)</p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.PutOutlinleNumber" title="pyhwpx.Hwp.PutOutlinleNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PutOutlinleNumber</span></code></a>()</p></td>
+<td><p>개요번호 삽입/제거 토글</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.PutParaNumber" title="pyhwpx.Hwp.PutParaNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PutParaNumber</span></code></a>()</p></td>
+<td><p>문단번호 삽입/제거 토글</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.QuickCommandRun" title="pyhwpx.Hwp.QuickCommandRun"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QuickCommandRun</span></code></a>()</p></td>
 <td><p>입력 자동 명령 동작</p></td>
 </tr>
@@ -2049,8 +2058,8 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.SendBrowserText" title="pyhwpx.Hwp.SendBrowserText"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SendBrowserText</span></code></a>()</p></td>
 <td><p>브라우저로 보내기</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.SetBarCodeImage" title="pyhwpx.Hwp.SetBarCodeImage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SetBarCodeImage</span></code></a>(lp_image_path, pgno, index, ...)</p></td>
-<td><p>작동하지 않는다.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SetBarCodeImage</span></code>(lp_image_path, pgno, index, ...)</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.SetCurFieldName" title="pyhwpx.Hwp.SetCurFieldName"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SetCurFieldName</span></code></a>(field[, option, direction, memo])</p></td>
 <td><p>현재 캐럿이 위치하는 곳의 필드이름을 설정한다.</p></td>
@@ -2275,7 +2284,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.SoftKeyboard" title="pyhwpx.Hwp.SoftKeyboard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SoftKeyboard</span></code></a>()</p></td>
-<td><p>보기</p></td>
+<td><p>소프트키보드 보기 토글</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SolarToLunar</span></code>(s_year, s_month, s_day, l_year, ...)</p></td>
 <td><p></p></td>
@@ -2547,8 +2556,8 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.TableResizeExRight" title="pyhwpx.Hwp.TableResizeExRight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TableResizeExRight</span></code></a>()</p></td>
 <td><p>셀 크기 변경: 셀 오른쪽.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TableResizeExUp</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.TableResizeExUp" title="pyhwpx.Hwp.TableResizeExUp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TableResizeExUp</span></code></a>()</p></td>
+<td><p>셀 크기 변경: 셀 위쪽.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.TableResizeLeft" title="pyhwpx.Hwp.TableResizeLeft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TableResizeLeft</span></code></a>()</p></td>
 <td><p>셀 크기 변경</p></td>
@@ -2622,8 +2631,8 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.TopTabFrameClose" title="pyhwpx.Hwp.TopTabFrameClose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TopTabFrameClose</span></code></a>()</p></td>
 <td><p>위쪽 작업창 감추기</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnSelectCtrl</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.UnSelectCtrl" title="pyhwpx.Hwp.UnSelectCtrl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnSelectCtrl</span></code></a>()</p></td>
+<td><p>선택중인 컨트롤 선택해제</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.Undo" title="pyhwpx.Hwp.Undo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Undo</span></code></a>()</p></td>
 <td><p>되살리기</p></td>
@@ -2662,10 +2671,10 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>메모 안내선 표시([보기-메모-메모 안내선 표시]메뉴와 동일)</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.ViewOptionPaper" title="pyhwpx.Hwp.ViewOptionPaper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ViewOptionPaper</span></code></a>()</p></td>
-<td><p>쪽 윤곽 보기</p></td>
+<td><p>쪽 윤곽 보기/숨기기</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.ViewOptionParaMark" title="pyhwpx.Hwp.ViewOptionParaMark"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ViewOptionParaMark</span></code></a>()</p></td>
-<td><p>문단 부호</p></td>
+<td><p>문단 부호 보기/숨기기</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.ViewOptionPicture" title="pyhwpx.Hwp.ViewOptionPicture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ViewOptionPicture</span></code></a>()</p></td>
 <td><p>그림 보이기/숨기기([보기-그림]메뉴와 동일)</p></td>
@@ -2874,8 +2883,8 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">file_translate</span></code>(cur_lang, trans_lang)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill_addr_field</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.fill_addr_field" title="pyhwpx.Hwp.fill_addr_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill_addr_field</span></code></a>()</p></td>
+<td><p>현재 표 안에서 모든 셀에 엑셀 셀주소 스타일(&quot;A1&quot;)의 셀필드를 채우는 메서드</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill_area_type</span></code>(fill_area)</p></td>
 <td><p></p></td>
@@ -2932,7 +2941,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>현재 캐럿이 위치한 셀(칼럼)의 너비를 리턴하는 메서드.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.get_ctrl_pos" title="pyhwpx.Hwp.get_ctrl_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ctrl_pos</span></code></a>([ctrl, option, as_tuple])</p></td>
-<td><p>특정 컨트롤의 앵커(빨간 조판부호) 좌표를 리턴하는 메서드. 한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함 :param ctrl: 컨트롤 오브젝트. 특정하지 않으면 현재 선택된 컨트롤의 좌표를 리턴 :type ctrl: Any :param option:     &quot;표안의 표&quot;처럼 컨트롤이 중첩된 경우에 어느 좌표를 리턴할지 결정할 수 있음     0: 현재 컨트롤이 포함된 리스트 기준으로 좌표 리턴     1: 현재 컨트롤을 포함하는 최상위 컨트롤 기준의 좌표 리턴 :type option: int :param as_tuple:     리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True     <cite>as_tuple=False</cite> 의 경우에는 ListParaPos 파라미터셋 자체를 리턴 :type as_tuple: bool :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; # 2x2표의 A1셀 안에 2x2표를 삽입하고, 표안의 표를 선택한 상태에서     &gt;&gt;&gt; # 컨트롤이 포함된 영역의 좌표를 리턴하려면(가장 많이 쓰임)     &gt;&gt;&gt; hwp.get_ctrl_pos() (3, 0, 0)     &gt;&gt;&gt; # 현재컨트롤을 포함한 최상위컨트롤의 본문기준 좌표를 리턴하려면     &gt;&gt;&gt; hwp.get_ctrl_pos(option=1) (0, 0, 16)     &gt;&gt;&gt; # 특정 컨트롤의 위치를 저장해 뒀다가 해당 위치로 이동하고 싶은 경우     &gt;&gt;&gt; pos = hwp.get_ctrl_pos(hwp.CurSelectedCtrl)  # 좌표 저장     &gt;&gt;&gt; # 모종의 작업으로 컨트롤 위치가 바뀌더라도, 컨트롤을 찾아갈 수 있음     &gt;&gt;&gt; hwp.set_pos(<a href="#id3"><span class="problematic" id="id4">*</span></a>pos)  # 해당 컨트롤 앞으로 이동함 True     &gt;&gt;&gt; # 특정 컨트롤 위치 앞으로 이동하기 액션은 아래처럼도 실행 가능     &gt;&gt;&gt; hwp.move_to_ctrl(hwp.ctrl_list[-1]) True.</p></td>
+<td><p>특정 컨트롤의 앵커(빨간 조판부호) 좌표를 리턴하는 메서드.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.get_cur_field_name" title="pyhwpx.Hwp.get_cur_field_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cur_field_name</span></code></a>([option])</p></td>
 <td><p>현재 캐럿이 위치하는 곳의 필드이름을 구한다.</p></td>
@@ -2959,7 +2968,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>현재 커서가 위치한 문단의 글머리표/문단번호/개요번호를 추출한다.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.get_image_info" title="pyhwpx.Hwp.get_image_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_image_info</span></code></a>([ctrl])</p></td>
-<td><p>이미지 컨트롤의 원본 그림의 이름과 원본 그림의 크기 정보를 추출하는 메서드 :param ctrl: 아래아한글의 이미지 컨트롤. ctrl을 지정하지 않으면 현재 선택된 이미지의 정보를 추출 :return: 해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트 :rtype: dict[&quot;name&quot;:str, &quot;size&quot;:list[int, int]] :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; # 이미지 선택 상태에서     &gt;&gt;&gt; hwp.get_image_info()     {'name': 'tmpmj2md6uy', 'size': [200, 200]}     &gt;&gt;&gt; # 문서 마지막그림 정보     &gt;&gt;&gt; ctrl = [i for i in hwp.ctrl_list if i.UserDesc == &quot;그림&quot;][-1]     &gt;&gt;&gt; hwp.get_image_info(ctrl)     {'name': 'tmpxk_5noth', 'size': [1920, 1080]}.</p></td>
+<td><p>이미지 컨트롤의 원본 그림의 이름과 원본 그림의 크기 정보를 추출하는 메서드</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.get_into_nth_table" title="pyhwpx.Hwp.get_into_nth_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_into_nth_table</span></code></a>([n, select_cell])</p></td>
 <td><p>문서 n번째 표의 첫 번째 셀로 이동하는 함수.</p></td>
@@ -2968,7 +2977,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>표 캡션(정확히는 표번호가 있는 리스트공간)으로 이동하는 메서드.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.get_linespacing" title="pyhwpx.Hwp.get_linespacing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linespacing</span></code></a>([method])</p></td>
-<td><p>현재 캐럿 위치의 줄간격(%) 리턴. 단, 줄간격 기준은 &quot;글자에 따라(%)&quot; 로 설정되어 있어야 하며, &quot;글자에 따라&quot;가 아닌 경우에는 method 파라미터를 실제 옵션과 일치시켜야 함. :param method:     줄간격 단위기준. 일치하지 않아도 값은 출력되지만, 단위를 모르게 됨.. Fixed: 고정값(포인트 단위)     Percent: 글자에 따라(기본값, %)     BetweenLines: 여백만 지정(포인트 단위)     AtLeast: 최소(포인트 단위) :type method: str :return: 현재 캐럿이 위치한 문단의 줄간격(% 또는 Point) :rtype: int :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; hwp.get_linespacing() 160     &gt;&gt;&gt; # 줄간격을 &quot;최소&quot; 기준 17.0point로 설정했다면, 아래처럼 실행해야 함     &gt;&gt;&gt; hwp.get_linespacing(&quot;AtLeast&quot;) 170.</p></td>
+<td><p>현재 캐럿 위치의 줄간격(%) 리턴.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.get_markpen_color" title="pyhwpx.Hwp.get_markpen_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_markpen_color</span></code></a>()</p></td>
 <td><p>현재 선택된 영역의 형광펜 색(RGB)을 튜플로 리턴하는 메서드 :return:</p></td>
@@ -2992,7 +3001,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>현재 페이지의 용지정보 파라미터셋을 리턴한다.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.get_pagedef_as_dict" title="pyhwpx.Hwp.get_pagedef_as_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pagedef_as_dict</span></code></a>([as_])</p></td>
-<td><p>현재 페이지의 용지정보를 dict 형태로 리턴한다. dict의 각 값은 밀리미터 단위로 변환된 값이며, set_pagedef 실행시 내부적으로 HWPUnit으로 자동변환하여 적용한다. (<a href="#id11"><span class="problematic" id="id12">as_</span></a> 파라미터를 &quot;eng&quot;로 변경하면 원래 영문 아이템명의 사전을 리턴한다.) :return:     현재 페이지의 용지정보(dict)     각 키의 원래 아이템명은 아래와 같다.</p></td>
+<td><p>현재 페이지의 용지정보를 dict 형태로 리턴한다. dict의 각 값은 밀리미터 단위로 변환된 값이며, set_pagedef 실행시 내부적으로 HWPUnit으로 자동변환하여 적용한다. (<a href="#id9"><span class="problematic" id="id10">as_</span></a> 파라미터를 &quot;eng&quot;로 변경하면 원래 영문 아이템명의 사전을 리턴한다.) :return:     현재 페이지의 용지정보(dict)     각 키의 원래 아이템명은 아래와 같다.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.get_pos" title="pyhwpx.Hwp.get_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pos</span></code></a>()</p></td>
 <td><p>캐럿의 위치를 얻어온다.</p></td>
@@ -3163,7 +3172,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>현재 캐럿 위치에 문서파일을 삽입한다.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.insert_background_picture" title="pyhwpx.Hwp.insert_background_picture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">insert_background_picture</span></code></a>(path[, ...])</p></td>
-<td><p><a href="#id5"><span class="problematic" id="id6">**</span></a>셀**에 배경이미지를 삽입한다. CellBorderFill의 SetItem 중 FillAttr 의 SetItem FileName 에 이미지의 binary data를 지정해 줄 수가 없어서 만든 함수다. 기타 배경에 대한 다른 조정은 Action과 ParameterSet의 조합으로 가능하다.</p></td>
+<td><p><a href="#id3"><span class="problematic" id="id4">**</span></a>셀**에 배경이미지를 삽입한다. CellBorderFill의 SetItem 중 FillAttr 의 SetItem FileName 에 이미지의 binary data를 지정해 줄 수가 없어서 만든 함수다. 기타 배경에 대한 다른 조정은 Action과 ParameterSet의 조합으로 가능하다.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.insert_ctrl" title="pyhwpx.Hwp.insert_ctrl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">insert_ctrl</span></code></a>(ctrl_id, initparam)</p></td>
 <td><p>현재 캐럿 위치에 컨트롤을 삽입한다.</p></td>
@@ -3402,11 +3411,11 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.select_text" title="pyhwpx.Hwp.select_text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_text</span></code></a>([spara, spos, epara, epos, slist])</p></td>
 <td><p>특정 범위의 텍스트를 블록선택한다.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_text_by_get_pos</span></code>(s_getpos, e_getpos)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.select_text_by_get_pos" title="pyhwpx.Hwp.select_text_by_get_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_text_by_get_pos</span></code></a>(s_getpos, e_getpos)</p></td>
+<td><p>hwp.get_pos()로 얻은 두 튜플 사이의 텍스트를 선택하는 메서드.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.set_bar_code_image" title="pyhwpx.Hwp.set_bar_code_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_bar_code_image</span></code></a>(lp_image_path, pgno, ...)</p></td>
-<td><p>작동하지 않는다.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_bar_code_image</span></code>(lp_image_path, pgno, ...)</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.set_cell_margin" title="pyhwpx.Hwp.set_cell_margin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_cell_margin</span></code></a>([left, right, top, bottom, as_])</p></td>
 <td><p>표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 지정하는 메서드.</p></td>
@@ -3418,7 +3427,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>칼럼의 너비를 변경할 수 있는 메서드.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.set_cur_field_name" title="pyhwpx.Hwp.set_cur_field_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_cur_field_name</span></code></a>(field[, option, ...])</p></td>
-<td><p>현재 캐럿이 위치하는 곳의 필드이름을 설정한다.</p></td>
+<td><p>현재 캐럿이 위치하는 곳의 필드이름을 설정한다. GetFieldList()의 옵션 중에 4(hwpFieldSelection) 옵션은 사용하지 않는다. (표의 셀에 셀필드를 매기고 싶은 경우 사용한다.) :param field:     데이터 필드 이름 :param option:     다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다. 1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)     2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere) :param direction:     누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다. :param memo:     누름틀 필드의 메모. 누름틀 필드일 때만 유효하다. :return:     성공하면 True, 실패하면 False.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_cur_metatag_name</span></code>(tag)</p></td>
 <td><p></p></td>
@@ -3436,7 +3445,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>글자모양을 메서드 형태로 수정할 수 있는 메서드.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.set_linespacing" title="pyhwpx.Hwp.set_linespacing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linespacing</span></code></a>([value, method])</p></td>
-<td><p>현재 캐럿 위치의 문단 또는 선택 블록의 줄간격(%) 설정 :param value: 줄간격 값(&quot;Percent&quot;인 경우에는 %, 그 외에는 point 값으로 적용됨). 기본값은 160(%) :type value: int|float :param method:     줄간격 단위기준. method가 일치해야 정상적으로 적용됨. Fixed: 고정값(포인트 단위)     Percent: 글자에 따라(기본값, %)     BetweenLines: 여백만 지정(포인트 단위)     AtLeast: 최소(포인트 단위) :type method: str :return: 성공시 True, 실패시 False를 리턴 :rtype: bool :example:     &gt;&gt;&gt; from pyhwpx import Hwp     &gt;&gt;&gt; hwp = Hwp()     &gt;&gt;&gt; hwp.SelectAll()  # 전체선택     &gt;&gt;&gt; hwp.set_linespacing(160)  # 본문 모든 문단의 줄간격을 160%로 변경 True     &gt;&gt;&gt; hwp.set_linespacing(20, method=&quot;BetweenLines&quot;)  # 본문 모든 문단의 줄간격을 &quot;여백만 지정&quot;으로 20pt 적용 True.</p></td>
+<td><p>현재 캐럿 위치의 문단 또는 선택 블록의 줄간격(%) 설정</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.set_message_box_mode" title="pyhwpx.Hwp.set_message_box_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_message_box_mode</span></code></a>(mode)</p></td>
 <td><p>한/글에서 쓰는 다양한 메시지박스가 뜨지 않고, 자동으로 특정 버튼을 클릭한 효과를 주기 위해 사용한다.</p></td>
@@ -3493,7 +3502,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>현재 조작중인 한/글 인스턴스의 백그라운드 숨김여부를 변경할 수 있다.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.shape_copy_paste" title="pyhwpx.Hwp.shape_copy_paste"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_copy_paste</span></code></a>([Type, cell_attr, ...])</p></td>
-<td><p>모양복사 메서드 :param Type: 글자, 문단, 글자&amp;문단 중에서 택일 :param cell_attr: 셀 속성 복사여부 :param cell_border: 셀 선 복사여부 :param cell_fill: 셀 음영 복사여부 :param cell_only: 셀만 복사할지, 내용도 복사할지 여부 :return: 성공시 True, 실패시 False를 리턴</p></td>
+<td><p>모양복사 메서드</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">side_type</span></code>(side_type)</p></td>
 <td><p></p></td>
@@ -3570,11 +3579,11 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">text_wrap_type</span></code>(text_wrap)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">un_select_ctrl</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyhwpx.Hwp.un_select_ctrl" title="pyhwpx.Hwp.un_select_ctrl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">un_select_ctrl</span></code></a>()</p></td>
+<td><p>선택중인 컨트롤 선택해제</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unfill_addr_field</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.unfill_addr_field" title="pyhwpx.Hwp.unfill_addr_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unfill_addr_field</span></code></a>()</p></td>
+<td><p>현재 캐럿이 들어있는 표의 셀필드를 모두 제거하는 메서드</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">v_align</span></code>(v_align)</p></td>
 <td><p></p></td>
@@ -3677,7 +3686,7 @@ hwp.RegisterModule(“FilePathCheckDLL”, “FilePathCheckerModule”) 메서�
 <td><p>HwpApplication의 XHwpDocuments 객체를 리턴한다.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyhwpx.Hwp.XHwpMessageBox" title="pyhwpx.Hwp.XHwpMessageBox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">XHwpMessageBox</span></code></a></p></td>
-<td><p>메시지박스 객체 리턴 :return:</p></td>
+<td><p>메시지박스 객체 리턴</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">XHwpODBC</span></code></p></td>
 <td><p></p></td>
@@ -4094,7 +4103,7 @@ LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색�
 <span class="gp">... </span>        <span class="n">hwp</span><span class="o">.</span><span class="n">DeleteCtrl</span><span class="p">(</span><span class="n">ctrl</span><span class="p">)</span>
 <span class="gp">... </span>    <span class="n">ctrl</span> <span class="o">=</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">Prev</span>
 <span class="gp">... </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;모든 그림을  삭제하였습니다.&quot;</span><span class="p">)</span>
-<span class="go">모든 그림의 `글자처럼 취급` 속성을 활성화하였습니다.</span>
+<span class="go">모든 그림을 삭제하였습니다.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># 아래처럼 for문과 hwp.ctrl_list로도 구현할 수 있음</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ctrl</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">hwp</span><span class="o">.</span><span class="n">ctrl_list</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">UserDesc</span> <span class="o">==</span> <span class="s2">&quot;그림&quot;</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># 역순 아니어도 무관.</span>
 <span class="gp">... </span>    <span class="n">hwp</span><span class="o">.</span><span class="n">DeleteCtrl</span><span class="p">(</span><span class="n">ctrl</span><span class="p">)</span>
@@ -4120,11 +4129,11 @@ LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색�
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;./example.hwpx&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;현재 이 문서의 총 페이지 수는 </span><span class="si">{</span><span class="n">hwp</span><span class="o">.</span><span class="n">PageCount</span><span class="si">}</span><span class="s2">입니다.&quot;</span><span class="p">)</span>
+<span class="go">현재 이 문서의 총 페이지 수는 20입니다.</span>
 </pre></div>
 </div>
 </dd>
 </dl>
-<p>현재 이 문서의 총 페이지 수는 20입니다.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -4141,6 +4150,14 @@ LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색�
 <span class="gp">&gt;&gt;&gt; </span><span class="n">val</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">ParaShape</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="s2">&quot;LineSpacing&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;현재 문단의 줄간격은 </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">%입니다.&quot;</span><span class="p">)</span>
 <span class="go">현재 문단의 줄간격은 160%입니다.</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 본문 모든 문단의 줄간격을 200%로 수정하기</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">SelectAll</span><span class="p">()</span>  <span class="c1"># 전체선택</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prop</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">ParaShape</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prop</span><span class="o">.</span><span class="n">SetItem</span><span class="p">(</span><span class="s2">&quot;LineSpacing&quot;</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">ParaShape</span> <span class="o">=</span> <span class="n">prop</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;본문 전체의 줄간격을 200%로 수정하였습니다.&quot;</span><span class="p">)</span>
+<span class="go">본문 전체의 줄간격을 200%로 수정하였습니다.</span>
 </pre></div>
 </div>
 </dd>
@@ -4150,50 +4167,90 @@ LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색�
 <dl class="py property">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.ParentCtrl">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParentCtrl</span></span><a class="headerlink" href="#pyhwpx.Hwp.ParentCtrl" title="Link to this definition">¶</a></dt>
-<dd><p>현재 선택되어 있거나, 캐럿이 들어있는 컨트롤을 포함하는 상위 컨트롤을 리턴한다.
-:return:</p>
+<dd><p>현재 선택되어 있거나, 캐럿이 들어있는 컨트롤을 포함하는 상위 컨트롤을 리턴한다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.Path">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Path</span></span><a class="headerlink" href="#pyhwpx.Hwp.Path" title="Link to this definition">¶</a></dt>
-<dd><p>현재 빈 문서가 아닌 경우, 열려 있는 문서의 파일명을 포함한 전체경로를 리턴한다.
-:return:</p>
+<dd><p>현재 빈 문서가 아닌 경우, 열려 있는 문서의 파일명을 포함한 전체경로를 리턴한다.</p>
+<dl class="field-list">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p>현재 문서의 전체경로</p>
+</dd>
+<dt class="field-even">반환 형식<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;./example.hwpx&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">Path</span>
+<span class="go">C:/Users/User/desktop/example.hwpx</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.SelectionMode">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SelectionMode</span></span><a class="headerlink" href="#pyhwpx.Hwp.SelectionMode" title="Link to this definition">¶</a></dt>
-<dd><p>현재 선택모드가 어떤 상태인지 리턴한다.
-:return:</p>
+<dd><p>현재 선택모드가 어떤 상태인지 리턴한다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.Version">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Version</span></span><a class="headerlink" href="#pyhwpx.Hwp.Version" title="Link to this definition">¶</a></dt>
-<dd><p>아래아한글 프로그램의 버전을 문자열로 리턴한다.
-:return:</p>
+<dd><p>아래아한글 프로그램의 버전을 문자열로 리턴한다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.ViewProperties">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ViewProperties</span></span><a class="headerlink" href="#pyhwpx.Hwp.ViewProperties" title="Link to this definition">¶</a></dt>
-<dd><p>현재 한/글 프로그램의 보기 속성 파라미터셋을 리턴한다.
-:return:</p>
+<dd><p>현재 한/글 프로그램의 보기 속성 파라미터셋을 리턴한다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.XHwpDocuments">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">XHwpDocuments</span></span><a class="headerlink" href="#pyhwpx.Hwp.XHwpDocuments" title="Link to this definition">¶</a></dt>
-<dd><p>HwpApplication의 XHwpDocuments 객체를 리턴한다.
-:return:</p>
+<dd><p>HwpApplication의 XHwpDocuments 객체를 리턴한다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.XHwpMessageBox">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">XHwpMessageBox</span></span><a class="headerlink" href="#pyhwpx.Hwp.XHwpMessageBox" title="Link to this definition">¶</a></dt>
-<dd><p>메시지박스 객체 리턴
-:return:</p>
+<dd><p>메시지박스 객체 리턴</p>
+<dl class="field-list simple">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -4203,8 +4260,12 @@ LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색�
 단, 기본으로 삽입되어 있는 두 개의 컨트롤인
 secd(섹션정의)와 cold(단정의) 두 개는 어차피 선택불가하므로
 ctrl_list에서 제외했다.
-(모든 컨트롤을 제거하는 등의 경우, 편의를 위함)
-:return:</p>
+(모든 컨트롤을 제거하는 등의 경우, 편의를 위함)</p>
+<dl class="field-list simple">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -4213,8 +4274,12 @@ ctrl_list에서 제외했다.
 <dd><p>현재 쪽번호를 리턴.
 1페이지에 있다면 1을 리턴한다.
 새쪽번호가 적용되어 있어도
-페이지의 인덱스를 리턴한다.
-:return:</p>
+페이지의 인덱스를 리턴한다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -4223,27 +4288,29 @@ ctrl_list에서 제외했다.
 <dd><p>현재 쪽번호를 리턴.
 1페이지에 있다면 1을 리턴한다.
 새쪽번호가 적용되어 있다면
-수정된 쪽번호를 리턴한다.
-:return:</p>
+수정된 쪽번호를 리턴한다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.get_ctrl_pos">
 <span class="sig-name descname"><span class="pre">get_ctrl_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_tuple</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.get_ctrl_pos" title="Link to this definition">¶</a></dt>
 <dd><p>특정 컨트롤의 앵커(빨간 조판부호) 좌표를 리턴하는 메서드.
-한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함
-:param ctrl: 컨트롤 오브젝트. 특정하지 않으면 현재 선택된 컨트롤의 좌표를 리턴
-:type ctrl: Any
-:param option:</p>
-<blockquote>
-<div><p>“표안의 표”처럼 컨트롤이 중첩된 경우에 어느 좌표를 리턴할지 결정할 수 있음
-0: 현재 컨트롤이 포함된 리스트 기준으로 좌표 리턴
-1: 현재 컨트롤을 포함하는 최상위 컨트롤 기준의 좌표 리턴</p>
-</div></blockquote>
+한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함</p>
 <dl class="field-list">
 <dt class="field-odd">매개변수<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>as_tuple</strong> (<em>bool</em>) – 리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True
-<cite>as_tuple=False</cite> 의 경우에는 ListParaPos 파라미터셋 자체를 리턴</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctrl</strong> (<em>Any</em>) – 컨트롤 오브젝트. 특정하지 않으면 현재 선택된 컨트롤의 좌표를 리턴</p></li>
+<li><p><strong>option</strong> (<em>int</em>) – “표안의 표”처럼 컨트롤이 중첩된 경우에 어느 좌표를 리턴할지 결정할 수 있음
+0: 현재 컨트롤이 포함된 리스트 기준으로 좌표 리턴
+1: 현재 컨트롤을 포함하는 최상위 컨트롤 기준의 좌표 리턴</p></li>
+<li><p><strong>as_tuple</strong> (<em>bool</em>) – 리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True
+<cite>as_tuple=False</cite> 의 경우에는 ListParaPos 파라미터셋 자체를 리턴</p></li>
+</ul>
 </dd>
 <dt class="field-even">Example<span class="colon">:</span></dt>
 <dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
@@ -4251,30 +4318,22 @@ ctrl_list에서 제외했다.
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># 2x2표의 A1셀 안에 2x2표를 삽입하고, 표안의 표를 선택한 상태에서</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># 컨트롤이 포함된 영역의 좌표를 리턴하려면(가장 많이 쓰임)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_ctrl_pos</span><span class="p">()</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-<dl>
-<dt>(3, 0, 0)</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 현재컨트롤을 포함한 최상위컨트롤의 본문기준 좌표를 리턴하려면</span>
+<span class="go">(3, 0, 0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 현재컨트롤을 포함한 최상위컨트롤의 본문기준 좌표를 리턴하려면</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_ctrl_pos</span><span class="p">(</span><span class="n">option</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd>
-<dt>(0, 0, 16)</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 특정 컨트롤의 위치를 저장해 뒀다가 해당 위치로 이동하고 싶은 경우</span>
+<span class="go">(0, 0, 16)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 특정 컨트롤의 위치를 저장해 뒀다가 해당 위치로 이동하고 싶은 경우</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">get_ctrl_pos</span><span class="p">(</span><span class="n">hwp</span><span class="o">.</span><span class="n">CurSelectedCtrl</span><span class="p">)</span>  <span class="c1"># 좌표 저장</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># 모종의 작업으로 컨트롤 위치가 바뀌더라도, 컨트롤을 찾아갈 수 있음</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_pos</span><span class="p">(</span><span class="o">*</span><span class="n">pos</span><span class="p">)</span>  <span class="c1"># 해당 컨트롤 앞으로 이동함</span>
-</pre></div>
-</div>
-</dd>
-<dt>True</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 특정 컨트롤 위치 앞으로 이동하기 액션은 아래처럼도 실행 가능</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 특정 컨트롤 위치 앞으로 이동하기 액션은 아래처럼도 실행 가능</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">move_to_ctrl</span><span class="p">(</span><span class="n">hwp</span><span class="o">.</span><span class="n">ctrl_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </dd>
 </dl>
-<p>True</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4282,77 +4341,68 @@ ctrl_list에서 제외했다.
 <span class="sig-name descname"><span class="pre">get_linespacing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Fixed'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Percent'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'BetweenLines'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'AtLeast'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Percent'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></span><a class="headerlink" href="#pyhwpx.Hwp.get_linespacing" title="Link to this definition">¶</a></dt>
 <dd><p>현재 캐럿 위치의 줄간격(%) 리턴.
 단, 줄간격 기준은 “글자에 따라(%)” 로 설정되어 있어야 하며,
-“글자에 따라”가 아닌 경우에는 method 파라미터를 실제 옵션과 일치시켜야 함.
-:param method:</p>
-<blockquote>
-<div><p>줄간격 단위기준. 일치하지 않아도 값은 출력되지만, 단위를 모르게 됨..
+“글자에 따라”가 아닌 경우에는 method 파라미터를 실제 옵션과 일치시켜야 함.</p>
+<dl class="field-list">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method</strong> (<em>str</em>) – 줄간격 단위기준. 일치하지 않아도 값은 출력되지만, 단위를 모르게 됨..
 Fixed: 고정값(포인트 단위)
 Percent: 글자에 따라(기본값, %)
 BetweenLines: 여백만 지정(포인트 단위)
 AtLeast: 최소(포인트 단위)</p>
-</div></blockquote>
-<dl class="field-list">
-<dt class="field-odd">반환<span class="colon">:</span></dt>
-<dd class="field-odd"><p>현재 캐럿이 위치한 문단의 줄간격(% 또는 Point)</p>
 </dd>
-<dt class="field-even">반환 형식<span class="colon">:</span></dt>
-<dd class="field-even"><p>int</p>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>현재 캐럿이 위치한 문단의 줄간격(% 또는 Point)</p>
 </dd>
-<dt class="field-odd">Example<span class="colon">:</span></dt>
-<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Example<span class="colon">:</span></dt>
+<dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_linespacing</span><span class="p">()</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-<dl>
-<dt>160</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 줄간격을 &quot;최소&quot; 기준 17.0point로 설정했다면, 아래처럼 실행해야 함</span>
+<span class="go">160</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 줄간격을 &quot;최소&quot; 기준 17.0point로 설정했다면, 아래처럼 실행해야 함</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_linespacing</span><span class="p">(</span><span class="s2">&quot;AtLeast&quot;</span><span class="p">)</span>
+<span class="go">170</span>
 </pre></div>
 </div>
 </dd>
 </dl>
-<p>170</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.set_linespacing">
 <span class="sig-name descname"><span class="pre">set_linespacing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">160</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Fixed'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Percent'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'BetweenLines'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'AtLeast'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Percent'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyhwpx.Hwp.set_linespacing" title="Link to this definition">¶</a></dt>
-<dd><p>현재 캐럿 위치의 문단 또는 선택 블록의 줄간격(%) 설정
-:param value: 줄간격 값(“Percent”인 경우에는 %, 그 외에는 point 값으로 적용됨). 기본값은 160(%)
-:type value: int|float
-:param method:</p>
-<blockquote>
-<div><p>줄간격 단위기준. method가 일치해야 정상적으로 적용됨.
+<dd><p>현재 캐럿 위치의 문단 또는 선택 블록의 줄간격(%) 설정</p>
+<dl class="field-list">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>int</em><em>|</em><em>float</em>) – 줄간격 값(“Percent”인 경우에는 %, 그 외에는 point 값으로 적용됨). 기본값은 160(%)</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – 줄간격 단위기준. method가 일치해야 정상적으로 적용됨.
 Fixed: 고정값(포인트 단위)
 Percent: 글자에 따라(기본값, %)
 BetweenLines: 여백만 지정(포인트 단위)
-AtLeast: 최소(포인트 단위)</p>
-</div></blockquote>
-<dl class="field-list">
-<dt class="field-odd">반환<span class="colon">:</span></dt>
-<dd class="field-odd"><p>성공시 True, 실패시 False를 리턴</p>
+AtLeast: 최소(포인트 단위)</p></li>
+</ul>
 </dd>
-<dt class="field-even">반환 형식<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>성공시 True, 실패시 False를 리턴</p>
 </dd>
-<dt class="field-odd">Example<span class="colon">:</span></dt>
-<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Example<span class="colon">:</span></dt>
+<dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">SelectAll</span><span class="p">()</span>  <span class="c1"># 전체선택</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_linespacing</span><span class="p">(</span><span class="mi">160</span><span class="p">)</span>  <span class="c1"># 본문 모든 문단의 줄간격을 160%로 변경</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_linespacing</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;BetweenLines&quot;</span><span class="p">)</span>  <span class="c1"># 본문 모든 문단의 줄간격을 &quot;여백만 지정&quot;으로 20pt 적용</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </dd>
 </dl>
-<dl>
-<dt>True</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_linespacing</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;BetweenLines&quot;</span><span class="p">)</span>  <span class="c1"># 본문 모든 문단의 줄간격을 &quot;여백만 지정&quot;으로 20pt 적용</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-<p>True</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4360,9 +4410,15 @@ AtLeast: 최소(포인트 단위)</p>
 <span class="sig-name descname"><span class="pre">is_empty_para</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyhwpx.Hwp.is_empty_para" title="Link to this definition">¶</a></dt>
 <dd><p>본문의 문단을 순회하면서 특정 서식을 적용할 때
 빈 문단에서 MoveNext~ 또는 MovePrev~ 등의 액션이 오작동하므로 이를 방지하기 위한 개발자용 헬퍼메서드.
-단독으로는 활용하지 말 것.
-:return: 빈 문단일 경우 제자리에서 True, 비어있지 않은 경우 False를 리턴
-:rtype: bool</p>
+단독으로는 활용하지 말 것.</p>
+<dl class="field-list simple">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p>빈 문단일 경우 제자리에서 True, 비어있지 않은 경우 False를 리턴</p>
+</dd>
+<dt class="field-even">반환 형식<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -4400,12 +4456,19 @@ hwp.get_field_list().split(”</p>
 <dt class="sig sig-object py" id="pyhwpx.Hwp.get_image_info">
 <span class="sig-name descname"><span class="pre">get_image_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.get_image_info" title="Link to this definition">¶</a></dt>
 <dd><p>이미지 컨트롤의 원본 그림의 이름과
-원본 그림의 크기 정보를 추출하는 메서드
-:param ctrl: 아래아한글의 이미지 컨트롤. ctrl을 지정하지 않으면 현재 선택된 이미지의 정보를 추출
-:return: 해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트
-:rtype: dict[“name”:str, “size”:list[int, int]]
-:example:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+원본 그림의 크기 정보를 추출하는 메서드</p>
+<dl class="field-list">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ctrl</strong> – 아래아한글의 이미지 컨트롤. ctrl을 지정하지 않으면 현재 선택된 이미지의 정보를 추출</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[“name”:str, “size”:list[int, int]]</p>
+</dd>
+<dt class="field-even">Example<span class="colon">:</span></dt>
+<dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># 이미지 선택 상태에서</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_image_info</span><span class="p">()</span>
@@ -4416,6 +4479,8 @@ hwp.get_field_list().split(”</p>
 <span class="go">{&#39;name&#39;: &#39;tmpxk_5noth&#39;, &#39;size&#39;: [1920, 1080]}</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -4426,29 +4491,47 @@ hwp.get_field_list().split(”</p>
 현재위치 이후 해당 스타일이 없거나,
 스타일이름/인덱스번호가 잘못된 경우
 False를 리턴
-참고사항 : API의 Goto는 1부터 시작하므로 메서드 내부에서 인덱스에 1을 더하고 있음
-:param style: 스타일이름 또는 스타일번호(첫 번째 스타일이 0)
-:return:</p>
+참고사항 : API의 Goto는 1부터 시작하므로 메서드 내부에서 인덱스에 1을 더하고 있음</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>style</strong> – 스타일이름 또는 스타일번호(첫 번째 스타일이 0)</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.get_into_table_caption">
 <span class="sig-name descname"><span class="pre">get_into_table_caption</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.get_into_table_caption" title="Link to this definition">¶</a></dt>
 <dd><p>표 캡션(정확히는 표번호가 있는 리스트공간)으로 이동하는 메서드.
-(추후 개선예정 : 캡션 스타일로 찾아가기 기능 추가할 것)
-:return: 성공시 True, 실패시 False를 리턴</p>
+(추후 개선예정 : 캡션 스타일로 찾아가기 기능 추가할 것)</p>
+<dl class="field-list simple">
+<dt class="field-odd">반환<span class="colon">:</span></dt>
+<dd class="field-odd"><p>성공시 True, 실패시 False를 리턴</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.shape_copy_paste">
 <span class="sig-name descname"><span class="pre">shape_copy_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'font'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'para'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'both'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'both'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_border</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_fill</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.shape_copy_paste" title="Link to this definition">¶</a></dt>
-<dd><p>모양복사 메서드
-:param Type: 글자, 문단, 글자&amp;문단 중에서 택일
-:param cell_attr: 셀 속성 복사여부
-:param cell_border: 셀 선 복사여부
-:param cell_fill: 셀 음영 복사여부
-:param cell_only: 셀만 복사할지, 내용도 복사할지 여부
-:return: 성공시 True, 실패시 False를 리턴</p>
+<dd><p>모양복사 메서드</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Type</strong> – 글자, 문단, 글자&amp;문단 중에서 택일</p></li>
+<li><p><strong>cell_attr</strong> – 셀 속성 복사여부</p></li>
+<li><p><strong>cell_border</strong> – 셀 선 복사여부</p></li>
+<li><p><strong>cell_fill</strong> – 셀 음영 복사여부</p></li>
+<li><p><strong>cell_only</strong> – 셀만 복사할지, 내용도 복사할지 여부</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>성공시 True, 실패시 False를 리턴</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -4505,9 +4588,15 @@ False를 리턴
 <dt class="sig sig-object py" id="pyhwpx.Hwp.set_style">
 <span class="sig-name descname"><span class="pre">set_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.set_style" title="Link to this definition">¶</a></dt>
 <dd><p>현재 캐럿이 위치한 문단의 스타일을 변경한다.
-스타일 입력은 style 인수로 정수값(스타일번호) 또는 문자열(스타일이름)을 넣으면 된다.
-:param style:
-:return:</p>
+스타일 입력은 style 인수로 정수값(스타일번호) 또는 문자열(스타일이름)을 넣으면 된다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>style</strong></p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -4515,6 +4604,18 @@ False를 리턴
 <span class="sig-name descname"><span class="pre">get_selected_range</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.get_selected_range" title="Link to this definition">¶</a></dt>
 <dd><p>선택한 범위의 셀주소를
 리스트로 리턴함</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyhwpx.Hwp.fill_addr_field">
+<span class="sig-name descname"><span class="pre">fill_addr_field</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.fill_addr_field" title="Link to this definition">¶</a></dt>
+<dd><p>현재 표 안에서 모든 셀에 엑셀 셀주소 스타일(“A1”)의 셀필드를 채우는 메서드</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyhwpx.Hwp.unfill_addr_field">
+<span class="sig-name descname"><span class="pre">unfill_addr_field</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.unfill_addr_field" title="Link to this definition">¶</a></dt>
+<dd><p>현재 캐럿이 들어있는 표의 셀필드를 모두 제거하는 메서드</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4651,7 +4752,7 @@ False : 줄표 삽입하지 않음</p></li>
 :param right: 셀의 우측 안여백
 :param top: 셀의 상단 안여백
 :param bottom: 셀의 하단 안여백
-:param <a href="#id13"><span class="problematic" id="id14">as_</span></a>: 입력단위. [“mm”, “hwpunit”] 중 기본값은 “mm”
+:param <a href="#id11"><span class="problematic" id="id12">as_</span></a>: 입력단위. [“mm”, “hwpunit”] 중 기본값은 “mm”
 :return: 성공시 True, 실패시 False를 리턴함</p>
 </dd></dl>
 
@@ -4661,7 +4762,7 @@ False : 줄표 삽입하지 않음</p></li>
 <dd><p>표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 조회하는 메서드. (표 안에서만 실행가능)
 단, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 조회되지 않음.
 차례대로 왼쪽, 오른쪽, 상단, 하단의 여백을 밀리미터로 지정.
-:param <a href="#id15"><span class="problematic" id="id16">as_</span></a>: 리턴값의 단위(“mm” 또는 “hwpunit” 중 지정가능. 기본값은 “mm”)
+:param <a href="#id13"><span class="problematic" id="id14">as_</span></a>: 리턴값의 단위(“mm” 또는 “hwpunit” 중 지정가능. 기본값은 “mm”)
 :return: dict</p>
 </dd></dl>
 
@@ -4728,7 +4829,7 @@ False : 줄표 삽입하지 않음</p></li>
 <dt class="sig sig-object py" id="pyhwpx.Hwp.get_col_width">
 <span class="sig-name descname"><span class="pre">get_col_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'mm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hwpunit'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'point'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'inch'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.get_col_width" title="Link to this definition">¶</a></dt>
 <dd><p>현재 캐럿이 위치한 셀(칼럼)의 너비를 리턴하는 메서드.
-기본 단위는 mm이지만, <a href="#id17"><span class="problematic" id="id18">as_</span></a> 파라미터를 사용하여 단위를 hwpunit이나 point, inch 등으로 변경 가능하다.
+기본 단위는 mm이지만, <a href="#id15"><span class="problematic" id="id16">as_</span></a> 파라미터를 사용하여 단위를 hwpunit이나 point, inch 등으로 변경 가능하다.
 :param <cite>as_</cite>: 리턴값의 단위(mm, HwpUnit, Pt, Inch 등 4종류)
 :return:</p>
 </dd></dl>
@@ -4806,7 +4907,7 @@ False : 줄표 삽입하지 않음</p></li>
 <dt class="sig sig-object py" id="pyhwpx.Hwp.get_table_width">
 <span class="sig-name descname"><span class="pre">get_table_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'mm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hwpunit'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'point'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'inch'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.get_table_width" title="Link to this definition">¶</a></dt>
 <dd><p>현재 캐럿이 속한 표의 너비(mm)를 리턴함.
-이 때 수치의 단위는 <a href="#id19"><span class="problematic" id="id20">as_</span></a> 파라미터를 통해 변경 가능하며, “mm”, “HwpUnit”, “Pt”, “Inch” 등을 쓸 수 있다.
+이 때 수치의 단위는 <a href="#id17"><span class="problematic" id="id18">as_</span></a> 파라미터를 통해 변경 가능하며, “mm”, “HwpUnit”, “Pt”, “Inch” 등을 쓸 수 있다.
 :return: 표의 너비(mm)</p>
 </dd></dl>
 
@@ -5093,7 +5194,7 @@ get_pagedef_as_dict 메서드를 추천한다.</p>
 <dd><p>현재 페이지의 용지정보를 dict 형태로 리턴한다.
 dict의 각 값은 밀리미터 단위로 변환된 값이며,
 set_pagedef 실행시 내부적으로 HWPUnit으로 자동변환하여 적용한다.
-(<a href="#id21"><span class="problematic" id="id22">as_</span></a> 파라미터를 “eng”로 변경하면 원래 영문 아이템명의 사전을 리턴한다.)
+(<a href="#id19"><span class="problematic" id="id20">as_</span></a> 파라미터를 “eng”로 변경하면 원래 영문 아이템명의 사전을 리턴한다.)
 :return:</p>
 <blockquote>
 <div><p>현재 페이지의 용지정보(dict)
@@ -7478,7 +7579,7 @@ code키가 존재할 경우 필터 사용 시 사용자 다이얼로그를  띄�
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.insert_background_picture">
 <span class="sig-name descname"><span class="pre">insert_background_picture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'SelectedCell'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'SelectedCellDelete'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SelectedCell'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedded</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filloption</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">watermark</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brightness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyhwpx.Hwp.insert_background_picture" title="Link to this definition">¶</a></dt>
-<dd><p><a href="#id7"><span class="problematic" id="id8">**</span></a>셀**에 배경이미지를 삽입한다.
+<dd><p><a href="#id5"><span class="problematic" id="id6">**</span></a>셀**에 배경이미지를 삽입한다.
 CellBorderFill의 SetItem 중 FillAttr 의 SetItem FileName 에
 이미지의 binary data를 지정해 줄 수가 없어서 만든 함수다.
 기타 배경에 대한 다른 조정은 Action과 ParameterSet의 조합으로 가능하다.</p>
@@ -7536,7 +7637,7 @@ CellBorderFill의 SetItem 중 FillAttr 의 SetItem FileName 에
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.InsertBackgroundPicture">
 <span class="sig-name descname"><span class="pre">InsertBackgroundPicture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'SelectedCell'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'SelectedCellDelete'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SelectedCell'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedded</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filloption</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">watermark</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brightness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyhwpx.Hwp.InsertBackgroundPicture" title="Link to this definition">¶</a></dt>
-<dd><p><a href="#id9"><span class="problematic" id="id10">**</span></a>셀**에 배경이미지를 삽입한다.
+<dd><p><a href="#id7"><span class="problematic" id="id8">**</span></a>셀**에 배경이미지를 삽입한다.
 CellBorderFill의 SetItem 중 FillAttr 의 SetItem FileName 에
 이미지의 binary data를 지정해 줄 수가 없어서 만든 함수다.
 기타 배경에 대한 다른 조정은 Action과 ParameterSet의 조합으로 가능하다.</p>
@@ -8533,6 +8634,18 @@ dict.keys를 필드명으로, dict.values를 필드값으로 입력한다.</stro
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyhwpx.Hwp.PutParaNumber">
+<span class="sig-name descname"><span class="pre">PutParaNumber</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.PutParaNumber" title="Link to this definition">¶</a></dt>
+<dd><p>문단번호 삽입/제거 토글</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyhwpx.Hwp.PutOutlinleNumber">
+<span class="sig-name descname"><span class="pre">PutOutlinleNumber</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.PutOutlinleNumber" title="Link to this definition">¶</a></dt>
+<dd><p>개요번호 삽입/제거 토글</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.quit">
 <span class="sig-name descname"><span class="pre">quit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.quit" title="Link to this definition">¶</a></dt>
 <dd><p>한/글을 종료한다.
@@ -9240,10 +9353,10 @@ ActionTable.hwp(별도문서)를 참고한다.</p></li>
 <dt class="sig sig-object py" id="pyhwpx.Hwp.CloseEx">
 <span class="sig-name descname"><span class="pre">CloseEx</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.CloseEx" title="Link to this definition">¶</a></dt>
 <dd><p>현재 리스트를 닫고 상위 리스트로 이동하는 액션.
-Close와 유사하나 두 가지 차이점이 있다.
+Close와 CloseEx는 유사하나 두 가지 차이점이 있다.
 첫 번째로는 여러 계층의 표 안에서 CloseEx 실행시
 본문이 아니라 상위의 표(셀)로 캐럿이 단계적으로 이동한다는 점.
-Close는 무조건 본문으로 나간다.
+반면 Close는 무조건 본문으로 나간다.
 두 번째로, CloseEx에는 전체화면(최대화 말고)을 해제하는 기능이 있다.
 Close로는 전체화면 해제가 되지 않는다.
 사용빈도가 가장 높은 액션 중의 하나라고 생각한다.</p>
@@ -10437,7 +10550,12 @@ Close로는 전체화면 해제가 되지 않는다.
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.MoveNextPosEx">
 <span class="sig-name descname"><span class="pre">MoveNextPosEx</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.MoveNextPosEx" title="Link to this definition">¶</a></dt>
-<dd><p>한 글자 뒤로 이동. 서브 리스트를 옮겨 다닐 수 있다. (머리말, 꼬리말, 각주, 미주, 글상자 포함)</p>
+<dd><p>한 글자 뒤로 이동. 서브 리스트를 옮겨 다닐 수 있다.
+(머리말, 꼬리말, 각주, 미주, 글상자 포함)
+예를 들어, 문단 중간에 글상자가 (글자처럼취급 꺼진상태로) 떠있다면
+MoveNextPos는 글상자를 패스하고 본문만 통과해서 지나가는데,
+MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 들어갔다 나온다.
+문서 전체를 훑어야 하는 경우에는 굉장히 유용하게 쓰일 듯.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -10521,7 +10639,8 @@ Close로는 전체화면 해제가 되지 않는다.
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.MovePrevPosEx">
 <span class="sig-name descname"><span class="pre">MovePrevPosEx</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.MovePrevPosEx" title="Link to this definition">¶</a></dt>
-<dd><p>한 글자 앞으로 이동. 서브 리스트를 옮겨 다닐 수 있다. (머리말, 꼬리말, 각주, 미주, 글상자 포함)</p>
+<dd><p>한 글자 앞으로 이동. 서브 리스트를 옮겨 다닐 수 있다.
+(머리말, 꼬리말, 각주, 미주, 글상자 포함)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -11873,7 +11992,7 @@ option 파라미터에 할당할 수 있는 값은 모두 7가지로,
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.SoftKeyboard">
 <span class="sig-name descname"><span class="pre">SoftKeyboard</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.SoftKeyboard" title="Link to this definition">¶</a></dt>
-<dd><p>보기</p>
+<dd><p>소프트키보드 보기 토글</p>
 </dd></dl>
 
 <dl class="py method">
@@ -12369,6 +12488,12 @@ option 파라미터에 할당할 수 있는 값은 모두 7가지로,
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyhwpx.Hwp.TableResizeExUp">
+<span class="sig-name descname"><span class="pre">TableResizeExUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.TableResizeExUp" title="Link to this definition">¶</a></dt>
+<dd><p>셀 크기 변경: 셀 위쪽. TebleResizeUp과 다른 점은 셀 블록 상태가 아니어도 동작한다는 점이다.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.TableResizeLeft">
 <span class="sig-name descname"><span class="pre">TableResizeLeft</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.TableResizeLeft" title="Link to this definition">¶</a></dt>
 <dd><p>셀 크기 변경</p>
@@ -12427,10 +12552,16 @@ option 파라미터에 할당할 수 있는 값은 모두 7가지로,
 <span class="sig-name descname"><span class="pre">TableSplitCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DistributeHeight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Merge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.TableSplitCell" title="Link to this definition">¶</a></dt>
 <dd><p>셀 나누기. Run메서드 같아 보이지만,
 엄연히 파라미터셋이 필수인 정통액션이다.</p>
-<p>Rows: 나눌 행 수(기본값:2)
-Cols: 나눌 열 수(기본값:0)
-DistributeHeight: 줄 높이를 같게 나누기(0 or 1)
-Merge: 셀을 합친 후 나누기(0 or 1)</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Rows</strong> – 나눌 행 수(기본값:2)</p></li>
+<li><p><strong>Cols</strong> – 나눌 열 수(기본값:0)</p></li>
+<li><p><strong>DistributeHeight</strong> – 줄 높이를 같게 나누기(0 or 1)</p></li>
+<li><p><strong>Merge</strong> – 셀을 합친 후 나누기(0 or 1)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -12532,13 +12663,13 @@ Merge: 셀을 합친 후 나누기(0 or 1)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.ViewOptionPaper">
 <span class="sig-name descname"><span class="pre">ViewOptionPaper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.ViewOptionPaper" title="Link to this definition">¶</a></dt>
-<dd><p>쪽 윤곽 보기</p>
+<dd><p>쪽 윤곽 보기/숨기기</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.ViewOptionParaMark">
 <span class="sig-name descname"><span class="pre">ViewOptionParaMark</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.ViewOptionParaMark" title="Link to this definition">¶</a></dt>
-<dd><p>문단 부호</p>
+<dd><p>문단 부호 보기/숨기기</p>
 </dd></dl>
 
 <dl class="py method">
@@ -12766,6 +12897,13 @@ format, arg의 일반적인 개념에 대해서는 Open()참조.
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyhwpx.Hwp.select_text_by_get_pos">
+<span class="sig-name descname"><span class="pre">select_text_by_get_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_getpos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e_getpos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.select_text_by_get_pos" title="Link to this definition">¶</a></dt>
+<dd><p>hwp.get_pos()로 얻은 두 튜플 사이의 텍스트를 선택하는 메서드.
+의외로 유용하지 않다!</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.select_text">
 <span class="sig-name descname"><span class="pre">select_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spara</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epara</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.select_text" title="Link to this definition">¶</a></dt>
 <dd><p>특정 범위의 텍스트를 블록선택한다.
@@ -12806,59 +12944,18 @@ epos가 가리키는 문자는 포함되지 않는다.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyhwpx.Hwp.set_bar_code_image">
-<span class="sig-name descname"><span class="pre">set_bar_code_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lp_image_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pgno</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.set_bar_code_image" title="Link to this definition">¶</a></dt>
-<dd><p>작동하지 않는다.</p>
-<dl class="field-list simple">
-<dt class="field-odd">매개변수<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>lp_image_path</strong></p></li>
-<li><p><strong>pgno</strong></p></li>
-<li><p><strong>index</strong></p></li>
-<li><p><strong>x</strong></p></li>
-<li><p><strong>y</strong></p></li>
-<li><p><strong>width</strong></p></li>
-<li><p><strong>height</strong></p></li>
-</ul>
-</dd>
-<dt class="field-even">반환<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyhwpx.Hwp.SetBarCodeImage">
-<span class="sig-name descname"><span class="pre">SetBarCodeImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lp_image_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pgno</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.SetBarCodeImage" title="Link to this definition">¶</a></dt>
-<dd><p>작동하지 않는다.</p>
-<dl class="field-list simple">
-<dt class="field-odd">매개변수<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>lp_image_path</strong></p></li>
-<li><p><strong>pgno</strong></p></li>
-<li><p><strong>index</strong></p></li>
-<li><p><strong>x</strong></p></li>
-<li><p><strong>y</strong></p></li>
-<li><p><strong>width</strong></p></li>
-<li><p><strong>height</strong></p></li>
-</ul>
-</dd>
-<dt class="field-even">반환<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.set_cur_field_name">
 <span class="sig-name descname"><span class="pre">set_cur_field_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.set_cur_field_name" title="Link to this definition">¶</a></dt>
 <dd><p>현재 캐럿이 위치하는 곳의 필드이름을 설정한다.
 GetFieldList()의 옵션 중에 4(hwpFieldSelection) 옵션은 사용하지 않는다.
-(표의 셀에 셀필드를 매기고 싶은 경우 사용한다.)</p>
+(표의 셀에 셀필드를 매기고 싶은 경우 사용한다.)
+:param field:</p>
+<blockquote>
+<div><p>데이터 필드 이름</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">매개변수<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>field</strong> – 데이터 필드 이름</p></li>
 <li><p><strong>option</strong> – 다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
 1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
 2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)</p></li>
@@ -12993,33 +13090,34 @@ SetMessageBoxMode는 하나의 파라메터를 받으며,
 MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 <dl class="field-list simple">
 <dt class="field-odd">매개변수<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>mode</strong> – // 메시지 박스의 종류
-#define MB_MASK                                             0x00FFFFFF
-// 1. 확인(MB_OK) : IDOK(1)
-#define MB_OK_IDOK                                          0x00000001
-#define MB_OK_MASK                                          0x0000000F
-// 2. 확인/취소(MB_OKCANCEL) : IDOK(1), IDCANCEL(2)
-#define MB_OKCANCEL_IDOK                                    0x00000010
-#define MB_OKCANCEL_IDCANCEL                                0x00000020
-#define MB_OKCANCEL_MASK                                    0x000000F0
-// 3. 종료/재시도/무시(MB_ABORTRETRYIGNORE) : IDABORT(3), IDRETRY(4), IDIGNORE(5)
-#define MB_ABORTRETRYIGNORE_IDABORT                 0x00000100
-#define MB_ABORTRETRYIGNORE_IDRETRY                 0x00000200
-#define MB_ABORTRETRYIGNORE_IDIGNORE                        0x00000400
-#define MB_ABORTRETRYIGNORE_MASK                            0x00000F00
-// 4. 예/아니오/취소(MB_YESNOCANCEL) : IDYES(6), IDNO(7), IDCANCEL(2)
-#define MB_YESNOCANCEL_IDYES                                0x00001000
-#define MB_YESNOCANCEL_IDNO                         0x00002000
-#define MB_YESNOCANCEL_IDCANCEL                             0x00004000
-#define MB_YESNOCANCEL_MASK                         0x0000F000
-// 5. 예/아니오(MB_YESNO) : IDYES(6), IDNO(7)
-#define MB_YESNO_IDYES                                      0x00010000
-#define MB_YESNO_IDNO                                       0x00020000
-#define MB_YESNO_MASK                                       0x000F0000
-// 6. 재시도/취소(MB_RETRYCANCEL) : IDRETRY(4), IDCANCEL(2)
-#define MB_RETRYCANCEL_IDRETRY                              0x00100000
-#define MB_RETRYCANCEL_IDCANCEL                             0x00200000
-#define MB_RETRYCANCEL_MASK                         0x00F00000</p>
+<dd class="field-odd"><p><strong>mode</strong> – <p>// 메시지 박스의 종류</p>
+<p>#define MB_MASK                                             0x00FFFFFF</p>
+<p>// 1. 확인(MB_OK) : IDOK(1)</p>
+<p>#define MB_OK_IDOK                                          0x00000001</p>
+<p>#define MB_OK_MASK                                          0x0000000F</p>
+<p>// 2. 확인/취소(MB_OKCANCEL) : IDOK(1), IDCANCEL(2)</p>
+<p>#define MB_OKCANCEL_IDOK                                    0x00000010</p>
+<p>#define MB_OKCANCEL_IDCANCEL                                0x00000020</p>
+<p>#define MB_OKCANCEL_MASK                                    0x000000F0</p>
+<p>// 3. 종료/재시도/무시(MB_ABORTRETRYIGNORE) : IDABORT(3), IDRETRY(4), IDIGNORE(5)</p>
+<p>#define MB_ABORTRETRYIGNORE_IDABORT                 0x00000100</p>
+<p>#define MB_ABORTRETRYIGNORE_IDRETRY                 0x00000200</p>
+<p>#define MB_ABORTRETRYIGNORE_IDIGNORE                        0x00000400</p>
+<p>#define MB_ABORTRETRYIGNORE_MASK                            0x00000F00</p>
+<p>// 4. 예/아니오/취소(MB_YESNOCANCEL) : IDYES(6), IDNO(7), IDCANCEL(2)</p>
+<p>#define MB_YESNOCANCEL_IDYES                                0x00001000</p>
+<p>#define MB_YESNOCANCEL_IDNO                         0x00002000</p>
+<p>#define MB_YESNOCANCEL_IDCANCEL                             0x00004000</p>
+<p>#define MB_YESNOCANCEL_MASK                         0x0000F000</p>
+<p>// 5. 예/아니오(MB_YESNO) : IDYES(6), IDNO(7)</p>
+<p>#define MB_YESNO_IDYES                                      0x00010000</p>
+<p>#define MB_YESNO_IDNO                                       0x00020000</p>
+<p>#define MB_YESNO_MASK                                       0x000F0000</p>
+<p>// 6. 재시도/취소(MB_RETRYCANCEL) : IDRETRY(4), IDCANCEL(2)</p>
+<p>#define MB_RETRYCANCEL_IDRETRY                              0x00100000</p>
+<p>#define MB_RETRYCANCEL_IDCANCEL                             0x00200000</p>
+<p>#define MB_RETRYCANCEL_MASK                         0x00F00000</p>
+</p>
 </dd>
 <dt class="field-even">반환<span class="colon">:</span></dt>
 <dd class="field-even"><p>실행 전의 MessageBoxMode</p>
@@ -13079,7 +13177,9 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 <dd class="field-even"><p>성공하면 True, 실패하면 False</p>
 </dd>
 <dt class="field-odd">Example<span class="colon">:</span></dt>
-<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">start_pos</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">GetPosBySet</span><span class="p">()</span>  <span class="c1"># 현재 위치를 저장하고,</span>
+<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">start_pos</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">GetPosBySet</span><span class="p">()</span>  <span class="c1"># 현재 위치를 저장하고,</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_pos_by_set</span><span class="p">(</span><span class="n">start_pos</span><span class="p">)</span>  <span class="c1"># 특정 작업 후에 저장위치로 재이동</span>
 </pre></div>
 </div>
@@ -13099,7 +13199,9 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 <dd class="field-even"><p>성공하면 True, 실패하면 False</p>
 </dd>
 <dt class="field-odd">Example<span class="colon">:</span></dt>
-<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">start_pos</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">GetPosBySet</span><span class="p">()</span>  <span class="c1"># 현재 위치를 저장하고,</span>
+<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">start_pos</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">GetPosBySet</span><span class="p">()</span>  <span class="c1"># 현재 위치를 저장하고,</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_pos_by_set</span><span class="p">(</span><span class="n">start_pos</span><span class="p">)</span>  <span class="c1"># 특정 작업 후에 저장위치로 재이동</span>
 </pre></div>
 </div>
@@ -13230,6 +13332,18 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyhwpx.Hwp.un_select_ctrl">
+<span class="sig-name descname"><span class="pre">un_select_ctrl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.un_select_ctrl" title="Link to this definition">¶</a></dt>
+<dd><p>선택중인 컨트롤 선택해제</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyhwpx.Hwp.UnSelectCtrl">
+<span class="sig-name descname"><span class="pre">UnSelectCtrl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.UnSelectCtrl" title="Link to this definition">¶</a></dt>
+<dd><p>선택중인 컨트롤 선택해제</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyhwpx.Hwp.WindowAlignCascade">
 <span class="sig-name descname"><span class="pre">WindowAlignCascade</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyhwpx.Hwp.WindowAlignCascade" title="Link to this definition">¶</a></dt>
 <dd><p>창 겹치게 배열</p>
@@ -13287,7 +13401,17 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
         
         <div class="related-pages">
           
-          
+          <a class="prev-page" href="../api.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">API</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -13366,6 +13490,8 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 <li><a class="reference internal" href="#pyhwpx.Hwp.get_style"><code class="docutils literal notranslate"><span class="pre">Hwp.get_style()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.set_style"><code class="docutils literal notranslate"><span class="pre">Hwp.set_style()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.get_selected_range"><code class="docutils literal notranslate"><span class="pre">Hwp.get_selected_range()</span></code></a></li>
+<li><a class="reference internal" href="#pyhwpx.Hwp.fill_addr_field"><code class="docutils literal notranslate"><span class="pre">Hwp.fill_addr_field()</span></code></a></li>
+<li><a class="reference internal" href="#pyhwpx.Hwp.unfill_addr_field"><code class="docutils literal notranslate"><span class="pre">Hwp.unfill_addr_field()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.resize_image"><code class="docutils literal notranslate"><span class="pre">Hwp.resize_image()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.NewNumberModify"><code class="docutils literal notranslate"><span class="pre">Hwp.NewNumberModify()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.NewNumber"><code class="docutils literal notranslate"><span class="pre">Hwp.NewNumber()</span></code></a></li>
@@ -13516,6 +13642,8 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 <li><a class="reference internal" href="#pyhwpx.Hwp.ProtectPrivateInfo"><code class="docutils literal notranslate"><span class="pre">Hwp.ProtectPrivateInfo()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.put_field_text"><code class="docutils literal notranslate"><span class="pre">Hwp.put_field_text()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.PutFieldText"><code class="docutils literal notranslate"><span class="pre">Hwp.PutFieldText()</span></code></a></li>
+<li><a class="reference internal" href="#pyhwpx.Hwp.PutParaNumber"><code class="docutils literal notranslate"><span class="pre">Hwp.PutParaNumber()</span></code></a></li>
+<li><a class="reference internal" href="#pyhwpx.Hwp.PutOutlinleNumber"><code class="docutils literal notranslate"><span class="pre">Hwp.PutOutlinleNumber()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.quit"><code class="docutils literal notranslate"><span class="pre">Hwp.quit()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.Quit"><code class="docutils literal notranslate"><span class="pre">Hwp.Quit()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.register_module"><code class="docutils literal notranslate"><span class="pre">Hwp.register_module()</span></code></a></li>
@@ -14109,6 +14237,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 <li><a class="reference internal" href="#pyhwpx.Hwp.TableResizeExDown"><code class="docutils literal notranslate"><span class="pre">Hwp.TableResizeExDown()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.TableResizeExLeft"><code class="docutils literal notranslate"><span class="pre">Hwp.TableResizeExLeft()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.TableResizeExRight"><code class="docutils literal notranslate"><span class="pre">Hwp.TableResizeExRight()</span></code></a></li>
+<li><a class="reference internal" href="#pyhwpx.Hwp.TableResizeExUp"><code class="docutils literal notranslate"><span class="pre">Hwp.TableResizeExUp()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.TableResizeLeft"><code class="docutils literal notranslate"><span class="pre">Hwp.TableResizeLeft()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.TableResizeLineDown"><code class="docutils literal notranslate"><span class="pre">Hwp.TableResizeLineDown()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.TableResizeLineLeft"><code class="docutils literal notranslate"><span class="pre">Hwp.TableResizeLineLeft()</span></code></a></li>
@@ -14153,10 +14282,9 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 <li><a class="reference internal" href="#pyhwpx.Hwp.Save"><code class="docutils literal notranslate"><span class="pre">Hwp.Save()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.save_as"><code class="docutils literal notranslate"><span class="pre">Hwp.save_as()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.SaveAs"><code class="docutils literal notranslate"><span class="pre">Hwp.SaveAs()</span></code></a></li>
+<li><a class="reference internal" href="#pyhwpx.Hwp.select_text_by_get_pos"><code class="docutils literal notranslate"><span class="pre">Hwp.select_text_by_get_pos()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.select_text"><code class="docutils literal notranslate"><span class="pre">Hwp.select_text()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.SelectText"><code class="docutils literal notranslate"><span class="pre">Hwp.SelectText()</span></code></a></li>
-<li><a class="reference internal" href="#pyhwpx.Hwp.set_bar_code_image"><code class="docutils literal notranslate"><span class="pre">Hwp.set_bar_code_image()</span></code></a></li>
-<li><a class="reference internal" href="#pyhwpx.Hwp.SetBarCodeImage"><code class="docutils literal notranslate"><span class="pre">Hwp.SetBarCodeImage()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.set_cur_field_name"><code class="docutils literal notranslate"><span class="pre">Hwp.set_cur_field_name()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.SetCurFieldName"><code class="docutils literal notranslate"><span class="pre">Hwp.SetCurFieldName()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.set_field_view_option"><code class="docutils literal notranslate"><span class="pre">Hwp.set_field_view_option()</span></code></a></li>
@@ -14173,6 +14301,8 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 <li><a class="reference internal" href="#pyhwpx.Hwp.SetTextFile"><code class="docutils literal notranslate"><span class="pre">Hwp.SetTextFile()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.set_title_name"><code class="docutils literal notranslate"><span class="pre">Hwp.set_title_name()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.SetTitleName"><code class="docutils literal notranslate"><span class="pre">Hwp.SetTitleName()</span></code></a></li>
+<li><a class="reference internal" href="#pyhwpx.Hwp.un_select_ctrl"><code class="docutils literal notranslate"><span class="pre">Hwp.un_select_ctrl()</span></code></a></li>
+<li><a class="reference internal" href="#pyhwpx.Hwp.UnSelectCtrl"><code class="docutils literal notranslate"><span class="pre">Hwp.UnSelectCtrl()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.WindowAlignCascade"><code class="docutils literal notranslate"><span class="pre">Hwp.WindowAlignCascade()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.WindowAlignTileHorz"><code class="docutils literal notranslate"><span class="pre">Hwp.WindowAlignTileHorz()</span></code></a></li>
 <li><a class="reference internal" href="#pyhwpx.Hwp.WindowAlignTileVert"><code class="docutils literal notranslate"><span class="pre">Hwp.WindowAlignTileVert()</span></code></a></li>
@@ -14194,7 +14324,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=972c94ca"></script>
+</div><script src="../_static/documentation_options.js?v=391bf73b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
