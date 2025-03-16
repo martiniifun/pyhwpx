@@ -14,6 +14,7 @@ from io import StringIO
 from time import sleep
 from typing import Literal, Union, Any
 from urllib import request, parse
+from winreg import QueryValueEx
 
 import numpy as np
 import pandas as pd
@@ -40,7 +41,7 @@ if sys.platform == 'win32':
         sys.stderr = old_stderr
         devnull.close()
 
-__version__ = "0.45.1"
+__version__ = "0.45.2"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -263,12 +264,14 @@ def check_registry_key():
     :return: 등록되어 있는 경우 True, 미등록인 경우 False
     :rtype: bool
     """
+    from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, KEY_WRITE, SetValueEx, REG_SZ, CloseKey
     winup_path = r"Software\HNC\HwpAutomation\Modules"
     alt_winup_path = r"Software\Hnc\HwpUserAction\Modules"
     reg_handle = ConnectRegistry(None, HKEY_CURRENT_USER)
 
     for path in [winup_path, alt_winup_path]:
         try:
+            from winreg import KEY_READ
             key = OpenKey(reg_handle, path, 0, KEY_READ)
             try:
                 value, regtype = QueryValueEx(key, "FilePathCheckerModule")
@@ -3159,7 +3162,7 @@ class Hwp:
                     self.set_pos_by_set(ctrl.GetAnchorPos(0))
                     self.hwp.FindCtrl()
                     self.ShapeObjTableSelCell()
-                    if not select:
+                    if not select_cell:
                         self.Cancel()
                     return ctrl
                 else:
@@ -3167,7 +3170,7 @@ class Hwp:
                         self.set_pos_by_set(ctrl.GetAnchorPos(0))
                         self.hwp.FindCtrl()
                         self.ShapeObjTableSelCell()
-                        if not select:
+                        if not select_cell:
                             self.Cancel()
                         return ctrl
                     if n >= 0:
