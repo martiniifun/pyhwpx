@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 project = 'pyhwpx'
 copyright = '2025, ilco'
 author = 'ilco'
-release = '0.44.9'
+release = '0.45.5'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
