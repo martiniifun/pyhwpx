@@ -41,7 +41,7 @@ if sys.platform == 'win32':
         sys.stderr = old_stderr
         devnull.close()
 
-__version__ = "0.45.7"
+__version__ = "0.45.8"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -2024,8 +2024,8 @@ class Hwp:
 
     def save_image(self, path="./img.png", ctrl=""):
         path = os.path.abspath(path)
-        # if os.path.exists(path):
-        #     raise FileExistsError("해당 이름의 파일이 이미 존재합니다.")
+        if os.path.exists(path):
+            os.remove(path)
         if ctrl:
             self.select_ctrl(ctrl)
         else:
