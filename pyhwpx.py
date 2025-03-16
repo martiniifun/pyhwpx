@@ -41,7 +41,7 @@ if sys.platform == 'win32':
         sys.stderr = old_stderr
         devnull.close()
 
-__version__ = "0.45.6"
+__version__ = "0.45.7"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -2024,11 +2024,12 @@ class Hwp:
 
     def save_image(self, path="./img.png", ctrl=""):
         path = os.path.abspath(path)
-        if os.path.exists(path):
-            raise FileExistsError("해당 이름의 파일이 이미 존재합니다.")
+        # if os.path.exists(path):
+        #     raise FileExistsError("해당 이름의 파일이 이미 존재합니다.")
         if ctrl:
-            self.move_to_ctrl(ctrl)
-        self.find_ctrl()
+            self.select_ctrl(ctrl)
+        else:
+            self.find_ctrl()
         if not self.CurSelectedCtrl.CtrlID == "gso":
             return False
         pset = self.HParameterSet.HShapeObjSaveAsPicture
@@ -2036,7 +2037,7 @@ class Hwp:
         pset.Path = path
         pset.Ext = "BMP"
         try:
-            self.HAction.Execute("PictureSave", pset.HSet)
+            return self.HAction.Execute("PictureSave", pset.HSet)
         finally:
             self.Undo()
             if not os.path.exists(path):
