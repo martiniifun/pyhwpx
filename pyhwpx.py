@@ -41,7 +41,7 @@ if sys.platform == 'win32':
         sys.stderr = old_stderr
         devnull.close()
 
-__version__ = "0.45.9"
+__version__ = "0.45.12"
 
 # for pyinstaller
 if getattr(sys, 'frozen', False):
@@ -4099,24 +4099,27 @@ class Hwp:
                                               total_height - self.mili_to_hwp_unit((0.5 + 0.5) * rows))
 
         pset.CreateItemArray("ColWidth", cols)  # 열 n개 생성
-        each_col_width = total_width - self.mili_to_hwp_unit(3.6 * cols)
+        each_col_width = round((total_width - self.mili_to_hwp_unit(3.6 * cols)) / cols)
         for i in range(cols):
             pset.ColWidth.SetItem(i, each_col_width)  # 1열
-        # pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
+        if self.Version.split(", ")[0] == "8":
+            pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
         pset.TableProperties.Width = total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
-        self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
+        try:
+            return self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
+        finally:
+            # 글자처럼 취급 여부 적용(treat_as_char)
+            if self.Version.split(", ")[0] == "8":
+                ctrl = self.hwp.CurSelectedCtrl or self.hwp.ParentCtrl
+                pset = self.hwp.CreateSet("Table")
+                pset.SetItem("TreatAsChar", treat_as_char)
+                ctrl.Properties = pset
 
-        # 글자처럼 취급 여부 적용(treat_as_char)
-        ctrl = self.hwp.CurSelectedCtrl or self.hwp.ParentCtrl
-        pset = self.hwp.CreateSet("Table")
-        pset.SetItem("TreatAsChar", treat_as_char)
-        ctrl.Properties = pset
-
-        # 제목 행 여부 적용(header)
-        pset = self.hwp.HParameterSet.HShapeObject
-        self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
-        pset.ShapeTableCell.Header = header
-        self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
+            # 제목 행 여부 적용(header)
+            pset = self.hwp.HParameterSet.HShapeObject
+            self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+            pset.ShapeTableCell.Header = header
+            self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
     def get_selected_text(self, as_: Literal["list", "str"] = "str"):
         """
@@ -12880,11 +12883,19 @@ class Hwp:
 
         if ext.lower() == "pdf" or format.lower() == "pdf":
             pset = self.HParameterSet.HFileOpenSave
-            self.HAction.GetDefault("FileSaveAsPdf", pset.HSet)
-            self.HParameterSet.HFileOpenSave.filename = path
-            self.HParameterSet.HFileOpenSave.Format = "PDF"
-            self.HParameterSet.HFileOpenSave.Attributes = 16384
-            return self.HAction.Execute("FileSaveAsPdf", pset.HSet)
+            self.HAction.GetDefault("FileSaveAs_S", pset.HSet)
+            pset.filename = path
+            pset.Format = "PDF"
+            pset.Attributes = 0
+            if not self.HAction.Execute("FileSaveAs_S", pset.HSet):
+                pset = self.HParameterSet.HFileOpenSave
+                self.HAction.GetDefault("FileSaveAsPdf", pset.HSet)
+                self.HParameterSet.HFileOpenSave.filename = path
+                self.HParameterSet.HFileOpenSave.Format = "PDF"
+                self.HParameterSet.HFileOpenSave.Attributes = 16384
+                return self.HAction.Execute("FileSaveAsPdf", pset.HSet)
+            else:
+                return True
         else:
             return self.hwp.SaveAs(Path=path, Format=format, arg=arg)
 

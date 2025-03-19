@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="save_image 수정(img.png 기본값으로, 기본동작은 덮어쓰기, find_ctrl 대신 select_ctrl로.">
+    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="save_image 추가수정(기존에 있으면 지워버리기) +typing">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/SOURCES.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/dependency_links.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/dependency_links.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/requires.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/requires.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/top_level.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/top_level.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyhwpx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -103,31 +100,11 @@
       <workItem from="1742094814127" duration="59000" />
       <workItem from="1742105095476" duration="6755000" />
       <workItem from="1742117554060" duration="785000" />
-      <workItem from="1742143739098" duration="611000" />
-    </task>
-    <task id="LOCAL-00044" summary="제발돼라2">
-      <option name="closed" value="true" />
-      <created>1742055769517</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1742055769517</updated>
-    </task>
-    <task id="LOCAL-00045" summary="html_static_path 이상해">
-      <option name="closed" value="true" />
-      <created>1742055884925</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1742055884925</updated>
-    </task>
-    <task id="LOCAL-00046" summary="yaml에 python-install 추가">
-      <option name="closed" value="true" />
-      <created>1742055999801</created>
-      <option name="number" value="00046" />
-      <option name="presentableId" value="LOCAL-00046" />
-      <option name="project" value="LOCAL" />
-      <updated>1742055999803</updated>
+      <workItem from="1742143739098" duration="1551000" />
+      <workItem from="1742224983901" duration="587000" />
+      <workItem from="1742391575319" duration="14000" />
+      <workItem from="1742391837975" duration="116000" />
+      <workItem from="1742392679786" duration="78000" />
     </task>
     <task id="LOCAL-00047" summary="automodule:: pyhwpx.Hwp 추가">
       <option name="closed" value="true" />
@@ -497,7 +474,31 @@
       <option name="project" value="LOCAL" />
       <updated>1742143906973</updated>
     </task>
-    <option name="localTasksCounter" value="93" />
+    <task id="LOCAL-00093" summary="save_image 추가수정(기존에 있으면 지워버리기)">
+      <option name="closed" value="true" />
+      <created>1742144364193</created>
+      <option name="number" value="00093" />
+      <option name="presentableId" value="LOCAL-00093" />
+      <option name="project" value="LOCAL" />
+      <updated>1742144364193</updated>
+    </task>
+    <task id="LOCAL-00094" summary="save_image 추가수정(기존에 있으면 지워버리기) os.remove">
+      <option name="closed" value="true" />
+      <created>1742144386056</created>
+      <option name="number" value="00094" />
+      <option name="presentableId" value="LOCAL-00094" />
+      <option name="project" value="LOCAL" />
+      <updated>1742144386056</updated>
+    </task>
+    <task id="LOCAL-00095" summary="save_image 추가수정(기존에 있으면 지워버리기) +typing">
+      <option name="closed" value="true" />
+      <created>1742144526696</created>
+      <option name="number" value="00095" />
+      <option name="presentableId" value="LOCAL-00095" />
+      <option name="project" value="LOCAL" />
+      <updated>1742144526696</updated>
+    </task>
+    <option name="localTasksCounter" value="96" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -518,9 +519,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/docs/build/html" />
     </ignored-roots>
-    <MESSAGE value="이젠 정말 모르겠다. 잠도 오지 않네..." />
-    <MESSAGE value="마지막 방법이다." />
-    <MESSAGE value="깃헙페이지로 간다." />
     <MESSAGE value="자기가 자기 오점을 찾아 고치는 게 신기하네" />
     <MESSAGE value="static.yml 추가" />
     <MESSAGE value="html 순서를 바꾸고 싶다." />
@@ -543,7 +541,10 @@
     <MESSAGE value="문서페이지 업데이트" />
     <MESSAGE value="작은 수정" />
     <MESSAGE value="save_image 수정(img.png 기본값으로, 기본동작은 덮어쓰기, find_ctrl 대신 select_ctrl로." />
-    <option name="LAST_COMMIT_MESSAGE" value="save_image 수정(img.png 기본값으로, 기본동작은 덮어쓰기, find_ctrl 대신 select_ctrl로." />
+    <MESSAGE value="save_image 추가수정(기존에 있으면 지워버리기)" />
+    <MESSAGE value="save_image 추가수정(기존에 있으면 지워버리기) os.remove" />
+    <MESSAGE value="save_image 추가수정(기존에 있으면 지워버리기) +typing" />
+    <option name="LAST_COMMIT_MESSAGE" value="save_image 추가수정(기존에 있으면 지워버리기) +typing" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/pyhwpx$pyhwpx__Doctests.coverage" NAME="pyhwpx 내 Doctests 커버리지 결과" MODIFIED="1742038027100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
