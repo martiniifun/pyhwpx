@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="save_image 추가수정(기존에 있으면 지워버리기) +typing">
+    <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="0.45.12, 한글2010용 create_table 업데이트">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyhwpx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,14 +104,7 @@
       <workItem from="1742391575319" duration="14000" />
       <workItem from="1742391837975" duration="116000" />
       <workItem from="1742392679786" duration="78000" />
-    </task>
-    <task id="LOCAL-00047" summary="automodule:: pyhwpx.Hwp 추가">
-      <option name="closed" value="true" />
-      <created>1742056124619</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1742056124619</updated>
+      <workItem from="1742403250365" duration="1021000" />
     </task>
     <task id="LOCAL-00048" summary="added pyhwpx.Hwp 라인">
       <option name="closed" value="true" />
@@ -498,7 +490,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742144526696</updated>
     </task>
-    <option name="localTasksCounter" value="96" />
+    <task id="LOCAL-00096" summary="0.45.12, 한글2010용 create_table 업데이트">
+      <option name="closed" value="true" />
+      <created>1742403423619</created>
+      <option name="number" value="00096" />
+      <option name="presentableId" value="LOCAL-00096" />
+      <option name="project" value="LOCAL" />
+      <updated>1742403423620</updated>
+    </task>
+    <option name="localTasksCounter" value="97" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -519,7 +519,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/docs/build/html" />
     </ignored-roots>
-    <MESSAGE value="자기가 자기 오점을 찾아 고치는 게 신기하네" />
     <MESSAGE value="static.yml 추가" />
     <MESSAGE value="html 순서를 바꾸고 싶다." />
     <MESSAGE value=".nojekyll 추가" />
@@ -544,7 +543,8 @@
     <MESSAGE value="save_image 추가수정(기존에 있으면 지워버리기)" />
     <MESSAGE value="save_image 추가수정(기존에 있으면 지워버리기) os.remove" />
     <MESSAGE value="save_image 추가수정(기존에 있으면 지워버리기) +typing" />
-    <option name="LAST_COMMIT_MESSAGE" value="save_image 추가수정(기존에 있으면 지워버리기) +typing" />
+    <MESSAGE value="0.45.12, 한글2010용 create_table 업데이트" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.45.12, 한글2010용 create_table 업데이트" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/pyhwpx$pyhwpx__Doctests.coverage" NAME="pyhwpx 내 Doctests 커버리지 결과" MODIFIED="1742038027100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
