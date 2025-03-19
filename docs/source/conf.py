@@ -44,8 +44,8 @@ html_theme = "furo" # "alabaster" # "sphinx_rtd_theme" # 'alabaster'
 html_theme_options = {"base_url": "https://martiniifun.github.io/pyhwpx/"}
 html_baseurl = "https://martiniifun.github.io/pyhwpx/"
 html_static_path = ['_static']
-autodoc_member_order = 'bysource'
-autoclass_member_order = 'bysource'
+# autodoc_member_order = 'bysource'
+# autoclass_member_order = 'bysource'
 autosummary_generate = True
 autodoc_inherit_docstrings = True
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
