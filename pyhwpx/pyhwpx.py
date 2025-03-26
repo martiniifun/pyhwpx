@@ -12067,6 +12067,12 @@ class Hwp:
         """
         return self.hwp.HAction.Run("TableAppendRow")
 
+    def TableSubtractRow(self):
+        """
+        줄 삭제
+        """
+        return self.hwp.HAction.Run("TableSubtractRow")
+
     def TableAutoFill(self):
         """자동 채우기"""
         return self.hwp.HAction.Run("TableAutoFill")
