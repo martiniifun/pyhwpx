@@ -5,7 +5,18 @@ theme:
   name: material
   language: ko
   features:
+    - navigation.top
+    - navigation.indexes
+    - navigation.prune
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.tracking
     - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
     - search.highlight
     - search.suggest
     - search.share
