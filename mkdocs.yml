@@ -3,21 +3,24 @@ site_url: https://martiniifun.github.io/pyhwpx
 repo_url: https://github.com/martiniifun/pyhwpx
 theme:
   name: material
+  language: ko
   features:
     - navigation.instant
     - search.highlight
     - search.suggest
     - search.share
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-    - scheme: slate
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-
 
 plugins:
   - search

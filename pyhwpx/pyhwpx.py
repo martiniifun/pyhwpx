@@ -454,17 +454,17 @@ class Hwp:
     def Application(self):
         """
         저수준의 아래아한글 오토메이션API에 직접 접근하기 위한 속성입니다.
+
         `hwp.Application.~~~` 로 실행 가능한 모든 속성은, 간단히 `hwp.~~~` 로 실행할 수도 있지만
         pyhwpx와 API의 작동방식을 동일하게 하기 위해 구현해 두었습니다.
 
-        :return: HwpApplication 객체
-        :rtype: HwpApplication
-        :examples:
-        ```
+        Returns:
+            저수준의 HwpApplication 객체
+
+        Examples:
         >>> from pyhwpx import Hwp
         >>> hwp = Hwp()
         >>> hwp.Application.XHwpWindows.Item(0).Visible = True
-        ```
         """
         return self.hwp.Application
 
@@ -1219,14 +1219,17 @@ class Hwp:
             print("파일을 찾을 수 없습니다.")
             return False
 
-    def get_image_info(self, ctrl: Any = None):
+    def get_image_info(self, ctrl: Any = None) -> dict[str:str, str:list[int, int]]:
         """
         이미지 컨트롤의 원본 그림의 이름과
         원본 그림의 크기 정보를 추출하는 메서드
 
-        :param ctrl: 아래아한글의 이미지 컨트롤. ctrl을 지정하지 않으면 현재 선택된 이미지의 정보를 추출
-        :return: 해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트
-        :rtype: dict["name":str, "size":list[int, int]]
+        Args:
+            ctrl: 아래아한글의 이미지 컨트롤. ctrl을 지정하지 않으면 현재 선택된 이미지의 정보를 추출
+
+        Returns:
+            해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
