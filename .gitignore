@@ -13,3 +13,4 @@ __pycache__/
 .pypirc
 /CHANGELOG_SAMPLE.md
 /release.py
+/site/

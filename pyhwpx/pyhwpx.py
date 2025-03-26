@@ -288,12 +288,12 @@ def crop_data_from_selection(data, selection):
     return result
 
 
-def check_registry_key():
+def check_registry_key() -> bool:
     """
     아래아한글의 보안모듈 FilePathCheckerModule의 레지스트리에 등록여부 체크
 
     Returns:
-            등록되어 있는 경우 True, 미등록인 경우 False
+        등록되어 있는 경우 True, 미등록인 경우 False
     
     """
     from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, KEY_WRITE, SetValueEx, REG_SZ, CloseKey
@@ -3979,7 +3979,7 @@ class Hwp:
         print(os.path.join(os.getcwd(), filename))
         return None
 
-    def table_to_df_q(self, n="", startrow=0, columns=[]):
+    def table_to_df_q(self, n="", startrow=0, columns=[]) -> pd.DataFrame:
         """
         (2024. 3. 14. for문 추출 구조에서, 한 번에 추출하는 방식으로 변경->속도개선)
 
@@ -3990,7 +3990,8 @@ class Hwp:
         df로 변환시작할 행을 특정할 때 사용된다.
 
         Returns:
-            pd.DataFrame
+            아래아한글 표 데이터를 가진 판다스 데이터프레임 인스턴스
+
         Examples:
             >>> from pyhwpx import Hwp
             >>>
@@ -4070,7 +4071,7 @@ class Hwp:
         self.hwp.SetPos(*start_pos)
         return df
 
-    def table_to_df(self, n="", cols=0, selected_range=None, start_pos=None):
+    def table_to_df(self, n="", cols=0, selected_range=None, start_pos=None) -> pd.DataFrame:
         """
         (2025. 3. 3. RowSpan이랑 ColSpan을 이용해서, 중복되는 값은 그냥 모든 셀에 넣어버림
 
@@ -4079,7 +4080,8 @@ class Hwp:
         캐럿이 표 밖에 있다면 첫 번째 표를 df로 리턴한다.
 
         Returns:
-            pd.DataFrame
+            아래아한글 표 데이터를 가진 판다스 데이터프레임 인스턴스
+
         Examples:
             >>> from pyhwpx import Hwp
             >>>
