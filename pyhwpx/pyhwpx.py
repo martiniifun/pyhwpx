@@ -10,6 +10,8 @@ import threading
 import urllib.error
 import xml.etree.ElementTree as ET
 import zipfile
+from functools import wraps
+
 from collections import defaultdict
 from io import StringIO
 from time import sleep
@@ -63,6 +65,26 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 
 # 헬퍼함수
+def com_initialized(func):
+    # 이용준님께서 기여해주셨습니다. (https://github.com/YongJun-Lee-98)
+    """
+    이 데코레이터는 함수 실행 전에 COM 라이브러리를 초기화하고,
+    실행 후에 COM 라이브러리를 해제합니다.
+
+    Python의 GC가 COM 객체를 자동으로 제거하더라도,
+    CoUninitialize()를 호출하지 않으면
+    COM 라이브러리가 해당 스레드에서 완전히 해제되지 않을 수 있기 때문입니다.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        pythoncom.CoInitialize()
+        try:
+            return func(*args, **kwargs)
+        finally:
+            pythoncom.CoUninitialize()
+    return wrapper
+
+
 def addr_to_tuple(cell_address: str):
     """
     엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 (row, col) 튜플로 변환하는 헬퍼함수입니다.
