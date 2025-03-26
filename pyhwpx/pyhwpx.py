@@ -23,6 +23,7 @@ import numpy as np
 import pandas as pd
 import pyperclip as cb
 from PIL import Image
+from pyhwpx import Hwp
 
 if sys.platform == 'win32':
     import pythoncom
@@ -315,7 +316,7 @@ def check_registry_key() -> bool:
     return False
 
 
-def rename_duplicates_in_list(file_list: list[str]):
+def rename_duplicates_in_list(file_list: list[str]) -> list[str]:
     """
     문서 내 이미지를 파일로 저장할 때,
     동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 헬퍼함수
@@ -341,7 +342,7 @@ def rename_duplicates_in_list(file_list: list[str]):
     return file_list
 
 
-def check_tuple_of_ints(var: tuple):
+def check_tuple_of_ints(var: tuple) -> bool:
     """
     변수가 튜플이고 모든 요소가 int인지 확인하는 헬퍼함수
 
@@ -904,7 +905,7 @@ class Hwp:
         return self.hwp.Path
 
     @property
-    def SelectionMode(self):
+    def SelectionMode(self) -> int:
         """
         현재 선택모드가 어떤 상태인지 리턴한다.
 
@@ -913,7 +914,7 @@ class Hwp:
         return self.hwp.SelectionMode
 
     @property
-    def Version(self):
+    def Version(self) -> str:
         """
         아래아한글 프로그램의 버전을 문자열로 리턴한다.
 
@@ -944,7 +945,7 @@ class Hwp:
         return self.hwp.XHwpDocuments
 
     @property
-    def XHwpMessageBox(self):
+    def XHwpMessageBox(self) -> Hwp.XHwpMessageBox:
         """
         메시지박스 객체 리턴
 
@@ -953,15 +954,15 @@ class Hwp:
         return self.hwp.XHwpMessageBox
 
     @property
-    def XHwpODBC(self):
+    def XHwpODBC(self) -> Hwp.XHwpODBC:
         return self.hwp.XHwpODBC
 
     @property
-    def XHwpWindows(self):
+    def XHwpWindows(self) -> Hwp.XHwpWindows:
         return self.hwp.XHwpWindows
 
     @property
-    def ctrl_list(self):
+    def ctrl_list(self) -> list:
         """
         문서 내 모든 ctrl를 리스트로 반환한다.
 
@@ -971,6 +972,7 @@ class Hwp:
         (모든 컨트롤을 제거하는 등의 경우, 편의를 위함)
 
         Returns:
+            문서 내 모든 컨트롤의 리스트. 단, HeadCtrl(secd), HeadCtrl.Next(cold)는 포함하지 않는다.
         """
         c_list = []
         ctrl = self.hwp.HeadCtrl.Next.Next
@@ -980,22 +982,23 @@ class Hwp:
         return c_list
 
     @property
-    def current_page(self):
+    def current_page(self) -> int:
         """
-        현재 쪽번호를 리턴.
+        새쪽번호나 구역과 무관한 현재 쪽의 순서를 리턴.
 
         1페이지에 있다면 1을 리턴한다.
         새쪽번호가 적용되어 있어도
         페이지의 인덱스를 리턴한다.
 
         Returns:
+            현재 쪽번호
         """
         return self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPage + 1
 
     @property
-    def current_printpage(self):
+    def current_printpage(self) -> int:
         """
-        현재 쪽번호를 리턴.
+        페이지인덱스가 아닌, 종이에 표시되는 쪽번호를 리턴.
 
         1페이지에 있다면 1을 리턴한다.
         새쪽번호가 적용되어 있다면
@@ -9044,18 +9047,18 @@ class Hwp:
         """
         return self.hwp.HAction.Run("CommentModify")
 
-    def ComposeChars(self, Chars: str | int = "", CharSize: int = -3, CheckCompose: int = 0, CircleType: int = 0,
-                     **kwargs):
+    def ComposeChars(self, Chars: str | int = "", CharSize: int = -3, CheckCompose: int = 0, CircleType: int = 0, **kwargs) -> bool:
         """
         글자 겹치기 메서드(원문자 만들기)
 
         캐럿 위치의 서체를 따라가지만, 임의의 키워드로 폰트 수정 가능(예: Bold=True, Italic=True, TextColor=hwp.RGBColor(255,0,0) 등)
 
-        :param Chars: 겹칠 글자(정수도 문자열로 인식)
-        :param CharSize: 글자확대(2:150%, 1:140%, 0:130%, -1:120%, -2:110%, -3:100%, -4:90%, -5:80%, -6:70%, -7:60%, -8:50%)
-        :param CheckCompose: 모양 안에 글자 겹치기 여부(1이면 글자들끼리도 겹침)
-        :param CircleType: 테두리 모양(0:없음, 1:원, 2:반전원, 3:사각, 4:반전사각, 5:삼각, 6:반전삼각, 7:해, 8:마름모, 9:반전마름모, 10:뭉툭사각, 11:재활용빈화살표, 12:재활용화살표, 13:재활용채운화살표)
-        :param kwargs: 폰트 관련 키워드인자들(Bold, Italic, TextColor 등)
+        Args:
+            Chars: 겹칠 글자(정수도 문자열로 인식)
+            CharSize: 글자확대(2:150%, 1:140%, 0:130%, -1:120%, -2:110%, -3:100%, -4:90%, -5:80%, -6:70%, -7:60%, -8:50%)
+            CheckCompose: 모양 안에 글자 겹치기 여부(1이면 글자들끼리도 겹침)
+            CircleType: 테두리 모양(0:없음, 1:원, 2:반전원, 3:사각, 4:반전사각, 5:삼각, 6:반전삼각, 7:해, 8:마름모, 9:반전마름모, 10:뭉툭사각, 11:재활용빈화살표, 12:재활용화살표, 13:재활용채운화살표)
+            kwargs: 폰트 관련 키워드인자들(Bold, Italic, TextColor 등)
 
         Returns:
         성공하면 True, 실패하면 False를 리턴
@@ -9129,7 +9132,7 @@ class Hwp:
         """툴바 버튼 이름만 보이기"""
         return self.hwp.HAction.Run("CustViewNameBtn")
 
-    def Cut(self, remove_cell=True):
+    def Cut(self, remove_cell=True) -> bool:
         """
         잘라내기. Copy 액션과 유사하지만, 복사 대신 잘라내기 기능을 수행한다. 자주 쓰이는 메서드이다.
 
@@ -13768,7 +13771,7 @@ class Hwp:
         """
         return self.hwp.SetTitleName(Title=title)
 
-    def SetTitleName(self, title):
+    def SetTitleName(self, title:str) -> bool:
         """
         한/글 프로그램의 타이틀을 변경한다.
 
@@ -13776,7 +13779,7 @@ class Hwp:
         모든 특수문자를 허용한다.
 
         Args:
-            title(str): 변경할 타이틀 문자열
+            title: 변경할 타이틀 문자열
 
         Returns:
             성공시 True
