@@ -5,14 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81f6b457-5ce7-4559-a767-1ee894a3280d" name="변경" comment="save_image 추가수정(기존에 있으면 지워버리기) +typing">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/25__3__16___6_22__________1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/25__3__16__오후_6_22,_체크아웃_전에_커밋되지_않은_변경_내용_[변경]1/objects.inv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/25__3__16__오후_6_22,_체크아웃_전에_커밋되지_않은_변경_내용_[변경]1/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBCx0x1x0_2024.py" beforeDir="false" afterPath="$PROJECT_DIR$/7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBCx0x1x0_2024.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MANIFEST.in" beforeDir="false" afterPath="$PROJECT_DIR$/MANIFEST.in" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/PKG-INFO" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyhwpx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/SOURCES.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/dependency_links.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/dependency_links.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/requires.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/requires.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.egg-info/top_level.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx.egg-info/top_level.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyhwpx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyhwpx/pyhwpx.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -40,39 +57,44 @@
   &quot;customColor&quot;: &quot;c4bb56b3&quot;
 }</component>
   <component name="ProjectId" id="2uJQs4IDnMgVsOCHIuLYayGIkAW" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python 문서.api.rst 내 Docutils 작업.executor&quot;: &quot;Run&quot;,
-    &quot;Python 테스트.pyhwpx 내 Doctests.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/PycharmProjects/pyhwpx&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python 문서.api.rst 내 Docutils 작업.executor": "Run",
+    "Python 테스트.pyhwpx 내 Doctests.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/user/PycharmProjects/pyhwpx/build/lib",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/새 스크래치 파일&quot;: [
-      &quot;TEXT&quot;,
-      &quot;Jupyter&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/새 스크래치 파일": [
+      "Jupyter",
+      "TEXT"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\user\PycharmProjects\pyhwpx\build\lib" />
+      <recent name="C:\Users\user\PycharmProjects\pyhwpx\pyhwpx.egg-info" />
       <recent name="C:\Users\user\PycharmProjects\pyhwpx" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\user\PycharmProjects\pyhwpx\pyhwpx" />
       <recent name="C:\Users\user\PycharmProjects\v" />
       <recent name="C:\Users\user\PycharmProjects\pyhwpx\docs" />
     </key>
@@ -105,6 +127,12 @@
       <workItem from="1742391575319" duration="14000" />
       <workItem from="1742391837975" duration="116000" />
       <workItem from="1742392679786" duration="78000" />
+      <workItem from="1742444513076" duration="4940000" />
+      <workItem from="1742529036288" duration="612000" />
+      <workItem from="1742554707115" duration="17000" />
+      <workItem from="1742970190778" duration="108000" />
+      <workItem from="1742972643062" duration="6251000" />
+      <workItem from="1742984957860" duration="3908000" />
     </task>
     <task id="LOCAL-00047" summary="automodule:: pyhwpx.Hwp 추가">
       <option name="closed" value="true" />

@@ -1,1 +1,1 @@
-include ./FilePathCheckerModule.dll
+include pyhwpx/FilePathCheckerModule.dll

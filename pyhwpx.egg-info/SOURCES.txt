@@ -1,7 +1,10 @@
 MANIFEST.in
 license.txt
-pyhwpx.py
 setup.py
+pyhwpx/FilePathCheckerModule.dll
+pyhwpx/__init__.py
+pyhwpx/pyhwpx.py
+pyhwpx/version.py
 pyhwpx.egg-info/PKG-INFO
 pyhwpx.egg-info/SOURCES.txt
 pyhwpx.egg-info/dependency_links.txt

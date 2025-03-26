@@ -1,3 +1,4 @@
+from importlib.resources import files
 import ctypes
 import json
 import os
@@ -41,9 +42,11 @@ if sys.platform == 'win32':
         sys.stderr = old_stderr
         devnull.close()
 
-__version__ = "0.45.12"
+
 
 # for pyinstaller
+_ = files("pyhwpx").joinpath("FilePathCheckerModule.dll")
+
 if getattr(sys, 'frozen', False):
     pyinstaller_path = sys._MEIPASS
 else:
@@ -276,7 +279,7 @@ def check_registry_key():
             key = OpenKey(reg_handle, path, 0, KEY_READ)
             try:
                 value, regtype = QueryValueEx(key, "FilePathCheckerModule")
-                if value:
+                if value and os.path.exists(value):
                     CloseKey(key)
                     return True
             except FileNotFoundError:
@@ -4109,17 +4112,18 @@ class Hwp:
             return self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
         finally:
             # 글자처럼 취급 여부 적용(treat_as_char)
-            if self.Version.split(", ")[0] == "8":
+            if self.Version.split(", ")[0] != "8":
                 ctrl = self.hwp.CurSelectedCtrl or self.hwp.ParentCtrl
                 pset = self.hwp.CreateSet("Table")
                 pset.SetItem("TreatAsChar", treat_as_char)
                 ctrl.Properties = pset
 
             # 제목 행 여부 적용(header)
-            pset = self.hwp.HParameterSet.HShapeObject
-            self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
-            pset.ShapeTableCell.Header = header
-            self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
+            if header:
+                pset = self.hwp.HParameterSet.HShapeObject
+                self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+                pset.ShapeTableCell.Header = header
+                self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
     def get_selected_text(self, as_: Literal["list", "str"] = "str"):
         """
@@ -8452,59 +8456,70 @@ class Hwp:
             location = [i.split(": ")[1] for i in
                         subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode(
                             encoding="cp949").split("\r\n") if i.startswith("Location: ")][0]
-        except:
-            try:
-                location = [i.split(": ")[1] for i in subprocess.check_output(['pip', 'show', 'pyhwpx'],
-                                                                              stderr=subprocess.DEVNULL).decode().split(
-                    "\r\n") if i.startswith("Location: ")][0]
-            except subprocess.CalledProcessError as e:
-                # FilePathCheckerModule.dll을 못 찾는 경우에는 아래 분기 중 하나를 실행
-                #
+            location = os.path.join(location, "pyhwpx")
+        except UnicodeDecodeError:
+            location = [i.split(": ")[1] for i in
+                        subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode().split(
+                            "\r\n") if i.startswith("Location: ")][0]
+            location = os.path.join(location, "pyhwpx")
+        print("default dll :", os.path.join(location, "FilePathCheckerModule.dll"))
+        if not os.path.exists(os.path.join(location, "FilePathCheckerModule.dll")):
+            print("위 폴더에서 보안모듈을 찾을 수 없음..")
+            location = ""
+            # except subprocess.CalledProcessError as e:
+            # FilePathCheckerModule.dll을 못 찾는 경우에는 아래 분기 중 하나를 실행
+            #
 
-                # 1. pyinstaller로 컴파일했고,
-                #    --add-binary="FilePathCheckerModule.dll:." 옵션을 추가한 경우
-                location = ""
-                for dirpath, dirnames, filenames in os.walk(pyinstaller_path):
-                    for filename in filenames:
-                        if filename.lower() == "FilePathCheckerModule.dll".lower():
-                            location = dirpath
+            # 1. pyinstaller로 컴파일했고,
+            #    --add-binary="FilePathCheckerModule.dll:." 옵션을 추가한 경우
+            for dirpath, dirnames, filenames in os.walk(pyinstaller_path):
+                for filename in filenames:
+                    if filename.lower() == "FilePathCheckerModule.dll".lower():
+                        location = dirpath
+                        print(location, "에서 보안모듈을 찾았습니다.")
+                        break
+            print("pyinstaller 하위경로에 보안모듈 없음..")
 
-                # 2. "FilePathCheckerModule.dll" 파일을 실행파일과 같은 경로에 둔 경우
-                if "FilePathCheckerModule.dll".lower() in [i.lower() for i in os.listdir(os.getcwd())]:
-                    location = os.getcwd()
-                # elif os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
-                elif "FilePathCheckerModule.dll".lower in [i.lower() for i in
-                                                           os.listdir(os.path.join(os.environ["USERPROFILE"]))]:
+            # 2. "FilePathCheckerModule.dll" 파일을 실행파일과 같은 경로에 둔 경우
+
+            if "FilePathCheckerModule.dll".lower() in [i.lower() for i in os.listdir(os.getcwd())]:
+                print("실행파일 경로에서 보안모듈을 찾았습니다.")
+                location = os.getcwd()
+                print("보안모듈 경로 :", location)
+            # elif os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
+            elif "FilePathCheckerModule.dll".lower in [i.lower() for i in
+                                                       os.listdir(os.path.join(os.environ["USERPROFILE"]))]:
+                print("사용자 폴더에서 보안모듈을 찾았습니다.")
+                location = os.environ["USERPROFILE"]
+                print("보안모듈 경로 :", location)
+            # 3. 위의 두 경우가 아닐 때, 인터넷에 연결되어 있는 경우에는
+            #    사용자 폴더(예: c:\\users\\user)에
+            #    FilePathCheckerModule.dll을 다운로드하기.
+            if location == "":
+                # pyhwpx가 설치되어 있지 않은 PC에서는,
+                # 공식사이트에서 다운을 받게 하자.
+                from zipfile import ZipFile
+                print("https://github.com/hancom-io에서 보안모듈 다운로드를 시도합니다.")
+                try:
+                    f = request.urlretrieve(
+                        "https://github.com/hancom-io/devcenter-archive/raw/main/hwp-automation/%EB%B3%B4%EC%95%88%EB%AA%A8%EB%93%88(Automation).zip",
+                        filename=os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
+                    with ZipFile(f[0]) as zf:
+                        zf.extract(
+                            "FilePathCheckerModuleExample.dll",
+                            os.path.join(os.environ["USERPROFILE"]))
+                    os.remove(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
+                    if not os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
+                        os.rename(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModuleExample.dll"),
+                                  os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll"))
                     location = os.environ["USERPROFILE"]
-
-                # 3. 위의 두 경우가 아닐 때, 인터넷에 연결되어 있는 경우에는
-                #    사용자 폴더(예: c:\\users\\user)에
-                #    FilePathCheckerModule.dll을 다운로드하기.
-                if not location:
-                    print("not location")
-                    # pyhwpx가 설치되어 있지 않은 PC에서는,
-                    # 공식사이트에서 다운을 받게 하자.
-                    from zipfile import ZipFile
-                    print("downloading FilePathCheckerModule.dll to User Profile Folder")
-                    try:
-                        f = request.urlretrieve(
-                            "https://github.com/hancom-io/devcenter-archive/raw/main/hwp-automation/%EB%B3%B4%EC%95%88%EB%AA%A8%EB%93%88(Automation).zip",
-                            filename=os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
-                        with ZipFile(f[0]) as zf:
-                            zf.extract(
-                                "FilePathCheckerModuleExample.dll",
-                                os.path.join(os.environ["USERPROFILE"]))
-                        os.remove(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
-                        if not os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
-                            os.rename(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModuleExample.dll"),
-                                      os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll"))
-                        location = os.environ["USERPROFILE"]
-                    except urllib.error.URLError as e:
-                        # URLError를 처리합니다.
-                        print(f"아래와 같은 이유로 URL 에러가 발생하여 보안모듈 다운로드에 실패했습니다: \n{e.reason}")
-                    except Exception as e:
-                        # 기타 예외를 처리합니다.
-                        print(f"예기치 못한 오류가 발생했습니다. 아래 오류를 개발자에게 문의해주시기 바랍니다: \n{str(e)}")
+                    print("사용자폴더", location, "에 보안모듈을 설치하였습니다.")
+                except urllib.error.URLError as e:
+                    # URLError를 처리합니다.
+                    print(f"내부망에서는 보안모듈을 다운로드할 수 없습니다. 보안모듈을 직접 다운받아 설치하여 주시기 바랍니다.: \n{e.reason}")
+                except Exception as e:
+                    # 기타 예외를 처리합니다.
+                    print(f"예기치 못한 오류가 발생했습니다. 아래 오류를 개발자에게 문의해주시기 바랍니다: \n{str(e)}")
         winup_path = r"Software\HNC\HwpAutomation\Modules"
 
         # HKEY_LOCAL_MACHINE와 연결 생성 후 핸들 얻음

@@ -21,7 +21,7 @@ defaultUnnamedArg=pythoncom.Empty
 CLSID = IID('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}')
 MajorVersion = 1
 MinorVersion = 0
-LibraryFlags = 8
+LibraryFlags = 8F
 LCID = 0x0
 
 from win32com.client import DispatchBaseClass
