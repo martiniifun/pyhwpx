@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.47.6] - 2025-03-27
+### Fixed
+- GitHub Releases 탭에 릴리즈 자동 생성 기능 추가
+
+---
+
 ## [0.47.5] - 2025-03-27
 ### Fixed
 - GitHub Releases 탭에 릴리즈 자동 생성 기능 추가
