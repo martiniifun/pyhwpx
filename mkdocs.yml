@@ -1,0 +1,58 @@
+site_name: pyhwpx
+site_url: https://martiniifun.github.io/pyhwpx
+repo_url: https://github.com/martiniifun/pyhwpx
+theme:
+  name: material
+  language: ko
+  features:
+    - navigation.top
+    - navigation.indexes
+    - navigation.prune
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.tracking
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - search.highlight
+    - search.suggest
+    - search.share
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+
+nav:
+  - Home: index.md
+  - API: api.md
+
+#extra_javascript:
+#  - https://cdn.jsdelivr.net/npm/@docsearch/js@3
+
+#extra_css:
+#  - https://cdn.jsdelivr.net/npm/@docsearch/css@3
+
+#extra:
+#  docsearch:
+#    app_id: YOUR_APP_ID
+#    api_key: YOUR_API_KEY
+#    index_name: YOUR_INDEX_NAME
