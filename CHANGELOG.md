@@ -1,5 +1,11 @@
 # 📦 Changelog
 
+## [0.47.11] - 2025-03-27
+### 🐛 Fixed
+- 기존에 누락되었던 TableSubtractRow 메서드 추가 == hwp.TableSubtractRow()라고 실행할 수 있음. (기존방식 : `hwp.HAction.Run("TableSubtractRow")`)
+
+---
+
 ## [0.47.10] - 2025-03-27
 ### 🐛 Fixed
 - 이모티콘(=감성) 추가✨ 챗지피티가 이렇게도 도와주는구나!!!
