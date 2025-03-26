@@ -1,5 +1,0 @@
-include readme.md
-include license.txt
-include MANIFEST.in
-include setup.py
-recursive-include pyhwpx *
