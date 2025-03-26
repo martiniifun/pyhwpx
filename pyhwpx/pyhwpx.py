@@ -85,16 +85,16 @@ def com_initialized(func):
     return wrapper
 
 
-def addr_to_tuple(cell_address: str):
+def addr_to_tuple(cell_address: str) -> tuple[int, int]:
     """
     엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 (row, col) 튜플로 변환하는 헬퍼함수입니다.
     예를 들어 addr_to_tuple("C3")을 실행하면 (3, 3)을 리턴하는 식입니다.
     pyhwpx 일부 메서드의 내부 연산에 사용됩니다.
 
-    :param cell_address: 엑셀 방식의 "셀주소" 문자열
-    :type cell_address: str
+    Args:
+        cell_address: 엑셀 방식의 "셀주소" 문자열
     Returns:
-            (row, column) 형식의 주소 튜플
+        (row, column) 형식의 주소 튜플
     
     Examples:
         >>> print(addr_to_tuple("C3"))
@@ -123,17 +123,15 @@ def addr_to_tuple(cell_address: str):
     return row, col
 
 
-def tuple_to_addr(col: int, row: int):
+def tuple_to_addr(col: int, row: int) -> str:
     """
     (컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: "AAA3")을 반환합니다.
     hwp.goto_addr(addr) 메서드 내부에서 활용됩니다. 직접 사용하지 않습니다.
 
     :param col: 열(칼럼) 번호(1부터 시작)
-    :type col: int
     :param row: 행(로우) 번호(1부터 시작)
-    :type row: int
     Returns:
-            엑셀 형식의 주소 문자열
+        엑셀 형식의 주소 문자열(예: "A1", "VVS1004")
     
     Examples:
         >>> from pyhwpx import tuple_to_addr
@@ -151,7 +149,7 @@ def tuple_to_addr(col: int, row: int):
     return f"{col_str}{row}"
 
 
-def _open_dialog(hwnd, key="M", delay=0.2):
+def _open_dialog(hwnd, key="M", delay=0.2) -> None:
     """
     수식컨트롤 관련 헬퍼함수. 직접 사용하지 말 것.
 
@@ -164,7 +162,7 @@ def _open_dialog(hwnd, key="M", delay=0.2):
     sleep(delay)
 
 
-def _get_edit_text(hwnd: int, delay: int = 0.2):
+def _get_edit_text(hwnd: int, delay: int = 0.2) -> str:
     """
     수식컨트롤 관련 헬퍼함수. 직접 사용하지 말 것.
 
@@ -177,7 +175,7 @@ def _get_edit_text(hwnd: int, delay: int = 0.2):
     return text
 
 
-def _refresh_eq(hwnd: int, delay: int = 0.1):
+def _refresh_eq(hwnd: int, delay: int = 0.1) -> None:
     """
     수식 새로고침을 위한 키 전송 함수.
     hwnd로 수식 편집기 창을 찾아놓은 후 실행하면 Ctrl-(Tab-Tab)을 전송한다.
@@ -197,15 +195,14 @@ def _refresh_eq(hwnd: int, delay: int = 0.1):
     sleep(delay)
 
 
-def _eq_create(visible: bool):
+def _eq_create(visible: bool) -> bool:
     """
     멀티스레드 형태로 새 수식편집기를 실행하는 헬퍼함수
 
     :param visible: 아래아한글을 백그라운드에서 실행할지(False), 혹은 화면에 보이게 할지(True) 결정하는 파라미터
-    :type visible: bool
+
     Returns:
-            무조건 True를 리턴함
-    
+        무조건 True를 리턴함    
     """
     pythoncom.CoInitialize()
     hwp = Hwp(visible=visible)
@@ -219,9 +216,9 @@ def _eq_modify(visible):
     멀티스레드 형태로 기존 수식에 대한 수식편집기를 실행하는 헬퍼함수.
 
     :param visible: 아래아한글을 백그라운드에서 실행할지(False), 혹은 화면에 보이게 할지(True) 결정하는 파라미터
-    :type visible: bool
+
     Returns:
-            무조건 True를 리턴
+        무조건 True를 리턴
     
     """
     pythoncom.CoInitialize()
@@ -236,11 +233,11 @@ def _close_eqedit(save: bool = False, delay: float = 0.1):
     멀티스레드로 열린 수식편집기를 억지로 찾아 닫는 헬퍼함수
 
     :param save: 수식편집기를 닫기 전에 저장할지 결정
-    :type save: bool
+
     :param delay: 실행 지연시간
-    :type delay: float
+
     Returns:
-            성공시 True, 실패시 False
+        성공시 True, 실패시 False
     
     """
     hwnd = 0
@@ -324,9 +321,9 @@ def rename_duplicates_in_list(file_list: list[str]):
     동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 헬퍼함수
 
     :param file_list: 문서 내 이미지 파일명 목록
-    :type file_list: list[str]
+
     Returns:
-            중복된 이름이 두 개 이상 있는 경우 뒤에 "(2)", "(3)"을 붙인 새로운 문자열 리스트
+        중복된 이름이 두 개 이상 있는 경우 뒤에 "(2)", "(3)"을 붙인 새로운 문자열 리스트
     
     """
     counts = {}
@@ -349,9 +346,9 @@ def check_tuple_of_ints(var: tuple):
     변수가 튜플이고 모든 요소가 int인지 확인하는 헬퍼함수
 
     :param var: 이터러블 자료형
-    :type var: tuple
+
     Returns:
-            튜플이면서, 요소들이 모두 int인 경우 True를 리턴, 그렇지 않으면 False
+        튜플이면서, 요소들이 모두 int인 경우 True를 리턴, 그렇지 않으면 False
     
     """
     if isinstance(var, tuple):  # 먼저 변수가 튜플인지 확인
@@ -466,7 +463,7 @@ class Hwp:
         pyhwpx와 API의 작동방식을 동일하게 하기 위해 구현해 두었습니다.
 
         Returns:
-            저수준의 HwpApplication 객체
+        저수준의 HwpApplication 객체
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -481,7 +478,7 @@ class Hwp:
         셀(또는 표) 모양을 관리하는 파라미터셋 속성입니다.
 
         Returns:
-            CellShape 파라미터셋
+        CellShape 파라미터셋
         
         Examples:
             >>> from pyhwpx import Hwp
@@ -623,7 +620,7 @@ class Hwp:
         (한글2024 이상) 현재 캐럿이 들어가 있는 메타태그 상태를 조회할 수 있는 속성.
 
         Returns:
-            1: 셀 메타태그 영역에 들어있음
+        1: 셀 메타태그 영역에 들어있음
             4: 메타태그가 부여된 글상자 또는 그리기개체 컨트롤 내부의 텍스트 공간에 있음
             8: 메타태그가 부여된 이미지 또는 글맵시, 글상자 등의 컨트롤 선택상태임
             16: 메타태그가 부여된 표 컨트롤 선택 상태임
@@ -666,7 +663,7 @@ class Hwp:
         편집모드로 변경하고 싶으면 1, 읽기전용으로 변경하고 싶으면 0 대입합니다.
 
         Returns:
-            편집모드는 1을, 읽기전용인 경우 0을 리턴
+        편집모드는 1을, 읽기전용인 경우 0을 리턴
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -895,7 +892,7 @@ class Hwp:
         현재 빈 문서가 아닌 경우, 열려 있는 문서의 파일명을 포함한 전체경로를 리턴한다.
 
         Returns:
-            현재 문서의 전체경로
+        현재 문서의 전체경로
         
         Examples:
             >>> from pyhwpx import Hwp
@@ -1027,16 +1024,16 @@ class Hwp:
         한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함
 
         :param ctrl: 컨트롤 오브젝트. 특정하지 않으면 현재 선택된 컨트롤의 좌표를 리턴
-        :type ctrl: Any
+
         :param option:
             "표안의 표"처럼 컨트롤이 중첩된 경우에 어느 좌표를 리턴할지 결정할 수 있음
             0: 현재 컨트롤이 포함된 리스트 기준으로 좌표 리턴
             1: 현재 컨트롤을 포함하는 최상위 컨트롤 기준의 좌표 리턴
-        :type option: int
+
         :param as_tuple:
             리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True
             `as_tuple=False` 의 경우에는 ListParaPos 파라미터셋 자체를 리턴
-        :type as_tuple: bool
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -1080,10 +1077,10 @@ class Hwp:
             Percent: 글자에 따라(기본값, %)
             BetweenLines: 여백만 지정(포인트 단위)
             AtLeast: 최소(포인트 단위)
-        :type method: str
+
 
         Returns:
-            현재 캐럿이 위치한 문단의 줄간격(% 또는 Point)
+        현재 캐럿이 위치한 문단의 줄간격(% 또는 Point)
         
         Examples:
             >>> from pyhwpx import Hwp
@@ -1108,17 +1105,17 @@ class Hwp:
         현재 캐럿 위치의 문단 또는 선택 블록의 줄간격(%) 설정
 
         :param value: 줄간격 값("Percent"인 경우에는 %, 그 외에는 point 값으로 적용됨). 기본값은 160(%)
-        :type value: int|float
+
         :param method:
             줄간격 단위기준. method가 일치해야 정상적으로 적용됨.
             Fixed: 고정값(포인트 단위)
             Percent: 글자에 따라(기본값, %)
             BetweenLines: 여백만 지정(포인트 단위)
             AtLeast: 최소(포인트 단위)
-        :type method: str
+
 
         Returns:
-            성공시 True, 실패시 False를 리턴
+        성공시 True, 실패시 False를 리턴
         
         Examples:
             >>> from pyhwpx import Hwp
@@ -1146,7 +1143,7 @@ class Hwp:
         단독으로는 활용하지 말 것.
 
         Returns:
-            빈 문단일 경우 제자리에서 True, 비어있지 않은 경우 False를 리턴
+        빈 문단일 경우 제자리에서 True, 비어있지 않은 경우 False를 리턴
         
         """
         self.MoveSelNextChar()
@@ -1222,7 +1219,7 @@ class Hwp:
         hwp.get_field_list().split("\r\n") 메서드를 쓰면 된다.
 
         Returns:
-            [{'name': 'zxcv', 'direction': 'adsf', 'memo': 'qwer'}] 형식의 사전 리스트
+        [{'name': 'zxcv', 'direction': 'adsf', 'memo': 'qwer'}] 형식의 사전 리스트
         
         Examples:
             >>> from pyhwpx import Hwp
@@ -1257,7 +1254,7 @@ class Hwp:
             ctrl: 아래아한글의 이미지 컨트롤. ctrl을 지정하지 않으면 현재 선택된 이미지의 정보를 추출
 
         Returns:
-            해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트
+        해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -1345,7 +1342,7 @@ class Hwp:
         (추후 개선예정 : 캡션 스타일로 찾아가기 기능 추가할 것)
 
         Returns:
-            성공시 True, 실패시 False를 리턴
+        성공시 True, 실패시 False를 리턴
         """
         pset = self.hwp.HParameterSet.HGotoE
         pset.HSet.SetItem("DialogResult", 56)  # 표번호
@@ -1364,7 +1361,7 @@ class Hwp:
         :param cell_only: 셀만 복사할지, 내용도 복사할지 여부
 
         Returns:
-            성공시 True, 실패시 False를 리턴
+        성공시 True, 실패시 False를 리턴
         """
         pset = self.hwp.HParameterSet.HShapeCopyPaste
         pset.type = ["font", "para", "both"].index(Type)
@@ -1577,7 +1574,7 @@ class Hwp:
         현재 캐럿이 위치한 문단의 스타일정보를 사전 형태로 리턴한다.
 
         Returns:
-            스타일 목록 딕셔너리
+        스타일 목록 딕셔너리
         """
         style_dict = self.get_style_dict(as_=list)
         pset = self.HParameterSet.HStyle
@@ -1722,7 +1719,7 @@ class Hwp:
             "Equation": 수식
 
         Returns:
-            성공시 True, 실패시 False를 리턴
+        성공시 True, 실패시 False를 리턴
         """
         current_pos = self.GetPos()
         current_page = self.PageCount
@@ -1764,7 +1761,7 @@ class Hwp:
             "Equation": 수식
 
         Returns:
-            성공시 True, 실패시 False를 리턴
+        성공시 True, 실패시 False를 리턴
         """
         pset = self.HParameterSet.HAutoNum
         self.HAction.GetDefault("NewNumber", pset.HSet)
@@ -1805,7 +1802,7 @@ class Hwp:
             False : 줄표 삽입하지 않음
 
         Returns:
-            성공시 True, 실패시 False를 리턴
+        성공시 True, 실패시 False를 리턴
         """
         pset = self.HParameterSet.HPageNumPos
         self.HAction.GetDefault("PageNumPos", pset.HSet)
@@ -1858,7 +1855,7 @@ class Hwp:
         :param as_: 입력단위. ["mm", "hwpunit"] 중 기본값은 "mm"
 
         Returns:
-            성공시 True, 실패시 False를 리턴함
+        성공시 True, 실패시 False를 리턴함
         """
         if not self.is_cell():
             return False
@@ -1888,7 +1885,7 @@ class Hwp:
         :param as_: 리턴값의 단위("mm" 또는 "hwpunit" 중 지정가능. 기본값은 "mm")
 
         Returns:
-            dict
+        dict
         """
         if not self.is_cell():
             return False
@@ -1922,7 +1919,7 @@ class Hwp:
         :param `as_`: 입력단위. "mm", "hwpunit" 중 택일. 기본값은 "mm"
 
         Returns:
-            성공시 True, 실패시 False를 리턴
+        성공시 True, 실패시 False를 리턴
         """
         if not self.is_cell():
             return False
@@ -2040,7 +2037,7 @@ class Hwp:
         :param `as_`: 입력단위. ["mm", "hwpunit"] 중 기본값은 "mm"
 
         Returns:
-            성공시 True, 실패시 False를 리턴
+        성공시 True, 실패시 False를 리턴
         """
         if not self.is_cell():
             return False
@@ -2104,7 +2101,7 @@ class Hwp:
         현재 캐럿이 속한 표의 높이(mm)를 리턴함
 
         Returns:
-            표의 높이(mm)
+        표의 높이(mm)
         """
         if as_.lower() == "mm":
             return self.HwpUnitToMili(self.CellShape.Item("Height"))
@@ -2124,7 +2121,7 @@ class Hwp:
         현재 표의 행의 최대갯수를 리턴
 
         Returns:
-            최대 행갯수:int
+        최대 행갯수:int
         """
         if not self.is_cell():
             raise AssertionError("현재 캐럿이 표 안에 있지 않습니다.")
@@ -2146,7 +2143,7 @@ class Hwp:
         :param `as_`: 리턴하는 수치의 단위
 
         Returns:
-            캐럿이 속한 행의 높이
+        캐럿이 속한 행의 높이
         """
         pset = self.HParameterSet.HShapeObject
         self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
@@ -2221,7 +2218,7 @@ class Hwp:
         :param `as_`: 단위
 
         Returns:
-            성공시 True, 실패시 False를 리턴
+        성공시 True, 실패시 False를 리턴
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -2285,7 +2282,7 @@ class Hwp:
         :param `as_`: 단위
 
         Returns:
-            성공시 True
+        성공시 True
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -2336,7 +2333,7 @@ class Hwp:
         이 때 수치의 단위는 as_ 파라미터를 통해 변경 가능하며, "mm", "HwpUnit", "Pt", "Inch" 등을 쓸 수 있다.
 
         Returns:
-            표의 너비(mm)
+        표의 너비(mm)
         """
         if as_.lower() == "mm":
             return self.HwpUnitToMili(self.CellShape.Item("Width"))
@@ -2358,7 +2355,7 @@ class Hwp:
         :param `as_`: 단위("mm" or "hwpunit")
 
         Returns:
-            성공시 True
+        성공시 True
         """
         if not width:
             sec_def = self.hwp.HParameterSet.HSecDef
@@ -2992,7 +2989,7 @@ class Hwp:
         API 사용시 발생하는 오류로 인해 현재는 한글 폰트만 지원하고 있음.
 
         Returns:
-            현재 사용 가능한 폰트 리스트
+        현재 사용 가능한 폰트 리스트
         """
         result_list = []
         initial_font = self.CharShape.Item("FaceNameHangul")
@@ -3100,7 +3097,7 @@ class Hwp:
         (as_ 파라미터를 "eng"로 변경하면 원래 영문 아이템명의 사전을 리턴한다.)
 
         Returns:
-            현재 페이지의 용지정보(dict)
+        현재 페이지의 용지정보(dict)
             각 키의 원래 아이템명은 아래와 같다.
 
             PaperWidth: 용지폭
@@ -3207,7 +3204,7 @@ class Hwp:
         :param page_num: 이동할 페이지번호
 
         Returns:
-            성공시 True, 실패시 False를 리턴
+        성공시 True, 실패시 False를 리턴
         """
         pset = self.hwp.HParameterSet.HGotoE
         self.hwp.HAction.GetDefault("Goto", pset.HSet)
@@ -3223,7 +3220,7 @@ class Hwp:
         :param page_index:
 
         Returns:
-            tuple(인쇄기준페이지, 페이지인덱스)
+        tuple(인쇄기준페이지, 페이지인덱스)
         """
         if int(page_index) > self.hwp.PageCount:
             return False
@@ -3395,7 +3392,7 @@ class Hwp:
         :param text: str
 
         Returns:
-            None
+        None
         """
         if memo_type == "revision":
             self.InsertFieldRevisionChagne()  # 이 라인이 메모고침표 삽입하는 코드
@@ -3409,7 +3406,7 @@ class Hwp:
         캐럿이 현재 표 안에 있는지 알려주는 메서드
 
         Returns:
-            표 안에 있으면 True, 그렇지 않으면 False를 리턴
+        표 안에 있으면 True, 그렇지 않으면 False를 리턴
         """
         if self.key_indicator()[-1].startswith("("):
             return True
@@ -3427,7 +3424,7 @@ class Hwp:
             찾을 단어
 
         Returns:
-            단어를 찾으면 찾아가서 선택한 후 True를 리턴,
+        단어를 찾으면 찾아가서 선택한 후 True를 리턴,
             단어가 더이상 없으면 False를 리턴
         """
         self.SetMessageBoxMode(0x2fff1)
@@ -3458,7 +3455,7 @@ class Hwp:
             찾을 단어
 
         Returns:
-            단어를 찾으면 찾아가서 선택한 후 True를 리턴,
+        단어를 찾으면 찾아가서 선택한 후 True를 리턴,
             단어가 더이상 없으면 False를 리턴
         """
         self.SetMessageBoxMode(0x2fff1)
@@ -3500,7 +3497,7 @@ class Hwp:
             "AutoSpell":
 
         Returns:
-            단어를 찾으면 찾아가서 선택한 후 True를 리턴,
+        단어를 찾으면 찾아가서 선택한 후 True를 리턴,
             단어가 더이상 없으면 False를 리턴
         """
         self.SetMessageBoxMode(0x2fff1)
@@ -3726,19 +3723,16 @@ class Hwp:
         for i in self.hwp.GetFieldList(1).split("\x02"):
             self.hwp.PutFieldText(i, "")
 
-    def switch_to(self, num):
+    def switch_to(self, num) -> None:
         """
         여러 개의 hwp인스턴스가 열려 있는 경우 해당 인스턴스를 활성화한다.
 
         :param num:
             인스턴스 번호
-
-        Returns:
-            None
         """
         self.hwp.XHwpDocuments.Item(num).SetActive_XHwpDocument()
 
-    def add_tab(self):
+    def add_tab(self) -> None:
         """
         새 문서를 현재 창의 새 탭에 추가한다.
 
@@ -3747,30 +3741,26 @@ class Hwp:
         탭 전환은 switch_to() 메서드로 가능하다.
 
         새 창을 추가하고 싶은 경우는 add_tab 대신 hwp.FileNew()나 hwp.add_doc()을 실행하면 된다.
-
-        Returns:
         """
         self.hwp.XHwpDocuments.Add(1)  # 0은 새 창, 1은 새 탭
 
-    def add_doc(self):
+    def add_doc(self) -> None:
         """
         새 문서를 추가한다. 원래 창이 백그라운드로 숨겨져 있어도
 
         추가된 문서는 보이는 상태가 기본값이다. 숨기려면 set_visible(False)를 실행해야 한다.
         새 탭을 추가하고 싶은 경우는 add_doc 대신 add_tab()을 실행하면 된다.
-
-        Returns:
         """
         self.hwp.XHwpDocuments.Add(0)  # 0은 새 창, 1은 새 탭
 
-    def hwp_unit_to_mili(self, hwp_unit):
+    def hwp_unit_to_mili(self, hwp_unit) -> float:
         """
         HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
 
         HwpUnit으로 리턴되었거나, 녹화된 코드의 HwpUnit값을 확인할 때 유용하게 사용할 수 있다.
 
         Returns:
-            HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값
+        HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값
         """
         if hwp_unit == 0:
             return 0
@@ -3783,14 +3773,14 @@ class Hwp:
         HwpUnit으로 리턴되었거나, 녹화된 코드의 HwpUnit값을 확인할 때 유용하게 사용할 수 있다.
 
         Returns:
-            HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값
+        HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값
         """
         if hwp_unit == 0:
             return 0
         else:
             return round(hwp_unit / 7200 * 25.4, 4)
 
-    def create_table(self, rows, cols, treat_as_char: bool = True, width_type=0, height_type=0, header=True, height=0):
+    def create_table(self, rows, cols, treat_as_char: bool = True, width_type=0, height_type=0, header=True, height=0) -> bool:
         """
         표를 생성하는 메서드.
 
@@ -3808,7 +3798,7 @@ class Hwp:
         이는 고정된 값으로 간주해야 한다.
 
         Returns:
-            표 생성 성공시 True, 실패시 False를 리턴한다.
+        표 생성 성공시 True, 실패시 False를 리턴한다.
         """
 
         pset = self.hwp.HParameterSet.HTableCreation
@@ -3820,9 +3810,7 @@ class Hwp:
 
         sec_def = self.hwp.HParameterSet.HSecDef
         self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
-        total_width = (
-                sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
-            2))
+        total_width = (sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(2))
 
         pset.WidthValue = total_width  # 표 너비(근데 영향이 없는 듯)
         if height and height_type == 1:  # 표높이가 정의되어 있으면
@@ -3868,7 +3856,7 @@ class Hwp:
         한/글 문서 선택 구간의 텍스트를 리턴하는 메서드.
 
         Returns:
-            선택한 문자열
+        선택한 문자열
         """
         if self.SelectionMode == 0:
             if self.is_cell():
@@ -3892,14 +3880,15 @@ class Hwp:
         self.hwp.ReleaseScan()
         return result if type(result) == str else result[:-1]
 
-    def table_to_csv(self, n="", filename="result.csv", encoding="utf-8", startrow=0):
+    def table_to_csv(self, n="", filename="result.csv", encoding="utf-8", startrow=0) -> None:
         """
         한/글 문서의 idx번째 표를 현재 폴더에 filename으로 csv포맷으로 저장한다.
 
         filename을 지정하지 않는 경우 "./result.csv"가 기본값이다.
 
         Returns:
-            None
+        None을 리턴하고, 표데이터를 "./result.csv"에 저장한다.
+        
         Examples:
             >>> from pyhwpx import Hwp
             >>>
@@ -3990,7 +3979,7 @@ class Hwp:
         df로 변환시작할 행을 특정할 때 사용된다.
 
         Returns:
-            아래아한글 표 데이터를 가진 판다스 데이터프레임 인스턴스
+        아래아한글 표 데이터를 가진 판다스 데이터프레임 인스턴스
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4080,7 +4069,7 @@ class Hwp:
         캐럿이 표 밖에 있다면 첫 번째 표를 df로 리턴한다.
 
         Returns:
-            아래아한글 표 데이터를 가진 판다스 데이터프레임 인스턴스
+        아래아한글 표 데이터를 가진 판다스 데이터프레임 인스턴스
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4232,7 +4221,7 @@ class Hwp:
         한/글 문서 내 캐럿 위치에 문자열을 삽입하는 메서드.
 
         Returns:
-            삽입 성공시 True, 실패시 False를 리턴함.
+        삽입 성공시 True, 실패시 False를 리턴함.
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -4371,7 +4360,7 @@ class Hwp:
             3: 무조건 저장한다. (hwpSave)
 
         Returns:
-            None
+        None
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4393,7 +4382,7 @@ class Hwp:
             3: 무조건 저장한다. (hwpSave)
 
         Returns:
-            None
+        None
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4450,7 +4439,7 @@ class Hwp:
             액션 ID (ActionIDTable.hwp 참조)
 
         Returns:
-            Action object
+        Action object
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4484,7 +4473,7 @@ class Hwp:
             액션 ID (ActionIDTable.hwp 참조)
 
         Returns:
-            Action object
+        Action object
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4520,7 +4509,7 @@ class Hwp:
             누름틀에 대한 설명/도움말
 
         Returns:
-            성공이면 True, 실패면 False
+        성공이면 True, 실패면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4545,7 +4534,7 @@ class Hwp:
             누름틀에 대한 설명/도움말
 
         Returns:
-            성공이면 True, 실패면 False
+        성공이면 True, 실패면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4603,7 +4592,7 @@ class Hwp:
             이미지파일의 포맷. "bmp", "gif"중의 하나. 생략하면 "bmp"가 사용된다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4673,7 +4662,7 @@ class Hwp:
             이미지파일의 포맷. "bmp", "gif"중의 하나. 생략하면 "bmp"가 사용된다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4727,7 +4716,7 @@ class Hwp:
             생성할 ParameterSet의 ID (ParameterSet Table.hwp 참고)
 
         Returns:
-            생성된 ParameterSet Object
+        생성된 ParameterSet Object
         """
         return self.hwp.CreateSet(setidstr=setidstr)
 
@@ -4749,7 +4738,7 @@ class Hwp:
             생성할 ParameterSet의 ID (ParameterSet Table.hwp 참고)
 
         Returns:
-            생성된 ParameterSet Object
+        생성된 ParameterSet Object
         """
         return self.hwp.CreateSet(setidstr=setidstr)
 
@@ -4779,7 +4768,7 @@ class Hwp:
             삭제할 문서 내 컨트롤
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4800,7 +4789,7 @@ class Hwp:
             삭제할 문서 내 컨트롤
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4936,7 +4925,7 @@ class Hwp:
             Export할 sty 파일의 전체경로 문자열
 
         Returns:
-            성공시 True, 실패시 False
+        성공시 True, 실패시 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4959,7 +4948,7 @@ class Hwp:
             Export할 sty 파일의 전체경로 문자열
 
         Returns:
-            성공시 True, 실패시 False
+        성공시 True, 실패시 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -4982,7 +4971,7 @@ class Hwp:
             필드이름
 
         Returns:
-            필드가 존재하면 True, 존재하지 않으면 False
+        필드가 존재하면 True, 존재하지 않으면 False
         """
         return self.hwp.FieldExist(Field=field)
 
@@ -4994,7 +4983,7 @@ class Hwp:
             필드이름
 
         Returns:
-            필드가 존재하면 True, 존재하지 않으면 False
+        필드가 존재하면 True, 존재하지 않으면 False
         """
         return self.hwp.FieldExist(Field=field)
 
@@ -5047,7 +5036,7 @@ class Hwp:
             0x0400 유형이 존재할 경우에만 유효하므로, 생략가능하다
 
         Returns:
-            찾은 개인정보의 유형 값. 다음과 같다.
+        찾은 개인정보의 유형 값. 다음과 같다.
             0x0001 : 전화번호
             0x0002 : 주민등록번호
             0x0004 : 외국인등록번호
@@ -5089,7 +5078,7 @@ class Hwp:
             0x0400 유형이 존재할 경우에만 유효하므로, 생략가능하다
 
         Returns:
-            찾은 개인정보의 유형 값. 다음과 같다.
+        찾은 개인정보의 유형 값. 다음과 같다.
             0x0001 : 전화번호
             0x0002 : 주민등록번호
             0x0004 : 외국인등록번호
@@ -5120,7 +5109,7 @@ class Hwp:
             바이너리 데이터의 ID 값 (1부터 시작)
 
         Returns:
-            바이너리 데이터의 경로
+        바이너리 데이터의 경로
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -5139,7 +5128,7 @@ class Hwp:
             바이너리 데이터의 ID 값 (1부터 시작)
 
         Returns:
-            바이너리 데이터의 경로
+        바이너리 데이터의 경로
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -5166,7 +5155,7 @@ class Hwp:
             2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
 
         Returns:
-            필드이름이 돌아온다.
+        필드이름이 돌아온다.
             필드이름이 없는 경우 빈 문자열이 돌아온다.
         """
         return self.hwp.GetCurFieldName(option=option)
@@ -5187,7 +5176,7 @@ class Hwp:
             2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
 
         Returns:
-            필드이름이 돌아온다.
+        필드이름이 돌아온다.
             필드이름이 없는 경우 빈 문자열이 돌아온다.
         """
         return self.hwp.GetCurFieldName(option=option)
@@ -5244,7 +5233,7 @@ class Hwp:
             0x04: 선택된 내용 안에 존재하는 필드 리스트를 구한다.(HwpFieldSelection)
 
         Returns:
-            각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
+        각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
             (가장 마지막 필드에는 0x02가 붙지 않는다.)
             "필드이름#1\x02필드이름#2\x02...필드이름#n"
         """
@@ -5279,7 +5268,7 @@ class Hwp:
             0x04: 선택된 내용 안에 존재하는 필드 리스트를 구한다.(HwpFieldSelection)
 
         Returns:
-            각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
+        각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
             (가장 마지막 필드에는 0x02가 붙지 않는다.)
             "필드이름#1\x02필드이름#2\x02...필드이름#n"
         """
@@ -5305,7 +5294,7 @@ class Hwp:
             즉, '필드이름'과 '필드이름{{0}}'은 동일한 의미로 해석된다.
 
         Returns:
-            텍스트 데이터가 돌아온다.
+        텍스트 데이터가 돌아온다.
             텍스트에서 탭은 '\t'(0x9),
             문단 바뀜은 CR/LF(0x0D/0x0A == \r\n)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
@@ -5344,7 +5333,7 @@ class Hwp:
             즉, '필드이름'과 '필드이름{{0}}'은 동일한 의미로 해석된다.
 
         Returns:
-            텍스트 데이터가 돌아온다.
+        텍스트 데이터가 돌아온다.
             텍스트에서 탭은 '\t'(0x9),
             문단 바뀜은 CR/LF(0x0D/0x0A == \r\n)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
@@ -5374,7 +5363,7 @@ class Hwp:
             정보를 구하고자 하는 hwp 파일의 전체 경로
 
         Returns:
-            "FileInfo" ParameterSet이 반환된다.
+        "FileInfo" ParameterSet이 반환된다.
             파라미터셋의 ItemID는 아래와 같다.
             Format(string) : 파일의 형식.(HWP : 한/글 파일, UNKNOWN : 알 수 없음.)
             VersionStr(string) : 파일의 버전 문자열. ex)5.0.0.3
@@ -5410,7 +5399,7 @@ class Hwp:
             정보를 구하고자 하는 hwp 파일의 전체 경로
 
         Returns:
-            "FileInfo" ParameterSet이 반환된다.
+        "FileInfo" ParameterSet이 반환된다.
             파라미터셋의 ItemID는 아래와 같다.
             Format(string) : 파일의 형식.(HWP : 한/글 파일, UNKNOWN : 알 수 없음.)
             VersionStr(string) : 파일의 버전 문자열. ex)5.0.0.3
@@ -5451,7 +5440,7 @@ class Hwp:
         문단에 글머리표/문단번호/개요번호가 없는 경우, 빈 문자열이 추출된다.
 
         Returns:
-            (글머리표/문단번호/개요번호가 있다면) 해당 문자열이 반환된다.
+        (글머리표/문단번호/개요번호가 있다면) 해당 문자열이 반환된다.
         """
         return self.hwp.GetHeadingString()
 
@@ -5463,7 +5452,7 @@ class Hwp:
         문단에 글머리표/문단번호/개요번호가 없는 경우, 빈 문자열이 추출된다.
 
         Returns:
-            (글머리표/문단번호/개요번호가 있다면) 해당 문자열이 반환된다.
+        (글머리표/문단번호/개요번호가 있다면) 해당 문자열이 반환된다.
         """
         return self.hwp.GetHeadingString()
 
@@ -5476,7 +5465,7 @@ class Hwp:
         자동으로 선택할 수 있게 설정할 수 있으며 조합 가능하다.
 
         Returns:
-            // 메시지 박스의 종류
+        // 메시지 박스의 종류
             MB_MASK: 0x00FFFFFF
             // 1. 확인(MB_OK) : IDOK(1)
             MB_OK_IDOK: 0x00000001
@@ -5515,7 +5504,7 @@ class Hwp:
         자동으로 선택할 수 있게 설정할 수 있으며 조합 가능하다.
 
         Returns:
-            // 메시지 박스의 종류
+        // 메시지 박스의 종류
             MB_MASK: 0x00FFFFFF
             // 1. 확인(MB_OK) : IDOK(1)
             MB_OK_IDOK: 0x00000001
@@ -5575,7 +5564,7 @@ class Hwp:
             1: 쪽 기준으로 좌표를 가져온다.
 
         Returns:
-            "MousePos" ParameterSet이 반환된다.
+        "MousePos" ParameterSet이 반환된다.
             아이템ID는 아래와 같다.
             XRelTo(unsigned long): 가로 상대적 기준(0: 종이, 1: 쪽)
             YRelTo(unsigned long): 세로 상대적 기준(0: 종이, 1: 쪽)
@@ -5618,7 +5607,7 @@ class Hwp:
             1: 쪽 기준으로 좌표를 가져온다.
 
         Returns:
-            "MousePos" ParameterSet이 반환된다.
+        "MousePos" ParameterSet이 반환된다.
             아이템ID는 아래와 같다.
             XRelTo(unsigned long): 가로 상대적 기준(0: 종이, 1: 쪽)
             YRelTo(unsigned long): 세로 상대적 기준(0: 종이, 1: 쪽)
@@ -5664,7 +5653,7 @@ class Hwp:
             0x04: 캡션 텍스트를 추출한다. (표, ShapeObject)(maskCaption)
 
         Returns:
-            해당 페이지의 텍스트가 추출된다.
+        해당 페이지의 텍스트가 추출된다.
             글머리는 추출하지만, 표번호는 추출하지 못한다.
         """
         return self.hwp.GetPageText(pgno=pgno, option=option)
@@ -5690,7 +5679,7 @@ class Hwp:
             0x04: 캡션 텍스트를 추출한다. (표, ShapeObject)(maskCaption)
 
         Returns:
-            해당 페이지의 텍스트가 추출된다.
+        해당 페이지의 텍스트가 추출된다.
             글머리는 추출하지만, 표번호는 추출하지 못한다.
         """
         return self.hwp.GetPageText(pgno=pgno, option=option)
@@ -5703,7 +5692,7 @@ class Hwp:
         (파이썬 자료형인 list가 아님)
 
         Returns:
-            (List, para, pos) 튜플.
+        (List, para, pos) 튜플.
             list: 캐럿이 위치한 문서 내 list ID(본문이 0)
             para: 캐럿이 위치한 문단 ID(0부터 시작)
             pos: 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
@@ -5719,7 +5708,7 @@ class Hwp:
         (파이썬 자료형인 list가 아님)
 
         Returns:
-            (List, para, pos) 튜플.
+        (List, para, pos) 튜플.
             list: 캐럿이 위치한 문서 내 list ID(본문이 0)
             para: 캐럿이 위치한 문단 ID(0부터 시작)
             pos: 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
@@ -5734,7 +5723,7 @@ class Hwp:
         해당 파라미터셋은 set_pos_by_set에 직접 집어넣을 수 있어 간편히 사용할 수 있다.
 
         Returns:
-            캐럿 위치에 대한 ParameterSet
+        캐럿 위치에 대한 ParameterSet
             해당 파라미터셋의 아이템은 아래와 같다.
             "List": 캐럿이 위치한 문서 내 list ID(본문이 0)
             "Para": 캐럿이 위치한 문단 ID(0부터 시작)
@@ -5762,7 +5751,7 @@ class Hwp:
         해당 파라미터셋은 set_pos_by_set에 직접 집어넣을 수 있어 간편히 사용할 수 있다.
 
         Returns:
-            캐럿 위치에 대한 ParameterSet
+        캐럿 위치에 대한 ParameterSet
             해당 파라미터셋의 아이템은 아래와 같다.
             "List": 캐럿이 위치한 문서 내 list ID(본문이 0)
             "Para": 캐럿이 위치한 문단 ID(0부터 시작)
@@ -5801,7 +5790,7 @@ class Hwp:
             매크로 소스를 가져올 한/글 문서의 전체경로
 
         Returns:
-            (문서에 포함된) 스크립트의 소스코드
+        (문서에 포함된) 스크립트의 소스코드
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -5843,7 +5832,7 @@ class Hwp:
             매크로 소스를 가져올 한/글 문서의 전체경로
 
         Returns:
-            (문서에 포함된) 스크립트의 소스코드
+        (문서에 포함된) 스크립트의 소스코드
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -5872,7 +5861,7 @@ class Hwp:
         현재 설정된 블록의 위치정보를 얻어온다.
 
         Returns:
-            블록상태여부, 시작과 끝위치 인덱스인 6개 정수 등 7개 요소의 튜플을 리턴
+        블록상태여부, 시작과 끝위치 인덱스인 6개 정수 등 7개 요소의 튜플을 리턴
             (is_block, slist, spara, spos, elist, epara, epos)
             is_block: 현재 블록선택상태 여부(블록상태이면 True)
             slist: 설정된 블록의 시작 리스트 아이디.
@@ -5895,7 +5884,7 @@ class Hwp:
         현재 설정된 블록의 위치정보를 얻어온다.
 
         Returns:
-            블록상태여부, 시작과 끝위치 인덱스인 6개 정수 등 7개 요소의 튜플을 리턴
+        블록상태여부, 시작과 끝위치 인덱스인 6개 정수 등 7개 요소의 튜플을 리턴
             (is_block, slist, spara, spos, elist, epara, epos)
             is_block: 현재 블록선택상태 여부(블록상태이면 True)
             slist: 설정된 블록의 시작 리스트 아이디.
@@ -5928,7 +5917,7 @@ class Hwp:
             설정된 블록의 끝 파라메터셋 (ListParaPos)
 
         Returns:
-            성공하면 True, 실패하면 False.
+        성공하면 True, 실패하면 False.
             실행시 sset과 eset의 아이템 값이 업데이트된다.
 
         Examples:
@@ -5957,7 +5946,7 @@ class Hwp:
             설정된 블록의 끝 파라메터셋 (ListParaPos)
 
         Returns:
-            성공하면 True, 실패하면 False.
+        성공하면 True, 실패하면 False.
             실행시 sset과 eset의 아이템 값이 업데이트된다.
 
         Examples:
@@ -5982,7 +5971,7 @@ class Hwp:
         move_pos(201)을 실행하면 된다.
 
         Returns:
-            (state: int, text: str) 형태의 튜플을 리턴한다.
+        (state: int, text: str) 형태의 튜플을 리턴한다.
             state의 의미는 아래와 같다.
             0: 텍스트 정보 없음
             1: 리스트의 끝
@@ -6029,7 +6018,7 @@ class Hwp:
         move_pos(201)을 실행하면 된다.
 
         Returns:
-            (state: int, text: str) 형태의 튜플을 리턴한다.
+        (state: int, text: str) 형태의 튜플을 리턴한다.
             state의 의미는 아래와 같다.
             0: 텍스트 정보 없음
             1: 리스트의 끝
@@ -6092,7 +6081,7 @@ class Hwp:
             기본값은 빈 문자열("")
 
         Returns:
-            지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
+        지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6129,7 +6118,7 @@ class Hwp:
             기본값은 빈 문자열("")
 
         Returns:
-            지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
+        지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6349,7 +6338,7 @@ class Hwp:
             sty파일의 경로
 
         Returns:
-            성공시 True, 실패시 False
+        성공시 True, 실패시 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6372,7 +6361,7 @@ class Hwp:
             sty파일의 경로A
 
         Returns:
-            성공시 True, 실패시 False
+        성공시 True, 실패시 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6452,7 +6441,7 @@ class Hwp:
             scanEposSpecified 옵션이 지정되었을 때만 유효하다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6524,7 +6513,7 @@ class Hwp:
             scanEposSpecified 옵션이 지정되었을 때만 유효하다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6607,7 +6596,7 @@ class Hwp:
             code키가 존재할 경우 필터 사용 시 사용자 다이얼로그를  띄우지 않는다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         if path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
@@ -6676,7 +6665,7 @@ class Hwp:
             선명도 지정(-100 ~ 100), 기본 값은 0
 
         Returns:
-            성공했을 경우 True, 실패했을 경우 False
+        성공했을 경우 True, 실패했을 경우 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6756,7 +6745,7 @@ class Hwp:
             선명도 지정(-100 ~ 100), 기본 값은 0
 
         Returns:
-            성공했을 경우 True, 실패했을 경우 False
+        성공했을 경우 True, 실패했을 경우 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6797,7 +6786,7 @@ class Hwp:
             컨트롤 초기속성. 생략하면 default 속성으로 생성한다.
 
         Returns:
-            생성된 컨트롤 object
+        생성된 컨트롤 object
 
         Examples:
             >>> # 3행5열의 표를 삽입한다.
@@ -6844,7 +6833,7 @@ class Hwp:
             컨트롤 초기속성. 생략하면 default 속성으로 생성한다.
 
         Returns:
-            생성된 컨트롤 object
+        생성된 컨트롤 object
 
         Examples:
             >>> # 3행5열의 표를 삽입한다.
@@ -7015,7 +7004,7 @@ class Hwp:
             그림의 높이 크기 지정. 단위는 mm
 
         Returns:
-            생성된 컨트롤 object.
+        생성된 컨트롤 object.
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -7091,7 +7080,7 @@ class Hwp:
         :param action_id: 액션 ID. (ActionIDTable.Hwp 참조)
 
         Returns:
-            잠겨있으면 True, 잠겨있지 않으면 False를 반환한다.
+        잠겨있으면 True, 잠겨있지 않으면 False를 반환한다.
         """
         return self.hwp.IsCommandLock(actionID=action_id)
 
@@ -7102,7 +7091,7 @@ class Hwp:
         :param action_id: 액션 ID. (ActionIDTable.Hwp 참조)
 
         Returns:
-            잠겨있으면 True, 잠겨있지 않으면 False를 반환한다.
+        잠겨있으면 True, 잠겨있지 않으면 False를 반환한다.
         """
         return self.hwp.IsCommandLock(actionID=action_id)
 
@@ -7112,7 +7101,7 @@ class Hwp:
         (캐럿이 표 안에 있을 때 셀의 주소를 얻어오는 거의 유일한 방법이다.)
 
         Returns:
-            튜플(succ, seccnt, secno, prnpageno, colno, line, pos, over, ctrlname)
+        튜플(succ, seccnt, secno, prnpageno, colno, line, pos, over, ctrlname)
             succ: 성공하면 True, 실패하면 False (항상 True임..)
             seccnt: 총 구역
             secno: 현재 구역
@@ -7138,7 +7127,7 @@ class Hwp:
         (캐럿이 표 안에 있을 때 셀의 주소를 얻어오는 거의 유일한 방법이다.)
 
         Returns:
-            튜플(succ, seccnt, secno, prnpageno, colno, line, pos, over, ctrlname)
+        튜플(succ, seccnt, secno, prnpageno, colno, line, pos, over, ctrlname)
             succ: 성공하면 True, 실패하면 False (항상 True임..)
             seccnt: 총 구역
             secno: 현재 구역
@@ -7180,7 +7169,7 @@ class Hwp:
             True이면 액션의 실행을 잠그고, False이면 액션이 실행되도록 한다.
 
         Returns:
-            None
+        None
 
         Examples:
             >>> # Undo와 Redo 잠그기
@@ -7201,7 +7190,7 @@ class Hwp:
             True이면 액션의 실행을 잠그고, False이면 액션이 실행되도록 한다.
 
         Returns:
-            None
+        None
 
         Examples:
             >>> # Undo와 Redo 잠그기
@@ -7357,7 +7346,7 @@ class Hwp:
             0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         return self.hwp.MovePos(moveID=move_id, Para=para, pos=pos)
 
@@ -7422,7 +7411,7 @@ class Hwp:
             0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         return self.hwp.MovePos(moveID=move_id, Para=para, pos=pos)
 
@@ -7601,7 +7590,7 @@ class Hwp:
                     저장할 때 페이지를 html로 저장
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         if filename and filename.startswith("http"):
             try:
@@ -7701,7 +7690,7 @@ class Hwp:
                     저장할 때 페이지를 html로 저장
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         if filename.startswith("http"):
             try:
@@ -7823,7 +7812,7 @@ class Hwp:
             0값은 기본 보호유형으로 모든 개인정보를 보호문자로 보호한다.
 
         Returns:
-            개인정보를 보호문자로 치환한 경우에 true를 반환한다.
+        개인정보를 보호문자로 치환한 경우에 true를 반환한다.
 	        개인정보를 보호하지 못할 경우 false를 반환한다.
 	        문자열이 선택되지 않은 상태이거나, 개체가 선택된 상태에서는 실패한다.
 	        또한, 보호유형이 잘못된 설정된 경우에도 실패한다.
@@ -7846,7 +7835,7 @@ class Hwp:
             0값은 기본 보호유형으로 모든 개인정보를 보호문자로 보호한다.
 
         Returns:
-            개인정보를 보호문자로 치환한 경우에 true를 반환한다.
+        개인정보를 보호문자로 치환한 경우에 true를 반환한다.
 	        개인정보를 보호하지 못할 경우 false를 반환한다.
 	        문자열이 선택되지 않은 상태이거나, 개체가 선택된 상태에서는 실패한다.
 	        또한, 보호유형이 잘못된 설정된 경우에도 실패한다.
@@ -7880,7 +7869,7 @@ class Hwp:
             텍스트를 0x02로 구분하여 지정한다.
 
         Returns:
-            None
+        None
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -8012,7 +8001,7 @@ class Hwp:
             텍스트를 0x02로 구분하여 지정한다.
 
         Returns:
-            None
+        None
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -8215,7 +8204,7 @@ class Hwp:
             Registry에 등록된 DLL 모듈 ID
 
         Returns:
-            추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
+        추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -8249,7 +8238,7 @@ class Hwp:
             Registry에 등록된 DLL 모듈 ID
 
         Returns:
-            추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
+        추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
         """
         if not check_registry_key():
             self.register_regedit()
@@ -8372,7 +8361,7 @@ class Hwp:
 			반속해서 입력할 수 있도록 한다.
 
         Returns:
-            등록이 성공하였으면 True, 실패하였으면 False
+        등록이 성공하였으면 True, 실패하였으면 False
 
         Examples:
             >>> from pyhwpx import Hwp()
@@ -8409,7 +8398,7 @@ class Hwp:
 			반속해서 입력할 수 있도록 한다.
 
         Returns:
-            등록이 성공하였으면 True, 실패하였으면 False
+        등록이 성공하였으면 True, 실패하였으면 False
 
         Examples:
             >>> from pyhwpx import Hwp()
@@ -8432,7 +8421,7 @@ class Hwp:
         텍스트 검색작업이 끝나면 반드시 호출하여 설정된 정보를 해제해야 한다.
 
         Returns:
-            None
+        None
         """
         return self.hwp.ReleaseScan()
 
@@ -8443,7 +8432,7 @@ class Hwp:
         텍스트 검색작업이 끝나면 반드시 호출하여 설정된 정보를 해제해야 한다.
 
         Returns:
-            None
+        None
         """
         return self.hwp.ReleaseScan()
 
@@ -8463,7 +8452,7 @@ class Hwp:
             새로운 필드 이름의 리스트. oldname과 동일한 개수의 필드 이름을 "\x02"로 구분하여 지정한다.
 
         Returns:
-            None
+        None
 
         Examples:
             >>> hwp.create_field("asdf")  # "asdf" 필드 생성
@@ -8502,7 +8491,7 @@ class Hwp:
             기존의 Action ID와 UserAction ID(ver:0x07050206) 모두 사용가능하다.
 
         Returns:
-            Action을 바꾸면 True를 바꾸지 못했다면 False를 반환한다.
+        Action을 바꾸면 True를 바꾸지 못했다면 False를 반환한다.
         """
 
         return self.hwp.ReplaceAction(OldActionID=old_action_id, NewActionID=new_action_id)
@@ -8531,7 +8520,7 @@ class Hwp:
             기존의 Action ID와 UserAction ID(ver:0x07050206) 모두 사용가능하다.
 
         Returns:
-            Action을 바꾸면 True를 바꾸지 못했다면 False를 반환한다.
+        Action을 바꾸면 True를 바꾸지 못했다면 False를 반환한다.
         """
 
         return self.hwp.ReplaceAction(OldActionID=old_action_id, NewActionID=new_action_id)
@@ -8562,7 +8551,7 @@ class Hwp:
             액션 ID (ActionIDTable.hwp 참조)
 
         Returns:
-            성공시 True, 실패시 False를 반환한다.
+        성공시 True, 실패시 False를 반환한다.
         """
         return self.hwp.HAction.Run(act_id)
 
@@ -9069,7 +9058,7 @@ class Hwp:
         :param kwargs: 폰트 관련 키워드인자들(Bold, Italic, TextColor 등)
 
         Returns:
-            성공하면 True, 실패하면 False를 리턴
+        성공하면 True, 실패하면 False를 리턴
         """
         pset = self.HParameterSet.HChCompose
         self.HAction.GetDefault("ComposeChars", pset.HSet)
@@ -12995,7 +12984,7 @@ class Hwp:
             아무 정수나 입력하면 된다. (기본값: 0)
 
         Returns:
-            무조건 True를 반환(매크로의 실행여부와 상관없음)
+        무조건 True를 반환(매크로의 실행여부와 상관없음)
 
         Examples:
             >>> hwp.run_script_macro("OnDocument_New", u_macro_type=1)
@@ -13029,7 +13018,7 @@ class Hwp:
             아무 정수나 입력하면 된다. (기본값: 0)
 
         Returns:
-            무조건 True를 반환(매크로의 실행여부와 상관없음)
+        무조건 True를 반환(매크로의 실행여부와 상관없음)
 
         Examples:
             >>> hwp.run_script_macro("OnDocument_New", u_macro_type=1)
@@ -13051,7 +13040,7 @@ class Hwp:
             생략하면 True가 지정된다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         return self.hwp.Save(save_if_dirty=save_if_dirty)
 
@@ -13067,7 +13056,7 @@ class Hwp:
             생략하면 True가 지정된다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         return self.hwp.Save(save_if_dirty=save_if_dirty)
 
@@ -13098,7 +13087,7 @@ class Hwp:
             세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
 
         if path.lower()[1] != ":":
@@ -13279,7 +13268,7 @@ class Hwp:
             세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         if path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
@@ -13316,7 +13305,7 @@ class Hwp:
             블록 끝 위치의 문단 중에서 문자의 위치.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         if type(spara) in [list, tuple]:
             _, slist, spara, spos, elist, epara, epos = spara
@@ -13343,7 +13332,7 @@ class Hwp:
             블록 끝 위치의 문단 중에서 문자의 위치.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         if type(spara) in [list, tuple]:
             _, slist, spara, spos, elist, epara, epos = spara
@@ -13385,7 +13374,7 @@ class Hwp:
             누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         if not self.is_cell():
             raise AssertionError("캐럿이 표 안에 있지 않습니다.")
@@ -13418,7 +13407,7 @@ class Hwp:
             누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         if not self.is_cell():
             raise AssertionError("캐럿이 표 안에 있지 않습니다.")
@@ -13458,7 +13447,7 @@ class Hwp:
             3: 누름틀의 『』을 흰색으로 표시, 기타필드의 『』을 흰색으로 표시
 
         Returns:
-            설정된 속성이 반환된다.
+        설정된 속성이 반환된다.
             에러일 경우 0이 반환된다.
         """
         return self.hwp.SetFieldViewOption(option=option)
@@ -13477,7 +13466,7 @@ class Hwp:
             3: 누름틀의 『』을 흰색으로 표시, 기타필드의 『』을 흰색으로 표시
 
         Returns:
-            설정된 속성이 반환된다.
+        설정된 속성이 반환된다.
             에러일 경우 0이 반환된다.
         """
         return self.hwp.SetFieldViewOption(option=option)
@@ -13523,7 +13512,7 @@ class Hwp:
             #define MB_RETRYCANCEL_MASK				0x00F00000
 
         Returns:
-            실행 전의 MessageBoxMode
+        실행 전의 MessageBoxMode
         """
         return self.hwp.SetMessageBoxMode(Mode=mode)
 
@@ -13594,7 +13583,7 @@ class Hwp:
             #define MB_RETRYCANCEL_MASK				0x00F00000
 
         Returns:
-            실행 전의 MessageBoxMode
+        실행 전의 MessageBoxMode
         """
         return self.hwp.SetMessageBoxMode(Mode=mode)
 
@@ -13613,7 +13602,7 @@ class Hwp:
             단 para가 범위 밖일 경우 pos는 무시되고 문서의 시작으로 캐럿을 옮긴다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         self.hwp.SetPos(List=list, Para=para, pos=pos)
         if (list, para) == self.get_pos()[:2]:
@@ -13636,7 +13625,7 @@ class Hwp:
             단 para가 범위 밖일 경우 pos는 무시되고 문서의 시작으로 캐럿을 옮긴다.
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         """
         self.hwp.SetPos(List=list, Para=para, pos=pos)
         if para == self.get_pos()[1]:
@@ -13652,7 +13641,7 @@ class Hwp:
             캐럿을 옮길 위치에 대한 ParameterSet 정보
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -13669,7 +13658,7 @@ class Hwp:
             캐럿을 옮길 위치에 대한 ParameterSet 정보
 
         Returns:
-            성공하면 True, 실패하면 False
+        성공하면 True, 실패하면 False
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -13692,7 +13681,7 @@ class Hwp:
             새 암호
 
         Returns:
-            정상적으로 암호가 설정되면 true를 반환한다.
+        정상적으로 암호가 설정되면 true를 반환한다.
             암호설정에 실패하면 false를 반환한다. false를 반환하는 경우는 다음과 같다
             1. 암호의 길이가 너무 짧거나 너무 길 때 (영문: 5~44자, 한글: 3~22자)
             2. 암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임
@@ -13713,7 +13702,7 @@ class Hwp:
             새 암호
 
         Returns:
-            정상적으로 암호가 설정되면 true를 반환한다.
+        정상적으로 암호가 설정되면 true를 반환한다.
             암호설정에 실패하면 false를 반환한다. false를 반환하는 경우는 다음과 같다
             1. 암호의 길이가 너무 짧거나 너무 길 때 (영문: 5~44자, 한글: 3~22자)
             2. 암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임
@@ -13738,7 +13727,7 @@ class Hwp:
             "insertfile": 현재커서 이후에 지정된 파일 삽입
 
         Returns:
-            성공이면 1을, 실패하면 0을 반환한다.
+        성공이면 1을, 실패하면 0을 반환한다.
         """
         return self.hwp.SetTextFile(data=data, Format=format, option=option)
 
@@ -13760,7 +13749,7 @@ class Hwp:
             "insertfile": 현재커서 이후에 지정된 파일 삽입
 
         Returns:
-            성공이면 1을, 실패하면 0을 반환한다.
+        성공이면 1을, 실패하면 0을 반환한다.
         """
         return self.hwp.SetTextFile(data=data, Format=format, option=option)
 
@@ -13775,7 +13764,7 @@ class Hwp:
             변경할 타이틀 문자열
 
         Returns:
-            성공시 True
+        성공시 True
         """
         return self.hwp.SetTitleName(Title=title)
 
