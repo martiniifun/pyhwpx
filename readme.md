@@ -53,3 +53,4 @@ hwp.save_as("./helloworld.hwp")
 hwp.quit()
 ```
 
+📋 [CHANGELOG 보기](https://github.com/martiniifun/pyhwpx/blob/master/CHANGELOG.md)
