@@ -1,5 +1,11 @@
 # 📦 Changelog
 
+## [0.47.21] - 2025-03-27
+### 🐛 Fixed
+- 다시 __init__에 from .pyhwpx import * 삽입
+
+---
+
 ## [0.47.20] - 2025-03-27
 ### 🐛 Fixed
 - 순환임포트는 pyhwpx.py 안에 있었다. from pyhwpx import Hwp 라인 제거
