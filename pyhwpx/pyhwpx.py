@@ -15,7 +15,7 @@ from functools import wraps
 from collections import defaultdict
 from io import StringIO
 from time import sleep
-from typing import Literal, Union, Any
+from typing import Literal, Union, Any, Type
 from urllib import request, parse
 from winreg import QueryValueEx
 
@@ -23,7 +23,6 @@ import numpy as np
 import pandas as pd
 import pyperclip as cb
 from PIL import Image
-# from pyhwpx import Hwp
 
 
 if sys.platform == 'win32':
@@ -946,7 +945,7 @@ class Hwp:
         return self.hwp.XHwpDocuments
 
     @property
-    def XHwpMessageBox(self) -> Hwp.XHwpMessageBox:
+    def XHwpMessageBox(self) -> "Hwp.XHwpMessageBox":
         """
         메시지박스 객체 리턴
 
@@ -955,11 +954,11 @@ class Hwp:
         return self.hwp.XHwpMessageBox
 
     @property
-    def XHwpODBC(self) -> Hwp.XHwpODBC:
+    def XHwpODBC(self) -> "Hwp.XHwpODBC":
         return self.hwp.XHwpODBC
 
     @property
-    def XHwpWindows(self) -> Hwp.XHwpWindows:
+    def XHwpWindows(self) -> "Hwp.XHwpWindows":
         return self.hwp.XHwpWindows
 
     @property
