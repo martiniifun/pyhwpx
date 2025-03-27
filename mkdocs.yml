@@ -55,9 +55,9 @@ plugins:
       repository: martiniifun/pyhwpx
       branch: master
       enabled: !ENV [CI, false]
-  - git-revision-date-localized:
-      enable_creation_date: true
-      fallback_to_build_date: true
+#  - git-revision-date-localized:
+#      enable_creation_date: true
+#      fallback_to_build_date: true
   - search
   - mkdocstrings:
       handlers:
