@@ -45,14 +45,16 @@ nav:
   - Home: index.md
   - API: api.md
 
-#extra_javascript:
-#  - https://cdn.jsdelivr.net/npm/@docsearch/js@3
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/@docsearch/js@3
 
-#extra_css:
-#  - https://cdn.jsdelivr.net/npm/@docsearch/css@3
+extra_css:
+  - https://cdn.jsdelivr.net/npm/@docsearch/css@3
 
-#extra:
-#  docsearch:
-#    app_id: YOUR_APP_ID
-#    api_key: YOUR_API_KEY
-#    index_name: YOUR_INDEX_NAME
+extra:
+  docsearch:
+    app_id: U3N1V3HJZN
+    api_key: 7cab876aeab826c0e4c392da7cdd2e29
+    index_name: martiniifunio
+    insights: true
+    debug: false
