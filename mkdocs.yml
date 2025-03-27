@@ -50,7 +50,6 @@ plugins:
 #      css_dir: css
 #      javascript_dir: js
   - offline
-  - optimize
   - git-authors
   - git-committers:
       repository: martiniifun/pyhwpx
