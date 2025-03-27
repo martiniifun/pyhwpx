@@ -1,0 +1,34 @@
+.metadata{
+    list-style:none;
+    padding:0;
+    margin:0;
+    margin-bottom: 15px;
+    color: #999;
+    font-size:0.85em;
+}
+.metadata.page-metadata .contributors-text{
+    margin-right:5px
+}
+body[dir=rtl] .metadata.page-metadata .contributors-text{
+    margin-right:0;
+    margin-left:5px
+}
+.page-metadata .contributors{
+    display:inline-block;
+    list-style:none;
+    margin:0!important;
+    padding:0!important
+}
+.page-metadata .contributors li{
+    display:inline-block;
+    vertical-align:top;
+    margin:0;
+    padding:0
+}
+.page-metadata .contributors li img{
+    border-radius:100%;
+    height:16px;
+    margin-top:-3px;
+    overflow:hidden;
+    width:16px
+}
