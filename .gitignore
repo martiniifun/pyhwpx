@@ -15,3 +15,6 @@ __pycache__/
 /release.py
 /site/
 /overrides/*
+/docs/
+/overrides/
+mkdocs.yml
