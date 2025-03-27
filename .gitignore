@@ -14,3 +14,4 @@ __pycache__/
 /CHANGELOG_SAMPLE.md
 /release.py
 /site/
+/overrides/*
