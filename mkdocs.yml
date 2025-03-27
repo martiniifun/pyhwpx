@@ -20,6 +20,8 @@ theme:
     - search.highlight
     - search.suggest
     - search.share
+    - toc.follow
+    - toc.integrate
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -58,3 +60,21 @@ extra:
     index_name: martiniifunio
     insights: true
     debug: false
+  analytics:
+    provider: google
+    property: G-J3X00QMZKL
+    feedback:
+      title: 이 페이지의 정보가 도움이 되었나요?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: 도움이 되었습니다.
+          data: 1
+          note: >-
+            피드백을 주셔서 감사합니다!
+        - icon: material/emoticon-sad-outline
+          name: 페이지가 조금 더 개선이 되어야 합니다.
+          data: 0
+          note: >-
+            피드백을 주셔서 감사합니다!
+            어떤 부분, 또는 어떤 설명이 추가되면 좋을지 익명으로 남겨주세요!
+            <a href="..." target="_blank" rel="noopener">피드백 보내기</a>
