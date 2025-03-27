@@ -23,7 +23,8 @@ import numpy as np
 import pandas as pd
 import pyperclip as cb
 from PIL import Image
-from pyhwpx import Hwp
+# from pyhwpx import Hwp
+
 
 if sys.platform == 'win32':
     import pythoncom
@@ -836,7 +837,7 @@ class Hwp:
         """
         현재 문서의 총 페이지 수를 리턴.
 
-        Returns: 
+        Returns:
             현재 문서의 총 페이지 수
         
         Examples:
