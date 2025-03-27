@@ -1,10 +1,15 @@
 site_name: pyhwpx
 site_url: https://martiniifun.github.io/pyhwpx
 repo_url: https://github.com/martiniifun/pyhwpx
+repo_name: martiniifun/pyhwpx
 theme:
+  icon:
+    repo: fontawesome/brands/github
   name: material
+  custom_dir: overrides
   language: ko
   features:
+    - header.autohide
     - navigation.top
     - navigation.indexes
     - navigation.prune
@@ -36,6 +41,24 @@ theme:
         name: Switch to light mode
 
 plugins:
+#  - mike:
+#      alias_type: symlink
+#      redirect_template: null
+#      deploy_prefix: ''
+#      canonical_version: null
+#      version_selector: true
+#      css_dir: css
+#      javascript_dir: js
+  - offline
+  - optimize
+  - git-authors
+  - git-committers:
+      repository: martiniifun/pyhwpx
+      branch: master
+      enabled: !ENV [CI, false]
+  - git-revision-date-localized:
+      enable_creation_date: true
+      fallback_to_build_date: true
   - search
   - mkdocstrings:
       handlers:
@@ -54,6 +77,10 @@ extra_css:
   - https://cdn.jsdelivr.net/npm/@docsearch/css@3
 
 extra:
+#  social:
+#    - icon: fontawesome/brands/
+#  version:
+#    provider: mike
   docsearch:
     app_id: U3N1V3HJZN
     api_key: 7cab876aeab826c0e4c392da7cdd2e29
