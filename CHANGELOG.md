@@ -1,5 +1,11 @@
 # 📦 Changelog
 
+## [0.47.32] - 2025-03-27
+### 📝 Misc
+- git-committers 활성화를 위해 환경변수에 APIKEY 저장! 제발돼라!1
+
+---
+
 ## [0.47.31] - 2025-03-27
 ### 📝 Misc
 - git-committers, git-revision-date-localized-plugin 추가해봄. (뭔지는 열어봐야 알겠지)
