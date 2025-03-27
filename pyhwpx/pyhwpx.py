@@ -377,35 +377,36 @@ def excel_address_to_tuple_zero_based(address):
 
 # 아래아한글 오토메이션 클래스 정의
 class Hwp:
-    # """
-    # 아래아한글 인스턴스를 실행합니다.
-    #
-    # 실행방법은 간단합니다. `from pyhwpx import Hwp`로 `Hwp` 클래스를 임포트한 후,
-    # `hwp = Hwp()` 명령어를 실행하면 아래아한글이 자동으로 열립니다.
-    # 만약 기존에 아래아한글 창이 하나 이상 열려 있다면, 가장 마지막에 접근했던 아래아한글 창과 연결됩니다.
-    #
-    # Args:
-    #     new (bool):
-    #         `new=True` 인 경우, 기존에 열려 있는 한/글 인스턴스와 무관한 새 인스턴스를 생성하게 됩니다.
-    #         `new=False` (기본값)인 경우, 우선적으로 기존에 열려 있는 한/글 창에 연결을 시도합니다. (연결되지 않기도 합니다.)
-    #     visible (bool):
-    #         한/글 인스턴스를 백그라운드에서 실행할지, 화면에 나타낼지 선택합니다.
-    #         기본값은 `True` 이며, 한/글 창이 화면에 나타나게 됩니다.
-    #         `visible=False` 파라미터를 추가할 경우 한/글 창이 보이지 않는 상태로 백그라운드에서 작업할 수 있습니다.
-    #     register_module (bool):
-    #         보안모듈을 Hwp 클래스에서 직접 실행하게 허용합니다. 기본값은 `True` 입니다.
-    #         hwp.RegisterModule("FilePathCheckDLL", "FilePathCheckerModule") 메서드를 직접 실행하는 것과 동일합니다.
-    #
-    # Examples:
-    #     >>> from pyhwpx import Hwp
-    #     >>> hwp = Hwp()
-    #     >>> hwp.insert_text("Hello world!")
-    #     True
-    #     >>> hwp.save_as("./hello.hwp")
-    #     True
-    #     >>> hwp.clear()
-    #     >>> hwp.quit()
-    # """
+    """
+    아래아한글 인스턴스를 실행합니다.
+
+    실행방법은 간단합니다. `from pyhwpx import Hwp`로 `Hwp` 클래스를 임포트한 후,
+    `hwp = Hwp()` 명령어를 실행하면 아래아한글이 자동으로 열립니다.
+    만약 기존에 아래아한글 창이 하나 이상 열려 있다면, 가장 마지막에 접근했던 아래아한글 창과 연결됩니다.
+
+    Args:
+        new (bool):
+            `new=True` 인 경우, 기존에 열려 있는 한/글 인스턴스와 무관한 새 인스턴스를 생성하게 됩니다.
+            `new=False` (기본값)인 경우, 우선적으로 기존에 열려 있는 한/글 창에 연결을 시도합니다. (연결되지 않기도 합니다.)
+        visible (bool):
+            한/글 인스턴스를 백그라운드에서 실행할지, 화면에 나타낼지 선택합니다.
+            기본값은 `True` 이며, 한/글 창이 화면에 나타나게 됩니다.
+            `visible=False` 파라미터를 추가할 경우 한/글 창이 보이지 않는 상태로 백그라운드에서 작업할 수 있습니다.
+        register_module (bool):
+            보안모듈을 Hwp 클래스에서 직접 실행하게 허용합니다. 기본값은 `True` 입니다.
+            hwp.RegisterModule("FilePathCheckDLL", "FilePathCheckerModule") 메서드를 직접 실행하는 것과 동일합니다.
+
+    Examples:
+        >>> from pyhwpx import Hwp
+        >>> hwp = Hwp()
+        >>> hwp.insert_text("Hello world!")
+        True
+        >>> hwp.save_as("./hello.hwp")
+        True
+        >>> hwp.clear()
+        >>> hwp.quit()
+    """
+
     @staticmethod
     def load_fonts():
         json_path = os.path.join(os.path.dirname(__file__), "fonts.json")
