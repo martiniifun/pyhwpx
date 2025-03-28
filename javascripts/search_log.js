@@ -8,8 +8,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 fetch('https://script.google.com/macros/s/AKfycbzC7rgzGmi1u0-IzmpDDZin6iwocXaljPA8FpVH3vXwMmcXdDJ6DED--81lRyo5IV4-Pg/exec', {
                     method: 'POST',
+                    mode: "no-cors",
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({query})
+                    body: JSON.stringify({query: searchInput.value.trim()})
                 })
                     .then(response => response.text())
                     .then(data => console.log("✅ 검색어 전송 성공:", data))
@@ -18,3 +19,5 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+
