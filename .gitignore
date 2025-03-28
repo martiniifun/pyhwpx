@@ -17,3 +17,4 @@ __pycache__/
 /overrides/*
 mkdocs.yml
 .cache
+/docs/javascripts/search_log.js
