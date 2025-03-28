@@ -6,11 +6,12 @@ document.addEventListener('DOMContentLoaded', function () {
       if (e.key === 'Enter') {
         const query = searchInput.value;
 
-        fetch('https://script.google.com/macros/s/AKfycbxOXDOYrXaCQFCgnEsXW8OL7hZ0ZPLGU3pKY1mlHtLCF8JFmP014CtHFEhuRSWJJCr3/exec', {
+        fetch('https://script.google.com/macros/s/AKfycbz64ekHwL55CDk_zhDSHaLu-sCHfNOpue4PH8-UydxkHyZ-Ei9BtJEKzK98eWj_VZe64w/exec', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ query })
-        });
+        })
+        
       }
     });
   }
