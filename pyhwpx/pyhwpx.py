@@ -97,7 +97,7 @@ def addr_to_tuple(cell_address: str) -> tuple[int, int]:
     Returns:
         (row, column) 형식의 주소 튜플
     
-    Example:
+    Examples:
         >>> print(addr_to_tuple("C3"))
         (3, 3)
         >>> print(addr_to_tuple("AB10"))
@@ -134,7 +134,7 @@ def tuple_to_addr(col: int, row: int) -> str:
     Returns:
         엑셀 형식의 주소 문자열(예: "A1", "VVS1004")
     
-    Example:
+    Examples:
         >>> from pyhwpx import tuple_to_addr
         >>> print(tuple_to_addr(1, 2))
         B1
@@ -395,7 +395,7 @@ class Hwp:
             보안모듈을 Hwp 클래스에서 직접 실행하게 허용합니다. 기본값은 `True` 입니다.
             hwp.RegisterModule("FilePathCheckDLL", "FilePathCheckerModule") 메서드를 직접 실행하는 것과 동일합니다.
 
-    Example:
+    Examples:
         >>> from pyhwpx import Hwp
         >>> hwp = Hwp()
         >>> hwp.insert_text("Hello world!")
@@ -466,7 +466,7 @@ class Hwp:
         Returns:
         저수준의 HwpApplication 객체
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.Application.XHwpWindows.Item(0).Visible = True
@@ -481,7 +481,7 @@ class Hwp:
         Returns:
         CellShape 파라미터셋
         
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.CellShape.Item("Height")  # 현재 표의 높이를 HwpUnit 단위로 리턴
@@ -509,7 +509,7 @@ class Hwp:
         CharShape 속성을 변경할 때는 아래 예시처럼
         hwp.set_font() 함수를 사용하는 것을 추천합니다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>>
@@ -569,7 +569,7 @@ class Hwp:
         """
         파라미터셋의 CLSID(클래스아이디)를 조회함. 읽기전용 속성이며, 사용할 일이 없음..
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.CharShape.CLSID
@@ -582,7 +582,7 @@ class Hwp:
         """
         coclass의 clsid를 리턴하는 읽기전용 속성. 사용하지 않음.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.coclass_clsid
@@ -603,7 +603,7 @@ class Hwp:
         예를 들어 필드와 무관하게 "캐럿이 셀 안에 있는가"를 알고 싶은 경우에도
         `hwp.CurFieldState` 가 1을 리턴하는지 확인하는 방식을 사용할 수 있습니다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # 캐럿이 현재 표 안에 들어있는지 확인하고 싶은 경우
@@ -629,7 +629,7 @@ class Hwp:
             40: 컨트롤을 선택하고 있긴 한데, 메타태그는 지정되어 있지 않은 상태(8+32)
             64: 본문 메타태그 영역에 들어있음
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> if hwp.CurMetatagState == 1:
@@ -642,7 +642,7 @@ class Hwp:
         """
         현재 선택된 오브젝트의 컨트롤을 리턴하는 속성
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # 문서의 첫 번째 표를 선택하고 "글자처럼 취급" 속성 켜기
@@ -666,7 +666,7 @@ class Hwp:
         Returns:
         편집모드는 1을, 읽기전용인 경우 0을 리턴
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.EditMode
@@ -691,7 +691,7 @@ class Hwp:
         GetDefalut, Execute, Run 등의 메서드를 가지고 있습니다.
         저수준의 액션과 파라미터셋을 조합하여 기능을 실행할 때에 필요합니다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # "Hello world!" 문자열을 입력하는 액션
@@ -719,7 +719,7 @@ class Hwp:
         `.Next` 대신 `.Prev` 를 사용하면 된다.
         hwp.HeadCtrl의 기본적인 사용법은 아래와 같다.
 
-        Example:
+        Examples:
             >>> # 문서에 삽입된 모든 표의 "글자처럼 취급" 속성을 해제하는 코드
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -745,7 +745,7 @@ class Hwp:
         녹화된 매크로에서 액션아이디와 파라미터셋을 참고하는 방식이 훨씬 효율적이다.
         HParameterSet을 활용하는 예시코드는 아래와 같다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> pset = hwp.HParameterSet.HInsertText
@@ -760,7 +760,7 @@ class Hwp:
         """
         아무 내용도 들어있지 않은 빈 문서인지 여부를 나타낸다. 읽기전용임
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # 특정 문서를 열고, 비어있는지 확인
@@ -779,7 +779,7 @@ class Hwp:
         최근 저장 또는 생성 이후 수정이 있는지 여부를 나타낸다. 읽기전용이며,
         자동화에 활용하는 경우는 거의 없다. 패스~
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.open("./example.hwpx")
@@ -814,7 +814,7 @@ class Hwp:
         특정 조건의 컨트롤을 삭제!!하는 경우 삭제한 컨트롤 이후의 모든 컨트롤의 인덱스가 변경되어버리므로
         이런 경우에는 LastCtrl에서 역순으로 진행해야 한다. (HeadCtrl부터 Next 작업을 하면 인덱스 꼬임)
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # 문서 내의 모든 그림 삭제하기
@@ -839,7 +839,7 @@ class Hwp:
         Returns:
             현재 문서의 총 페이지 수
         
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.open("./example.hwpx")
@@ -855,7 +855,7 @@ class Hwp:
 
         현재 캐럿이 위치한, 혹은 선택한 문단(블록)의 문단모양 파라미터셋을 리턴한다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.open("./example.hwp")
@@ -895,7 +895,7 @@ class Hwp:
         Returns:
         현재 문서의 전체경로
         
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.open("./example.hwpx")
@@ -1037,7 +1037,7 @@ class Hwp:
             리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True
             `as_tuple=False` 의 경우에는 ListParaPos 파라미터셋 자체를 리턴
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # 2x2표의 A1셀 안에 2x2표를 삽입하고, 표안의 표를 선택한 상태에서
@@ -1085,7 +1085,7 @@ class Hwp:
         Returns:
         현재 캐럿이 위치한 문단의 줄간격(% 또는 Point)
         
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.get_linespacing()
@@ -1120,7 +1120,7 @@ class Hwp:
         Returns:
         성공시 True, 실패시 False를 리턴
         
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.SelectAll()  # 전체선택
@@ -1224,7 +1224,7 @@ class Hwp:
         Returns:
         [{'name': 'zxcv', 'direction': 'adsf', 'memo': 'qwer'}] 형식의 사전 리스트
         
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.get_field_info()
@@ -1259,7 +1259,7 @@ class Hwp:
         Returns:
         해당 이미지의 삽입 전 파일명과, [Width, Height] 리스트
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # 이미지 선택 상태에서
@@ -2222,7 +2222,7 @@ class Hwp:
 
         Returns:
         성공시 True, 실패시 False를 리턴
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.create_table(3,3)
@@ -2286,7 +2286,7 @@ class Hwp:
 
         Returns:
         성공시 True
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.create_table(3,3)
@@ -2509,7 +2509,7 @@ class Hwp:
             특정 컨트롤(들)을 선택하고 있는 상태에서, 추가선택할 수 있는 옵션.
             0: 추가선택
             1: 기존 선택해제 후 컨트롤 선택
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()  # 한글2024 이상의 버전
             >>> # 문서 마지막 컨트롤 선택하기
@@ -3892,7 +3892,7 @@ class Hwp:
         Returns:
         None을 리턴하고, 표데이터를 "./result.csv"에 저장한다.
         
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
@@ -3984,7 +3984,7 @@ class Hwp:
         Returns:
         아래아한글 표 데이터를 가진 판다스 데이터프레임 인스턴스
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
@@ -4074,7 +4074,7 @@ class Hwp:
         Returns:
         아래아한글 표 데이터를 가진 판다스 데이터프레임 인스턴스
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
@@ -4225,7 +4225,7 @@ class Hwp:
 
         Returns:
         삽입 성공시 True, 실패시 False를 리턴함.
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.insert_text('Hello world!')
@@ -4365,7 +4365,7 @@ class Hwp:
         Returns:
         None
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
@@ -4387,7 +4387,7 @@ class Hwp:
         Returns:
         None
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
@@ -4444,7 +4444,7 @@ class Hwp:
         Returns:
         Action object
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
@@ -4478,7 +4478,7 @@ class Hwp:
         Returns:
         Action object
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
@@ -4514,7 +4514,7 @@ class Hwp:
         Returns:
         성공이면 True, 실패면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.create_field(direction="이름", memo="이름을 입력하는 필드", name="name")
@@ -4539,7 +4539,7 @@ class Hwp:
         Returns:
         성공이면 True, 실패면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.create_field(direction="이름", memo="이름을 입력하는 필드", name="name")
@@ -4597,7 +4597,7 @@ class Hwp:
         Returns:
         성공하면 True, 실패하면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
@@ -4667,7 +4667,7 @@ class Hwp:
         Returns:
         성공하면 True, 실패하면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.create_page_image("c:/Users/User/Desktop/a.bmp")
@@ -4773,7 +4773,7 @@ class Hwp:
         Returns:
         성공하면 True, 실패하면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> ctrl = hwp.HeadCtrl.Next.Next
@@ -4794,7 +4794,7 @@ class Hwp:
         Returns:
         성공하면 True, 실패하면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> ctrl = hwp.HeadCtrl.Next.Next
@@ -4930,7 +4930,7 @@ class Hwp:
         Returns:
         성공시 True, 실패시 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.export_style("C:/Users/User/Desktop/new_style.sty")
@@ -4953,7 +4953,7 @@ class Hwp:
         Returns:
         성공시 True, 실패시 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.export_style("C:/Users/User/Desktop/new_style.sty")
@@ -5114,7 +5114,7 @@ class Hwp:
         Returns:
         바이너리 데이터의 경로
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> path = hwp.get_bin_data_path(2)
@@ -5133,7 +5133,7 @@ class Hwp:
         Returns:
         바이너리 데이터의 경로
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> path = hwp.get_bin_data_path(2)
@@ -5188,7 +5188,7 @@ class Hwp:
         """
         현재 캐럿위치의 메타태그 이름을 리턴하는 메서드.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # "#test"라는 메타태그 이름이 부여된 표를 선택한 상태에서
@@ -5374,7 +5374,7 @@ class Hwp:
             Encrypted(int) : 암호 여부 (현재는 파일 버전 3.0.0.0 이후 문서-한/글97, 한/글 워디안 및 한/글 2002 이상의 버전-에 대해서만 판단한다.)
             (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> pset = hwp.get_file_info("C:/Users/Administrator/Desktop/이력서.hwp")
@@ -5410,7 +5410,7 @@ class Hwp:
             Encrypted(int) : 암호 여부 (현재는 파일 버전 3.0.0.0 이후 문서-한/글97, 한/글 워디안 및 한/글 2002 이상의 버전-에 대해서만 판단한다.)
             (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> pset = hwp.get_file_info("C:/Users/Administrator/Desktop/이력서.hwp")
@@ -5575,7 +5575,7 @@ class Hwp:
             X(long): 가로 클릭한 위치(HWPUNIT)
             Y(long): 세로 클릭한 위치(HWPUNIT)
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> pset = hwp.get_mouse_pos(1, 1)
@@ -5618,7 +5618,7 @@ class Hwp:
             X(long): 가로 클릭한 위치(HWPUNIT)
             Y(long): 세로 클릭한 위치(HWPUNIT)
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> pset = hwp.get_mouse_pos(1, 1)
@@ -5732,7 +5732,7 @@ class Hwp:
             "Para": 캐럿이 위치한 문단 ID(0부터 시작)
             "Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> pset = hwp.get_pos_by_set()  # 캐럿위치 저장
@@ -5760,7 +5760,7 @@ class Hwp:
             "Para": 캐럿이 위치한 문단 ID(0부터 시작)
             "Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> pset = hwp.get_pos_by_set()  # 캐럿위치 저장
@@ -5795,7 +5795,7 @@ class Hwp:
         Returns:
         (문서에 포함된) 스크립트의 소스코드
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
@@ -5837,7 +5837,7 @@ class Hwp:
         Returns:
         (문서에 포함된) 스크립트의 소스코드
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>>
             >>> hwp = Hwp()
@@ -5874,7 +5874,7 @@ class Hwp:
             epara: 설정된 블록의 끝 문단 아이디.
             epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.get_selected_pos()
@@ -5897,7 +5897,7 @@ class Hwp:
             epara: 설정된 블록의 끝 문단 아이디.
             epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.get_selected_pos()
@@ -5923,7 +5923,7 @@ class Hwp:
         성공하면 True, 실패하면 False.
             실행시 sset과 eset의 아이템 값이 업데이트된다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> sset = hwp.get_pos_by_set()
@@ -5952,7 +5952,7 @@ class Hwp:
         성공하면 True, 실패하면 False.
             실행시 sset과 eset의 아이템 값이 업데이트된다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> sset = hwp.get_pos_by_set()
@@ -5988,7 +5988,7 @@ class Hwp:
             텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.init_scan()
@@ -6035,7 +6035,7 @@ class Hwp:
             텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.init_scan()
@@ -6086,7 +6086,7 @@ class Hwp:
         Returns:
         지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.get_text_file()
@@ -6123,7 +6123,7 @@ class Hwp:
         Returns:
         지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.get_text_file()
@@ -6343,7 +6343,7 @@ class Hwp:
         Returns:
         성공시 True, 실패시 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.import_style("C:/Users/User/Desktop/new_style.sty")
@@ -6366,7 +6366,7 @@ class Hwp:
         Returns:
         성공시 True, 실패시 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.import_style("C:/Users/User/Desktop/new_style.sty")
@@ -6446,7 +6446,7 @@ class Hwp:
         Returns:
         성공하면 True, 실패하면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.init_scan(range=0xff)
@@ -6518,7 +6518,7 @@ class Hwp:
         Returns:
         성공하면 True, 실패하면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.init_scan(range=0xff)
@@ -6670,7 +6670,7 @@ class Hwp:
         Returns:
         성공했을 경우 True, 실패했을 경우 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.insert_background_picture(path="C:/Users/User/Desktop/KakaoTalk_20230709_023118549.jpg")
@@ -6750,7 +6750,7 @@ class Hwp:
         Returns:
         성공했을 경우 True, 실패했을 경우 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.insert_background_picture(path="C:/Users/User/Desktop/KakaoTalk_20230709_023118549.jpg")
@@ -6791,7 +6791,7 @@ class Hwp:
         Returns:
         생성된 컨트롤 object
 
-        Example:
+        Examples:
             >>> # 3행5열의 표를 삽입한다.
             >>> from pyhwpx import Hwp
             >>> from time import sleep
@@ -6838,7 +6838,7 @@ class Hwp:
         Returns:
         생성된 컨트롤 object
 
-        Example:
+        Examples:
             >>> # 3행5열의 표를 삽입한다.
             >>> from time import sleep
             >>> from pyhwpx import Hwp
@@ -6907,7 +6907,7 @@ class Hwp:
     #     Returns:
     #         생성된 컨트롤 object.
     #
-    #     Example:
+    #     Examples:
     #         >>> from pyhwpx import Hwp
     #         >>> hwp = Hwp()
     #         >>> path = "C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg"
@@ -7009,7 +7009,7 @@ class Hwp:
         Returns:
         생성된 컨트롤 object.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> path = "C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg"
@@ -7115,7 +7115,7 @@ class Hwp:
             over: 삽입모드 (True: 수정, False: 삽입)
             ctrlname: 캐럿이 위치한 곳의 컨트롤이름
 
-        Example:
+        Examples:
             >>> # 현재 셀 주소(표 안에 있을 때)
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -7141,7 +7141,7 @@ class Hwp:
             over: 삽입모드 (True: 수정, False: 삽입)
             ctrlname: 캐럿이 위치한 곳의 컨트롤이름
 
-        Example:
+        Examples:
             >>> # 현재 셀 주소(표 안에 있을 때)
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -7174,7 +7174,7 @@ class Hwp:
         Returns:
         None
 
-        Example:
+        Examples:
             >>> # Undo와 Redo 잠그기
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -7195,7 +7195,7 @@ class Hwp:
         Returns:
         None
 
-        Example:
+        Examples:
             >>> # Undo와 Redo 잠그기
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -7874,7 +7874,7 @@ class Hwp:
         Returns:
         None
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # 현재 캐럿 위치에 zxcv 필드 생성
@@ -8006,7 +8006,7 @@ class Hwp:
         Returns:
             None
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # 현재 캐럿 위치에 zxcv 필드 생성
@@ -8188,7 +8188,7 @@ class Hwp:
         Returns:
             아래아한글이 인식하는 정수 형태의 RGB값.
             
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.set_font(TextColor=hwp.RGBColor("Red"))  # 글자색 빨강
@@ -8232,7 +8232,7 @@ class Hwp:
         Returns:
         추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # 사전에 레지스트리에 보안모듈이 등록되어 있어야 한다.
@@ -8267,7 +8267,7 @@ class Hwp:
             self.register_regedit()
         return self.hwp.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
-    def register_regedit(self):
+    def register_regedit(self) -> None:
         """
         레지스트리 에디터에 한/글 보안모듈을 자동등록하는 메서드.
         
@@ -8280,7 +8280,7 @@ class Hwp:
         Returns:
             None
             
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()  # 이 때 내부적으로 register_regedit를 실행한다.
         """
@@ -8402,7 +8402,7 @@ class Hwp:
         Returns:
         등록이 성공하였으면 True, 실패하였으면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp()
             >>> hwp = Hwp()
             >>>
@@ -8410,7 +8410,7 @@ class Hwp:
         """
         return self.hwp.RegisterPrivateInfoPattern(PrivateType=private_type, PrivatePattern=private_pattern)
 
-    def RegisterPrivateInfoPattern(self, private_type, private_pattern):
+    def RegisterPrivateInfoPattern(self, private_type: int, private_pattern: int) -> bool:
         """
         개인정보의 패턴을 등록한다.
 
@@ -8418,27 +8418,27 @@ class Hwp:
 
         Args:
             private_type: 등록할 개인정보 유형. 다음의 값 중 하나다.
-			 0x0001: 전화번호
-			 0x0002: 주민등록번호
-			 0x0004: 외국인등록번호
-			 0x0008: 전자우편
-			 0x0010: 계좌번호
-			 0x0020: 신용카드번호
-			 0x0040: IP 주소
-			 0x0080: 생년월일
-			 0x0100: 주소
-			 0x0200: 사용자 정의
+			    0x0001: 전화번호
+			    0x0002: 주민등록번호
+			    0x0004: 외국인등록번호
+			    0x0008: 전자우편
+			    0x0010: 계좌번호
+			    0x0020: 신용카드번호
+			    0x0040: IP 주소
+			    0x0080: 생년월일
+			    0x0100: 주소
+			    0x0200: 사용자 정의
 
-        private_pattern: 등록할 개인정보 패턴. 예를 들면 이런 형태로 입력한다.
-			(예) 주민등록번호 - "NNNNNN-NNNNNNN"
-			한/글이 이미 정의한 패턴은 정의하면 안 된다.
-			함수를 여러 번 호출하는 것을 피하기 위해 패턴을 “;”기호로 구분
-			반속해서 입력할 수 있도록 한다.
+            private_pattern: 등록할 개인정보 패턴. 예를 들면 이런 형태로 입력한다.
+			    (예) 주민등록번호 - "NNNNNN-NNNNNNN"
+			    한/글이 이미 정의한 패턴은 정의하면 안 된다.
+			    함수를 여러 번 호출하는 것을 피하기 위해 패턴을 “;”기호로 구분
+			    반속해서 입력할 수 있도록 한다.
 
         Returns:
             등록이 성공하였으면 True, 실패하였으면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp()
             >>> hwp = Hwp()
             >>> hwp.register_private_info_pattern(0x01, "NNNN-NNNN;NN-NN-NNNN-NNNN")  # 전화번호패턴
@@ -8451,7 +8451,7 @@ class Hwp:
     def ReleaseAction(self, action: str):
         return self.hwp.ReleaseAction(action=action)
 
-    def release_scan(self):
+    def release_scan(self) -> None:
         """
         InitScan()으로 설정된 초기화 정보를 해제한다.
 
@@ -8462,7 +8462,7 @@ class Hwp:
         """
         return self.hwp.ReleaseScan()
 
-    def ReleaseScan(self):
+    def ReleaseScan(self) -> None:
         """
         InitScan()으로 설정된 초기화 정보를 해제한다.
 
@@ -8489,7 +8489,7 @@ class Hwp:
         Returns:
             None
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.create_field("asdf")  # "asdf" 필드 생성
@@ -8524,7 +8524,7 @@ class Hwp:
         Returns:
             Action을 바꾸면 True를 바꾸지 못했다면 False를 반환한다.
         
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.replace_action("Cut", "Cut")
@@ -8552,7 +8552,7 @@ class Hwp:
         Returns:
             Action을 바꾸면 True를, 바꾸지 못했다면 False를 반환한다.
         
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.replace_action("Cut", "Cut")
@@ -8789,7 +8789,7 @@ class Hwp:
         Returns:
             True
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()  # 한/글 창이 열림
             >>> hwp.BreakPara()  # 줄바꿈 삽입!
@@ -13043,7 +13043,7 @@ class Hwp:
         Returns:
         무조건 True를 반환(매크로의 실행여부와 상관없음)
 
-        Example:
+        Examples:
             >>> hwp.run_script_macro("OnDocument_New", u_macro_type=1)
             True
             >>> hwp.run_script_macro("OnScriptMacro_중국어1성")
@@ -13077,7 +13077,7 @@ class Hwp:
         Returns:
         무조건 True를 반환(매크로의 실행여부와 상관없음)
 
-        Example:
+        Examples:
             >>> hwp.run_script_macro("OnDocument_New", u_macro_type=1)
             True
             >>> hwp.run_script_macro("OnScriptMacro_중국어1성")
@@ -13699,7 +13699,7 @@ class Hwp:
 
         Returns:
         성공하면 True, 실패하면 False
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> start_pos = hwp.GetPosBySet()  # 현재 위치를 저장하고,
@@ -13716,7 +13716,7 @@ class Hwp:
 
         Returns:
         성공하면 True, 실패하면 False
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> start_pos = hwp.GetPosBySet()  # 현재 위치를 저장하고,
