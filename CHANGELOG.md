@@ -1,5 +1,11 @@
 # 📦 Changelog
 
+## [0.47.45] - 2025-03-29
+### 🐛 Fixed
+- docstring 개선(Example: -> Examples:)
+
+---
+
 ## [0.47.44] - 2025-03-29
 ### 🐛 Fixed
 - docstring 개선, release.py 업데이트, api.md 우측 TOC 숨김해제 등
