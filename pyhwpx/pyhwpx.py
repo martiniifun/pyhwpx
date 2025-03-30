@@ -7978,7 +7978,7 @@ class Hwp:
         else:
             return self.hwp.PutFieldText(Field=field, Text=text)
 
-    def PutFieldText(self, field, text: Union[str, list, tuple, pd.Series] = "", idx=None):
+    def PutFieldText(self, field, text: Union[str, list, tuple, pd.Series] = "", idx=None) -> None:
         """
         지정한 필드의 내용을 채운다.
 
@@ -7987,21 +7987,20 @@ class Hwp:
         fieldlist의 필드 개수와, textlist의 텍스트 개수는 동일해야 한다.
         존재하지 않는 필드에 대해서는 무시한다.
 
-        :param field:
-            내용을 채울 필드 이름의 리스트.
-            한 번에 여러 개의 필드를 지정할 수 있으며,
-            형식은 GetFieldText와 동일하다.
-            다만 필드 이름 뒤에 "{{#}}"로 번호를 지정하지 않으면
-            해당 이름을 가진 모든 필드에 동일한 텍스트를 채워 넣는다.
-            즉, PutFieldText에서는 ‘필드이름’과 ‘필드이름{{0}}’의 의미가 다르다.
-            **단, field에 dict를 입력하는 경우에는 text 파라미터를 무시하고
-            dict.keys를 필드명으로, dict.values를 필드값으로 입력한다.**
+        Args:
+            field: 내용을 채울 필드 이름의 리스트.
+                한 번에 여러 개의 필드를 지정할 수 있으며,
+                형식은 GetFieldText와 동일하다.
+                다만 필드 이름 뒤에 "{{#}}"로 번호를 지정하지 않으면
+                해당 이름을 가진 모든 필드에 동일한 텍스트를 채워 넣는다.
+                즉, PutFieldText에서는 ‘필드이름’과 ‘필드이름{{0}}’의 의미가 다르다.
+                **단, field에 dict를 입력하는 경우에는 text 파라미터를 무시하고
+                dict.keys를 필드명으로, dict.values를 필드값으로 입력한다.**
 
 
-        :param text:
-            필드에 채워 넣을 문자열의 리스트.
-            형식은 필드 리스트와 동일하게 필드의 개수만큼
-            텍스트를 0x02로 구분하여 지정한다.
+            text: 필드에 채워 넣을 문자열의 리스트.
+                형식은 필드 리스트와 동일하게 필드의 개수만큼
+                텍스트를 0x02로 구분하여 지정한다.
 
         Returns:
             None
@@ -8133,7 +8132,7 @@ class Hwp:
 
 
 
-    def quit(self):
+    def quit(self) -> None:
         """
         한/글을 종료한다.
 
@@ -8145,7 +8144,7 @@ class Hwp:
         self.hwp.Quit()
         del self.hwp
 
-    def Quit(self):
+    def Quit(self) -> None:
         """
         한/글을 종료한다.
 
@@ -8159,7 +8158,28 @@ class Hwp:
         self.hwp.Quit()
         del self.hwp
 
-    def rgb_color(self, red_or_colorname: str | tuple, green=255, blue=255):
+    def rgb_color(self, red_or_colorname: str|tuple|int, green:int=255, blue:int=255) -> int:
+        """
+        RGB값을 한/글이 인식하는 정수 형태로 변환해주는 메서드.
+
+        자주 쓰이는 24가지 색깔은 문자열로 입력 가능하다.
+
+        Args:
+            red_or_colorname: R값(0~255) 또는 색깔 문자열
+            green: G값(0~255)
+            blue: B값(0~255)
+
+        Returns:
+            아래아한글이 인식하는 정수 형태의 RGB값.
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.set_font(TextColor=hwp.RGBColor("Red"))  # 글자색 빨강
+            >>> hwp.insert_text("빨간 글자색\r\n")
+            >>> hwp.set_font(ShadeColor=hwp.RGBColor(0, 255, 0))  # 음영색 초록
+            >>> hwp.insert_text("초록 음영색")
+        """
         color_palette = {"Red": (255, 0, 0), "Green": (0, 255, 0), "Blue": (0, 0, 255), "Yellow": (255, 255, 0),
                          "Cyan": (0, 255, 255), "Magenta": (255, 0, 255), "Black": (0, 0, 0), "White": (255, 255, 255),
                          "Gray": (128, 128, 128), "Orange": (255, 165, 0), "DarkBlue": (0, 0, 139),
@@ -8174,7 +8194,7 @@ class Hwp:
             return self.hwp.RGBColor(*color_palette[red_or_colorname])
         return self.hwp.RGBColor(red=red_or_colorname, green=green, blue=blue)
 
-    def RGBColor(self, red_or_colorname: str | tuple, green: int=255, blue: int=255):
+    def RGBColor(self, red_or_colorname: str|tuple|int, green: int=255, blue: int=255) -> int:
         """
         RGB값을 한/글이 인식하는 정수 형태로 변환해주는 메서드.
         
@@ -8210,7 +8230,7 @@ class Hwp:
             return self.hwp.RGBColor(*color_palette[red_or_colorname])
         return self.hwp.RGBColor(red=red_or_colorname, green=green, blue=blue)
 
-    def register_module(self, module_type="FilePathCheckDLL", module_data="FilePathCheckerModule"):
+    def register_module(self, module_type:str="FilePathCheckDLL", module_data:str="FilePathCheckerModule") -> bool:
         """
         (인스턴스 생성시 자동으로 실행된다.)
 
@@ -8244,7 +8264,7 @@ class Hwp:
             self.register_regedit()
         return self.hwp.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
-    def RegisterModule(self, module_type="FilePathCheckDLL", module_data="FilePathCheckerModule"):
+    def RegisterModule(self, module_type:str="FilePathCheckDLL", module_data:str="FilePathCheckerModule") -> bool:
         """
         한/글 컨트롤에 부가적인 모듈을 등록한다. 기본동작은 "보안모듈 등록"
         
@@ -13435,7 +13455,9 @@ class Hwp:
         """
         if not self.is_cell():
             raise AssertionError("캐럿이 표 안에 있지 않습니다.")
-        if self.SelectionMode == 0x13:
+
+        if self.SelectionMode in [0, 3, 19]:
+            # 셀 안에서 아무것도 선택하지 않았거나, 하나 이상의 셀블록 상태일 때
             pset = self.HParameterSet.HShapeObject
             self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
             pset.HSet.SetItem("ShapeType", 3)
@@ -13464,11 +13486,12 @@ class Hwp:
             누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         if not self.is_cell():
             raise AssertionError("캐럿이 표 안에 있지 않습니다.")
-        if self.SelectionMode == 0x13:
+        if self.SelectionMode in [0, 3, 19]:
+            # 셀 안에서 아무것도 선택하지 않았거나, 하나 이상의 셀블록 상태일 때
             pset = self.HParameterSet.HShapeObject
             self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
             pset.HSet.SetItem("ShapeType", 3)
