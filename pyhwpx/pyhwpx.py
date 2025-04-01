@@ -13844,41 +13844,61 @@ class Hwp:
             한/글 창의 상단 타이틀. Path와 달리 빈 문서 상태라도 "빈 문서 1 - 한글" 문자열을 리턴한다.
 
         Example:
-             >>> from pyhwpx import Hwp
-             >>> hwp = Hwp()
-             >>> print(hwp.get_title())
-             빈 문서 1 - 한글
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> print(hwp.get_title())
+            빈 문서 1 - 한글
         """
         return win32gui.GetWindowText(self.hwp.XHwpWindows.Active_XHwpWindow.WindowHandle)
 
 
-    def set_title_name(self, title:str) -> bool:
+    def set_title_name(self, title:str="") -> bool:
         """
         한/글 프로그램의 타이틀을 변경한다.
 
-        파일명과 무관하게 설정할 수 있으며,
-        모든 특수문자를 허용한다.
+        파일명과 무관하게 설정할 수 있으며, 이모지 등 모든 특수문자를 허용한다. 단, 끝에는 항상 " - 한글"이 붙는다.
+        타이틀을 빈 문자열로 만들면 자동으로 원래 타이틀로 돌아간다.
 
         Args:
             title: 변경할 타이틀 문자열
 
         Returns:
             성공시 True
+
+        Example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.open("asdf.hwp")
+            >>> hwp.get_title()
+            asdf.hwp [c:\\Users\\user\\desktop\\] - 한글
+            >>> hwp.set_title_name("😘")
+            >>> hwp.get_title()
+            😘 - 한글
         """
         return self.hwp.SetTitleName(Title=title)
 
-    def SetTitleName(self, title:str) -> bool:
+    def SetTitleName(self, title:str="") -> bool:
         """
         한/글 프로그램의 타이틀을 변경한다.
 
-        파일명과 무관하게 설정할 수 있으며,
-        모든 특수문자를 허용한다.
+        파일명과 무관하게 설정할 수 있으며, 이모지 등 모든 특수문자를 허용한다. 단, 끝에는 항상 " - 한글"이 붙는다.
+        타이틀을 빈 문자열로 만들면 자동으로 원래 타이틀로 돌아간다.
 
         Args:
             title: 변경할 타이틀 문자열
 
         Returns:
             성공시 True
+
+        Example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.open("asdf.hwp")
+            >>> hwp.get_title()
+            asdf.hwp [c:\\Users\\user\\desktop\\] - 한글
+            >>> hwp.SetTitleName("😘")
+            >>> hwp.get_title()
+            😘 - 한글
         """
         return self.hwp.SetTitleName(Title=title)
 
