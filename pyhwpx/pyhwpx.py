@@ -7846,7 +7846,7 @@ class Hwp:
         """
         return self.hwp.ProtectPrivateInfo(PotectingChar=protecting_char, PrivatePatternType=private_pattern_type)
 
-    def put_field_text(self, field, text: Union[str, list, tuple, pd.Series] = "", idx=None):
+    def put_field_text(self, field:Any="", text: Union[str, list, tuple, pd.Series] = "", idx=None):
         """
         지정한 필드의 내용을 채운다.
 
@@ -7978,7 +7978,7 @@ class Hwp:
         else:
             return self.hwp.PutFieldText(Field=field, Text=text)
 
-    def PutFieldText(self, field, text: Union[str, list, tuple, pd.Series] = "", idx=None) -> None:
+    def PutFieldText(self, field:Any="", text: Union[str, list, tuple, pd.Series] = "", idx=None) -> None:
         """
         지정한 필드의 내용을 채운다.
 
@@ -13433,25 +13433,36 @@ class Hwp:
         return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index, X=x, Y=y, Width=width,
                                         Height=height)
 
-    def set_cur_field_name(self, field, option=0, direction="", memo=""):
+    def set_cur_field_name(self, field:str="", direction:str="", memo:str="", option:int=0) -> bool:
         """
-        현재 캐럿이 위치하는 곳의 필드이름을 설정한다.
+        표 안에서 현재 캐럿이 위치하는 셀, 또는 블록선택한 셀들의 필드이름을 설정한다.
 
         GetFieldList()의 옵션 중에 4(hwpFieldSelection) 옵션은 사용하지 않는다.
-        (표의 셀에 셀필드를 매기고 싶은 경우 사용한다.)
-        :param field:
-            데이터 필드 이름
-        :param option:
-            다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
-            1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
-            2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
-        :param direction:
-            누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다.
-        :param memo:
-            누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
+
+        셀필드가 아닌 누름틀 생성은 `create_field` 메서드를 이용해야 한다.
+
+        Args:
+            field: 데이터 필드 이름
+            direction: 누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다.
+            memo: 누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
+            option:
+                다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
+                1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+                2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
+
+        Example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.create_table(5, 5, True)  # 3행3열의 글자처럼 취급한 표 생성(A1셀로 이동)
+            >>> hwp.TableCellBlockExtendAbs()
+            >>> hwp.TableCellBlockExtend()  # 셀 전체 선택
+            >>> hwp.set_cur_field_name("target_table")  # 모든 셀의 셀필드 이름을 "target_table"로 바꿈
+            >>> hwp.put_field_text("target_table", list(range(1, 26)))  # 각 셀에 1~25까지의 정수를 넣음
+            >>> hwp.set_cur_field_name("")  # 셀필드 초기화
+            >>> hwp.Cancel()  # 셀블록 선택취소
         """
         if not self.is_cell():
             raise AssertionError("캐럿이 표 안에 있지 않습니다.")
@@ -13467,26 +13478,36 @@ class Hwp:
         else:
             return self.hwp.SetCurFieldName(Field=field, option=option, Direction=direction, memo=memo)
 
-    def SetCurFieldName(self, field, option=0, direction="", memo=""):
+    def SetCurFieldName(self, field:str="", direction:str="", memo:str="", option:int=0) -> bool:
         """
-        현재 캐럿이 위치하는 곳의 필드이름을 설정한다.
+        표 안에서 현재 캐럿이 위치하는 셀, 또는 블록선택한 셀들의 필드이름을 설정한다.
 
         GetFieldList()의 옵션 중에 4(hwpFieldSelection) 옵션은 사용하지 않는다.
-        (표의 셀에 셀필드를 매기고 싶은 경우 사용한다.)
 
-        :param field:
-            데이터 필드 이름
-        :param option:
-            다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
-            1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
-            2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
-        :param direction:
-            누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다.
-        :param memo:
-            누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
+        셀필드가 아닌 누름틀 생성은 `create_field` 메서드를 이용해야 한다.
+
+        Args:
+            field: 데이터 필드 이름
+            direction: 누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다.
+            memo: 누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
+            option:
+                다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
+                1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+                2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
 
         Returns:
             성공하면 True, 실패하면 False
+
+        Example:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.create_table(5, 5, True)  # 3행3열의 글자처럼 취급한 표 생성(A1셀로 이동)
+            >>> hwp.TableCellBlockExtendAbs()
+            >>> hwp.TableCellBlockExtend()  # 셀 전체 선택
+            >>> hwp.set_cur_field_name("target_table")  # 모든 셀의 셀필드 이름을 "target_table"로 바꿈
+            >>> hwp.put_field_text("target_table", list(range(1, 26)))  # 각 셀에 1~25까지의 정수를 넣음
+            >>> hwp.set_cur_field_name("")  # 셀필드 초기화
+            >>> hwp.Cancel()  # 셀블록 선택취소
         """
         if not self.is_cell():
             raise AssertionError("캐럿이 표 안에 있지 않습니다.")
