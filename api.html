@@ -18610,7 +18610,7 @@ API에서는 하나의 함수로 구현한다.</p>
 
 
 <h3 id="pyhwpx.Hwp.PutFieldText" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">PutFieldText</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">PutFieldText</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -18640,6 +18640,7 @@ fieldlist의 필드 개수와, textlist의 텍스트 개수는 동일해야 한�
                 <code>field</code>
             </td>
             <td>
+                  <code><span title="typing.Any">Any</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -18654,7 +18655,7 @@ dict.keys를 필드명으로, dict.values를 필드값으로 입력한다.</stro
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>&#39;&#39;</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -20417,26 +20418,97 @@ Examples:
 
 
 <h3 id="pyhwpx.Hwp.SetCurFieldName" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">SetCurFieldName</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">SetCurFieldName</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>현재 캐럿이 위치하는 곳의 필드이름을 설정한다.</p>
-<p>GetFieldList()의 옵션 중에 4(hwpFieldSelection) 옵션은 사용하지 않는다.
-(표의 셀에 셀필드를 매기고 싶은 경우 사용한다.)</p>
-<p>:param field:
-    데이터 필드 이름
-:param option:
-    다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
-    1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
-    2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
-:param direction:
-    누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다.
-:param memo:
-    누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.</p>
+        <p>표 안에서 현재 캐럿이 위치하는 셀, 또는 블록선택한 셀들의 필드이름을 설정한다.</p>
+<p>GetFieldList()의 옵션 중에 4(hwpFieldSelection) 옵션은 사용하지 않는다.</p>
+<p>셀필드가 아닌 누름틀 생성은 <code>create_field</code> 메서드를 이용해야 한다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>field</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>데이터 필드 이름</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>direction</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>memo</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>option</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
+1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -20450,6 +20522,7 @@ Examples:
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -20460,6 +20533,25 @@ Examples:
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <blockquote>
+<blockquote>
+<blockquote>
+<p>from pyhwpx import Hwp
+hwp = Hwp()
+hwp.create_table(5, 5, True)  # 3행3열의 글자처럼 취급한 표 생성(A1셀로 이동)
+hwp.TableCellBlockExtendAbs()
+hwp.TableCellBlockExtend()  # 셀 전체 선택
+hwp.set_cur_field_name("target_table")  # 모든 셀의 셀필드 이름을 "target_table"로 바꿈
+hwp.put_field_text("target_table", list(range(1, 26)))  # 각 셀에 1~25까지의 정수를 넣음
+hwp.set_cur_field_name("")  # 셀필드 초기화
+hwp.Cancel()  # 셀블록 선택취소</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</details>
 
     </div>
 
@@ -27592,7 +27684,7 @@ API에서는 하나의 함수로 구현한다.</p>
 
 
 <h3 id="pyhwpx.Hwp.put_field_text" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">put_field_text</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">put_field_text</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -28477,29 +28569,140 @@ Examples:
 
 
 <h3 id="pyhwpx.Hwp.set_cur_field_name" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">set_cur_field_name</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">set_cur_field_name</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>현재 캐럿이 위치하는 곳의 필드이름을 설정한다.</p>
-<p>GetFieldList()의 옵션 중에 4(hwpFieldSelection) 옵션은 사용하지 않는다.
-(표의 셀에 셀필드를 매기고 싶은 경우 사용한다.)
-:param field:
-    데이터 필드 이름
-:param option:
-    다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
-    1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
-    2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
-:param direction:
-    누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다.
-:param memo:
-    누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.</p>
-<p>Returns:
-성공하면 True, 실패하면 False</p>
+        <p>표 안에서 현재 캐럿이 위치하는 셀, 또는 블록선택한 셀들의 필드이름을 설정한다.</p>
+<p>GetFieldList()의 옵션 중에 4(hwpFieldSelection) 옵션은 사용하지 않는다.</p>
+<p>셀필드가 아닌 누름틀 생성은 <code>create_field</code> 메서드를 이용해야 한다.</p>
 
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>field</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>데이터 필드 이름</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>direction</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>누름틀 필드의 안내문. 누름틀 필드일 때만 유효하다.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>memo</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>option</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
+1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공하면 True, 실패하면 False</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <blockquote>
+<blockquote>
+<blockquote>
+<p>from pyhwpx import Hwp
+hwp = Hwp()
+hwp.create_table(5, 5, True)  # 3행3열의 글자처럼 취급한 표 생성(A1셀로 이동)
+hwp.TableCellBlockExtendAbs()
+hwp.TableCellBlockExtend()  # 셀 전체 선택
+hwp.set_cur_field_name("target_table")  # 모든 셀의 셀필드 이름을 "target_table"로 바꿈
+hwp.put_field_text("target_table", list(range(1, 26)))  # 각 셀에 1~25까지의 정수를 넣음
+hwp.set_cur_field_name("")  # 셀필드 초기화
+hwp.Cancel()  # 셀블록 선택취소</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</details>
 
     </div>
 
