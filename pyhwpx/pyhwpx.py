@@ -13453,7 +13453,7 @@ class Hwp:
         Returns:
             성공하면 True, 실패하면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.create_table(5, 5, True)  # 3행3열의 글자처럼 취급한 표 생성(A1셀로 이동)
@@ -13498,7 +13498,7 @@ class Hwp:
         Returns:
             성공하면 True, 실패하면 False
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.create_table(5, 5, True)  # 3행3열의 글자처럼 취급한 표 생성(A1셀로 이동)
@@ -13864,7 +13864,7 @@ class Hwp:
         Returns:
             한/글 창의 상단 타이틀. Path와 달리 빈 문서 상태라도 "빈 문서 1 - 한글" 문자열을 리턴한다.
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> print(hwp.get_title())
@@ -13886,7 +13886,7 @@ class Hwp:
         Returns:
             성공시 True
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.open("asdf.hwp")
@@ -13911,7 +13911,7 @@ class Hwp:
         Returns:
             성공시 True
 
-        Example:
+        Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.open("asdf.hwp")
