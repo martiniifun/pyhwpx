@@ -13833,18 +13833,37 @@ class Hwp:
         """
         return self.hwp.SetTextFile(data=data, Format=format, option=option)
 
-    def set_title_name(self, title):
+    def get_title(self) -> str:
+        """
+        한/글 프로그램의 타이틀을 조회한다. 내부적으로 윈도우핸들을 이용한다.
+
+        SetTitleName이라는 못난 이름의 API가 있는데, 차마 get_title_name이라고 따라짓지는 못했다ㅜ
+        (파일명을 조회하려면 title 대신 Path나 FullName 등을 조회하면 된다.)
+
+        Returns:
+            한/글 창의 상단 타이틀. Path와 달리 빈 문서 상태라도 "빈 문서 1 - 한글" 문자열을 리턴한다.
+
+        Example:
+             >>> from pyhwpx import Hwp
+             >>> hwp = Hwp()
+             >>> print(hwp.get_title())
+             빈 문서 1 - 한글
+        """
+        return win32gui.GetWindowText(self.hwp.XHwpWindows.Active_XHwpWindow.WindowHandle)
+
+
+    def set_title_name(self, title:str) -> bool:
         """
         한/글 프로그램의 타이틀을 변경한다.
 
         파일명과 무관하게 설정할 수 있으며,
         모든 특수문자를 허용한다.
 
-        :param title:
-            변경할 타이틀 문자열
+        Args:
+            title: 변경할 타이틀 문자열
 
         Returns:
-        성공시 True
+            성공시 True
         """
         return self.hwp.SetTitleName(Title=title)
 
