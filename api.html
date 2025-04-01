@@ -7667,6 +7667,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pyhwpx.Hwp.get_title" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_title
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyhwpx.Hwp.goto_page" class="md-nav__link">
     <span class="md-ellipsis">
       goto_page
@@ -26328,6 +26337,63 @@ OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
 <div class="doc doc-object doc-function">
 
 
+<h3 id="pyhwpx.Hwp.get_title" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_title</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>한/글 프로그램의 타이틀을 조회한다. 내부적으로 윈도우핸들을 이용한다.</p>
+<p>SetTitleName이라는 못난 이름의 API가 있는데, 차마 get_title_name이라고 따라짓지는 못했다ㅜ
+(파일명을 조회하려면 title 대신 Path나 FullName 등을 조회하면 된다.)</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>한/글 창의 상단 타이틀. Path와 달리 빈 문서 상태라도 "빈 문서 1 - 한글" 문자열을 리턴한다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <blockquote>
+<blockquote>
+<blockquote>
+<p>from pyhwpx import Hwp
+hwp = Hwp()
+print(hwp.get_title())
+빈 문서 1 - 한글</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h3 id="pyhwpx.Hwp.goto_page" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">goto_page</span><span class="p">(</span><span class="n">page_index</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
 
@@ -28885,10 +28951,60 @@ Examples:
         <p>한/글 프로그램의 타이틀을 변경한다.</p>
 <p>파일명과 무관하게 설정할 수 있으며,
 모든 특수문자를 허용한다.</p>
-<p>:param title:
-    변경할 타이틀 문자열</p>
-<p>Returns:
-성공시 True</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>title</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>변경할 타이틀 문자열</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
