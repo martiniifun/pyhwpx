@@ -20742,7 +20742,7 @@ Examples:
 
 
 <h3 id="pyhwpx.Hwp.SetTitleName" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">SetTitleName</span><span class="p">(</span><span class="n">title</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">SetTitleName</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
 
 </h3>
 
@@ -20750,8 +20750,8 @@ Examples:
     <div class="doc doc-contents ">
 
         <p>한/글 프로그램의 타이틀을 변경한다.</p>
-<p>파일명과 무관하게 설정할 수 있으며,
-모든 특수문자를 허용한다.</p>
+<p>파일명과 무관하게 설정할 수 있으며, 이모지 등 모든 특수문자를 허용한다. 단, 끝에는 항상 " - 한글"이 붙는다.
+타이틀을 빈 문자열로 만들면 자동으로 원래 타이틀로 돌아간다.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -20778,7 +20778,7 @@ Examples:
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>&#39;&#39;</code>
             </td>
           </tr>
       </tbody>
@@ -20807,6 +20807,24 @@ Examples:
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <blockquote>
+<blockquote>
+<blockquote>
+<p>from pyhwpx import Hwp
+hwp = Hwp()
+hwp.open("asdf.hwp")
+hwp.get_title()
+asdf.hwp [c:\Users\user\desktop] - 한글
+hwp.SetTitleName("😘")
+hwp.get_title()
+😘 - 한글</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</details>
 
     </div>
 
@@ -28941,7 +28959,7 @@ Examples:
 
 
 <h3 id="pyhwpx.Hwp.set_title_name" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">set_title_name</span><span class="p">(</span><span class="n">title</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">set_title_name</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
 
 </h3>
 
@@ -28949,8 +28967,8 @@ Examples:
     <div class="doc doc-contents ">
 
         <p>한/글 프로그램의 타이틀을 변경한다.</p>
-<p>파일명과 무관하게 설정할 수 있으며,
-모든 특수문자를 허용한다.</p>
+<p>파일명과 무관하게 설정할 수 있으며, 이모지 등 모든 특수문자를 허용한다. 단, 끝에는 항상 " - 한글"이 붙는다.
+타이틀을 빈 문자열로 만들면 자동으로 원래 타이틀로 돌아간다.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -28977,7 +28995,7 @@ Examples:
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>&#39;&#39;</code>
             </td>
           </tr>
       </tbody>
@@ -29006,6 +29024,24 @@ Examples:
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <blockquote>
+<blockquote>
+<blockquote>
+<p>from pyhwpx import Hwp
+hwp = Hwp()
+hwp.open("asdf.hwp")
+hwp.get_title()
+asdf.hwp [c:\Users\user\desktop] - 한글
+hwp.set_title_name("😘")
+hwp.get_title()
+😘 - 한글</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</details>
 
     </div>
 
