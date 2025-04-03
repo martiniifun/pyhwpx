@@ -1,7 +1,7 @@
 # 📦 Changelog
 
 ## [0.50.0] - 2025-04-01
-### 🚀 Added
+### 🐛 Fixed
 - 항상 헷갈린다. 예시코드는 Example: 이 아니고 Examples:인데ㅜ Args, Returns, Examples 전부 s로 끝난다고 외워야겠다. 
 
 ---
