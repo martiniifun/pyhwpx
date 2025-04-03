@@ -2363,10 +2363,16 @@ class Hwp:
         if not width:
             sec_def = self.hwp.HParameterSet.HSecDef
             self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
-            width = (
-                    sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen
-                    - self.get_table_outside_margin_left(as_="hwpunit") - self.get_table_outside_margin_right(
-                as_="hwpunit"))
+            if sec_def.PageDef.Landscape == 0:
+                width = (
+                        sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen
+                        - self.get_table_outside_margin_left(as_="hwpunit") - self.get_table_outside_margin_right(
+                    as_="hwpunit"))
+            elif sec_def.PageDef.Landscape == 1:
+                width = (
+                        sec_def.PageDef.PaperHeight - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen
+                        - self.get_table_outside_margin_left(as_="hwpunit") - self.get_table_outside_margin_right(
+                    as_="hwpunit"))
         elif as_ == "mm":
             width = self.mili_to_hwp_unit(width)
         ratio = width / self.get_table_width(as_="hwpunit")
