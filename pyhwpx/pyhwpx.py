@@ -13317,6 +13317,8 @@ class Hwp:
                 return self.HAction.Execute("FileSaveAsPdf", pset.HSet)
             else:
                 return True
+        elif ext.lower() == "hwpx" or format.lower() == "hwpx":
+            return self.hwp.SaveAs(Path=path, Format="HWPX", arg=arg)
         else:
             return self.hwp.SaveAs(Path=path, Format=format, arg=arg)
 
