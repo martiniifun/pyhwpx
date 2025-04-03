@@ -1,5 +1,12 @@
 # 📦 Changelog
 
+## [0.50.2] - 2025-04-03
+### 🐛 Fixed
+- set_table_width 실행시 용지 방향에 따른 계산방식 변경(기존 오류 해결)
+- get/set_table_width 실행시 캐럿이 표 안에 있지 않으면 오류 발생(AttributeError 같은 애매한 거 말고ㅜ 이런 작업 많이 해야겠다) 
+
+---
+
 ## [0.50.1] - 2025-04-03
 ### 🐛 Fixed
 - save_as 메서드에서 ".hwpx"로 저장할 때 포맷을 명시하지 않아도 내부적으로 "HWPX"로 처리하는 elif문 추가
