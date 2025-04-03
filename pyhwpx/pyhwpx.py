@@ -2338,6 +2338,8 @@ class Hwp:
         Returns:
         표의 너비(mm)
         """
+        if not self.is_cell():
+            raise IndexError("캐럿이 표 안에 있어야 합니다.")
         if as_.lower() == "mm":
             return self.HwpUnitToMili(self.CellShape.Item("Width"))
         elif as_.lower() in ("hwpunit", "hu"):
