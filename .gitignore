@@ -12,6 +12,7 @@ __pycache__/
 /*.pyc
 .pypirc
 /CHANGELOG_SAMPLE.md
+/release_test.py
 /release.py
 /site/
 /overrides/*
