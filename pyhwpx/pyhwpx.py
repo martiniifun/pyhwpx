@@ -87,12 +87,15 @@ def com_initialized(func):
 
 def addr_to_tuple(cell_address: str) -> tuple[int, int]:
     """
+    엑셀주소를 튜플로 변환하는 헬퍼함수
+
     엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 (row, col) 튜플로 변환하는 헬퍼함수입니다.
     예를 들어 addr_to_tuple("C3")을 실행하면 (3, 3)을 리턴하는 식입니다.
     pyhwpx 일부 메서드의 내부 연산에 사용됩니다.
 
     Args:
         cell_address: 엑셀 방식의 "셀주소" 문자열
+
     Returns:
         (row, column) 형식의 주소 튜플
 
@@ -457,6 +460,15 @@ class Ctrl:
                 - 29: 예약
                 - 30: 묶음 빈칸
                 - 31: 고정 폭 빈칸
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()  # 표 두 개가 들어있는 문서에서
+            >>> for ctrl in hwp.ctrl_list:
+            ...     print(ctrl.CtrlCh)
+            ...
+            11
+            11
         """
         return self._com_obj.CtrlCh
 
@@ -471,35 +483,47 @@ class Ctrl:
         Returns:
             해당 컨트롤의 컨트롤아이디
 
-                - cold(ColDef): 단
-                - secd(SecDef): 구역
-                - fn(FootnoteShape): 각주
-                - en(FootnoteShape): 미주
-                - tbl(TableCreation): 표
-                - eqed(EqEdit): 수식
-                - gso(ShapeObject): 그리기 개체
-                - atno(AutoNum): 번호 넣기
-                - nwno(AutoNum): 새 번호로
-                - pgct(PageNumCtrl): 페이지 번호 제어(97의 홀수 쪽에서 시작)
-                - pghd(PageHiding): 감추기
-                - pgnp(PageNumPos): 쪽 번호 위치
-                - head(HeaderFooter): 머리말
-                - foot(HeaderFooter): 꼬리말
-                - %dte(FieldCtrl): 현재의 날짜/시간 필드
-                - %ddt(FieldCtrl): 파일 작성 날짜/시간 필드
-                - %pat(FieldCtrl): 문서 경로 필드
-                - %bmk(FieldCtrl): 블록 책갈피
-                - %mmg(FieldCtrl): 메일 머지
-                - %xrf(FieldCtrl): 상호 참조
-                - %fmu(FieldCtrl): 계산식
-                - %clk(FieldCtrl): 누름틀
-                - %smr(FieldCtrl): 문서 요약 정보 필드
-                - %usr(FieldCtrl): 사용자 정보 필드
-                - %hlk(FieldCtrl): 하이퍼링크
-                - bokm(TextCtrl): 책갈피
-                - idxm(IndexMark): 찾아보기
-                - tdut(Dutmal): 덧말
-                - tcmt(None): 주석
+                - "cold" : (ColDef) 단
+                - "secd" : (SecDef) 구역
+                - "fn" : (FootnoteShape) 각주
+                - "en" : (FootnoteShape) 미주
+                - "tbl" : (TableCreation) 표
+                - "eqed" : (EqEdit) 수식
+                - "gso" : (ShapeObject) 그리기 개체
+                - "atno" : (AutoNum) 번호 넣기
+                - "nwno" : (AutoNum) 새 번호로
+                - "pgct" : (PageNumCtrl) 페이지 번호 제어(97의 홀수 쪽에서 시작)
+                - "pghd" : (PageHiding) 감추기
+                - "pgnp" : (PageNumPos) 쪽 번호 위치
+                - "head" : (HeaderFooter) 머리말
+                - "foot" : (HeaderFooter) 꼬리말
+                - "%dte" : (FieldCtrl) 현재의 날짜/시간 필드
+                - "%ddt" : (FieldCtrl) 파일 작성 날짜/시간 필드
+                - "%pat" : (FieldCtrl) 문서 경로 필드
+                - "%bmk" : (FieldCtrl) 블록 책갈피
+                - "%mmg" : (FieldCtrl) 메일 머지
+                - "%xrf" : (FieldCtrl) 상호 참조
+                - "%fmu" : (FieldCtrl) 계산식
+                - "%clk" : (FieldCtrl) 누름틀
+                - "%smr" : (FieldCtrl) 문서 요약 정보 필드
+                - "%usr" : (FieldCtrl) 사용자 정보 필드
+                - "%hlk" : (FieldCtrl) 하이퍼링크
+                - "bokm" : (TextCtrl) 책갈피
+                - "idxm" : (IndexMark) 찾아보기
+                - "tdut" : (Dutmal) 덧말
+                - "tcmt" : (None) 주석
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()  # 2x2 표의 각 셀 안에 이미지가 총 4장 들어있는 문서
+            >>> for ctrl in hwp.ctrl_list:
+            ...     print(ctrl.CtrlID)
+            ...
+            tbl
+            gso
+            gso
+            gso
+            gso
         """
         return self._com_obj.CtrlID
 
@@ -508,22 +532,40 @@ class Ctrl:
         return self._com_obj.HasList
 
     @property
-    def Next(self) -> Ctrl:
+    def Next(self) -> "Ctrl":
         """
         다음 컨트롤.
 
         문서 중의 모든 컨트롤(표, 그림 등의 특수 문자들)은 linked list로 서로 연결되어 있는데, list 중 다음 컨트롤을 나타낸다.
+
+        Returns:
+            현재 컨트롤의 다음 컨트롤
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()  # 표 하나만 들어 있는 문서에서
+            >>> print(hwp.HeadCtrl.Next.Next.UserDesc)
+            표
         """
-        return self._com_obj.Next
+        return Ctrl(self._com_obj.Next)
 
     @property
-    def Prev(self):
+    def Prev(self) -> "Ctrl":
         """
         앞 컨트롤.
 
         문서 중의 모든 컨트롤(표, 그림 등의 특수 문자들)은 linked list로 서로 연결되어 있는데, list 중 앞 컨트롤을 나타낸다.
+
+        Returns:
+            현재 컨트롤의 이전 컨트롤
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()  # 표 두 개 들어 있는 문서에서
+            >>> print(hwp.LastCtrl.Prev.UserDesc)
+            그림
         """
-        return self._com_obj.Prev
+        return Ctrl(self._com_obj.Prev)
 
     @property
     def Properties(self):
