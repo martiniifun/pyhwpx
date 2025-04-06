@@ -508,7 +508,7 @@ class Ctrl:
         return self._com_obj.HasList
 
     @property
-    def Next(self):
+    def Next(self) -> Ctrl:
         """
         다음 컨트롤.
 
@@ -7877,7 +7877,7 @@ class Hwp:
         """
         return self.hwp.GetText()
 
-    def get_text_file(self, format="UNICODE", option=""):
+    def get_text_file(self, format="UNICODE", option="saveblock:true"):
         """
         현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
 
@@ -7915,7 +7915,7 @@ class Hwp:
         """
         return self.hwp.GetTextFile(Format=format, option=option)
 
-    def GetTextFile(self, format="UNICODE", option=""):
+    def GetTextFile(self, format="UNICODE", option="saveblock:true"):
         """
         현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
 
@@ -15726,8 +15726,7 @@ class Hwp:
         """
         return self.hwp.SetPrivateInfoPassword(Password=password)
 
-    def set_text_file(self, data: str, format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
-                      option="insertfile"):
+    def set_text_file(self, data: str, format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X", option:str="insertfile") -> int:
         """
         GetTextFile로 저장한 문자열 정보를 문서에 삽입
 
