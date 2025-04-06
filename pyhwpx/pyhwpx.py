@@ -387,7 +387,7 @@ class Ctrl:
     def __repr__(self):
         return f"<CtrlCode: CtrlID={self.CtrlID}, CtrlCH={self.CtrlCh}, UserDesc={self.UserDesc}>"
 
-    def GetAnchorPos(self, type_: int = 0):
+    def GetAnchorPos(self, type_: int = 0) -> Any:
         """
         해당 컨트롤의 앵커(조판부호)의 위치를 반환한다.
 
@@ -400,48 +400,61 @@ class Ctrl:
 
         Returns:
             성공했을 경우 ListParaPos ParameterSet이 반환된다. 실패했을 때는 None을 리턴함.
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()  # 표만 두 개 있는 문서에 연결됨.
+            >>> for ctrl in hwp.ctrl_list:
+            ...     print(ctrl.GetAnchorPos().Item("List"))
+            ...     print(ctrl.GetAnchorPos().Item("List"))
+            ...     print(ctrl.GetAnchorPos().Item("List"))
         """
+        return self._com_obj.GetAnchorPos(type=type_)
 
     @property
-    def CtrlCh(self):
+    def CtrlCh(self) -> int:
         """
         컨트롤 문자
 
-        일반적으로 컨트롤 ID를 사용해 컨트롤의 종류를 판별하지만, 이보다 더 포괄적인 범주를 나타내는 컨트롤 문자로 판별할 수도 있다. 예를 들어 각주와 미주는 ID는 다르지만, 컨트롤 문자는 17로 동일하다. 컨트롤 문자는 1부터 31사이의 값을 사용한다.
+        일반적으로 컨트롤 ID를 사용해 컨트롤의 종류를 판별하지만,
+        이보다 더 포괄적인 범주를 나타내는 컨트롤 문자로 판별할 수도 있다.
+        예를 들어 각주와 미주는 ID는 다르지만, 컨트롤 문자는 17로 동일하다.
+        컨트롤 문자는 1부터 31사이의 값을 사용한다.
 
         Returns:
+            1~31의 정수
 
-            - 1: 예약
-            - 2: 구역/단 정의
-            - 3: 필드 시작
-            - 4: 필드 끝
-            - 5: 예약
-            - 6: 예약
-            - 7: 예약
-            - 8: 예약
-            - 9: 탭
-            - 10: 강제 줄 나눔
-            - 11: 그리기 개체 / 표
-            - 12: 예약
-            - 13: 문단 나누기
-            - 14: 예약
-            - 15: 주석
-            - 16: 머리말 / 꼬리말
-            - 17: 각주 / 미주
-            - 18: 자동 번호
-            - 19: 예약
-            - 20: 예약
-            - 21: 쪽바뀜
-            - 22: 책갈피 / 찾아보기 표시
-            - 23: 덧말 / 글자 겹침
-            - 24: 하이픈
-            - 25: 예약
-            - 26: 예약
-            - 27: 예약
-            - 28: 예약
-            - 29: 예약
-            - 30: 묶음 빈칸
-            - 31: 고정 폭 빈칸
+                - 1: 예약
+                - 2: 구역/단 정의
+                - 3: 필드 시작
+                - 4: 필드 끝
+                - 5: 예약
+                - 6: 예약
+                - 7: 예약
+                - 8: 예약
+                - 9: 탭
+                - 10: 강제 줄 나눔
+                - 11: 그리기 개체 / 표
+                - 12: 예약
+                - 13: 문단 나누기
+                - 14: 예약
+                - 15: 주석
+                - 16: 머리말 / 꼬리말
+                - 17: 각주 / 미주
+                - 18: 자동 번호
+                - 19: 예약
+                - 20: 예약
+                - 21: 쪽바뀜
+                - 22: 책갈피 / 찾아보기 표시
+                - 23: 덧말 / 글자 겹침
+                - 24: 하이픈
+                - 25: 예약
+                - 26: 예약
+                - 27: 예약
+                - 28: 예약
+                - 29: 예약
+                - 30: 묶음 빈칸
+                - 31: 고정 폭 빈칸
         """
         return self._com_obj.CtrlCh
 
@@ -450,7 +463,8 @@ class Ctrl:
         """
         컨트롤 아이디
 
-        컨트롤 ID는 컨트롤의 종류를 나타내기 위해 할당된 ID로서, 최대 4개의 문자로 구성된 문자열이다. 예를 들어 표는 "tbl", 각주는 "fn"이다. 글에서 현재까지 지원되는 모든 컨트롤의 ID는 아래 Returns: 참조.
+        컨트롤 ID는 컨트롤의 종류를 나타내기 위해 할당된 ID로서, 최대 4개의 문자로 구성된 문자열이다.
+        예를 들어 표는 "tbl", 각주는 "fn"이다. 한/글에서 현재까지 지원되는 모든 컨트롤의 ID는 아래 Returns 참조.
 
         Returns:
             해당 컨트롤의 컨트롤아이디
@@ -6301,16 +6315,17 @@ class Hwp:
         """
         return self.hwp.XHwpDocuments.Active_XHwpDocument.Clear(option=option)
 
-    def Clear(self, option: int = 1):
+    def Clear(self, option: int = 1) -> None:
         """
         현재 편집중인 문서의 내용을 닫고 빈문서 편집 상태로 돌아간다.
 
         :param option:
             편집중인 문서의 내용에 대한 처리 방법, 생략하면 1(hwpDiscard)가 선택된다.
-            0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
-            1: 문서의 내용을 버린다. (hwpDiscard, 기본값)
-            2: 문서가 변경된 경우 저장한다. (hwpSaveIfDirty)
-            3: 무조건 저장한다. (hwpSave)
+
+                - 0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
+                - 1: 문서의 내용을 버린다. (hwpDiscard, 기본값)
+                - 2: 문서가 변경된 경우 저장한다. (hwpSaveIfDirty)
+                - 3: 무조건 저장한다. (hwpSave)
 
         Returns:
             None
