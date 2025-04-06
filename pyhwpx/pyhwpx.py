@@ -2658,6 +2658,7 @@ class Hwp:
         현재 선택되어 있거나, 캐럿이 들어있는 컨트롤을 포함하는 상위 컨트롤을 리턴한다.
 
         Returns:
+            현재 선택되어 있거나, 캐럿이 들어있는 컨트롤을 포함하는 상위 컨트롤
         """
         return self.hwp.ParentCtrl
 
@@ -2667,7 +2668,7 @@ class Hwp:
         현재 빈 문서가 아닌 경우, 열려 있는 문서의 파일명을 포함한 전체경로를 리턴한다.
 
         Returns:
-        현재 문서의 전체경로
+            현재 문서의 전체경로
         
         Examples:
             >>> from pyhwpx import Hwp
@@ -2684,6 +2685,7 @@ class Hwp:
         현재 선택모드가 어떤 상태인지 리턴한다.
 
         Returns:
+            현재 선택모드의 상태
         """
         return self.hwp.SelectionMode
 
@@ -2725,6 +2727,7 @@ class Hwp:
         현재 한/글 프로그램의 보기 속성 파라미터셋을 리턴한다.
 
         Returns:
+            현재 한/글 프로그램의 보기 속성 파라미터셋
         """
         return self.hwp.ViewProperties
 
@@ -2738,6 +2741,18 @@ class Hwp:
         HwpApplication의 XHwpDocuments 객체를 리턴한다.
 
         Returns:
+            HwpApplication의 XHwpDocuments 객체
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.add_doc()  # 빈 문서창 추가
+            >>> hwp.add_doc()  # 빈 문서창 하나 더 추가
+            >>> hwp.add_tab()  # 마지막 창에 새 탭 하나 추가
+            >>> print(len(hwp.XHwpDocuments))
+            4
+            >>> hwp.XHwpDocuments[0].SetActive_XHwpDocument()
+
         """
         return self.hwp.XHwpDocuments
 
@@ -5532,14 +5547,35 @@ class Hwp:
         for i in self.hwp.GetFieldList(1).split("\x02"):
             self.hwp.PutFieldText(i, "")
 
-    def switch_to(self, num) -> None:
+    def switch_to(self, num:int) -> None:
         """
-        여러 개의 hwp인스턴스가 열려 있는 경우 해당 인스턴스를 활성화한다.
+        여러 개의 hwp인스턴스가 열려 있는 경우 해당 인스턴스를 활성화하고, 해당 타이틀을 출력한다.
 
-        :param num:
-            인스턴스 번호
+        백그라운드 상태에서 새 창을 만들 때 윈도우에 나타나는 경우가 있는데,
+        add_tab() 함수를 사용하면 백그라운드 작업이 보장된다.
+        탭 전환은 switch_to() 메서드로 가능하다.
+
+        Args:
+            num: 인스턴스(한/글 문서) 일련번호
+
+        Examples:
+            >>> # 빈 문서가 세 개 열린 상태에서
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.switch_to(0)
+            빈 문서 1 - 한글
+            >>> hwp.switch_to(1)
+            빈 문서 2 - 한글
+            >>> hwp.switch_to(2)
+            빈 문서 3 - 한글
         """
-        self.hwp.XHwpDocuments.Item(num).SetActive_XHwpDocument()
+        try:
+            self.hwp.XHwpDocuments.Item(num).SetActive_XHwpDocument()
+            print(self.Title)
+        except com_error as e:
+            raise IndexError(f"해당 인덱스의 문서가 존재하지 않습니다. 현재 문서창은 총 {len(self.XHwpDocuments)}개가 열려 있습니다.")
+
+
 
     def add_tab(self) -> None:
         """
