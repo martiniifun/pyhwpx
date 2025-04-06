@@ -30,6 +30,7 @@ if sys.platform == 'win32':
     import win32api
     import win32con
     import win32gui
+    from pywintypes import com_error
 
     # CircularImport 오류 출력안함
     devnull = open(os.devnull, 'w')
@@ -2760,8 +2761,6 @@ class Hwp:
     def XHwpMessageBox(self) -> "Hwp.XHwpMessageBox":
         """
         메시지박스 객체 리턴
-
-        Returns:
         """
         return self.hwp.XHwpMessageBox
 
@@ -5515,6 +5514,7 @@ class Hwp:
             finally:
                 self.SetMessageBoxMode(0xfffff)
 
+    @staticmethod
     def clipboard_to_pyfunc(self):
         """
         한/글 프로그램에서 스크립트매크로 녹화 코드를 클립보드에 복사하고
@@ -5573,9 +5573,7 @@ class Hwp:
             self.hwp.XHwpDocuments.Item(num).SetActive_XHwpDocument()
             print(self.Title)
         except com_error as e:
-            raise IndexError(f"해당 인덱스의 문서가 존재하지 않습니다. 현재 문서창은 총 {len(self.XHwpDocuments)}개가 열려 있습니다.")
-
-
+            raise IndexError(f"해당 인덱스의 문서가 존재하지 않습니다. 현재 총 {len(self.XHwpDocuments)}개의 문서가 연결되어 있습니다.")
 
     def add_tab(self) -> None:
         """
@@ -5588,6 +5586,7 @@ class Hwp:
         새 창을 추가하고 싶은 경우는 add_tab 대신 hwp.FileNew()나 hwp.add_doc()을 실행하면 된다.
         """
         self.hwp.XHwpDocuments.Add(1)  # 0은 새 창, 1은 새 탭
+        print(self.Title)
 
     def add_doc(self) -> None:
         """
@@ -5597,7 +5596,9 @@ class Hwp:
         새 탭을 추가하고 싶은 경우는 add_doc 대신 add_tab()을 실행하면 된다.
         """
         self.hwp.XHwpDocuments.Add(0)  # 0은 새 창, 1은 새 탭
+        print(self.Title)
 
+    @staticmethod
     def hwp_unit_to_mili(self, hwp_unit) -> float:
         """
         HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
@@ -5612,6 +5613,7 @@ class Hwp:
         else:
             return round(hwp_unit / 7200 * 25.4, 4)
 
+    @staticmethod
     def HwpUnitToMili(self, hwp_unit: int) -> float:
         """
         HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
@@ -6719,7 +6721,8 @@ class Hwp:
         else:
             return self.hwp.HAction.Run("EquationCreate")
 
-    def EquationClose(self, save=False, delay=0.1):
+    @staticmethod
+    def EquationClose(save=False, delay=0.1):
         return _close_eqedit(save, delay)
 
     def EquationModify(self, thread=False):
@@ -9588,28 +9591,34 @@ class Hwp:
     def PointToHwpUnit(self, point: float) -> int:
         return self.hwp.PointToHwpUnit(Point=point)
 
-    def hwp_unit_to_point(self, HwpUnit: int) -> float:
+    @staticmethod
+    def hwp_unit_to_point(HwpUnit: int) -> float:
         return HwpUnit / 100
 
-    def HwpUnitToPoint(self, HwpUnit: int) -> float:
+    @staticmethod
+    def HwpUnitToPoint(HwpUnit: int) -> float:
         return HwpUnit / 100
 
-    def hwp_unit_to_inch(self, HwpUnit: int) -> float:
+    @staticmethod
+    def hwp_unit_to_inch(HwpUnit: int) -> float:
         if HwpUnit == 0:
             return 0
         else:
             return HwpUnit / 7200
 
-    def HwpUnitToInch(self, HwpUnit: int) -> float:
+    @staticmethod
+    def HwpUnitToInch(HwpUnit: int) -> float:
         if HwpUnit == 0:
             return 0
         else:
             return HwpUnit / 7200
 
-    def inch_to_hwp_unit(self, inch) -> int:
+    @staticmethod
+    def inch_to_hwp_unit(inch) -> int:
         return int(inch * 7200)
 
-    def InchToHwpUnit(self, inch) -> int:
+    @staticmethod
+    def InchToHwpUnit(inch) -> int:
         return int(inch * 7200)
 
     def present_effect(self, prsnteffect):
@@ -10129,7 +10138,8 @@ class Hwp:
             self.register_regedit()
         return self.hwp.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
-    def register_regedit(self) -> None:
+    @staticmethod
+    def register_regedit() -> None:
         """
         레지스트리 에디터에 한/글 보안모듈을 자동등록하는 메서드.
         
@@ -15046,19 +15056,19 @@ class Hwp:
                             ("time", ctypes.c_ulong),
                             ("dwExtraInfo", PUL)]
 
-            class Input_I(ctypes.Union):
+            class InputI(ctypes.Union):
                 _fields_ = [("ki", KeyBdInput),
                             ("mi", MouseInput),
                             ("hi", HardwareInput)]
 
             class Input(ctypes.Structure):
                 _fields_ = [("type", ctypes.c_ulong),
-                            ("ii", Input_I)]
+                            ("ii", InputI)]
 
             # 키를 누르는 함수
             def press_key(hexKeyCode):
                 extra = ctypes.c_ulong(0)
-                ii_ = Input_I()
+                ii_ = InputI()
                 ii_.ki = KeyBdInput(hexKeyCode, 0, 0, 0, ctypes.pointer(extra))
                 x = Input(ctypes.c_ulong(1), ii_)
                 ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
@@ -15066,7 +15076,7 @@ class Hwp:
             # 키를 떼는 함수
             def release_key(hexKeyCode):
                 extra = ctypes.c_ulong(0)
-                ii_ = Input_I()
+                ii_ = InputI()
                 ii_.ki = KeyBdInput(hexKeyCode, 0, 0x0002, 0, ctypes.pointer(extra))
                 x = Input(ctypes.c_ulong(1), ii_)
                 ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
