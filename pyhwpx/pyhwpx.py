@@ -127,10 +127,13 @@ def addr_to_tuple(cell_address: str) -> tuple[int, int]:
 def tuple_to_addr(col: int, row: int) -> str:
     """
     (컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: "AAA3")을 반환합니다.
+
     hwp.goto_addr(addr) 메서드 내부에서 활용됩니다. 직접 사용하지 않습니다.
 
-    :param col: 열(칼럼) 번호(1부터 시작)
-    :param row: 행(로우) 번호(1부터 시작)
+    Args:
+        col: 열(칼럼) 번호(1부터 시작)
+        row: 행(로우) 번호(1부터 시작)
+
     Returns:
         엑셀 형식의 주소 문자열(예: "A1", "VVS1004")
     
@@ -198,9 +201,10 @@ def _refresh_eq(hwnd: int, delay: int = 0.1) -> None:
 
 def _eq_create(visible: bool) -> bool:
     """
-    멀티스레드 형태로 새 수식편집기를 실행하는 헬퍼함수
+    멀티스레드 형태로 새 수식편집기를 실행하는 헬퍼함수. 직접 사용하지 말 것.
 
-    :param visible: 아래아한글을 백그라운드에서 실행할지(False), 혹은 화면에 보이게 할지(True) 결정하는 파라미터
+    Args:
+        visible: 아래아한글을 백그라운드에서 실행할지(False), 혹은 화면에 보이게 할지(True) 결정하는 파라미터
 
     Returns:
         무조건 True를 리턴함    
@@ -212,15 +216,15 @@ def _eq_create(visible: bool) -> bool:
     return True
 
 
-def _eq_modify(visible):
+def _eq_modify(visible) -> bool:
     """
-    멀티스레드 형태로 기존 수식에 대한 수식편집기를 실행하는 헬퍼함수.
+    멀티스레드 형태로 기존 수식에 대한 수식편집기를 실행하는 헬퍼함수. 직접 사용하지 말 것.
 
-    :param visible: 아래아한글을 백그라운드에서 실행할지(False), 혹은 화면에 보이게 할지(True) 결정하는 파라미터
+    Args:
+        visible: 아래아한글을 백그라운드에서 실행할지(False), 혹은 화면에 보이게 할지(True) 결정하는 파라미터
 
     Returns:
         무조건 True를 리턴
-    
     """
     pythoncom.CoInitialize()
     hwp = Hwp(visible=visible)
@@ -229,13 +233,13 @@ def _eq_modify(visible):
     return True
 
 
-def _close_eqedit(save: bool = False, delay: float = 0.1):
+def _close_eqedit(save: bool = False, delay: float = 0.1) -> bool:
     """
-    멀티스레드로 열린 수식편집기를 억지로 찾아 닫는 헬퍼함수
+    멀티스레드로 열린 수식편집기를 억지로 찾아 닫는 헬퍼함수. 직접 사용하지 말 것.
 
-    :param save: 수식편집기를 닫기 전에 저장할지 결정
-
-    :param delay: 실행 지연시간
+    Args:
+        save: 수식편집기를 닫기 전에 저장할지 결정
+        delay: 실행 지연시간
 
     Returns:
         성공시 True, 실패시 False
@@ -260,7 +264,7 @@ def _close_eqedit(save: bool = False, delay: float = 0.1):
         return False
 
 
-def crop_data_from_selection(data, selection):
+def crop_data_from_selection(data, selection) -> list[str]:
     """
     리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출하는 함수.
     pyhwpx 내부적으로만 사용됨
@@ -321,7 +325,8 @@ def rename_duplicates_in_list(file_list: list[str]) -> list[str]:
     문서 내 이미지를 파일로 저장할 때,
     동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 헬퍼함수
 
-    :param file_list: 문서 내 이미지 파일명 목록
+    Args:
+        file_list: 문서 내 이미지 파일명 목록
 
     Returns:
         중복된 이름이 두 개 이상 있는 경우 뒤에 "(2)", "(3)"을 붙인 새로운 문자열 리스트
@@ -346,7 +351,8 @@ def check_tuple_of_ints(var: tuple) -> bool:
     """
     변수가 튜플이고 모든 요소가 int인지 확인하는 헬퍼함수
 
-    :param var: 이터러블 자료형
+    Args:
+        var: 이터러블 자료형. 일반적으로 튜플.
 
     Returns:
         튜플이면서, 요소들이 모두 int인 경우 True를 리턴, 그렇지 않으면 False
@@ -357,7 +363,7 @@ def check_tuple_of_ints(var: tuple) -> bool:
     return False  # 변수가 튜플이 아니면 False 반환
 
 
-def excel_address_to_tuple_zero_based(address):
+def excel_address_to_tuple_zero_based(address:str) -> tuple[int | Any, int | Any]:
     """
     엑셀 셀 주소를 튜플로 변환하는 헬퍼함수
 
@@ -2811,22 +2817,23 @@ class Hwp:
                     return key
 
     # 커스텀 메서드
-    def get_ctrl_pos(self, ctrl: Any = None, option: Literal[0, 1] = 0, as_tuple: bool = True):
+    def get_ctrl_pos(self, ctrl: Any = None, option: Literal[0, 1] = 0, as_tuple: bool = True) -> tuple[int, int, int]:
         """
-        특정 컨트롤의 앵커(빨간 조판부호) 좌표를 리턴하는 메서드.
+        특정 컨트롤의 앵커(빨간 조판부호) 좌표를 리턴하는 메서드. 한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함
 
-        한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함
+        Args:
+            ctrl: 컨트롤 오브젝트. 특정하지 않으면 현재 선택된 컨트롤의 좌표를 리턴
+            option:
+                "표안의 표"처럼 컨트롤이 중첩된 경우에 어느 좌표를 리턴할지 결정할 수 있음
+                0: 현재 컨트롤이 포함된 리스트 기준으로 좌표 리턴
+                1: 현재 컨트롤을 포함하는 최상위 컨트롤 기준의 좌표 리턴
+            as_tuple:
+                리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True
+                `as_tuple=False` 의 경우에는 ListParaPos 파라미터셋 자체를 리턴
 
-        :param ctrl: 컨트롤 오브젝트. 특정하지 않으면 현재 선택된 컨트롤의 좌표를 리턴
-
-        :param option:
-            "표안의 표"처럼 컨트롤이 중첩된 경우에 어느 좌표를 리턴할지 결정할 수 있음
-            0: 현재 컨트롤이 포함된 리스트 기준으로 좌표 리턴
-            1: 현재 컨트롤을 포함하는 최상위 컨트롤 기준의 좌표 리턴
-
-        :param as_tuple:
-            리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True
-            `as_tuple=False` 의 경우에는 ListParaPos 파라미터셋 자체를 리턴
+        Returns:
+            기본적으로 (List, Para, Pos) 형태의 튜플로 리턴하며,
+            as_tuple=False 옵션 추가시에는 해당 ListParaPos 파라미터셋 자체를 리턴한다.
 
         Examples:
             >>> from pyhwpx import Hwp
