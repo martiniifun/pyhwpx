@@ -25301,16 +25301,106 @@ dict</p>
 
     <div class="doc doc-contents ">
 
-        <p>특정 컨트롤의 앵커(빨간 조판부호) 좌표를 리턴하는 메서드.</p>
-<p>한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함</p>
-<p>:param ctrl: 컨트롤 오브젝트. 특정하지 않으면 현재 선택된 컨트롤의 좌표를 리턴</p>
-<p>:param option:
-    "표안의 표"처럼 컨트롤이 중첩된 경우에 어느 좌표를 리턴할지 결정할 수 있음
-    0: 현재 컨트롤이 포함된 리스트 기준으로 좌표 리턴
-    1: 현재 컨트롤을 포함하는 최상위 컨트롤 기준의 좌표 리턴</p>
-<p>:param as_tuple:
-    리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True
-    <code>as_tuple=False</code> 의 경우에는 ListParaPos 파라미터셋 자체를 리턴</p>
+        <p>특정 컨트롤의 앵커(빨간 조판부호) 좌표를 리턴하는 메서드. 한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>ctrl</code>
+            </td>
+            <td>
+                  <code><span title="typing.Any">Any</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>컨트롤 오브젝트. 특정하지 않으면 현재 선택된 컨트롤의 좌표를 리턴</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>option</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[0, 1]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>"표안의 표"처럼 컨트롤이 중첩된 경우에 어느 좌표를 리턴할지 결정할 수 있음
+0: 현재 컨트롤이 포함된 리스트 기준으로 좌표 리턴
+1: 현재 컨트롤을 포함하는 최상위 컨트롤 기준의 좌표 리턴</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_tuple</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True
+<code>as_tuple=False</code> 의 경우에는 ListParaPos 파라미터셋 자체를 리턴</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>기본적으로 (List, Para, Pos) 형태의 튜플로 리턴하며,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as_tuple=False 옵션 추가시에는 해당 ListParaPos 파라미터셋 자체를 리턴한다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
@@ -29682,7 +29772,37 @@ pyhwpx 일부 메서드의 내부 연산에 사용됩니다.</p>
     <div class="doc doc-contents ">
 
         <p>변수가 튜플이고 모든 요소가 int인지 확인하는 헬퍼함수</p>
-<p>:param var: 이터러블 자료형</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>var</code>
+            </td>
+            <td>
+                  <code><span title="tuple">tuple</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>이터러블 자료형. 일반적으로 튜플.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -29784,7 +29904,37 @@ pyhwpx 내부적으로만 사용됨</p>
 
         <p>문서 내 이미지를 파일로 저장할 때,
 동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 헬퍼함수</p>
-<p>:param file_list: 문서 내 이미지 파일명 목록</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_list</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>문서 내 이미지 파일명 목록</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -29825,12 +29975,78 @@ pyhwpx 내부적으로만 사용됨</p>
 
     <div class="doc doc-contents ">
 
-        <p>(컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: "AAA3")을 반환합니다.
-hwp.goto_addr(addr) 메서드 내부에서 활용됩니다. 직접 사용하지 않습니다.</p>
-<p>:param col: 열(칼럼) 번호(1부터 시작)
-:param row: 행(로우) 번호(1부터 시작)
-Returns:
-    엑셀 형식의 주소 문자열(예: "A1", "VVS1004")</p>
+        <p>(컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: "AAA3")을 반환합니다.</p>
+<p>hwp.goto_addr(addr) 메서드 내부에서 활용됩니다. 직접 사용하지 않습니다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>col</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>열(칼럼) 번호(1부터 시작)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>row</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>행(로우) 번호(1부터 시작)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>엑셀 형식의 주소 문자열(예: "A1", "VVS1004")</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
