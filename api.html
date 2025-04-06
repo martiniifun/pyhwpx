@@ -9364,7 +9364,29 @@ LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색�
     <div class="doc doc-contents ">
 
         <p>현재 선택되어 있거나, 캐럿이 들어있는 컨트롤을 포함하는 상위 컨트롤을 리턴한다.</p>
-<p>Returns:</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pyhwpx.pyhwpx.Hwp.ctrl">ctrl</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 선택되어 있거나, 캐럿이 들어있는 컨트롤을 포함하는 상위 컨트롤</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
     </div>
 
@@ -9387,8 +9409,28 @@ LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색�
     <div class="doc doc-contents ">
 
         <p>현재 빈 문서가 아닌 경우, 열려 있는 문서의 파일명을 포함한 전체경로를 리턴한다.</p>
-<p>Returns:
-현재 문서의 전체경로</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 문서의 전체경로</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
@@ -9420,7 +9462,29 @@ LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색�
     <div class="doc doc-contents ">
 
         <p>현재 선택모드가 어떤 상태인지 리턴한다.</p>
-<p>Returns:</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 선택모드의 상태</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
     </div>
 
@@ -9550,7 +9614,28 @@ LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색�
     <div class="doc doc-contents ">
 
         <p>현재 한/글 프로그램의 보기 속성 파라미터셋을 리턴한다.</p>
-<p>Returns:</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 한/글 프로그램의 보기 속성 파라미터셋</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
     </div>
 
@@ -9573,7 +9658,40 @@ LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색�
     <div class="doc doc-contents ">
 
         <p>HwpApplication의 XHwpDocuments 객체를 리턴한다.</p>
-<p>Returns:</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>HwpApplication의 XHwpDocuments 객체</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">add_doc</span><span class="p">()</span>  <span class="c1"># 빈 문서창 추가</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">add_doc</span><span class="p">()</span>  <span class="c1"># 빈 문서창 하나 더 추가</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">add_tab</span><span class="p">()</span>  <span class="c1"># 마지막 창에 새 탭 하나 추가</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hwp</span><span class="o">.</span><span class="n">XHwpDocuments</span><span class="p">))</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="go">4</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">XHwpDocuments</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">SetActive_XHwpDocument</span><span class="p">()</span>
+</code></pre></div>
 
     </div>
 
@@ -9596,7 +9714,6 @@ LastCtrl.Prev.Prev 또는 HeadCtrl.Next.Next 등으로 컨트롤 순차 탐색�
     <div class="doc doc-contents ">
 
         <p>메시지박스 객체 리턴</p>
-<p>Returns:</p>
 
     </div>
 
@@ -14181,6 +14298,10 @@ OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
 
 <h3 id="pyhwpx.Hwp.HwpUnitToMili" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">HwpUnitToMili</span><span class="p">(</span><span class="n">hwp_unit</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
 
 </h3>
 
@@ -24589,6 +24710,10 @@ None</p>
 <h3 id="pyhwpx.Hwp.clipboard_to_pyfunc" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">clipboard_to_pyfunc</span><span class="p">()</span></code>
 
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
 </h3>
 
 
@@ -26830,6 +26955,10 @@ False를 리턴
 <h3 id="pyhwpx.Hwp.hwp_unit_to_mili" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">hwp_unit_to_mili</span><span class="p">(</span><span class="n">hwp_unit</span><span class="p">)</span></code>
 
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
 </h3>
 
 
@@ -28006,6 +28135,10 @@ clear나 save 등의 메서드를 실행한 후에 quit을 실행해야 한다.<
 
 <h3 id="pyhwpx.Hwp.register_regedit" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">register_regedit</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
 
 </h3>
 
@@ -29459,9 +29592,54 @@ Examples:
 
     <div class="doc doc-contents ">
 
-        <p>여러 개의 hwp인스턴스가 열려 있는 경우 해당 인스턴스를 활성화한다.</p>
-<p>:param num:
-    인스턴스 번호</p>
+        <p>여러 개의 hwp인스턴스가 열려 있는 경우 해당 인스턴스를 활성화하고, 해당 타이틀을 출력한다.</p>
+<p>백그라운드 상태에서 새 창을 만들 때 윈도우에 나타나는 경우가 있는데,
+add_tab() 함수를 사용하면 백그라운드 작업이 보장된다.
+탭 전환은 switch_to() 메서드로 가능하다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>num</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>인스턴스(한/글 문서) 일련번호</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 빈 문서가 세 개 열린 상태에서</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">switch_to</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="go">빈 문서 1 - 한글</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">switch_to</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="go">빈 문서 2 - 한글</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">switch_to</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="go">빈 문서 3 - 한글</span>
+</code></pre></div>
 
 
     </div>
