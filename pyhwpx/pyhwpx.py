@@ -405,9 +405,11 @@ class Ctrl:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()  # 표만 두 개 있는 문서에 연결됨.
             >>> for ctrl in hwp.ctrl_list:
-            ...     print(ctrl.GetAnchorPos().Item("List"))
-            ...     print(ctrl.GetAnchorPos().Item("List"))
-            ...     print(ctrl.GetAnchorPos().Item("List"))
+            ...     print(ctrl.GetAnchorPos().Item("List"), end=" ")
+            ...     print(ctrl.GetAnchorPos().Item("Para"), end=" ")
+            ...     print(ctrl.GetAnchorPos().Item("Pos"))
+            0 0 16
+            0 2 0
         """
         return self._com_obj.GetAnchorPos(type=type_)
 
