@@ -1,5 +1,17 @@
 # 📦 Changelog
 
+## [0.50.5] - 2025-04-06
+### 🚀 Added
+- Title 프로퍼티 추가(제목표시줄의 타이틀임)
+
+---
+
+### 🐛 Fixed
+- 기존 __repr__ 을 Title 문자열로 교체함(앞으로는 굳이 hwp.Path를 실행해보지 말고, hwp만 실행해보면 됨)
+- 외부에서 불러오던 fonts.json 파일 때문에 pyinstaller 커맨드가 길어짐.. 사용자 편의를 위해 fonts.json을 다시 pyhwpx.Hwp의 __init__에 삽입!
+
+---
+
 ## [0.50.4] - 2025-04-06
 ### 🚀 Added
 - Title 프로퍼티 추가(제목표시줄의 타이틀임)
