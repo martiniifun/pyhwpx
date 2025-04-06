@@ -24,13 +24,11 @@ import pandas as pd
 import pyperclip as cb
 from PIL import Image
 
-
 if sys.platform == 'win32':
     import pythoncom
     import win32api
     import win32con
     import win32gui
-    from pywintypes import com_error
 
     # CircularImport 오류 출력안함
     devnull = open(os.devnull, 'w')
@@ -45,8 +43,6 @@ if sys.platform == 'win32':
         sys.stdout = old_stdout
         sys.stderr = old_stderr
         devnull.close()
-
-
 
 # for pyinstaller
 _ = files("pyhwpx").joinpath("FilePathCheckerModule.dll")
@@ -77,6 +73,7 @@ def com_initialized(func):
     CoUninitialize()를 호출하지 않으면
     COM 라이브러리가 해당 스레드에서 완전히 해제되지 않을 수 있기 때문입니다.
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         pythoncom.CoInitialize()
@@ -84,6 +81,7 @@ def com_initialized(func):
             return func(*args, **kwargs)
         finally:
             pythoncom.CoUninitialize()
+
     return wrapper
 
 
@@ -97,7 +95,7 @@ def addr_to_tuple(cell_address: str) -> tuple[int, int]:
         cell_address: 엑셀 방식의 "셀주소" 문자열
     Returns:
         (row, column) 형식의 주소 튜플
-    
+
     Examples:
         >>> print(addr_to_tuple("C3"))
         (3, 3)
@@ -137,7 +135,7 @@ def tuple_to_addr(col: int, row: int) -> str:
 
     Returns:
         엑셀 형식의 주소 문자열(예: "A1", "VVS1004")
-    
+
     Examples:
         >>> from pyhwpx import tuple_to_addr
         >>> print(tuple_to_addr(1, 2))
@@ -208,7 +206,7 @@ def _eq_create(visible: bool) -> bool:
         visible: 아래아한글을 백그라운드에서 실행할지(False), 혹은 화면에 보이게 할지(True) 결정하는 파라미터
 
     Returns:
-        무조건 True를 리턴함    
+        무조건 True를 리턴함
     """
     pythoncom.CoInitialize()
     hwp = Hwp(visible=visible)
@@ -244,7 +242,7 @@ def _close_eqedit(save: bool = False, delay: float = 0.1) -> bool:
 
     Returns:
         성공시 True, 실패시 False
-    
+
     """
     hwnd = 0
     while not hwnd:
@@ -297,7 +295,7 @@ def check_registry_key() -> bool:
 
     Returns:
         등록되어 있는 경우 True, 미등록인 경우 False
-    
+
     """
     from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, KEY_WRITE, SetValueEx, REG_SZ, CloseKey
     winup_path = r"Software\HNC\HwpAutomation\Modules"
@@ -331,7 +329,7 @@ def rename_duplicates_in_list(file_list: list[str]) -> list[str]:
 
     Returns:
         중복된 이름이 두 개 이상 있는 경우 뒤에 "(2)", "(3)"을 붙인 새로운 문자열 리스트
-    
+
     """
     counts = {}
 
@@ -357,14 +355,14 @@ def check_tuple_of_ints(var: tuple) -> bool:
 
     Returns:
         튜플이면서, 요소들이 모두 int인 경우 True를 리턴, 그렇지 않으면 False
-    
+
     """
     if isinstance(var, tuple):  # 먼저 변수가 튜플인지 확인
         return all(isinstance(item, int) for item in var)  # 모든 요소가 int인지 확인
     return False  # 변수가 튜플이 아니면 False 반환
 
 
-def excel_address_to_tuple_zero_based(address:str) -> tuple[int | Any, int | Any]:
+def excel_address_to_tuple_zero_based(address: str) -> tuple[int | Any, int | Any]:
     """
     엑셀 셀 주소를 튜플로 변환하는 헬퍼함수
 
@@ -379,6 +377,153 @@ def excel_address_to_tuple_zero_based(address:str) -> tuple[int | Any, int | Any
         else:
             raise ValueError("Invalid address format")
     return row - 1, column
+
+
+# 아래아한글의 ctrl 래퍼 클래스 정의
+class Ctrl:
+    def __init__(self, com_obj):
+        self._com_obj = com_obj  # 원래 COM 객체
+
+    def __repr__(self):
+        return f"<CtrlCode: CtrlID={self.CtrlID}, CtrlCH={self.CtrlCh}, UserDesc={self.UserDesc}>"
+
+    def GetAnchorPos(self, type_: int = 0):
+        """
+        해당 컨트롤의 앵커(조판부호)의 위치를 반환한다.
+
+        Args:
+            type_: 기준위치
+
+                - 0: 바로 상위 리스트에서의 앵커 위치(기본값)
+                - 1: 탑레벨 리스트에서의 앵커 위치
+                - 2: 루트 리 스트에서의 앵커 위치
+
+        Returns:
+            성공했을 경우 ListParaPos ParameterSet이 반환된다. 실패했을 때는 None을 리턴함.
+        """
+
+    @property
+    def CtrlCh(self):
+        """
+        컨트롤 문자
+
+        일반적으로 컨트롤 ID를 사용해 컨트롤의 종류를 판별하지만, 이보다 더 포괄적인 범주를 나타내는 컨트롤 문자로 판별할 수도 있다. 예를 들어 각주와 미주는 ID는 다르지만, 컨트롤 문자는 17로 동일하다. 컨트롤 문자는 1부터 31사이의 값을 사용한다.
+
+        Returns:
+
+            - 1: 예약
+            - 2: 구역/단 정의
+            - 3: 필드 시작
+            - 4: 필드 끝
+            - 5: 예약
+            - 6: 예약
+            - 7: 예약
+            - 8: 예약
+            - 9: 탭
+            - 10: 강제 줄 나눔
+            - 11: 그리기 개체 / 표
+            - 12: 예약
+            - 13: 문단 나누기
+            - 14: 예약
+            - 15: 주석
+            - 16: 머리말 / 꼬리말
+            - 17: 각주 / 미주
+            - 18: 자동 번호
+            - 19: 예약
+            - 20: 예약
+            - 21: 쪽바뀜
+            - 22: 책갈피 / 찾아보기 표시
+            - 23: 덧말 / 글자 겹침
+            - 24: 하이픈
+            - 25: 예약
+            - 26: 예약
+            - 27: 예약
+            - 28: 예약
+            - 29: 예약
+            - 30: 묶음 빈칸
+            - 31: 고정 폭 빈칸
+        """
+        return self._com_obj.CtrlCh
+
+    @property
+    def CtrlID(self) -> str:
+        """
+        컨트롤 아이디
+
+        컨트롤 ID는 컨트롤의 종류를 나타내기 위해 할당된 ID로서, 최대 4개의 문자로 구성된 문자열이다. 예를 들어 표는 "tbl", 각주는 "fn"이다. 글에서 현재까지 지원되는 모든 컨트롤의 ID는 아래 Returns: 참조.
+
+        Returns:
+            해당 컨트롤의 컨트롤아이디
+
+                - cold(ColDef): 단
+                - secd(SecDef): 구역
+                - fn(FootnoteShape): 각주
+                - en(FootnoteShape): 미주
+                - tbl(TableCreation): 표
+                - eqed(EqEdit): 수식
+                - gso(ShapeObject): 그리기 개체
+                - atno(AutoNum): 번호 넣기
+                - nwno(AutoNum): 새 번호로
+                - pgct(PageNumCtrl): 페이지 번호 제어(97의 홀수 쪽에서 시작)
+                - pghd(PageHiding): 감추기
+                - pgnp(PageNumPos): 쪽 번호 위치
+                - head(HeaderFooter): 머리말
+                - foot(HeaderFooter): 꼬리말
+                - %dte(FieldCtrl): 현재의 날짜/시간 필드
+                - %ddt(FieldCtrl): 파일 작성 날짜/시간 필드
+                - %pat(FieldCtrl): 문서 경로 필드
+                - %bmk(FieldCtrl): 블록 책갈피
+                - %mmg(FieldCtrl): 메일 머지
+                - %xrf(FieldCtrl): 상호 참조
+                - %fmu(FieldCtrl): 계산식
+                - %clk(FieldCtrl): 누름틀
+                - %smr(FieldCtrl): 문서 요약 정보 필드
+                - %usr(FieldCtrl): 사용자 정보 필드
+                - %hlk(FieldCtrl): 하이퍼링크
+                - bokm(TextCtrl): 책갈피
+                - idxm(IndexMark): 찾아보기
+                - tdut(Dutmal): 덧말
+                - tcmt(None): 주석
+        """
+        return self._com_obj.CtrlID
+
+    @property
+    def HasList(self):
+        return self._com_obj.HasList
+
+    @property
+    def Next(self):
+        """
+        다음 컨트롤.
+
+        문서 중의 모든 컨트롤(표, 그림 등의 특수 문자들)은 linked list로 서로 연결되어 있는데, list 중 다음 컨트롤을 나타낸다.
+        """
+        return self._com_obj.Next
+
+    @property
+    def Prev(self):
+        """
+        앞 컨트롤.
+
+        문서 중의 모든 컨트롤(표, 그림 등의 특수 문자들)은 linked list로 서로 연결되어 있는데, list 중 앞 컨트롤을 나타낸다.
+        """
+        return self._com_obj.Prev
+
+    @property
+    def Properties(self):
+        """
+        컨트롤의 속성을 나타낸다.
+
+        모든 컨트롤은 대응하는 parameter set으로 속성을 읽고 쓸 수 있다.
+        """
+        return self._com_obj.Properties
+
+    @property
+    def UserDesc(self):
+        """
+        컨트롤의 종류를 사용자에게 보여줄 수 있는 localize된 문자열로 나타낸다.
+        """
+        return self._com_obj.UserDesc
 
 
 # 아래아한글 오토메이션 클래스 정의
@@ -425,1782 +570,1782 @@ class Hwp:
     def __init__(self, new: bool = False, visible: bool = True, register_module: bool = True):
         self.hwp = 0
         self.htf_fonts = {
-          "명조": {
-            "FaceNameHangul": "명조",
-            "FaceNameLatin": "명조",
-            "FaceNameHanja": "명조",
-            "FaceNameJapanese": "명조",
-            "FaceNameOther": "명조",
-            "FaceNameSymbol": "명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "고딕": {
-            "FaceNameHangul": "고딕",
-            "FaceNameLatin": "고딕",
-            "FaceNameHanja": "명조",
-            "FaceNameJapanese": "고딕",
-            "FaceNameOther": "명조",
-            "FaceNameSymbol": "명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "샘물": {
-            "FaceNameHangul": "샘물",
-            "FaceNameLatin": "산세리프",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "필기": {
-            "FaceNameHangul": "필기",
-            "FaceNameLatin": "필기",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명조": {
-            "FaceNameHangul": "한양신명조",
-            "FaceNameLatin": "한양신명조",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "견명조": {
-            "FaceNameHangul": "한양견명조",
-            "FaceNameLatin": "한양견명조",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명조 약자": {
-            "FaceNameHangul": "한양신명조",
-            "FaceNameLatin": "한양신명조",
-            "FaceNameHanja": "신명조 약자",
-            "FaceNameJapanese": "한양신명조V",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명조 간자": {
-            "FaceNameHangul": "한양신명조",
-            "FaceNameLatin": "한양신명조",
-            "FaceNameHanja": "신명조 간자",
-            "FaceNameJapanese": "한양신명조V",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "중고딕": {
-            "FaceNameHangul": "한양중고딕",
-            "FaceNameLatin": "한양중고딕",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "중고딕 약자": {
-            "FaceNameHangul": "한양중고딕",
-            "FaceNameLatin": "한양중고딕",
-            "FaceNameHanja": "중고딕 약자",
-            "FaceNameJapanese": "한양중고딕V",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "중고딕 간자": {
-            "FaceNameHangul": "한양중고딕",
-            "FaceNameLatin": "한양중고딕",
-            "FaceNameHanja": "중고딕 간자",
-            "FaceNameJapanese": "한양중고딕V",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "견고딕": {
-            "FaceNameHangul": "한양견고딕",
-            "FaceNameLatin": "한양견고딕",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "그래픽": {
-            "FaceNameHangul": "한양그래픽",
-            "FaceNameLatin": "한양그래픽",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "궁서": {
-            "FaceNameHangul": "한양궁서",
-            "FaceNameLatin": "한양궁서",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "해서 약자": {
-            "FaceNameHangul": "한양궁서",
-            "FaceNameLatin": "한양궁서",
-            "FaceNameHanja": "해서 약자",
-            "FaceNameJapanese": "한양신명조V",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "해서 간자": {
-            "FaceNameHangul": "한양궁서",
-            "FaceNameLatin": "한양궁서",
-            "FaceNameHanja": "해서 간자",
-            "FaceNameJapanese": "한양신명조V",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "가는공한": {
-            "FaceNameHangul": "가는공한",
-            "FaceNameLatin": "가는공한",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "중간공한": {
-            "FaceNameHangul": "중간공한",
-            "FaceNameLatin": "중간공한",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "굵은공한": {
-            "FaceNameHangul": "굵은공한",
-            "FaceNameLatin": "굵은공한",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "가는한": {
-            "FaceNameHangul": "가는한",
-            "FaceNameLatin": "가는한",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "중간한": {
-            "FaceNameHangul": "중간한",
-            "FaceNameLatin": "중간한",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "굵은한": {
-            "FaceNameHangul": "굵은한",
-            "FaceNameLatin": "굵은한",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "펜흘림": {
-            "FaceNameHangul": "펜흘림",
-            "FaceNameLatin": "펜흘림",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "복숭아": {
-            "FaceNameHangul": "복숭아",
-            "FaceNameLatin": "한양중고딕",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "옥수수": {
-            "FaceNameHangul": "옥수수",
-            "FaceNameLatin": "옥수수",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "오이": {
-            "FaceNameHangul": "오이",
-            "FaceNameLatin": "오이",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "가지": {
-            "FaceNameHangul": "가지",
-            "FaceNameLatin": "오이",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "강낭콩": {
-            "FaceNameHangul": "강낭콩",
-            "FaceNameLatin": "오이",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "딸기": {
-            "FaceNameHangul": "딸기",
-            "FaceNameLatin": "옥수수",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "타이프": {
-            "FaceNameHangul": "타이프",
-            "FaceNameLatin": "타이프",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "헤드라인": {
-            "FaceNameHangul": "태 헤드라인T",
-            "FaceNameLatin": "한양견고딕",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "가는헤드라인": {
-            "FaceNameHangul": "태 가는 헤드라인T",
-            "FaceNameLatin": "HCI Hollyhock",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "헤드라인D": {
-            "FaceNameHangul": "태 헤드라인D",
-            "FaceNameLatin": "Blippo Blk BT",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "가는헤드라인D": {
-            "FaceNameHangul": "태 가는 헤드라인D",
-            "FaceNameLatin": "Hobo BT",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "태 나무": {
-            "FaceNameHangul": "태 나무",
-            "FaceNameLatin": "태 나무",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "양재 다운명조M": {
-            "FaceNameHangul": "양재 다운명조M",
-            "FaceNameLatin": "양재 다운명조M",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "양재 본목각M": {
-            "FaceNameHangul": "양재 본목각M",
-            "FaceNameLatin": "양재 본목각M",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "양재 소슬": {
-            "FaceNameHangul": "양재 소슬",
-            "FaceNameLatin": "양재 소슬",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "양재 튼튼B": {
-            "FaceNameHangul": "양재 튼튼B",
-            "FaceNameLatin": "양재 튼튼B",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "양재 참숯B": {
-            "FaceNameHangul": "양재 참숯B",
-            "FaceNameLatin": "양재 참숯B",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "양재 둘기": {
-            "FaceNameHangul": "양재 둘기",
-            "FaceNameLatin": "양재 둘기",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "양재 매화": {
-            "FaceNameHangul": "양재 매화",
-            "FaceNameLatin": "양재 매화",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "양재 샤넬": {
-            "FaceNameHangul": "양재 샤넬",
-            "FaceNameLatin": "양재 샤넬",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "양재 와당": {
-            "FaceNameHangul": "양재 와당",
-            "FaceNameLatin": "양재 와당",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "양재 이니셜": {
-            "FaceNameHangul": "양재 이니셜",
-            "FaceNameLatin": "양재 이니셜",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "휴먼명조": {
-            "FaceNameHangul": "휴먼명조",
-            "FaceNameLatin": "HCI Poppy",
-            "FaceNameHanja": "한양신명조",
-            "FaceNameJapanese": "한양신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "휴먼고딕": {
-            "FaceNameHangul": "휴먼고딕",
-            "FaceNameLatin": "HCI Hollyhock",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "가는안상수체": {
-            "FaceNameHangul": "가는안상수체",
-            "FaceNameLatin": "가는안상수체영문",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "중간안상수체": {
-            "FaceNameHangul": "중간안상수체",
-            "FaceNameLatin": "중간안상수체영문",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "굵은안상수체": {
-            "FaceNameHangul": "굵은안상수체",
-            "FaceNameLatin": "굵은안상수체영문",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "휴먼가는샘체": {
-            "FaceNameHangul": "휴먼가는샘체",
-            "FaceNameLatin": "중간한",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "휴먼중간샘체": {
-            "FaceNameHangul": "휴먼중간샘체",
-            "FaceNameLatin": "HCI Hollyhock Narrow",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "휴먼굵은샘체": {
-            "FaceNameHangul": "휴먼굵은샘체",
-            "FaceNameLatin": "한양견고딕",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "휴먼가는팸체": {
-            "FaceNameHangul": "휴먼가는팸체",
-            "FaceNameLatin": "중간한",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "휴먼중간팸체": {
-            "FaceNameHangul": "휴먼중간팸체",
-            "FaceNameLatin": "HCI Hollyhock Narrow",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "휴먼굵은팸체": {
-            "FaceNameHangul": "휴먼굵은팸체",
-            "FaceNameLatin": "한양견고딕",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "휴먼옛체": {
-            "FaceNameHangul": "휴먼옛체",
-            "FaceNameLatin": "한양궁서",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "한양중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 세명조": {
-            "FaceNameHangul": "신명 세명조",
-            "FaceNameLatin": "신명 세명조",
-            "FaceNameHanja": "신명 세명조",
-            "FaceNameJapanese": "신명 신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 신명조": {
-            "FaceNameHangul": "신명 신명조",
-            "FaceNameLatin": "신명 신명조",
-            "FaceNameHanja": "신명 세명조",
-            "FaceNameJapanese": "신명 신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 신신명조": {
-            "FaceNameHangul": "신명 신신명조",
-            "FaceNameLatin": "신명 신신명조",
-            "FaceNameHanja": "신명 세명조",
-            "FaceNameJapanese": "신명 신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 중명조": {
-            "FaceNameHangul": "신명 중명조",
-            "FaceNameLatin": "신명 중명조",
-            "FaceNameHanja": "신명 중명조",
-            "FaceNameJapanese": "신명 신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 태명조": {
-            "FaceNameHangul": "신명 태명조",
-            "FaceNameLatin": "신명 태명조",
-            "FaceNameHanja": "신명 태명조",
-            "FaceNameJapanese": "신명 태명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "신명 견명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 견명조": {
-            "FaceNameHangul": "신명 견명조",
-            "FaceNameLatin": "신명 견명조",
-            "FaceNameHanja": "신명 견명조",
-            "FaceNameJapanese": "신명 견명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "신명 견명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 신문명조": {
-            "FaceNameHangul": "신명 신문명조",
-            "FaceNameLatin": "신명 신문명조",
-            "FaceNameHanja": "신명 신문명조",
-            "FaceNameJapanese": "신명 신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 순명조": {
-            "FaceNameHangul": "신명 순명조",
-            "FaceNameLatin": "신명 순명조",
-            "FaceNameHanja": "신명 중명조",
-            "FaceNameJapanese": "신명 태명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 세고딕": {
-            "FaceNameHangul": "신명 세고딕",
-            "FaceNameLatin": "신명 세고딕",
-            "FaceNameHanja": "신명 세고딕",
-            "FaceNameJapanese": "신명 중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 중고딕": {
-            "FaceNameHangul": "신명 중고딕",
-            "FaceNameLatin": "신명 중고딕",
-            "FaceNameHanja": "신명 중고딕",
-            "FaceNameJapanese": "신명 중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 태고딕": {
-            "FaceNameHangul": "신명 태고딕",
-            "FaceNameLatin": "신명 태고딕",
-            "FaceNameHanja": "신명 태고딕",
-            "FaceNameJapanese": "신명 태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "신명 태그래픽",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 견고딕": {
-            "FaceNameHangul": "신명 견고딕",
-            "FaceNameLatin": "신명 견고딕",
-            "FaceNameHanja": "신명 견고딕",
-            "FaceNameJapanese": "신명 태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "신명 견고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 세나루": {
-            "FaceNameHangul": "신명 세나루",
-            "FaceNameLatin": "신명 세나루",
-            "FaceNameHanja": "신명 중고딕",
-            "FaceNameJapanese": "신명 중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 디나루": {
-            "FaceNameHangul": "신명 디나루",
-            "FaceNameLatin": "신명 디나루",
-            "FaceNameHanja": "신명 중고딕",
-            "FaceNameJapanese": "신명 중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 신그래픽": {
-            "FaceNameHangul": "신명 신그래픽",
-            "FaceNameLatin": "신명 신그래픽",
-            "FaceNameHanja": "신명 중고딕",
-            "FaceNameJapanese": "신명 중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 태그래픽": {
-            "FaceNameHangul": "신명 태그래픽",
-            "FaceNameLatin": "신명 태그래픽",
-            "FaceNameHanja": "신명 중고딕",
-            "FaceNameJapanese": "신명 태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "신명 태그래픽",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "신명 궁서": {
-            "FaceNameHangul": "신명 궁서",
-            "FaceNameLatin": "신명 궁서",
-            "FaceNameHanja": "신명 궁서",
-            "FaceNameJapanese": "신명 신명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "한양신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#세명조": {
-            "FaceNameHangul": "#세명조",
-            "FaceNameLatin": "#세명조",
-            "FaceNameHanja": "#신명조",
-            "FaceNameJapanese": "#세명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#세명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신명조": {
-            "FaceNameHangul": "#신명조",
-            "FaceNameLatin": "#신명조",
-            "FaceNameHanja": "#신명조",
-            "FaceNameJapanese": "#세명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#중명조": {
-            "FaceNameHangul": "#중명조",
-            "FaceNameLatin": "#중명조",
-            "FaceNameHanja": "#중명조",
-            "FaceNameJapanese": "#세명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#중명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신중명조": {
-            "FaceNameHangul": "#신중명조",
-            "FaceNameLatin": "#신중명조",
-            "FaceNameHanja": "#중명조",
-            "FaceNameJapanese": "#세명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#중명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#화명조A": {
-            "FaceNameHangul": "#화명조A",
-            "FaceNameLatin": "#화명조A",
-            "FaceNameHanja": "#중명조",
-            "FaceNameJapanese": "#세명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#중명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#화명조B": {
-            "FaceNameHangul": "#화명조B",
-            "FaceNameLatin": "#화명조B",
-            "FaceNameHanja": "#중명조",
-            "FaceNameJapanese": "#세명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#중명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#태명조": {
-            "FaceNameHangul": "#태명조",
-            "FaceNameLatin": "#태명조",
-            "FaceNameHanja": "#태명조",
-            "FaceNameJapanese": "#태명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#태명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신태명조": {
-            "FaceNameHangul": "#신태명조",
-            "FaceNameLatin": "#신태명조",
-            "FaceNameHanja": "#태명조",
-            "FaceNameJapanese": "#태명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#신태명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#태신명조": {
-            "FaceNameHangul": "#태신명조",
-            "FaceNameLatin": "#태신명조",
-            "FaceNameHanja": "#태명조",
-            "FaceNameJapanese": "#태명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#태신명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#견명조": {
-            "FaceNameHangul": "#견명조",
-            "FaceNameLatin": "#견명조",
-            "FaceNameHanja": "#견명조",
-            "FaceNameJapanese": "#태명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#견명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신문명조": {
-            "FaceNameHangul": "#신문명조",
-            "FaceNameLatin": "#신문명조",
-            "FaceNameHanja": "#신문명조",
-            "FaceNameJapanese": "#세명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#신문명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신문태명": {
-            "FaceNameHangul": "#신문태명",
-            "FaceNameLatin": "#신문태명",
-            "FaceNameHanja": "#태명조",
-            "FaceNameJapanese": "#태명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#태명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신문견명": {
-            "FaceNameHangul": "#신문견명",
-            "FaceNameLatin": "#신문견명",
-            "FaceNameHanja": "#신문견명",
-            "FaceNameJapanese": "#태명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#견명조",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#세고딕": {
-            "FaceNameHangul": "#세고딕",
-            "FaceNameLatin": "#세고딕",
-            "FaceNameHanja": "#신세고딕",
-            "FaceNameJapanese": "#세고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#세고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신세고딕": {
-            "FaceNameHangul": "#신세고딕",
-            "FaceNameLatin": "#신세고딕",
-            "FaceNameHanja": "#신세고딕",
-            "FaceNameJapanese": "#세고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#신세고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#중고딕": {
-            "FaceNameHangul": "#중고딕",
-            "FaceNameLatin": "#중고딕",
-            "FaceNameHanja": "#중고딕",
-            "FaceNameJapanese": "#중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#중고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#태고딕": {
-            "FaceNameHangul": "#태고딕",
-            "FaceNameLatin": "#태고딕",
-            "FaceNameHanja": "#태고딕",
-            "FaceNameJapanese": "#태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#태고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#견고딕": {
-            "FaceNameHangul": "#견고딕",
-            "FaceNameLatin": "#견고딕",
-            "FaceNameHanja": "#견고딕",
-            "FaceNameJapanese": "#태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#견고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신문고딕": {
-            "FaceNameHangul": "#신문고딕",
-            "FaceNameLatin": "#신문고딕",
-            "FaceNameHanja": "#신문고딕",
-            "FaceNameJapanese": "#중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#신문고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신문태고": {
-            "FaceNameHangul": "#신문태고",
-            "FaceNameLatin": "#신문태고",
-            "FaceNameHanja": "#태고딕",
-            "FaceNameJapanese": "#중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#태고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신문견고": {
-            "FaceNameHangul": "#신문견고",
-            "FaceNameLatin": "#신문견고",
-            "FaceNameHanja": "#신문견고",
-            "FaceNameJapanese": "#태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#견고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#세나루": {
-            "FaceNameHangul": "#세나루",
-            "FaceNameLatin": "#세나루",
-            "FaceNameHanja": "#신세나루",
-            "FaceNameJapanese": "#세고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#세나루",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신세나루": {
-            "FaceNameHangul": "#신세나루",
-            "FaceNameLatin": "#신세나루",
-            "FaceNameHanja": "#신세나루",
-            "FaceNameJapanese": "#세고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#신세나루",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#디나루": {
-            "FaceNameHangul": "#디나루",
-            "FaceNameLatin": "#디나루",
-            "FaceNameHanja": "#신디나루",
-            "FaceNameJapanese": "#태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#디나루",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신디나루": {
-            "FaceNameHangul": "#신디나루",
-            "FaceNameLatin": "#신디나루",
-            "FaceNameHanja": "#신디나루",
-            "FaceNameJapanese": "#태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#신디나루",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#그래픽": {
-            "FaceNameHangul": "#그래픽",
-            "FaceNameLatin": "#그래픽",
-            "FaceNameHanja": "#신세고딕",
-            "FaceNameJapanese": "#중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#그래픽",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#신그래픽": {
-            "FaceNameHangul": "#신그래픽",
-            "FaceNameLatin": "#신그래픽",
-            "FaceNameHanja": "#중고딕",
-            "FaceNameJapanese": "#중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#신그래픽",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#태그래픽": {
-            "FaceNameHangul": "#태그래픽",
-            "FaceNameLatin": "#태그래픽",
-            "FaceNameHanja": "#태고딕",
-            "FaceNameJapanese": "#태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#태그래픽",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#궁서": {
-            "FaceNameHangul": "#궁서",
-            "FaceNameLatin": "#궁서",
-            "FaceNameHanja": "#궁서",
-            "FaceNameJapanese": "#세명조",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#궁서",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#공작": {
-            "FaceNameHangul": "#공작",
-            "FaceNameLatin": "#공작",
-            "FaceNameHanja": "#중고딕",
-            "FaceNameJapanese": "#중고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#공작",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#수암A": {
-            "FaceNameHangul": "#수암A",
-            "FaceNameLatin": "#수암A",
-            "FaceNameHanja": "#태고딕",
-            "FaceNameJapanese": "#태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#수암A",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#수암B": {
-            "FaceNameHangul": "#수암B",
-            "FaceNameLatin": "#수암B",
-            "FaceNameHanja": "#태고딕",
-            "FaceNameJapanese": "#태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#수암A",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "#빅": {
-            "FaceNameHangul": "#빅",
-            "FaceNameLatin": "#빅",
-            "FaceNameHanja": "#견고딕",
-            "FaceNameJapanese": "#태고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "#빅",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "시스템": {
-            "FaceNameHangul": "시스템",
-            "FaceNameLatin": "시스템",
-            "FaceNameHanja": "시스템",
-            "FaceNameJapanese": "시스템",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "시스템",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "시스템 약자": {
-            "FaceNameHangul": "시스템",
-            "FaceNameLatin": "시스템",
-            "FaceNameHanja": "시스템 약자",
-            "FaceNameJapanese": "시스템",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "시스템",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "시스템 간자": {
-            "FaceNameHangul": "시스템",
-            "FaceNameLatin": "시스템",
-            "FaceNameHanja": "시스템 간자",
-            "FaceNameJapanese": "시스템",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "시스템",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          },
-          "HY둥근고딕": {
-            "FaceNameHangul": "HY둥근고딕",
-            "FaceNameLatin": "HY둥근고딕",
-            "FaceNameHanja": "한양중고딕",
-            "FaceNameJapanese": "HY둥근고딕",
-            "FaceNameOther": "한양신명조",
-            "FaceNameSymbol": "HY둥근고딕",
-            "FaceNameUser": "명조",
-            "FontTypeHangul": 2,
-            "FontTypeHanja": 2,
-            "FontTypeJapanese": 2,
-            "FontTypeLatin": 2,
-            "FontTypeOther": 2,
-            "FontTypeSymbol": 2,
-            "FontTypeUser": 2
-          }
+            "명조": {
+                "FaceNameHangul": "명조",
+                "FaceNameLatin": "명조",
+                "FaceNameHanja": "명조",
+                "FaceNameJapanese": "명조",
+                "FaceNameOther": "명조",
+                "FaceNameSymbol": "명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "고딕": {
+                "FaceNameHangul": "고딕",
+                "FaceNameLatin": "고딕",
+                "FaceNameHanja": "명조",
+                "FaceNameJapanese": "고딕",
+                "FaceNameOther": "명조",
+                "FaceNameSymbol": "명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "샘물": {
+                "FaceNameHangul": "샘물",
+                "FaceNameLatin": "산세리프",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "필기": {
+                "FaceNameHangul": "필기",
+                "FaceNameLatin": "필기",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명조": {
+                "FaceNameHangul": "한양신명조",
+                "FaceNameLatin": "한양신명조",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "견명조": {
+                "FaceNameHangul": "한양견명조",
+                "FaceNameLatin": "한양견명조",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명조 약자": {
+                "FaceNameHangul": "한양신명조",
+                "FaceNameLatin": "한양신명조",
+                "FaceNameHanja": "신명조 약자",
+                "FaceNameJapanese": "한양신명조V",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명조 간자": {
+                "FaceNameHangul": "한양신명조",
+                "FaceNameLatin": "한양신명조",
+                "FaceNameHanja": "신명조 간자",
+                "FaceNameJapanese": "한양신명조V",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "중고딕": {
+                "FaceNameHangul": "한양중고딕",
+                "FaceNameLatin": "한양중고딕",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "중고딕 약자": {
+                "FaceNameHangul": "한양중고딕",
+                "FaceNameLatin": "한양중고딕",
+                "FaceNameHanja": "중고딕 약자",
+                "FaceNameJapanese": "한양중고딕V",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "중고딕 간자": {
+                "FaceNameHangul": "한양중고딕",
+                "FaceNameLatin": "한양중고딕",
+                "FaceNameHanja": "중고딕 간자",
+                "FaceNameJapanese": "한양중고딕V",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "견고딕": {
+                "FaceNameHangul": "한양견고딕",
+                "FaceNameLatin": "한양견고딕",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "그래픽": {
+                "FaceNameHangul": "한양그래픽",
+                "FaceNameLatin": "한양그래픽",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "궁서": {
+                "FaceNameHangul": "한양궁서",
+                "FaceNameLatin": "한양궁서",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "해서 약자": {
+                "FaceNameHangul": "한양궁서",
+                "FaceNameLatin": "한양궁서",
+                "FaceNameHanja": "해서 약자",
+                "FaceNameJapanese": "한양신명조V",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "해서 간자": {
+                "FaceNameHangul": "한양궁서",
+                "FaceNameLatin": "한양궁서",
+                "FaceNameHanja": "해서 간자",
+                "FaceNameJapanese": "한양신명조V",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "가는공한": {
+                "FaceNameHangul": "가는공한",
+                "FaceNameLatin": "가는공한",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "중간공한": {
+                "FaceNameHangul": "중간공한",
+                "FaceNameLatin": "중간공한",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "굵은공한": {
+                "FaceNameHangul": "굵은공한",
+                "FaceNameLatin": "굵은공한",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "가는한": {
+                "FaceNameHangul": "가는한",
+                "FaceNameLatin": "가는한",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "중간한": {
+                "FaceNameHangul": "중간한",
+                "FaceNameLatin": "중간한",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "굵은한": {
+                "FaceNameHangul": "굵은한",
+                "FaceNameLatin": "굵은한",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "펜흘림": {
+                "FaceNameHangul": "펜흘림",
+                "FaceNameLatin": "펜흘림",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "복숭아": {
+                "FaceNameHangul": "복숭아",
+                "FaceNameLatin": "한양중고딕",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "옥수수": {
+                "FaceNameHangul": "옥수수",
+                "FaceNameLatin": "옥수수",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "오이": {
+                "FaceNameHangul": "오이",
+                "FaceNameLatin": "오이",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "가지": {
+                "FaceNameHangul": "가지",
+                "FaceNameLatin": "오이",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "강낭콩": {
+                "FaceNameHangul": "강낭콩",
+                "FaceNameLatin": "오이",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "딸기": {
+                "FaceNameHangul": "딸기",
+                "FaceNameLatin": "옥수수",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "타이프": {
+                "FaceNameHangul": "타이프",
+                "FaceNameLatin": "타이프",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "헤드라인": {
+                "FaceNameHangul": "태 헤드라인T",
+                "FaceNameLatin": "한양견고딕",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "가는헤드라인": {
+                "FaceNameHangul": "태 가는 헤드라인T",
+                "FaceNameLatin": "HCI Hollyhock",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "헤드라인D": {
+                "FaceNameHangul": "태 헤드라인D",
+                "FaceNameLatin": "Blippo Blk BT",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "가는헤드라인D": {
+                "FaceNameHangul": "태 가는 헤드라인D",
+                "FaceNameLatin": "Hobo BT",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "태 나무": {
+                "FaceNameHangul": "태 나무",
+                "FaceNameLatin": "태 나무",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "양재 다운명조M": {
+                "FaceNameHangul": "양재 다운명조M",
+                "FaceNameLatin": "양재 다운명조M",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "양재 본목각M": {
+                "FaceNameHangul": "양재 본목각M",
+                "FaceNameLatin": "양재 본목각M",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "양재 소슬": {
+                "FaceNameHangul": "양재 소슬",
+                "FaceNameLatin": "양재 소슬",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "양재 튼튼B": {
+                "FaceNameHangul": "양재 튼튼B",
+                "FaceNameLatin": "양재 튼튼B",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "양재 참숯B": {
+                "FaceNameHangul": "양재 참숯B",
+                "FaceNameLatin": "양재 참숯B",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "양재 둘기": {
+                "FaceNameHangul": "양재 둘기",
+                "FaceNameLatin": "양재 둘기",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "양재 매화": {
+                "FaceNameHangul": "양재 매화",
+                "FaceNameLatin": "양재 매화",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "양재 샤넬": {
+                "FaceNameHangul": "양재 샤넬",
+                "FaceNameLatin": "양재 샤넬",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "양재 와당": {
+                "FaceNameHangul": "양재 와당",
+                "FaceNameLatin": "양재 와당",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "양재 이니셜": {
+                "FaceNameHangul": "양재 이니셜",
+                "FaceNameLatin": "양재 이니셜",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "휴먼명조": {
+                "FaceNameHangul": "휴먼명조",
+                "FaceNameLatin": "HCI Poppy",
+                "FaceNameHanja": "한양신명조",
+                "FaceNameJapanese": "한양신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "휴먼고딕": {
+                "FaceNameHangul": "휴먼고딕",
+                "FaceNameLatin": "HCI Hollyhock",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "가는안상수체": {
+                "FaceNameHangul": "가는안상수체",
+                "FaceNameLatin": "가는안상수체영문",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "중간안상수체": {
+                "FaceNameHangul": "중간안상수체",
+                "FaceNameLatin": "중간안상수체영문",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "굵은안상수체": {
+                "FaceNameHangul": "굵은안상수체",
+                "FaceNameLatin": "굵은안상수체영문",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "휴먼가는샘체": {
+                "FaceNameHangul": "휴먼가는샘체",
+                "FaceNameLatin": "중간한",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "휴먼중간샘체": {
+                "FaceNameHangul": "휴먼중간샘체",
+                "FaceNameLatin": "HCI Hollyhock Narrow",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "휴먼굵은샘체": {
+                "FaceNameHangul": "휴먼굵은샘체",
+                "FaceNameLatin": "한양견고딕",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "휴먼가는팸체": {
+                "FaceNameHangul": "휴먼가는팸체",
+                "FaceNameLatin": "중간한",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "휴먼중간팸체": {
+                "FaceNameHangul": "휴먼중간팸체",
+                "FaceNameLatin": "HCI Hollyhock Narrow",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "휴먼굵은팸체": {
+                "FaceNameHangul": "휴먼굵은팸체",
+                "FaceNameLatin": "한양견고딕",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "휴먼옛체": {
+                "FaceNameHangul": "휴먼옛체",
+                "FaceNameLatin": "한양궁서",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "한양중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 세명조": {
+                "FaceNameHangul": "신명 세명조",
+                "FaceNameLatin": "신명 세명조",
+                "FaceNameHanja": "신명 세명조",
+                "FaceNameJapanese": "신명 신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 신명조": {
+                "FaceNameHangul": "신명 신명조",
+                "FaceNameLatin": "신명 신명조",
+                "FaceNameHanja": "신명 세명조",
+                "FaceNameJapanese": "신명 신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 신신명조": {
+                "FaceNameHangul": "신명 신신명조",
+                "FaceNameLatin": "신명 신신명조",
+                "FaceNameHanja": "신명 세명조",
+                "FaceNameJapanese": "신명 신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 중명조": {
+                "FaceNameHangul": "신명 중명조",
+                "FaceNameLatin": "신명 중명조",
+                "FaceNameHanja": "신명 중명조",
+                "FaceNameJapanese": "신명 신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 태명조": {
+                "FaceNameHangul": "신명 태명조",
+                "FaceNameLatin": "신명 태명조",
+                "FaceNameHanja": "신명 태명조",
+                "FaceNameJapanese": "신명 태명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "신명 견명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 견명조": {
+                "FaceNameHangul": "신명 견명조",
+                "FaceNameLatin": "신명 견명조",
+                "FaceNameHanja": "신명 견명조",
+                "FaceNameJapanese": "신명 견명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "신명 견명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 신문명조": {
+                "FaceNameHangul": "신명 신문명조",
+                "FaceNameLatin": "신명 신문명조",
+                "FaceNameHanja": "신명 신문명조",
+                "FaceNameJapanese": "신명 신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 순명조": {
+                "FaceNameHangul": "신명 순명조",
+                "FaceNameLatin": "신명 순명조",
+                "FaceNameHanja": "신명 중명조",
+                "FaceNameJapanese": "신명 태명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 세고딕": {
+                "FaceNameHangul": "신명 세고딕",
+                "FaceNameLatin": "신명 세고딕",
+                "FaceNameHanja": "신명 세고딕",
+                "FaceNameJapanese": "신명 중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 중고딕": {
+                "FaceNameHangul": "신명 중고딕",
+                "FaceNameLatin": "신명 중고딕",
+                "FaceNameHanja": "신명 중고딕",
+                "FaceNameJapanese": "신명 중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 태고딕": {
+                "FaceNameHangul": "신명 태고딕",
+                "FaceNameLatin": "신명 태고딕",
+                "FaceNameHanja": "신명 태고딕",
+                "FaceNameJapanese": "신명 태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "신명 태그래픽",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 견고딕": {
+                "FaceNameHangul": "신명 견고딕",
+                "FaceNameLatin": "신명 견고딕",
+                "FaceNameHanja": "신명 견고딕",
+                "FaceNameJapanese": "신명 태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "신명 견고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 세나루": {
+                "FaceNameHangul": "신명 세나루",
+                "FaceNameLatin": "신명 세나루",
+                "FaceNameHanja": "신명 중고딕",
+                "FaceNameJapanese": "신명 중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 디나루": {
+                "FaceNameHangul": "신명 디나루",
+                "FaceNameLatin": "신명 디나루",
+                "FaceNameHanja": "신명 중고딕",
+                "FaceNameJapanese": "신명 중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 신그래픽": {
+                "FaceNameHangul": "신명 신그래픽",
+                "FaceNameLatin": "신명 신그래픽",
+                "FaceNameHanja": "신명 중고딕",
+                "FaceNameJapanese": "신명 중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 태그래픽": {
+                "FaceNameHangul": "신명 태그래픽",
+                "FaceNameLatin": "신명 태그래픽",
+                "FaceNameHanja": "신명 중고딕",
+                "FaceNameJapanese": "신명 태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "신명 태그래픽",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "신명 궁서": {
+                "FaceNameHangul": "신명 궁서",
+                "FaceNameLatin": "신명 궁서",
+                "FaceNameHanja": "신명 궁서",
+                "FaceNameJapanese": "신명 신명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "한양신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#세명조": {
+                "FaceNameHangul": "#세명조",
+                "FaceNameLatin": "#세명조",
+                "FaceNameHanja": "#신명조",
+                "FaceNameJapanese": "#세명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#세명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신명조": {
+                "FaceNameHangul": "#신명조",
+                "FaceNameLatin": "#신명조",
+                "FaceNameHanja": "#신명조",
+                "FaceNameJapanese": "#세명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#중명조": {
+                "FaceNameHangul": "#중명조",
+                "FaceNameLatin": "#중명조",
+                "FaceNameHanja": "#중명조",
+                "FaceNameJapanese": "#세명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#중명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신중명조": {
+                "FaceNameHangul": "#신중명조",
+                "FaceNameLatin": "#신중명조",
+                "FaceNameHanja": "#중명조",
+                "FaceNameJapanese": "#세명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#중명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#화명조A": {
+                "FaceNameHangul": "#화명조A",
+                "FaceNameLatin": "#화명조A",
+                "FaceNameHanja": "#중명조",
+                "FaceNameJapanese": "#세명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#중명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#화명조B": {
+                "FaceNameHangul": "#화명조B",
+                "FaceNameLatin": "#화명조B",
+                "FaceNameHanja": "#중명조",
+                "FaceNameJapanese": "#세명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#중명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#태명조": {
+                "FaceNameHangul": "#태명조",
+                "FaceNameLatin": "#태명조",
+                "FaceNameHanja": "#태명조",
+                "FaceNameJapanese": "#태명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#태명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신태명조": {
+                "FaceNameHangul": "#신태명조",
+                "FaceNameLatin": "#신태명조",
+                "FaceNameHanja": "#태명조",
+                "FaceNameJapanese": "#태명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#신태명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#태신명조": {
+                "FaceNameHangul": "#태신명조",
+                "FaceNameLatin": "#태신명조",
+                "FaceNameHanja": "#태명조",
+                "FaceNameJapanese": "#태명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#태신명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#견명조": {
+                "FaceNameHangul": "#견명조",
+                "FaceNameLatin": "#견명조",
+                "FaceNameHanja": "#견명조",
+                "FaceNameJapanese": "#태명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#견명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신문명조": {
+                "FaceNameHangul": "#신문명조",
+                "FaceNameLatin": "#신문명조",
+                "FaceNameHanja": "#신문명조",
+                "FaceNameJapanese": "#세명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#신문명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신문태명": {
+                "FaceNameHangul": "#신문태명",
+                "FaceNameLatin": "#신문태명",
+                "FaceNameHanja": "#태명조",
+                "FaceNameJapanese": "#태명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#태명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신문견명": {
+                "FaceNameHangul": "#신문견명",
+                "FaceNameLatin": "#신문견명",
+                "FaceNameHanja": "#신문견명",
+                "FaceNameJapanese": "#태명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#견명조",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#세고딕": {
+                "FaceNameHangul": "#세고딕",
+                "FaceNameLatin": "#세고딕",
+                "FaceNameHanja": "#신세고딕",
+                "FaceNameJapanese": "#세고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#세고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신세고딕": {
+                "FaceNameHangul": "#신세고딕",
+                "FaceNameLatin": "#신세고딕",
+                "FaceNameHanja": "#신세고딕",
+                "FaceNameJapanese": "#세고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#신세고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#중고딕": {
+                "FaceNameHangul": "#중고딕",
+                "FaceNameLatin": "#중고딕",
+                "FaceNameHanja": "#중고딕",
+                "FaceNameJapanese": "#중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#중고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#태고딕": {
+                "FaceNameHangul": "#태고딕",
+                "FaceNameLatin": "#태고딕",
+                "FaceNameHanja": "#태고딕",
+                "FaceNameJapanese": "#태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#태고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#견고딕": {
+                "FaceNameHangul": "#견고딕",
+                "FaceNameLatin": "#견고딕",
+                "FaceNameHanja": "#견고딕",
+                "FaceNameJapanese": "#태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#견고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신문고딕": {
+                "FaceNameHangul": "#신문고딕",
+                "FaceNameLatin": "#신문고딕",
+                "FaceNameHanja": "#신문고딕",
+                "FaceNameJapanese": "#중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#신문고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신문태고": {
+                "FaceNameHangul": "#신문태고",
+                "FaceNameLatin": "#신문태고",
+                "FaceNameHanja": "#태고딕",
+                "FaceNameJapanese": "#중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#태고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신문견고": {
+                "FaceNameHangul": "#신문견고",
+                "FaceNameLatin": "#신문견고",
+                "FaceNameHanja": "#신문견고",
+                "FaceNameJapanese": "#태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#견고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#세나루": {
+                "FaceNameHangul": "#세나루",
+                "FaceNameLatin": "#세나루",
+                "FaceNameHanja": "#신세나루",
+                "FaceNameJapanese": "#세고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#세나루",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신세나루": {
+                "FaceNameHangul": "#신세나루",
+                "FaceNameLatin": "#신세나루",
+                "FaceNameHanja": "#신세나루",
+                "FaceNameJapanese": "#세고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#신세나루",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#디나루": {
+                "FaceNameHangul": "#디나루",
+                "FaceNameLatin": "#디나루",
+                "FaceNameHanja": "#신디나루",
+                "FaceNameJapanese": "#태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#디나루",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신디나루": {
+                "FaceNameHangul": "#신디나루",
+                "FaceNameLatin": "#신디나루",
+                "FaceNameHanja": "#신디나루",
+                "FaceNameJapanese": "#태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#신디나루",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#그래픽": {
+                "FaceNameHangul": "#그래픽",
+                "FaceNameLatin": "#그래픽",
+                "FaceNameHanja": "#신세고딕",
+                "FaceNameJapanese": "#중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#그래픽",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#신그래픽": {
+                "FaceNameHangul": "#신그래픽",
+                "FaceNameLatin": "#신그래픽",
+                "FaceNameHanja": "#중고딕",
+                "FaceNameJapanese": "#중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#신그래픽",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#태그래픽": {
+                "FaceNameHangul": "#태그래픽",
+                "FaceNameLatin": "#태그래픽",
+                "FaceNameHanja": "#태고딕",
+                "FaceNameJapanese": "#태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#태그래픽",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#궁서": {
+                "FaceNameHangul": "#궁서",
+                "FaceNameLatin": "#궁서",
+                "FaceNameHanja": "#궁서",
+                "FaceNameJapanese": "#세명조",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#궁서",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#공작": {
+                "FaceNameHangul": "#공작",
+                "FaceNameLatin": "#공작",
+                "FaceNameHanja": "#중고딕",
+                "FaceNameJapanese": "#중고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#공작",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#수암A": {
+                "FaceNameHangul": "#수암A",
+                "FaceNameLatin": "#수암A",
+                "FaceNameHanja": "#태고딕",
+                "FaceNameJapanese": "#태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#수암A",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#수암B": {
+                "FaceNameHangul": "#수암B",
+                "FaceNameLatin": "#수암B",
+                "FaceNameHanja": "#태고딕",
+                "FaceNameJapanese": "#태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#수암A",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "#빅": {
+                "FaceNameHangul": "#빅",
+                "FaceNameLatin": "#빅",
+                "FaceNameHanja": "#견고딕",
+                "FaceNameJapanese": "#태고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "#빅",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "시스템": {
+                "FaceNameHangul": "시스템",
+                "FaceNameLatin": "시스템",
+                "FaceNameHanja": "시스템",
+                "FaceNameJapanese": "시스템",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "시스템",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "시스템 약자": {
+                "FaceNameHangul": "시스템",
+                "FaceNameLatin": "시스템",
+                "FaceNameHanja": "시스템 약자",
+                "FaceNameJapanese": "시스템",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "시스템",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "시스템 간자": {
+                "FaceNameHangul": "시스템",
+                "FaceNameLatin": "시스템",
+                "FaceNameHanja": "시스템 간자",
+                "FaceNameJapanese": "시스템",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "시스템",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            },
+            "HY둥근고딕": {
+                "FaceNameHangul": "HY둥근고딕",
+                "FaceNameLatin": "HY둥근고딕",
+                "FaceNameHanja": "한양중고딕",
+                "FaceNameJapanese": "HY둥근고딕",
+                "FaceNameOther": "한양신명조",
+                "FaceNameSymbol": "HY둥근고딕",
+                "FaceNameUser": "명조",
+                "FontTypeHangul": 2,
+                "FontTypeHanja": 2,
+                "FontTypeJapanese": 2,
+                "FontTypeLatin": 2,
+                "FontTypeOther": 2,
+                "FontTypeSymbol": 2,
+                "FontTypeUser": 2
+            }
         }
         context = pythoncom.CreateBindCtx(0)
         pythoncom.CoInitialize()  # 이걸 꼭 실행해야 하는가? 왜 Pycharm이나 주피터에서는 괜찮고, vscode에서는 CoInitialize 오류가 나는지?
@@ -2255,7 +2400,7 @@ class Hwp:
 
         Returns:
         CellShape 파라미터셋
-        
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -2278,7 +2423,7 @@ class Hwp:
     def CharShape(self) -> "Hwp.CharShape":
         """
         글자모양 파라미터셋을 조회하거나 업데이트할 수 있는 파라미터셋 속성.
-        
+
         여러 속성값을 조회하고 싶은 경우에는 hwp.CharShape 대신
         `hwp.get_charshape_as_dict()` 메서드를 사용하면 편리합니다.
         CharShape 속성을 변경할 때는 아래 예시처럼
@@ -2369,7 +2514,7 @@ class Hwp:
     def CurFieldState(self):
         """
         현재 캐럿이 들어있는 영역의 상태를 조회할 수 있는 속성.
-        
+
         필드 안에 들어있지 않으면(본문, 캡션이나 주석 포함) 0을 리턴하며,
         셀 안이면 1, 글상자 안이면 4를 리턴합니다.
         셀필드 안에 있으면 17, 누름틀 안에 있으면 18을 리턴합니다.
@@ -2429,7 +2574,7 @@ class Hwp:
             >>> ctrl.Properties = prop  # 파라미터셋 속성을 표 오브젝트 컨트롤에 적용
             >>> hwp.Cancel()  # 적용을 마쳤으면 표선택 해제(권장)
         """
-        return self.hwp.CurSelectedCtrl
+        return Ctrl(self.hwp.CurSelectedCtrl)
 
     @property
     def EditMode(self) -> int:
@@ -2508,7 +2653,7 @@ class Hwp:
             >>> print("모든 표의 글자처럼 취급 속성 해제작업이 완료되었습니다.")
             모든 표의 글자처럼 취급 속성 해제작업이 완료되었습니다.
         """
-        return self.hwp.HeadCtrl
+        return Ctrl(self.hwp.HeadCtrl)
 
     @property
     def HParameterSet(self):
@@ -2604,7 +2749,7 @@ class Hwp:
             >>> for ctrl in [i for i in hwp.ctrl_list if i.UserDesc == "그림"][::-1]:  # 역순 아니어도 무관.
             ...     hwp.DeleteCtrl(ctrl)
         """
-        return self.hwp.LastCtrl
+        return Ctrl(self.hwp.LastCtrl)
 
     @property
     def PageCount(self) -> int:
@@ -2613,7 +2758,7 @@ class Hwp:
 
         Returns:
             현재 문서의 총 페이지 수
-        
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -2657,8 +2802,10 @@ class Hwp:
     def ParentCtrl(self):
         """
         현재 선택되어 있거나, 캐럿이 들어있는 컨트롤을 포함하는 상위 컨트롤을 리턴한다.
+
+        Returns:
         """
-        return self.hwp.ParentCtrl
+        return Ctrl(self.hwp.ParentCtrl)
 
     @property
     def Path(self):
@@ -2666,8 +2813,8 @@ class Hwp:
         현재 빈 문서가 아닌 경우, 열려 있는 문서의 파일명을 포함한 전체경로를 리턴한다.
 
         Returns:
-            현재 문서의 전체경로
-        
+        현재 문서의 전체경로
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -2683,7 +2830,6 @@ class Hwp:
         현재 선택모드가 어떤 상태인지 리턴한다.
 
         Returns:
-            현재 선택모드의 상태
         """
         return self.hwp.SelectionMode
 
@@ -2725,7 +2871,6 @@ class Hwp:
         현재 한/글 프로그램의 보기 속성 파라미터셋을 리턴한다.
 
         Returns:
-            현재 한/글 프로그램의 보기 속성 파라미터셋
         """
         return self.hwp.ViewProperties
 
@@ -2739,18 +2884,6 @@ class Hwp:
         HwpApplication의 XHwpDocuments 객체를 리턴한다.
 
         Returns:
-            HwpApplication의 XHwpDocuments 객체
-
-        Examples:
-            >>> from pyhwpx import Hwp
-            >>> hwp = Hwp()
-            >>> hwp.add_doc()  # 빈 문서창 추가
-            >>> hwp.add_doc()  # 빈 문서창 하나 더 추가
-            >>> hwp.add_tab()  # 마지막 창에 새 탭 하나 추가
-            >>> print(len(hwp.XHwpDocuments))
-            4
-            >>> hwp.XHwpDocuments[0].SetActive_XHwpDocument()
-
         """
         return self.hwp.XHwpDocuments
 
@@ -2758,6 +2891,8 @@ class Hwp:
     def XHwpMessageBox(self) -> "Hwp.XHwpMessageBox":
         """
         메시지박스 객체 리턴
+
+        Returns:
         """
         return self.hwp.XHwpMessageBox
 
@@ -2787,7 +2922,7 @@ class Hwp:
         while ctrl:
             c_list.append(ctrl)
             ctrl = ctrl.Next
-        return c_list
+        return [Ctrl(i) for i in c_list]
 
     @property
     def current_page(self) -> int:
@@ -2893,7 +3028,7 @@ class Hwp:
 
         Returns:
         현재 캐럿이 위치한 문단의 줄간격(% 또는 Point)
-        
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -2928,7 +3063,7 @@ class Hwp:
 
         Returns:
         성공시 True, 실패시 False를 리턴
-        
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -2956,7 +3091,7 @@ class Hwp:
 
         Returns:
         빈 문단일 경우 제자리에서 True, 비어있지 않은 경우 False를 리턴
-        
+
         """
         self.MoveSelNextChar()
         if self.get_pos()[2] == 0:  # 빈 문단이면?
@@ -3032,7 +3167,7 @@ class Hwp:
 
         Returns:
         [{'name': 'zxcv', 'direction': 'adsf', 'memo': 'qwer'}] 형식의 사전 리스트
-        
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -3473,7 +3608,7 @@ class Hwp:
             return True
         return False
 
-    def save_image(self, path:str="./img.png", ctrl:Any=None):
+    def save_image(self, path: str = "./img.png", ctrl: Any = None):
         path = os.path.abspath(path)
         if os.path.exists(path):
             os.remove(path)
@@ -5511,7 +5646,6 @@ class Hwp:
             finally:
                 self.SetMessageBoxMode(0xfffff)
 
-    @staticmethod
     def clipboard_to_pyfunc(self):
         """
         한/글 프로그램에서 스크립트매크로 녹화 코드를 클립보드에 복사하고
@@ -5544,33 +5678,14 @@ class Hwp:
         for i in self.hwp.GetFieldList(1).split("\x02"):
             self.hwp.PutFieldText(i, "")
 
-    def switch_to(self, num:int) -> None:
+    def switch_to(self, num) -> None:
         """
-        여러 개의 hwp인스턴스가 열려 있는 경우 해당 인스턴스를 활성화하고, 해당 타이틀을 출력한다.
+        여러 개의 hwp인스턴스가 열려 있는 경우 해당 인스턴스를 활성화한다.
 
-        백그라운드 상태에서 새 창을 만들 때 윈도우에 나타나는 경우가 있는데,
-        add_tab() 함수를 사용하면 백그라운드 작업이 보장된다.
-        탭 전환은 switch_to() 메서드로 가능하다.
-
-        Args:
-            num: 인스턴스(한/글 문서) 일련번호
-
-        Examples:
-            >>> # 빈 문서가 세 개 열린 상태에서
-            >>> from pyhwpx import Hwp
-            >>> hwp = Hwp()
-            >>> hwp.switch_to(0)
-            빈 문서 1 - 한글
-            >>> hwp.switch_to(1)
-            빈 문서 2 - 한글
-            >>> hwp.switch_to(2)
-            빈 문서 3 - 한글
+        :param num:
+            인스턴스 번호
         """
-        try:
-            self.hwp.XHwpDocuments.Item(num).SetActive_XHwpDocument()
-            print(self.Title)
-        except com_error as e:
-            raise IndexError(f"해당 인덱스의 문서가 존재하지 않습니다. 현재 총 {len(self.XHwpDocuments)}개의 문서가 연결되어 있습니다.")
+        self.hwp.XHwpDocuments.Item(num).SetActive_XHwpDocument()
 
     def add_tab(self) -> None:
         """
@@ -5583,7 +5698,6 @@ class Hwp:
         새 창을 추가하고 싶은 경우는 add_tab 대신 hwp.FileNew()나 hwp.add_doc()을 실행하면 된다.
         """
         self.hwp.XHwpDocuments.Add(1)  # 0은 새 창, 1은 새 탭
-        print(self.Title)
 
     def add_doc(self) -> None:
         """
@@ -5593,9 +5707,7 @@ class Hwp:
         새 탭을 추가하고 싶은 경우는 add_doc 대신 add_tab()을 실행하면 된다.
         """
         self.hwp.XHwpDocuments.Add(0)  # 0은 새 창, 1은 새 탭
-        print(self.Title)
 
-    @staticmethod
     def hwp_unit_to_mili(self, hwp_unit) -> float:
         """
         HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
@@ -5610,7 +5722,6 @@ class Hwp:
         else:
             return round(hwp_unit / 7200 * 25.4, 4)
 
-    @staticmethod
     def HwpUnitToMili(self, hwp_unit: int) -> float:
         """
         HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
@@ -5624,7 +5735,8 @@ class Hwp:
         else:
             return round(hwp_unit / 7200 * 25.4, 4)
 
-    def create_table(self, rows, cols, treat_as_char: bool = True, width_type=0, height_type=0, header=True, height=0) -> bool:
+    def create_table(self, rows, cols, treat_as_char: bool = True, width_type=0, height_type=0, header=True,
+                     height=0) -> bool:
         """
         표를 생성하는 메서드.
 
@@ -5654,7 +5766,9 @@ class Hwp:
 
         sec_def = self.hwp.HParameterSet.HSecDef
         self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
-        total_width = (sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(2))
+        total_width = (
+                    sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
+                2))
 
         pset.WidthValue = total_width  # 표 너비(근데 영향이 없는 듯)
         if height and height_type == 1:  # 표높이가 정의되어 있으면
@@ -5732,7 +5846,7 @@ class Hwp:
 
         Returns:
         None을 리턴하고, 표데이터를 "./result.csv"에 저장한다.
-        
+
         Examples:
             >>> from pyhwpx import Hwp
             >>>
@@ -6138,77 +6252,50 @@ class Hwp:
 
     # 액션 파라미터용 함수
 
-    def arc_type(self, arc_type):
-        return self.hwp.ArcType(ArcType=arc_type)
-
     def ArcType(self, arc_type):
         return self.hwp.ArcType(ArcType=arc_type)
-
-    def auto_num_type(self, autonum):
-        return self.hwp.AutoNumType(autonum=autonum)
 
     def AutoNumType(self, autonum):
         return self.hwp.AutoNumType(autonum=autonum)
 
-    def border_shape(self, border_type):
-        return self.hwp.BorderShape(BorderType=border_type)
-
     def BorderShape(self, border_type):
         return self.hwp.BorderShape(BorderType=border_type)
-
-    def break_word_latin(self, break_latin_word):
-        return self.hwp.BreakWordLatin(BreakLatinWord=break_latin_word)
 
     def BreakWordLatin(self, break_latin_word):
         return self.hwp.BreakWordLatin(BreakLatinWord=break_latin_word)
 
-    def brush_type(self, brush_type):
-        return self.hwp.BrushType(BrushType=brush_type)
-
     def BrushType(self, brush_type):
         return self.hwp.BrushType(BrushType=brush_type)
-
-    def canonical(self, canonical):
-        return self.hwp.Canonical(Canonical=canonical)
 
     def Canonical(self, canonical):
         return self.hwp.Canonical(Canonical=canonical)
 
-    def cell_apply(self, cell_apply):
-        return self.hwp.CellApply(CellApply=cell_apply)
-
     def CellApply(self, cell_apply):
         return self.hwp.CellApply(CellApply=cell_apply)
-
-    def char_shadow_type(self, shadow_type):
-        return self.hwp.CharShadowType(ShadowType=shadow_type)
 
     def CharShadowType(self, shadow_type):
         return self.hwp.CharShadowType(ShadowType=shadow_type)
 
-    def check_xobject(self, bstring):
-        return self.hwp.CheckXObject(bstring=bstring)
-
     def CheckXObject(self, bstring):
         return self.hwp.CheckXObject(bstring=bstring)
 
-    def clear(self, option: int = 1):
+    def clear(self, option: int = 1) -> None:
         """
         현재 편집중인 문서의 내용을 닫고 빈문서 편집 상태로 돌아간다.
 
-        :param option:
+        Args:
             편집중인 문서의 내용에 대한 처리 방법, 생략하면 1(hwpDiscard)가 선택된다.
-            0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
-            1: 문서의 내용을 버린다. (hwpDiscard, 기본값)
-            2: 문서가 변경된 경우 저장한다. (hwpSaveIfDirty)
-            3: 무조건 저장한다. (hwpSave)
+
+                - 0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
+                - 1: 문서의 내용을 버린다. (hwpDiscard, 기본값)
+                - 2: 문서가 변경된 경우 저장한다. (hwpSaveIfDirty)
+                - 3: 무조건 저장한다. (hwpSave)
 
         Returns:
-        None
+            None
 
         Examples:
             >>> from pyhwpx import Hwp
-            >>>
             >>> hwp = Hwp()
             >>> hwp.clear()
         """
@@ -6226,7 +6313,7 @@ class Hwp:
             3: 무조건 저장한다. (hwpSave)
 
         Returns:
-        None
+            None
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6240,8 +6327,7 @@ class Hwp:
         """
         문서를 버리고 닫은 후, 새 문서창을 여는 메서드.
 
-        굳이 새 문서파일이 필요한 게 아니라면
-        hwp.close 대신 hwp.clear를 사용할 것.
+        굳이 새 문서파일이 필요한 게 아니라면 ``hwp.close()`` 대신 ``hwp.clear()``를 사용할 것.
         """
         while True:
             try:
@@ -6249,24 +6335,11 @@ class Hwp:
             except AttributeError:
                 sleep(interval)
 
-    # Run 액션아이디의 Close와 중복되어 주석처리함. close로 실행가능
-    # def Close(self, is_dirty: bool = False):
-    #     return self.hwp.XHwpDocuments.Active_XHwpDocument.Close(isDirty=is_dirty)
-
-    def col_def_type(self, col_def_type):
-        return self.hwp.ColDefType(ColDefType=col_def_type)
-
     def ColDefType(self, col_def_type):
         return self.hwp.ColDefType(ColDefType=col_def_type)
 
-    def col_layout_type(self, col_layout_type):
-        return self.hwp.ColLayoutType(ColLayoutType=col_layout_type)
-
     def ColLayoutType(self, col_layout_type):
         return self.hwp.ColLayoutType(ColLayoutType=col_layout_type)
-
-    def convert_pua_hangul_to_unicode(self, reverse):
-        return self.hwp.ConvertPUAHangulToUnicode(Reverse=reverse)
 
     def ConvertPUAHangulToUnicode(self, reverse):
         return self.hwp.ConvertPUAHangulToUnicode(Reverse=reverse)
@@ -6279,11 +6352,11 @@ class Hwp:
         예를 들어 기능을 수행하지 않고 대화상자만을 띄운다든지,
         대화상자 없이 지정한 옵션에 따라 기능을 수행하는 등에 사용할 수 있다.
 
-        :param actidstr:
-            액션 ID (ActionIDTable.hwp 참조)
+        Args:
+            actidstr: 액션 ID (ActionIDTable.hwp 참조)
 
         Returns:
-        Action object
+            Action object
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6313,11 +6386,11 @@ class Hwp:
         예를 들어 기능을 수행하지 않고 대화상자만을 띄운다든지,
         대화상자 없이 지정한 옵션에 따라 기능을 수행하는 등에 사용할 수 있다.
 
-        :param actidstr:
-            액션 ID (ActionIDTable.hwp 참조)
+        Args:
+            actidstr: 액션 ID (ActionIDTable.hwp 참조)
 
         Returns:
-        Action object
+            Action object
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6343,17 +6416,13 @@ class Hwp:
         """
         캐럿의 현재 위치에 누름틀을 생성한다.
 
-        :param name:
-            누름틀 필드에 대한 필드 이름(중요)
-
-        :param direction:
-            누름틀에 입력이 안 된 상태에서 보이는 안내문/지시문.
-
-        :param memo:
-            누름틀에 대한 설명/도움말
+        Args:
+            name: 누름틀 필드에 대한 필드 이름(중요)
+            direction: 누름틀에 입력이 안 된 상태에서 보이는 안내문/지시문.
+            memo: 누름틀에 대한 설명/도움말
 
         Returns:
-        성공이면 True, 실패면 False
+            성공이면 True, 실패면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6368,17 +6437,13 @@ class Hwp:
         """
         캐럿의 현재 위치에 누름틀을 생성한다.
 
-        :param name:
-            누름틀 필드에 대한 필드 이름(중요)
-
-        :param direction:
-            누름틀에 입력이 안 된 상태에서 보이는 안내문/지시문.
-
-        :param memo:
-            누름틀에 대한 설명/도움말
+        Args:
+            name: 누름틀 필드에 대한 필드 이름(중요)
+            direction: 누름틀에 입력이 안 된 상태에서 보이는 안내문/지시문.
+            memo: 누름틀에 대한 설명/도움말
 
         Returns:
-        성공이면 True, 실패면 False
+            성공이면 True, 실패면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6389,14 +6454,8 @@ class Hwp:
         """
         return self.hwp.CreateField(Direction=direction, memo=memo, name=name)
 
-    def create_id(self, creation_id):
-        return self.hwp.CreateID(CreationID=creation_id)
-
     def CreateId(self, creation_id):
         return self.hwp.CreateID(CreationID=creation_id)
-
-    def create_mode(self, creation_mode):
-        return self.hwp.CreateMode(CreationMode=creation_mode)
 
     def CreateMode(self, creation_mode):
         return self.hwp.CreateMode(CreationMode=creation_mode)
@@ -6404,39 +6463,29 @@ class Hwp:
     def create_page_image(self, path: str, pgno: int = -1, resolution: int = 300, depth: int = 24,
                           format: str = "bmp") -> bool:
         """
-        pgno로 지정한 페이지를 path 라는 파일명으로 저장한다.
+        ``pgno``로 지정한 페이지를 ``path`` 라는 파일명으로 저장한다.
         이 때 페이지번호는 1부터 시작하며,(1-index)
-        pgno=0이면 현재 페이지, pgno=-1(기본값)이면 전체 페이지를 이미지로 저장한다.
-        내부적으로 Pillow 모듈을 사용하여 변환하므로,
-        사실상 Pillow에서 변환 가능한 모든 포맷으로 입력 가능하다.
+        ``pgno=0``이면 현재 페이지, ``pgno=-1``(기본값)이면 전체 페이지를 이미지로 저장한다.
+        내부적으로 pillow 모듈을 사용하여 변환하므로,
+        사실상 pillow에서 변환 가능한 모든 포맷으로 입력 가능하다.
 
-        :param path:
-            생성할 이미지 파일의 경로(전체경로로 입력해야 함)
-
-        :param pgno:
-            페이지 번호(1페이지 저장하려면 pgno=1).
-            1부터 hwp.PageCount 사이에서 pgno 입력시 선택한 페이지만 저장한다.
-            생략하면(기본값은 -1) 전체 페이지가 저장된다.
-            이 때 path가 "img.jpg"라면 저장되는 파일명은
-            "img001.jpg", "img002.jpg", "img003.jpg",..,"img099.jpg" 가 된다.
-
-            현재 캐럿이 있는 페이지만 저장하고 싶을 때에는 pgno=0으로 설정하면 된다.
-
-
-
-        :param resolution:
-            이미지 해상도. DPI단위(96, 300, 1200 등)로 지정한다.
-            생략하면 300이 사용된다.
-
-        :param depth:
-            이미지파일의 Color Depth(1, 4, 8, 24)를 지정한다.
-            생략하면 24
-
-        :param format:
-            이미지파일의 포맷. "bmp", "gif"중의 하나. 생략하면 "bmp"가 사용된다.
+        Args:
+            path: 생성할 이미지 파일의 경로(전체경로로 입력해야 함)
+            pgno:
+                페이지 번호(1페이지 저장하려면 pgno=1).
+                1부터 hwp.PageCount 사이에서 pgno 입력시 선택한 페이지만 저장한다.
+                생략하면(기본값은 -1) 전체 페이지가 저장된다.
+                이 때 path가 "img.jpg"라면 저장되는 파일명은
+                "img001.jpg", "img002.jpg", "img003.jpg",..,"img099.jpg" 가 된다.
+                현재 캐럿이 있는 페이지만 저장하고 싶을 때에는 ``pgno=0``으로 설정하면 된다.
+            resolution:
+                이미지 해상도. DPI단위(96, 300, 1200 등)로 지정한다.
+                생략하면 300이 사용된다.
+            depth: 이미지파일의 Color Depth(1, 4, 8, 24)를 지정한다. 생략하면 24
+            format: 이미지파일의 포맷. "bmp", "gif"중의 하나. 생략하면 "bmp"가 사용된다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6475,38 +6524,29 @@ class Hwp:
     def CreatePageImage(self, path: str, pgno: int = -1, resolution: int = 300, depth: int = 24,
                         format: str = "bmp") -> bool:
         """
-        pgno로 지정한 페이지를 path 라는 파일명으로 저장한다.
+        ``pgno``로 지정한 페이지를 ``path`` 라는 파일명으로 저장한다.
         이 때 페이지번호는 1부터 시작하며,(1-index)
-        pgno=0이면 현재 페이지, pgno=-1(기본값)이면 전체 페이지를 이미지로 저장한다.
-        내부적으로 Pillow 모듈을 사용하여 변환하므로,
-        사실상 Pillow에서 변환 가능한 모든 포맷으로 입력 가능하다.
+        ``pgno=0``이면 현재 페이지, ``pgno=-1``(기본값)이면 전체 페이지를 이미지로 저장한다.
+        내부적으로 pillow 모듈을 사용하여 변환하므로,
+        사실상 pillow에서 변환 가능한 모든 포맷으로 입력 가능하다.
 
-        :param path:
-            생성할 이미지 파일의 경로(전체경로로 입력해야 함)
-
-        :param pgno:
-            페이지 번호(1페이지 저장하려면 pgno=1).
-            1부터 hwp.PageCount 사이에서 pgno 입력시 선택한 페이지만 저장한다.
-            생략하면(기본값은 -1) 전체 페이지가 저장된다.
-            이 때 path가 "img.jpg"라면 저장되는 파일명은
-            "img001.jpg", "img002.jpg", "img003.jpg",..,"img099.jpg" 가 된다.
-
-            현재 캐럿이 있는 페이지만 저장하고 싶을 때에는 pgno=0으로 설정하면 된다.
-
-
-        :param resolution:
-            이미지 해상도. DPI단위(96, 300, 1200 등)로 지정한다.
-            생략하면 300이 사용된다.
-
-        :param depth:
-            이미지파일의 Color Depth(1, 4, 8, 24)를 지정한다.
-            생략하면 24
-
-        :param format:
-            이미지파일의 포맷. "bmp", "gif"중의 하나. 생략하면 "bmp"가 사용된다.
+        Args:
+            path: 생성할 이미지 파일의 경로(전체경로로 입력해야 함)
+            pgno:
+                페이지 번호(1페이지 저장하려면 pgno=1).
+                1부터 hwp.PageCount 사이에서 pgno 입력시 선택한 페이지만 저장한다.
+                생략하면(기본값은 -1) 전체 페이지가 저장된다.
+                이 때 path가 "img.jpg"라면 저장되는 파일명은
+                "img001.jpg", "img002.jpg", "img003.jpg",..,"img099.jpg" 가 된다.
+                현재 캐럿이 있는 페이지만 저장하고 싶을 때에는 ``pgno=0``으로 설정하면 된다.
+            resolution:
+                이미지 해상도. DPI단위(96, 300, 1200 등)로 지정한다.
+                생략하면 300이 사용된다.
+            depth: 이미지파일의 Color Depth(1, 4, 8, 24)를 지정한다. 생략하면 24
+            format: 이미지파일의 포맷. "bmp", "gif"중의 하나. 생략하면 "bmp"가 사용된다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6542,7 +6582,7 @@ class Hwp:
                     os.remove(path_.replace(ext, format))
             return True
 
-    def create_set(self, setidstr):
+    def CreateSet(self, setidstr: str):
         """
         ParameterSet을 생성한다.
 
@@ -6556,63 +6596,32 @@ class Hwp:
         ParameterSet으로 변환하여 넘겨주기도 한다.
         사용 가능한 ParameterSet의 ID는 ParameterSet Table.hwp문서를 참조한다.
 
-        :param setidstr:
-            생성할 ParameterSet의 ID (ParameterSet Table.hwp 참고)
+        Args:
+            setidstr: 생성할 ParameterSet의 ID (ParameterSet Table.hwp 참고)
 
         Returns:
-        생성된 ParameterSet Object
+            생성된 ParameterSet Object
         """
         return self.hwp.CreateSet(setidstr=setidstr)
-
-    def CreateSet(self, setidstr):
-        """
-        ParameterSet을 생성한다.
-
-        단독으로 쓰이는 경우는 거의 없으며,
-        대부분 create_action과 같이 사용한다.
-
-        ParameterSet은 일종의 정보를 지니는 객체이다.
-        어떤 Action들은 그 Action이 수행되기 위해서 정보가 필요한데
-        이 때 사용되는 정보를 ParameterSet으로 넘겨준다.
-        또한 한/글 컨트롤은 특정정보(ViewProperties, CellShape, CharShape 등)를
-        ParameterSet으로 변환하여 넘겨주기도 한다.
-        사용 가능한 ParameterSet의 ID는 ParameterSet Table.hwp문서를 참조한다.
-
-        :param setidstr:
-            생성할 ParameterSet의 ID (ParameterSet Table.hwp 참고)
-
-        Returns:
-        생성된 ParameterSet Object
-        """
-        return self.hwp.CreateSet(setidstr=setidstr)
-
-    def crooked_slash(self, crooked_slash):
-        return self.hwp.CrookedSlash(CrookedSlash=crooked_slash)
 
     def CrookedSlash(self, crooked_slash):
         return self.hwp.CrookedSlash(CrookedSlash=crooked_slash)
 
-    def ds_mark(self, diac_sym_mark):
-        return self.hwp.DSMark(DiacSymMark=diac_sym_mark)
-
     def DSMark(self, diac_sym_mark):
         return self.hwp.DSMark(DiacSymMark=diac_sym_mark)
-
-    def dbf_code_type(self, dbf_code):
-        return self.hwp.DbfCodeType(DbfCode=dbf_code)
 
     def DbfCodeType(self, dbf_code):
         return self.hwp.DbfCodeType(DbfCode=dbf_code)
 
-    def delete_ctrl(self, ctrl) -> bool:
+    def delete_ctrl(self, ctrl: Ctrl) -> bool:
         """
         문서 내 컨트롤을 삭제한다.
 
-        :param ctrl:
-            삭제할 문서 내 컨트롤
+        Args:
+            ctrl: 삭제할 문서 내 컨트롤
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6625,15 +6634,15 @@ class Hwp:
         """
         return self.hwp.DeleteCtrl(ctrl=ctrl)
 
-    def DeleteCtrl(self, ctrl) -> bool:
+    def DeleteCtrl(self, ctrl: Ctrl) -> bool:
         """
         문서 내 컨트롤을 삭제한다.
 
-        :param ctrl:
-            삭제할 문서 내 컨트롤
+        Args:
+            ctrl: 삭제할 문서 내 컨트롤
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6647,6 +6656,9 @@ class Hwp:
         return self.hwp.DeleteCtrl(ctrl=ctrl)
 
     def DeleteDocumentMasterPage(self):
+        """
+        문서의 마스터페이지 삭제하기
+        """
         self.hwp.HAction.Run("MasterPage")
         cur_messagebox_mode = self.get_message_box_mode()
         self.set_message_box_mode(0x10001)
@@ -6656,6 +6668,9 @@ class Hwp:
             self.set_message_box_mode(cur_messagebox_mode)
 
     def DeleteSectionMasterPage(self):
+        """
+        섹션의 마스터페이지 삭제하기
+        """
         self.hwp.HAction.Run("MasterPage")
         cur_messagebox_mode = self.get_message_box_mode()
         self.set_message_box_mode(0x10001)
@@ -6664,49 +6679,31 @@ class Hwp:
         finally:
             self.set_message_box_mode(cur_messagebox_mode)
 
-    def delimiter(self, delimiter):
-        return self.hwp.Delimiter(Delimiter=delimiter)
-
     def Delimiter(self, delimiter):
         return self.hwp.Delimiter(Delimiter=delimiter)
-
-    def draw_aspect(self, draw_aspect):
-        return self.hwp.DrawAspect(DrawAspect=draw_aspect)
 
     def DrawAspect(self, draw_aspect):
         return self.hwp.DrawAspect(DrawAspect=draw_aspect)
 
-    def draw_fill_image(self, fillimage):
-        return self.hwp.DrawFillImage(fillimage=fillimage)
-
     def DrawFillImage(self, fillimage):
         return self.hwp.DrawFillImage(fillimage=fillimage)
-
-    def draw_shadow_type(self, shadow_type):
-        return self.hwp.DrawShadowType(ShadowType=shadow_type)
 
     def DrawShadowType(self, shadow_type):
         return self.hwp.DrawShadowType(ShadowType=shadow_type)
 
-    def encrypt(self, encrypt):
-        return self.hwp.Encrypt(Encrypt=encrypt)
-
     def Encrypt(self, encrypt):
         return self.hwp.Encrypt(Encrypt=encrypt)
 
-    def end_size(self, end_size):
-        return self.hwp.EndSize(EndSize=end_size)
-
     def EndSize(self, end_size):
         return self.hwp.EndSize(EndSize=end_size)
-
-    def end_style(self, end_style):
-        return self.hwp.EndStyle(EndStyle=end_style)
 
     def EndStyle(self, end_style):
         return self.hwp.EndStyle(EndStyle=end_style)
 
     def EquationCreate(self, thread=False):
+        """
+        수식만들기 창을 직접 제어하기 위한 스레드 함수. 직접 사용하지 말 것.
+        """
         visible = self.hwp.XHwpWindows.Active_XHwpWindow.Visible
         if thread:
             if win32gui.FindWindow(None, "수식 편집기"):
@@ -6718,11 +6715,16 @@ class Hwp:
         else:
             return self.hwp.HAction.Run("EquationCreate")
 
-    @staticmethod
-    def EquationClose(save=False, delay=0.1):
+    def EquationClose(self, save=False, delay=0.1):
+        """
+        ``EquationCreate(thread=True)``로 생성한 수식창을 닫기 위한 메서드.
+        """
         return _close_eqedit(save, delay)
 
     def EquationModify(self, thread=False):
+        """
+        ``EquationCreate(thread=True)``로 생성한 수식창에서 편집작업을 하기 위한 메서드.
+        """
         visible = self.hwp.XHwpWindows.Active_XHwpWindow.Visible
         if thread:
             if win32gui.FindWindow(None, "수식 편집기"):
@@ -6734,28 +6736,14 @@ class Hwp:
         else:
             return self.hwp.HAction.Run("EquationModify")
 
-    def EquationRefresh(self):  # , delay=0.2):
+    def EquationRefresh(self) -> bool:  # , delay=0.2):
         """
-        kosohn님께서 도움 주셔서 만든 메서드.
-
-        수식을 정형화함.
+        수식을 정형화함. (kosohn님께서 도움 주셔서 만든 메서드.)
 
         Returns:
+            성공시 True, 실패시 False를 리턴함.
+
         """
-        # self.EquationModify(thread=True)
-        # sleep(delay)
-        # hwnd = 0
-        # while True:
-        #     hwnd = win32gui.FindWindow(None, "수식 편집기")
-        #     if hwnd:
-        #         sleep(delay)
-        #         break
-        #     else:
-        #         self.EquationModify(thread=True)
-        #         sleep(delay)
-        # t = threading.Thread(target=_eq_refresh, args=(hwnd,), name="refresh_eq")
-        # t.run()
-        # return True
         pset = self.hwp.HParameterSet.HEqEdit
         self.hwp.HAction.GetDefault("EquationModify", pset.HSet)
         pset.string = pset.VisualString
@@ -6764,13 +6752,13 @@ class Hwp:
 
     def export_style(self, sty_filepath: str) -> bool:
         """
-        현재 문서의 Style을 sty 파일로 Export한다.
+        현재 문서의 Style을 sty 파일로 Export한다. #스타일 #내보내기
 
-        :param sty_filepath:
-            Export할 sty 파일의 전체경로 문자열
+        Args:
+            sty_filepath: Export할 sty 파일의 전체경로 문자열
 
         Returns:
-        성공시 True, 실패시 False
+            성공시 True, 실패시 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6787,13 +6775,13 @@ class Hwp:
 
     def ExportStyle(self, sty_filepath: str) -> bool:
         """
-        현재 문서의 Style을 sty 파일로 Export한다.
+        현재 문서의 Style을 sty 파일로 Export한다.  #스타일 #내보내기
 
-        :param sty_filepath:
-            Export할 sty 파일의 전체경로 문자열
+        Args:
+            sty_filepath: Export할 sty 파일의 전체경로 문자열
 
         Returns:
-        성공시 True, 실패시 False
+            성공시 True, 실패시 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6808,38 +6796,32 @@ class Hwp:
         style_set.filename = sty_filepath
         return self.hwp.ExportStyle(param=style_set.HSet)
 
-    def field_exist(self, field):
+    def field_exist(self, field: str) -> bool:
         """
-        문서에 지정된 데이터 필드가 존재하는지 검사한다.
+        문서에 해당 이름의 데이터 필드가 존재하는지 검사한다.
 
-        :param field:
-            필드이름
+        Args:
+            field: 필드이름
 
         Returns:
-        필드가 존재하면 True, 존재하지 않으면 False
+            필드가 존재하면 True, 존재하지 않으면 False
         """
         return self.hwp.FieldExist(Field=field)
 
     def FieldExist(self, field):
         """
-        문서에 지정된 데이터 필드가 존재하는지 검사한다.
+        문서에 해당 이름의 데이터 필드가 존재하는지 검사한다.
 
-        :param field:
-            필드이름
+        Args:
+            field: 필드이름
 
         Returns:
-        필드가 존재하면 True, 존재하지 않으면 False
+            필드가 존재하면 True, 존재하지 않으면 False
         """
         return self.hwp.FieldExist(Field=field)
 
-    def file_translate(self, cur_lang, trans_lang):
-        return self.hwp.FileTranslate(curLang=cur_lang, transLang=trans_lang)
-
     def FileTranslate(self, cur_lang, trans_lang):
         return self.hwp.FileTranslate(curLang=cur_lang, transLang=trans_lang)
-
-    def fill_area_type(self, fill_area):
-        return self.hwp.FillAreaType(FillArea=fill_area)
 
     def FillAreaType(self, fill_area):
         return self.hwp.FillAreaType(FillArea=fill_area)
@@ -6850,111 +6832,99 @@ class Hwp:
     def FindCtrl(self):
         return self.hwp.FindCtrl()
 
-    def find_dir(self, find_dir: Literal["Forward", "Backward", "AllDoc"] = "AllDoc"):
-        return self.hwp.FindDir(FindDir=find_dir)
-
     def FindDir(self, find_dir: Literal["Forward", "Backward", "AllDoc"] = "AllDoc"):
         return self.hwp.FindDir(FindDir=find_dir)
 
     def find_private_info(self, private_type, private_string):
         """
-        개인정보를 찾는다.
+        개인정보를 찾는다. (비밀번호 설정 등의 이유, 현재 비활성화된 것으로 추정)
 
-        (비밀번호 설정 등의 이유, 현재 비활성화된 것으로 추정)
+        Args:
+            private_type:
+                보호할 개인정보 유형. 다음의 값을 하나이상 조합한다.
 
-        :param private_type:
-            보호할 개인정보 유형. 다음의 값을 하나이상 조합한다.
-            0x0001: 전화번호
-            0x0002: 주민등록번호
-            0x0004: 외국인등록번호
-            0x0008: 전자우편
-            0x0010: 계좌번호
-            0x0020: 신용카드번호
-            0x0040: IP 주소
-            0x0080: 생년월일
-            0x0100: 주소
-            0x0200: 사용자 정의
-            0x0400: 기타
+                    - 0x0001: 전화번호
+                    - 0x0002: 주민등록번호
+                    - 0x0004: 외국인등록번호
+                    - 0x0008: 전자우편
+                    - 0x0010: 계좌번호
+                    - 0x0020: 신용카드번호
+                    - 0x0040: IP 주소
+                    - 0x0080: 생년월일
+                    - 0x0100: 주소
+                    - 0x0200: 사용자 정의
+                    - 0x0400: 기타
 
-        :param private_string:
-            기타 문자열. 예: "신한카드"
-            0x0400 유형이 존재할 경우에만 유효하므로, 생략가능하다
+            private_string: 기타 문자열. 0x0400 유형이 존재할 경우에만 유효하므로, 생략가능하다. (예: "신한카드")
 
         Returns:
-        찾은 개인정보의 유형 값. 다음과 같다.
-            0x0001 : 전화번호
-            0x0002 : 주민등록번호
-            0x0004 : 외국인등록번호
-            0x0008 : 전자우편
-            0x0010 : 계좌번호
-            0x0020 : 신용카드번호
-            0x0040 : IP 주소
-            0x0080 : 생년월일
-            0x0100 : 주소
-            0x0200 : 사용자 정의
-            0x0400 : 기타
-            개인정보가 없는 경우에는 0을 반환한다.
-            또한, 검색 중 문서의 끝(end of document)을 만나면 –1을 반환한다. 이는 함수가 무한히 반복하는 것을 막아준다.
+            찾은 개인정보의 유형 값. 개인정보가 없는 경우에는 0을 반환한다. 또한, 검색 중 문서의 끝(end of document)을 만나면 –1을 반환한다. 이는 함수가 무한히 반복하는 것을 막아준다. 구체적으로는 아래와 같다.
+
+                - 0x0001 : 전화번호
+                - 0x0002 : 주민등록번호
+                - 0x0004 : 외국인등록번호
+                - 0x0008 : 전자우편
+                - 0x0010 : 계좌번호
+                - 0x0020 : 신용카드번호
+                - 0x0040 : IP 주소
+                - 0x0080 : 생년월일
+                - 0x0100 : 주소
+                - 0x0200 : 사용자 정의
+                - 0x0400 : 기타
         """
         return self.hwp.FindPrivateInfo(PrivateType=private_type, PrivateString=private_string)
 
     def FindPrivateInfo(self, private_type, private_string):
         """
-        개인정보를 찾는다.
+        개인정보를 찾는다. (비밀번호 설정 등의 이유, 현재 비활성화된 것으로 추정)
 
-        (비밀번호 설정 등의 이유, 현재 비활성화된 것으로 추정)
+        Args:
+            private_type:
+                보호할 개인정보 유형. 다음의 값을 하나이상 조합한다.
 
-        :param private_type:
-            보호할 개인정보 유형. 다음의 값을 하나이상 조합한다.
-            0x0001: 전화번호
-            0x0002: 주민등록번호
-            0x0004: 외국인등록번호
-            0x0008: 전자우편
-            0x0010: 계좌번호
-            0x0020: 신용카드번호
-            0x0040: IP 주소
-            0x0080: 생년월일
-            0x0100: 주소
-            0x0200: 사용자 정의
-            0x0400: 기타
+                    - 0x0001: 전화번호
+                    - 0x0002: 주민등록번호
+                    - 0x0004: 외국인등록번호
+                    - 0x0008: 전자우편
+                    - 0x0010: 계좌번호
+                    - 0x0020: 신용카드번호
+                    - 0x0040: IP 주소
+                    - 0x0080: 생년월일
+                    - 0x0100: 주소
+                    - 0x0200: 사용자 정의
+                    - 0x0400: 기타
 
-        :param private_string:
-            기타 문자열. 예: "신한카드"
-            0x0400 유형이 존재할 경우에만 유효하므로, 생략가능하다
+            private_string: 기타 문자열. 0x0400 유형이 존재할 경우에만 유효하므로, 생략가능하다. (예: "신한카드")
 
         Returns:
-        찾은 개인정보의 유형 값. 다음과 같다.
-            0x0001 : 전화번호
-            0x0002 : 주민등록번호
-            0x0004 : 외국인등록번호
-            0x0008 : 전자우편
-            0x0010 : 계좌번호
-            0x0020 : 신용카드번호
-            0x0040 : IP 주소
-            0x0080 : 생년월일
-            0x0100 : 주소
-            0x0200 : 사용자 정의
-            0x0400 : 기타
-            개인정보가 없는 경우에는 0을 반환한다.
-            또한, 검색 중 문서의 끝(end of document)을 만나면 –1을 반환한다. 이는 함수가 무한히 반복하는 것을 막아준다.
+            찾은 개인정보의 유형 값. 개인정보가 없는 경우에는 0을 반환한다. 또한, 검색 중 문서의 끝(end of document)을 만나면 –1을 반환한다. 이는 함수가 무한히 반복하는 것을 막아준다. 구체적으로는 아래와 같다.
+
+                - 0x0001 : 전화번호
+                - 0x0002 : 주민등록번호
+                - 0x0004 : 외국인등록번호
+                - 0x0008 : 전자우편
+                - 0x0010 : 계좌번호
+                - 0x0020 : 신용카드번호
+                - 0x0040 : IP 주소
+                - 0x0080 : 생년월일
+                - 0x0100 : 주소
+                - 0x0200 : 사용자 정의
+                - 0x0400 : 기타
         """
         return self.hwp.FindPrivateInfo(PrivateType=private_type, PrivateString=private_string)
-
-    def font_type(self, font_type):
-        return self.hwp.FontType(FontType=font_type)
 
     def FontType(self, font_type):
         return self.hwp.FontType(FontType=font_type)
 
-    def get_bin_data_path(self, binid):
+    def get_bin_data_path(self, binid: int) -> str:
         """
         Binary Data(Temp Image 등)의 경로를 가져온다.
 
-        :param binid:
-            바이너리 데이터의 ID 값 (1부터 시작)
+        Args:
+            binid: 바이너리 데이터의 ID 값 (1부터 시작)
 
         Returns:
-        바이너리 데이터의 경로
+            바이너리 데이터의 경로
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6965,15 +6935,15 @@ class Hwp:
         """
         return self.hwp.GetBinDataPath(binid=binid)
 
-    def GetBinDataPath(self, binid):
+    def GetBinDataPath(self, binid: int) -> str:
         """
         Binary Data(Temp Image 등)의 경로를 가져온다.
 
-        :param binid:
-            바이너리 데이터의 ID 값 (1부터 시작)
+        Args:
+            binid: 바이너리 데이터의 ID 값 (1부터 시작)
 
         Returns:
-        바이너리 데이터의 경로
+            바이너리 데이터의 경로
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -6993,15 +6963,15 @@ class Hwp:
         GetFieldList()의 옵션 중에 hwpFieldSelection(=4)옵션은 사용하지 않는다.
 
 
-        :param option:
-            다음과 같은 옵션을 지정할 수 있다.
-            0: 모두 off. 생략하면 0이 지정된다.
-            1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
-            2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
+        Args:
+            option: 다음과 같은 옵션을 지정할 수 있다.
+
+                - 0: 모두 off. 생략하면 0이 지정된다.
+                - 1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+                - 2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
 
         Returns:
-        필드이름이 돌아온다.
-            필드이름이 없는 경우 빈 문자열이 돌아온다.
+            필드이름이 돌아온다. 필드이름이 없는 경우 빈 문자열이 돌아온다.
         """
         return self.hwp.GetCurFieldName(option=option)
 
@@ -7014,15 +6984,15 @@ class Hwp:
         GetFieldList()의 옵션 중에 hwpFieldSelection(=4)옵션은 사용하지 않는다.
 
 
-        :param option:
-            다음과 같은 옵션을 지정할 수 있다.
-            0: 모두 off. 생략하면 0이 지정된다.
-            1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
-            2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
+        Args:
+            option: 다음과 같은 옵션을 지정할 수 있다.
+
+                - 0: 모두 off. 생략하면 0이 지정된다.
+                - 1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+                - 2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
 
         Returns:
-        필드이름이 돌아온다.
-            필드이름이 없는 경우 빈 문자열이 돌아온다.
+            필드이름이 돌아온다. 필드이름이 없는 경우 빈 문자열이 돌아온다.
         """
         return self.hwp.GetCurFieldName(option=option)
 
@@ -7035,7 +7005,7 @@ class Hwp:
             >>> hwp = Hwp()
             >>> # "#test"라는 메타태그 이름이 부여된 표를 선택한 상태에서
             >>> hwp.get_cur_metatag_name()
-        #test
+            #test
         """
         try:
             return self.hwp.GetCurMetatagName()
@@ -7043,13 +7013,23 @@ class Hwp:
             print(e, "메타태그명을 출력할 수 없습니다.")
 
     def GetCurMetatagName(self):
+        """
+        현재 캐럿위치의 메타태그 이름을 리턴하는 메서드.
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> # "#test"라는 메타태그 이름이 부여된 표를 선택한 상태에서
+            >>> hwp.GetCurMetatagName()
+            #test
+        """
         try:
             return self.hwp.GetCurMetatagName()
         except pythoncom.com_error as e:
             # 가끔 com_error 발생한다. (대부분 최초 실행시?)
             print(e, "메타태그명을 출력할 수 없습니다.")
 
-    def get_field_list(self, number=1, option=0):
+    def get_field_list(self, number: int = 1, option: int = 0) -> str:
         """
         문서에 존재하는 필드의 목록을 구한다.
 
@@ -7058,27 +7038,28 @@ class Hwp:
         예를 들어 문서 중 title, body, title, body, footer 순으로
         5개의 필드가 존재할 때, hwpFieldPlain, hwpFieldNumber, HwpFieldCount
         세 가지 형식에 따라 다음과 같은 내용이 돌아온다.
-        hwpFieldPlain: "title\x02body\x02title\x02body\x02footer"
-        hwpFieldNumber: "title{{0}}\x02body{{0}}\x02title{{1}}\x02body{{1}}\x02footer{{0}}"
-        hwpFieldCount: "title{{2}}\x02body{{2}}\x02footer{{1}}"
 
-        :param number:
-            문서 내에서 동일한 이름의 필드가 여러 개 존재할 경우
-            이를 구별하기 위한 식별방법을 지정한다.
-            생략하면 0(hwpFieldPlain)이 지정된다.
-            0: 아무 기호 없이 순서대로 필드의 이름을 나열한다.(hwpFieldPlain)
-            1: 필드이름 뒤에 일련번호가 {{#}}과 같은 형식으로 붙는다.(hwpFieldNumber)
-            2: 필드이름 뒤에 그 필드의 개수가 {{#}}과 같은 형식으로 붙는다.(hwpFieldCount)
+            - hwpFieldPlain: "title\x02body\x02title\x02body\x02footer"
+            - hwpFieldNumber: "title{{0}}\x02body{{0}}\x02title{{1}}\x02body{{1}}\x02footer{{0}}"
+            - hwpFieldCount: "title{{2}}\x02body{{2}}\x02footer{{1}}"
 
-        :param option:
-            다음과 같은 옵션을 조합할 수 있다. 0을 지정하면 모두 off이다.
-            생략하면 0이 지정된다.
-            0x01: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere과는 함께 지정할 수 없다.(hwpFieldCell)
-            0x02: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
-            0x04: 선택된 내용 안에 존재하는 필드 리스트를 구한다.(HwpFieldSelection)
+        Args:
+            number:
+                문서 내에서 동일한 이름의 필드가 여러 개 존재할 경우 이를 구별하기 위한 식별방법을 지정한다. 생략하면 0(hwpFieldPlain)이 지정된다.
+
+                    - 0: 아무 기호 없이 순서대로 필드의 이름을 나열한다.(hwpFieldPlain)
+                    - 1: 필드이름 뒤에 일련번호가 ``{{#}}``과 같은 형식으로 붙는다.(hwpFieldNumber)
+                    - 2: 필드이름 뒤에 그 필드의 개수가 ``{{#}}``과 같은 형식으로 붙는다.(hwpFieldCount)
+
+            option:
+                다음과 같은 옵션을 조합할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
+
+                    - 0x01: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere과는 함께 지정할 수 없다.(hwpFieldCell)
+                    - 0x02: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
+                    - 0x04: 선택된 내용 안에 존재하는 필드 리스트를 구한다.(HwpFieldSelection)
 
         Returns:
-        각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
+            각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
             (가장 마지막 필드에는 0x02가 붙지 않는다.)
             "필드이름#1\x02필드이름#2\x02...필드이름#n"
         """
@@ -7093,53 +7074,56 @@ class Hwp:
         예를 들어 문서 중 title, body, title, body, footer 순으로
         5개의 필드가 존재할 때, hwpFieldPlain, hwpFieldNumber, HwpFieldCount
         세 가지 형식에 따라 다음과 같은 내용이 돌아온다.
-        hwpFieldPlain: "title\x02body\x02title\x02body\x02footer"
-        hwpFieldNumber: "title{{0}}\x02body{{0}}\x02title{{1}}\x02body{{1}}\x02footer{{0}}"
-        hwpFieldCount: "title{{2}}\x02body{{2}}\x02footer{{1}}"
 
-        :param number:
-            문서 내에서 동일한 이름의 필드가 여러 개 존재할 경우
-            이를 구별하기 위한 식별방법을 지정한다.
-            생략하면 0(hwpFieldPlain)이 지정된다.
-            0: 아무 기호 없이 순서대로 필드의 이름을 나열한다.(hwpFieldPlain)
-            1: 필드이름 뒤에 일련번호가 {{#}}과 같은 형식으로 붙는다.(hwpFieldNumber)
-            2: 필드이름 뒤에 그 필드의 개수가 {{#}}과 같은 형식으로 붙는다.(hwpFieldCount)
+            - hwpFieldPlain: "title\x02body\x02title\x02body\x02footer"
+            - hwpFieldNumber: "title{{0}}\x02body{{0}}\x02title{{1}}\x02body{{1}}\x02footer{{0}}"
+            - hwpFieldCount: "title{{2}}\x02body{{2}}\x02footer{{1}}"
 
-        :param option:
-            다음과 같은 옵션을 조합할 수 있다. 0을 지정하면 모두 off이다.
-            생략하면 0이 지정된다.
-            0x01: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere과는 함께 지정할 수 없다.(hwpFieldCell)
-            0x02: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
-            0x04: 선택된 내용 안에 존재하는 필드 리스트를 구한다.(HwpFieldSelection)
+        Args:
+            number:
+                문서 내에서 동일한 이름의 필드가 여러 개 존재할 경우 이를 구별하기 위한 식별방법을 지정한다. 생략하면 0(hwpFieldPlain)이 지정된다.
+
+                    - 0: 아무 기호 없이 순서대로 필드의 이름을 나열한다.(hwpFieldPlain)
+                    - 1: 필드이름 뒤에 일련번호가 ``{{#}}``과 같은 형식으로 붙는다.(hwpFieldNumber)
+                    - 2: 필드이름 뒤에 그 필드의 개수가 ``{{#}}``과 같은 형식으로 붙는다.(hwpFieldCount)
+
+            option:
+                다음과 같은 옵션을 조합할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
+
+                    - 0x01: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere과는 함께 지정할 수 없다.(hwpFieldCell)
+                    - 0x02: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
+                    - 0x04: 선택된 내용 안에 존재하는 필드 리스트를 구한다.(HwpFieldSelection)
 
         Returns:
-        각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
+            각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
             (가장 마지막 필드에는 0x02가 붙지 않는다.)
             "필드이름#1\x02필드이름#2\x02...필드이름#n"
         """
         return self.hwp.GetFieldList(Number=number, option=option)
 
-    def get_field_text(self, field: str | list | tuple | set, idx=0):
+    def get_field_text(self, field: str | list | tuple | set, idx: int = 0) -> str:
         """
         지정한 필드에서 문자열을 구한다.
 
-
-        :param field:
-            텍스트를 구할 필드 이름의 리스트.
-            다음과 같이 필드 사이를 문자 코드 0x02로 구분하여
-            한 번에 여러 개의 필드를 지정할 수 있다.
-            "필드이름#1\x02필드이름#2\x02...필드이름#n"
-            지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.
-            "필드이름": 이름의 필드 중 첫 번째
-            "필드이름{{n}}": 지정한 이름의 필드 중 n 번째
-            예를 들어 "제목{{1}}\x02본문\x02이름{{0}}" 과 같이 지정하면
-            '제목'이라는 이름의 필드 중 두 번째,
-            '본문'이라는 이름의 필드 중 첫 번째,
-            '이름'이라는 이름의 필드 중 첫 번째를 각각 지정한다.
-            즉, '필드이름'과 '필드이름{{0}}'은 동일한 의미로 해석된다.
+        Args:
+            field:
+                텍스트를 구할 필드 이름의 리스트.
+                다음과 같이 필드 사이를 문자 코드 0x02로 구분하여
+                한 번에 여러 개의 필드를 지정할 수 있다.
+                "필드이름#1\x02필드이름#2\x02...필드이름#n"
+                지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.
+                "필드이름": 이름의 필드 중 첫 번째
+                "필드이름{{n}}": 지정한 이름의 필드 중 n 번째
+                예를 들어 "제목{{1}}\x02본문\x02이름{{0}}" 과 같이 지정하면
+                '제목'이라는 이름의 필드 중 두 번째,
+                '본문'이라는 이름의 필드 중 첫 번째,
+                '이름'이라는 이름의 필드 중 첫 번째를 각각 지정한다.
+                즉, '필드이름'과 '필드이름{{0}}'은 동일한 의미로 해석된다.
+            idx:
+                특정 필드가 여러 개이고, 각각의 값이 다를 때, ``field{{n}}`` 대신 ``hwp.get_field_text(field, idx=n)``라고 작성할 수 있다.
 
         Returns:
-        텍스트 데이터가 돌아온다.
+            텍스트 데이터가 돌아온다.
             텍스트에서 탭은 '\t'(0x9),
             문단 바뀜은 CR/LF(0x0D/0x0A == \r\n)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
@@ -7158,27 +7142,29 @@ class Hwp:
         elif isinstance(field, list | tuple | set):
             return self.hwp.GetFieldText(Field="\x02".join(str(i) for i in field))
 
-    def GetFieldText(self, field: str | list | tuple | set, idx=0):
+    def GetFieldText(self, field: str | list | tuple | set, idx: int = 0) -> str:
         """
         지정한 필드에서 문자열을 구한다.
 
-
-        :param field:
-            텍스트를 구할 필드 이름의 리스트.
-            다음과 같이 필드 사이를 문자 코드 0x02로 구분하여
-            한 번에 여러 개의 필드를 지정할 수 있다.
-            "필드이름#1\x02필드이름#2\x02...필드이름#n"
-            지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.
-            "필드이름": 이름의 필드 중 첫 번째
-            "필드이름{{n}}": 지정한 이름의 필드 중 n 번째
-            예를 들어 "제목{{1}}\x02본문\x02이름{{0}}" 과 같이 지정하면
-            '제목'이라는 이름의 필드 중 두 번째,
-            '본문'이라는 이름의 필드 중 첫 번째,
-            '이름'이라는 이름의 필드 중 첫 번째를 각각 지정한다.
-            즉, '필드이름'과 '필드이름{{0}}'은 동일한 의미로 해석된다.
+        Args:
+            field:
+                텍스트를 구할 필드 이름의 리스트.
+                다음과 같이 필드 사이를 문자 코드 0x02로 구분하여
+                한 번에 여러 개의 필드를 지정할 수 있다.
+                "필드이름#1\x02필드이름#2\x02...필드이름#n"
+                지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.
+                "필드이름": 이름의 필드 중 첫 번째
+                "필드이름{{n}}": 지정한 이름의 필드 중 n 번째
+                예를 들어 "제목{{1}}\x02본문\x02이름{{0}}" 과 같이 지정하면
+                '제목'이라는 이름의 필드 중 두 번째,
+                '본문'이라는 이름의 필드 중 첫 번째,
+                '이름'이라는 이름의 필드 중 첫 번째를 각각 지정한다.
+                즉, '필드이름'과 '필드이름{{0}}'은 동일한 의미로 해석된다.
+            idx:
+                특정 필드가 여러 개이고, 각각의 값이 다를 때, ``field{{n}}`` 대신 ``hwp.GetFieldText(field, idx=n)``라고 작성할 수 있다.
 
         Returns:
-        텍스트 데이터가 돌아온다.
+            텍스트 데이터가 돌아온다.
             텍스트에서 탭은 '\t'(0x9),
             문단 바뀜은 CR/LF(0x0D/0x0A == \r\n)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
@@ -7197,24 +7183,23 @@ class Hwp:
         elif isinstance(field, list | tuple | set):
             return self.hwp.GetFieldText(Field="\x02".join(str(i) for i in field))
 
-    def get_file_info(self, filename):
+    def get_file_info(self, filename: str) -> str:
         """
         파일 정보를 알아낸다.
 
         한글 문서를 열기 전에 암호가 걸린 문서인지 확인할 목적으로 만들어졌다.
         (현재 한/글2022 기준으로 hwpx포맷에 대해서는 파일정보를 파악할 수 없다.)
 
-        :param filename:
-            정보를 구하고자 하는 hwp 파일의 전체 경로
+        Args:
+            filename: 정보를 구하고자 하는 hwp 파일의 전체 경로
 
         Returns:
-        "FileInfo" ParameterSet이 반환된다.
-            파라미터셋의 ItemID는 아래와 같다.
-            Format(string) : 파일의 형식.(HWP : 한/글 파일, UNKNOWN : 알 수 없음.)
-            VersionStr(string) : 파일의 버전 문자열. ex)5.0.0.3
-            VersionNum(unsigned int) : 파일의 버전. ex) 0x05000003
-            Encrypted(int) : 암호 여부 (현재는 파일 버전 3.0.0.0 이후 문서-한/글97, 한/글 워디안 및 한/글 2002 이상의 버전-에 대해서만 판단한다.)
-            (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
+            "FileInfo" ParameterSet이 반환된다. 파라미터셋의 ItemID는 아래와 같다.
+
+                - Format(string) : 파일의 형식.(HWP : 한/글 파일, UNKNOWN : 알 수 없음.)
+                - VersionStr(string) : 파일의 버전 문자열. ex)5.0.0.3
+                - VersionNum(unsigned int) : 파일의 버전. ex) 0x05000003
+                - Encrypted(int) : 암호 여부. 현재는 파일 버전 3.0.0.0 이후 문서-한/글97, 한/글 워디안 및 한/글 2002 이상의 버전-에 대해서만 판단한다. (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -7240,17 +7225,16 @@ class Hwp:
         한글 문서를 열기 전에 암호가 걸린 문서인지 확인할 목적으로 만들어졌다.
         (현재 한/글2022 기준으로 hwpx포맷에 대해서는 파일정보를 파악할 수 없다.)
 
-        :param filename:
-            정보를 구하고자 하는 hwp 파일의 전체 경로
+        Args:
+            filename: 정보를 구하고자 하는 hwp 파일의 전체 경로
 
         Returns:
-        "FileInfo" ParameterSet이 반환된다.
-            파라미터셋의 ItemID는 아래와 같다.
-            Format(string) : 파일의 형식.(HWP : 한/글 파일, UNKNOWN : 알 수 없음.)
-            VersionStr(string) : 파일의 버전 문자열. ex)5.0.0.3
-            VersionNum(unsigned int) : 파일의 버전. ex) 0x05000003
-            Encrypted(int) : 암호 여부 (현재는 파일 버전 3.0.0.0 이후 문서-한/글97, 한/글 워디안 및 한/글 2002 이상의 버전-에 대해서만 판단한다.)
-            (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
+            "FileInfo" ParameterSet이 반환된다. 파라미터셋의 ItemID는 아래와 같다.
+
+                - Format(string) : 파일의 형식.(HWP : 한/글 파일, UNKNOWN : 알 수 없음.)
+                - VersionStr(string) : 파일의 버전 문자열. ex)5.0.0.3
+                - VersionNum(unsigned int) : 파일의 버전. ex) 0x05000003
+                - Encrypted(int) : 암호 여부. 현재는 파일 버전 3.0.0.0 이후 문서-한/글97, 한/글 워디안 및 한/글 2002 이상의 버전-에 대해서만 판단한다. (-1: 판단할 수 없음, 0: 암호가 걸려 있지 않음, 양수: 암호가 걸려 있음.)
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -7269,23 +7253,47 @@ class Hwp:
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.GetFileInfo(filename=filename)
 
-    def get_font_list(self, langid=""):
-        self.scan_font()
-        return self.hwp.GetFontList(langid=langid)
+    def get_font_list(self, langid: str = "") -> list[str]:
+        """
+        현재 문서에 사용되고 있는 폰트 목록 리턴
 
-    def GetFontList(self, langid=""):
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.get_font_list()
+            ['D2Coding,R', 'Pretendard Variable Thin,R', '나눔명조,R', '함초롬바탕,R']
+        """
+        self.scan_font()
+        return [i.rsplit(",", maxsplit=1)[0] for i in self.hwp.GetFontList(langid=langid).split("\x02")]
+
+    def GetFontList(self, langid: str = "") -> list:
+        """
+        현재 문서에 사용되고 있는 폰트 목록 리턴
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.get_font_list()
+            ['D2Coding,R', 'Pretendard Variable Thin,R', '나눔명조,R', '함초롬바탕,R']
+        """
         self.scan_font()
         return self.hwp.GetFontList(langid=langid)
 
     def get_heading_string(self):
         """
-        현재 커서가 위치한 문단의 글머리표/문단번호/개요번호를 추출한다.
+        현재 커서가 위치한 문단 시작부분의 글머리표/문단번호/개요번호를 추출한다.
 
         글머리표/문단번호/개요번호가 있는 경우, 해당 문자열을 얻어올 수 있다.
         문단에 글머리표/문단번호/개요번호가 없는 경우, 빈 문자열이 추출된다.
 
         Returns:
-        (글머리표/문단번호/개요번호가 있다면) 해당 문자열이 반환된다.
+            (글머리표/문단번호/개요번호가 있다면) 해당 문자열이 반환된다.
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.get_heading_string()
+            '1.'
         """
         return self.hwp.GetHeadingString()
 
@@ -7297,46 +7305,22 @@ class Hwp:
         문단에 글머리표/문단번호/개요번호가 없는 경우, 빈 문자열이 추출된다.
 
         Returns:
-        (글머리표/문단번호/개요번호가 있다면) 해당 문자열이 반환된다.
+            (글머리표/문단번호/개요번호가 있다면) 해당 문자열이 반환된다.
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.GetHeadingString()
+            '1.'
         """
         return self.hwp.GetHeadingString()
 
-    def get_message_box_mode(self):
+    def get_message_box_mode(self) -> int:
         """
-        현재 메시지 박스의 Mode를 int로 얻어온다.
+        현재 메시지 박스의 Mode를 ``int``로 얻어온다.
 
-        set_message_box_mode와 함께 쓰인다.
-        6개의 대화상자에서 각각 확인/취소/종료/재시도/무시/예/아니오 버튼을
-        자동으로 선택할 수 있게 설정할 수 있으며 조합 가능하다.
-
-        Returns:
-        // 메시지 박스의 종류
-            MB_MASK: 0x00FFFFFF
-            // 1. 확인(MB_OK) : IDOK(1)
-            MB_OK_IDOK: 0x00000001
-            MB_OK_MASK: 0x0000000F
-            // 2. 확인/취소(MB_OKCANCEL) : IDOK(1), IDCANCEL(2)
-            MB_OKCANCEL_IDOK: 0x00000010
-            MB_OKCANCEL_IDCANCEL: 0x00000020
-            MB_OKCANCEL_MASK: 0x000000F0
-            // 3. 종료/재시도/무시(MB_ABORTRETRYIGNORE) : IDABORT(3), IDRETRY(4), IDIGNORE(5)
-            MB_ABORTRETRYIGNORE_IDABORT: 0x00000100
-            MB_ABORTRETRYIGNORE_IDRETRY: 0x00000200
-            MB_ABORTRETRYIGNORE_IDIGNORE: 0x00000400
-            MB_ABORTRETRYIGNORE_MASK: 0x00000F00
-            // 4. 예/아니오/취소(MB_YESNOCANCEL) : IDYES(6), IDNO(7), IDCANCEL(2)
-            MB_YESNOCANCEL_IDYES: 0x00001000
-            MB_YESNOCANCEL_IDNO: 0x00002000
-            MB_YESNOCANCEL_IDCANCEL: 0x00004000
-            MB_YESNOCANCEL_MASK: 0x0000F000
-            // 5. 예/아니오(MB_YESNO) : IDYES(6), IDNO(7)
-            MB_YESNO_IDYES: 0x00010000
-            MB_YESNO_IDNO: 0x00020000
-            MB_YESNO_MASK: 0x000F0000
-            // 6. 재시도/취소(MB_RETRYCANCEL) : IDRETRY(4), IDCANCEL(2)
-            MB_RETRYCANCEL_IDRETRY: 0x00100000
-            MB_RETRYCANCEL_IDCANCEL: 0x00200000
-            MB_RETRYCANCEL_MASK: 0x00F00000
+        set_message_box_mode와 함께 쓰인다. 6개의 대화상자에서 각각 확인/취소/종료/재시도/무시/예/아니오 버튼을 자동으로 선택할 수 있게 설정할 수 있으며 조합 가능하다.
+        리턴하는 정수의 의미는 ``set_message_box_mode``를 참고한다.
         """
         return self.hwp.GetMessageBoxMode()
 
@@ -7347,35 +7331,7 @@ class Hwp:
         set_message_box_mode와 함께 쓰인다.
         6개의 대화상자에서 각각 확인/취소/종료/재시도/무시/예/아니오 버튼을
         자동으로 선택할 수 있게 설정할 수 있으며 조합 가능하다.
-
-        Returns:
-        // 메시지 박스의 종류
-            MB_MASK: 0x00FFFFFF
-            // 1. 확인(MB_OK) : IDOK(1)
-            MB_OK_IDOK: 0x00000001
-            MB_OK_MASK: 0x0000000F
-            // 2. 확인/취소(MB_OKCANCEL) : IDOK(1), IDCANCEL(2)
-            MB_OKCANCEL_IDOK: 0x00000010
-            MB_OKCANCEL_IDCANCEL: 0x00000020
-            MB_OKCANCEL_MASK: 0x000000F0
-            // 3. 종료/재시도/무시(MB_ABORTRETRYIGNORE) : IDABORT(3), IDRETRY(4), IDIGNORE(5)
-            MB_ABORTRETRYIGNORE_IDABORT: 0x00000100
-            MB_ABORTRETRYIGNORE_IDRETRY: 0x00000200
-            MB_ABORTRETRYIGNORE_IDIGNORE: 0x00000400
-            MB_ABORTRETRYIGNORE_MASK: 0x00000F00
-            // 4. 예/아니오/취소(MB_YESNOCANCEL) : IDYES(6), IDNO(7), IDCANCEL(2)
-            MB_YESNOCANCEL_IDYES: 0x00001000
-            MB_YESNOCANCEL_IDNO: 0x00002000
-            MB_YESNOCANCEL_IDCANCEL: 0x00004000
-            MB_YESNOCANCEL_MASK: 0x0000F000
-            // 5. 예/아니오(MB_YESNO) : IDYES(6), IDNO(7)
-            MB_YESNO_IDYES: 0x00010000
-            MB_YESNO_IDNO: 0x00020000
-            MB_YESNO_MASK: 0x000F0000
-            // 6. 재시도/취소(MB_RETRYCANCEL) : IDRETRY(4), IDCANCEL(2)
-            MB_RETRYCANCEL_IDRETRY: 0x00100000
-            MB_RETRYCANCEL_IDCANCEL: 0x00200000
-            MB_RETRYCANCEL_MASK: 0x00F00000
+        리턴하는 정수의 의미는 ``set_message_box_mode``를 참고한다.
         """
         return self.hwp.GetMessageBoxMode()
 
@@ -7398,24 +7354,26 @@ class Hwp:
         단위가 HWPUNIT임을 주의해야 한다.
         (1 inch = 7200 HWPUNIT, 1mm = 283.465 HWPUNIT)
 
-        :param x_rel_to:
-            X좌표계의 기준 위치(기본값은 1:쪽기준)
-            0: 종이 기준으로 좌표를 가져온다.
-            1: 쪽 기준으로 좌표를 가져온다.
+        Args:
+            x_rel_to: X좌표계의 기준 위치(기본값은 1:쪽기준)
 
-        :param y_rel_to:
-            Y좌표계의 기준 위치(기본값은 1:쪽기준)
-            0: 종이 기준으로 좌표를 가져온다.
-            1: 쪽 기준으로 좌표를 가져온다.
+                - 0: 종이 기준으로 좌표를 가져온다.
+                - 1: 쪽 기준으로 좌표를 가져온다.
+
+            y_rel_to: Y좌표계의 기준 위치(기본값은 1:쪽기준)
+
+                - 0: 종이 기준으로 좌표를 가져온다.
+                - 1: 쪽 기준으로 좌표를 가져온다.
 
         Returns:
-        "MousePos" ParameterSet이 반환된다.
+            "MousePos" ParameterSet이 반환된다.
             아이템ID는 아래와 같다.
-            XRelTo(unsigned long): 가로 상대적 기준(0: 종이, 1: 쪽)
-            YRelTo(unsigned long): 세로 상대적 기준(0: 종이, 1: 쪽)
-            Page(unsigned long): 페이지 번호(0-based)
-            X(long): 가로 클릭한 위치(HWPUNIT)
-            Y(long): 세로 클릭한 위치(HWPUNIT)
+
+                - XRelTo(unsigned long): 가로 상대적 기준(0: 종이, 1: 쪽)
+                - YRelTo(unsigned long): 세로 상대적 기준(0: 종이, 1: 쪽)
+                - Page(unsigned long): 페이지 번호(0-based)
+                - X(long): 가로 클릭한 위치(HWPUNIT)
+                - Y(long): 세로 클릭한 위치(HWPUNIT)
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -7441,24 +7399,26 @@ class Hwp:
         단위가 HWPUNIT임을 주의해야 한다.
         (1 inch = 7200 HWPUNIT, 1mm = 283.465 HWPUNIT)
 
-        :param x_rel_to:
-            X좌표계의 기준 위치(기본값은 1:쪽기준)
-            0: 종이 기준으로 좌표를 가져온다.
-            1: 쪽 기준으로 좌표를 가져온다.
+        Args:
+            x_rel_to: X좌표계의 기준 위치(기본값은 1:쪽기준)
 
-        :param y_rel_to:
-            Y좌표계의 기준 위치(기본값은 1:쪽기준)
-            0: 종이 기준으로 좌표를 가져온다.
-            1: 쪽 기준으로 좌표를 가져온다.
+                - 0: 종이 기준으로 좌표를 가져온다.
+                - 1: 쪽 기준으로 좌표를 가져온다.
+
+            y_rel_to: Y좌표계의 기준 위치(기본값은 1:쪽기준)
+
+                - 0: 종이 기준으로 좌표를 가져온다.
+                - 1: 쪽 기준으로 좌표를 가져온다.
 
         Returns:
-        "MousePos" ParameterSet이 반환된다.
+            "MousePos" ParameterSet이 반환된다.
             아이템ID는 아래와 같다.
-            XRelTo(unsigned long): 가로 상대적 기준(0: 종이, 1: 쪽)
-            YRelTo(unsigned long): 세로 상대적 기준(0: 종이, 1: 쪽)
-            Page(unsigned long): 페이지 번호(0-based)
-            X(long): 가로 클릭한 위치(HWPUNIT)
-            Y(long): 세로 클릭한 위치(HWPUNIT)
+
+                - XRelTo(unsigned long): 가로 상대적 기준(0: 종이, 1: 쪽)
+                - YRelTo(unsigned long): 세로 상대적 기준(0: 종이, 1: 쪽)
+                - Page(unsigned long): 페이지 번호(0-based)
+                - X(long): 가로 클릭한 위치(HWPUNIT)
+                - Y(long): 세로 클릭한 위치(HWPUNIT)
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -7486,45 +7446,44 @@ class Hwp:
         팁2: 아무리 get_page_text라도 유일하게 표번호는 추출하지 못한다.
         표번호는 XML태그 속성 안에 저장되기 때문이다.
 
-        :param pgno:
-            텍스트를 추출 할 페이지의 번호(0부터 시작)
+        Args:
+            pgno: 텍스트를 추출 할 페이지의 번호(0부터 시작)
 
-        :param option:
-            추출 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다.
-            생략(또는 0xffffffff)하면 모든 텍스트를 추출한다.
-            0x00: 본문 텍스트만 추출한다.(maskNormal)
-            0x01: 표에대한 텍스트를 추출한다.(maskTable)
-            0x02: 글상자 텍스트를 추출한다.(maskTextbox)
-            0x04: 캡션 텍스트를 추출한다. (표, ShapeObject)(maskCaption)
+            option: 추출 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다. 생략(또는 0xffffffff)하면 모든 텍스트를 추출한다.
+
+                - 0x00: 본문 텍스트만 추출한다.(maskNormal)
+                - 0x01: 표에대한 텍스트를 추출한다.(maskTable)
+                - 0x02: 글상자 텍스트를 추출한다.(maskTextbox)
+                - 0x04: 캡션 텍스트를 추출한다. (표, ShapeObject)(maskCaption)
 
         Returns:
-        해당 페이지의 텍스트가 추출된다.
+            해당 페이지의 텍스트가 추출된다.
             글머리는 추출하지만, 표번호는 추출하지 못한다.
         """
         return self.hwp.GetPageText(pgno=pgno, option=option)
 
     def GetPageText(self, pgno: int = 0, option: hex = 0xffffffff) -> str:
         """
-        페이지 단위의 텍스트 추출
+        페이지 단위의 텍스트 추출.
+
         일반 텍스트(글자처럼 취급 도형 포함)를 우선적으로 추출하고,
         도형(표, 글상자) 내의 텍스트를 추출한다.
-        팁: get_text로는 글머리를 추출하지 않지만, get_page_text는 추출한다.
-        팁2: 아무리 get_page_text라도 유일하게 표번호는 추출하지 못한다.
-        표번호는 XML태그 속성 안에 저장되기 때문이다.
 
-        :param pgno:
-            텍스트를 추출 할 페이지의 번호(0부터 시작)
+            - 팁1: get_text로는 글머리를 추출하지 않지만, get_page_text는 추출한다.
+            - 팁2: 아무리 get_page_text라도 유일하게 표번호는 추출하지 못한다. 표번호는 XML태그 속성 안에 저장되기 때문이다.
 
-        :param option:
-            추출 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다.
-            생략(또는 0xffffffff)하면 모든 텍스트를 추출한다.
-            0x00: 본문 텍스트만 추출한다.(maskNormal)
-            0x01: 표에대한 텍스트를 추출한다.(maskTable)
-            0x02: 글상자 텍스트를 추출한다.(maskTextbox)
-            0x04: 캡션 텍스트를 추출한다. (표, ShapeObject)(maskCaption)
+        Args:
+            pgno: 텍스트를 추출 할 페이지의 번호(0부터 시작)
+
+            option: 추출 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다. 생략(또는 0xffffffff)하면 모든 텍스트를 추출한다.
+
+                - 0x00: 본문 텍스트만 추출한다.(maskNormal)
+                - 0x01: 표에대한 텍스트를 추출한다.(maskTable)
+                - 0x02: 글상자 텍스트를 추출한다.(maskTextbox)
+                - 0x04: 캡션 텍스트를 추출한다. (표, ShapeObject)(maskCaption)
 
         Returns:
-        해당 페이지의 텍스트가 추출된다.
+            해당 페이지의 텍스트가 추출된다.
             글머리는 추출하지만, 표번호는 추출하지 못한다.
         """
         return self.hwp.GetPageText(pgno=pgno, option=option)
@@ -7532,15 +7491,17 @@ class Hwp:
     def get_pos(self) -> tuple[int]:
         """
         캐럿의 위치를 얻어온다.
+
         파라미터 중 리스트는, 문단과 컨트롤들이 연결된 한/글 문서 내 구조를 뜻한다.
         리스트 아이디는 문서 내 위치 정보 중 하나로서 SelectText에 넘겨줄 때 사용한다.
         (파이썬 자료형인 list가 아님)
 
         Returns:
-        (List, para, pos) 튜플.
-            list: 캐럿이 위치한 문서 내 list ID(본문이 0)
-            para: 캐럿이 위치한 문단 ID(0부터 시작)
-            pos: 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
+            (List, Para, Pos) 튜플.
+
+                - List: 캐럿이 위치한 문서 내 list ID(본문이 0)
+                - Para: 캐럿이 위치한 문단 ID(0부터 시작)
+                - Pos: 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
 
         """
         return self.hwp.GetPos()
@@ -7548,15 +7509,17 @@ class Hwp:
     def GetPos(self) -> tuple[int]:
         """
         캐럿의 위치를 얻어온다.
+
         파라미터 중 리스트는, 문단과 컨트롤들이 연결된 한/글 문서 내 구조를 뜻한다.
         리스트 아이디는 문서 내 위치 정보 중 하나로서 SelectText에 넘겨줄 때 사용한다.
         (파이썬 자료형인 list가 아님)
 
         Returns:
-        (List, para, pos) 튜플.
-            list: 캐럿이 위치한 문서 내 list ID(본문이 0)
-            para: 캐럿이 위치한 문단 ID(0부터 시작)
-            pos: 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
+            (List, Para, Pos) 튜플.
+
+                - List: 캐럿이 위치한 문서 내 list ID(본문이 0)
+                - Para: 캐럿이 위치한 문단 ID(0부터 시작)
+                - Pos: 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
 
         """
         return self.hwp.GetPos()
@@ -7568,7 +7531,7 @@ class Hwp:
         해당 파라미터셋은 set_pos_by_set에 직접 집어넣을 수 있어 간편히 사용할 수 있다.
 
         Returns:
-        캐럿 위치에 대한 ParameterSet
+            캐럿 위치에 대한 ParameterSet
             해당 파라미터셋의 아이템은 아래와 같다.
             "List": 캐럿이 위치한 문서 내 list ID(본문이 0)
             "Para": 캐럿이 위치한 문단 ID(0부터 시작)
@@ -7596,7 +7559,7 @@ class Hwp:
         해당 파라미터셋은 set_pos_by_set에 직접 집어넣을 수 있어 간편히 사용할 수 있다.
 
         Returns:
-        캐럿 위치에 대한 ParameterSet
+            캐럿 위치에 대한 ParameterSet
             해당 파라미터셋의 아이템은 아래와 같다.
             "List": 캐럿이 위치한 문서 내 list ID(본문이 0)
             "Para": 캐럿이 위치한 문단 ID(0부터 시작)
@@ -7605,7 +7568,7 @@ class Hwp:
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
-            >>> pset = hwp.get_pos_by_set()  # 캐럿위치 저장
+            >>> pset = hwp.GetPosBySet()  # 캐럿위치 저장
             >>> print(pset.Item("List"))
             6
             >>> print(pset.Item("Para"))
@@ -7621,21 +7584,21 @@ class Hwp:
         """
         문서에 포함된 매크로(스크립트매크로 제외) 소스코드를 가져온다.
         문서포함 매크로는 기본적으로
+
         ```
         function OnDocument_New() {
         }
         function OnDocument_Open() {
         }
         ```
-        형태로 비어있는 상태이며,
-        OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
-        코드를 추가하고 실행할 수 있다.
 
-        :param filename:
-            매크로 소스를 가져올 한/글 문서의 전체경로
+        형태로 비어있는 상태이며, OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만 코드를 추가하고 실행할 수 있다.
+
+        Args:
+            filename: 매크로 소스를 가져올 한/글 문서의 전체경로
 
         Returns:
-        (문서에 포함된) 스크립트의 소스코드
+            (문서에 포함된) 스크립트의 소스코드
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -7706,15 +7669,15 @@ class Hwp:
         현재 설정된 블록의 위치정보를 얻어온다.
 
         Returns:
-        블록상태여부, 시작과 끝위치 인덱스인 6개 정수 등 7개 요소의 튜플을 리턴
-            (is_block, slist, spara, spos, elist, epara, epos)
-            is_block: 현재 블록선택상태 여부(블록상태이면 True)
-            slist: 설정된 블록의 시작 리스트 아이디.
-            spara: 설정된 블록의 시작 문단 아이디.
-            spos: 설정된 블록의 문단 내 시작 글자 단위 위치.
-            elist: 설정된 블록의 끝 리스트 아이디.
-            epara: 설정된 블록의 끝 문단 아이디.
-            epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
+            블록상태여부, 시작과 끝위치 인덱스인 6개 정수 등 7개 요소의 튜플을 리턴(is_block, slist, spara, spos, elist, epara, epos)
+
+                - is_block: 현재 블록선택상태 여부(블록상태이면 True)
+                - slist: 설정된 블록의 시작 리스트 아이디.
+                - spara: 설정된 블록의 시작 문단 아이디.
+                - spos: 설정된 블록의 문단 내 시작 글자 단위 위치.
+                - elist: 설정된 블록의 끝 리스트 아이디.
+                - epara: 설정된 블록의 끝 문단 아이디.
+                - epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -7729,25 +7692,25 @@ class Hwp:
         현재 설정된 블록의 위치정보를 얻어온다.
 
         Returns:
-        블록상태여부, 시작과 끝위치 인덱스인 6개 정수 등 7개 요소의 튜플을 리턴
-            (is_block, slist, spara, spos, elist, epara, epos)
-            is_block: 현재 블록선택상태 여부(블록상태이면 True)
-            slist: 설정된 블록의 시작 리스트 아이디.
-            spara: 설정된 블록의 시작 문단 아이디.
-            spos: 설정된 블록의 문단 내 시작 글자 단위 위치.
-            elist: 설정된 블록의 끝 리스트 아이디.
-            epara: 설정된 블록의 끝 문단 아이디.
-            epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
+            블록상태여부, 시작과 끝위치 인덱스인 6개 정수 등 7개 요소의 튜플을 리턴(is_block, slist, spara, spos, elist, epara, epos)
+
+                - is_block: 현재 블록선택상태 여부(블록상태이면 True)
+                - slist: 설정된 블록의 시작 리스트 아이디.
+                - spara: 설정된 블록의 시작 문단 아이디.
+                - spos: 설정된 블록의 문단 내 시작 글자 단위 위치.
+                - elist: 설정된 블록의 끝 리스트 아이디.
+                - epara: 설정된 블록의 끝 문단 아이디.
+                - epos: 설정된 블록의 문단 내 끝 글자 단위 위치.
 
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
-            >>> hwp.get_selected_pos()
+            >>> hwp.GetSelectedPos()
             (True, 0, 0, 16, 0, 7, 16)
         """
         return self.hwp.GetSelectedPos()
 
-    def get_selected_pos_by_set(self, sset, eset):
+    def get_selected_pos_by_set(self, sset, eset) -> bool:
         """
         현재 설정된 블록의 위치정보를 얻어온다.
 
@@ -7755,20 +7718,19 @@ class Hwp:
         실행 전 GetPos 형태의 파라미터셋 두 개를 미리 만들어서
         인자로 넣어줘야 한다.
 
-        :param sset:
-            설정된 블록의 시작 파라메터셋 (ListParaPos)
-
-        :param eset:
-            설정된 블록의 끝 파라메터셋 (ListParaPos)
+        Args:
+            sset: 설정된 블록의 시작 파라메터셋 (ListParaPos)
+            eset: 설정된 블록의 끝 파라메터셋 (ListParaPos)
 
         Returns:
-        성공하면 True, 실패하면 False.
-            실행시 sset과 eset의 아이템 값이 업데이트된다.
+            성공하면 True, 실패하면 False. (실행시 sset과 eset의 아이템 값이 업데이트된다.)
 
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
+            >>> # 선택할 블록의 시작 위치에 캐럿을 둔 상태로
             >>> sset = hwp.get_pos_by_set()
+            >>> # 블록 끝이 될 부분으로 이동한 후에
             >>> eset = hwp.get_pos_by_set()
             >>> hwp.get_selected_pos_by_set(sset, eset)
             >>> hwp.set_pos_by_set(eset)
@@ -7784,22 +7746,21 @@ class Hwp:
         실행 전 GetPos 형태의 파라미터셋 두 개를 미리 만들어서
         인자로 넣어줘야 한다.
 
-        :param sset:
-            설정된 블록의 시작 파라메터셋 (ListParaPos)
-
-        :param eset:
-            설정된 블록의 끝 파라메터셋 (ListParaPos)
+        Args:
+            sset: 설정된 블록의 시작 파라메터셋 (ListParaPos)
+            eset: 설정된 블록의 끝 파라메터셋 (ListParaPos)
 
         Returns:
-        성공하면 True, 실패하면 False.
-            실행시 sset과 eset의 아이템 값이 업데이트된다.
+            성공하면 True, 실패하면 False. (실행시 sset과 eset의 아이템 값이 업데이트된다.)
 
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
+            >>> # 선택할 블록의 시작 위치에 캐럿을 둔 상태로
             >>> sset = hwp.get_pos_by_set()
+            >>> # 블록 끝이 될 부분으로 이동한 후에
             >>> eset = hwp.get_pos_by_set()
-            >>> hwp.get_selected_pos_by_set(sset, eset)
+            >>> hwp.GetSelectedPosBySet(sset, eset)
             >>> hwp.set_pos_by_set(eset)
             True
         """
@@ -7816,19 +7777,19 @@ class Hwp:
         move_pos(201)을 실행하면 된다.
 
         Returns:
-        (state: int, text: str) 형태의 튜플을 리턴한다.
-            state의 의미는 아래와 같다.
-            0: 텍스트 정보 없음
-            1: 리스트의 끝
-            2: 일반 텍스트
-            3: 다음 문단
-            4: 제어문자 내부로 들어감
-            5: 제어문자를 빠져나옴
-            101: 초기화 안 됨(init_scan() 실패 또는 init_scan()을 실행하지 않은 경우)
-            102: 텍스트 변환 실패
-            text는 추출한 텍스트 데이터이다.
-            텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,
+            (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
+
+            state의 의미는 아래와 같다.
+
+                - 0: 텍스트 정보 없음
+                - 1: 리스트의 끝
+                - 2: 일반 텍스트
+                - 3: 다음 문단
+                - 4: 제어문자 내부로 들어감
+                - 5: 제어문자를 빠져나옴
+                - 101: 초기화 안 됨(init_scan() 실패 또는 init_scan()을 실행하지 않은 경우)
+                - 102: 텍스트 변환 실패
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -7863,30 +7824,30 @@ class Hwp:
         move_pos(201)을 실행하면 된다.
 
         Returns:
-        (state: int, text: str) 형태의 튜플을 리턴한다.
-            state의 의미는 아래와 같다.
-            0: 텍스트 정보 없음
-            1: 리스트의 끝
-            2: 일반 텍스트
-            3: 다음 문단
-            4: 제어문자 내부로 들어감
-            5: 제어문자를 빠져나옴
-            101: 초기화 안 됨(init_scan() 실패 또는 init_scan()을 실행하지 않은 경우)
-            102: 텍스트 변환 실패
-            text는 추출한 텍스트 데이터이다.
-            텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,
+            (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
+
+            state의 의미는 아래와 같다.
+
+                - 0: 텍스트 정보 없음
+                - 1: 리스트의 끝
+                - 2: 일반 텍스트
+                - 3: 다음 문단
+                - 4: 제어문자 내부로 들어감
+                - 5: 제어문자를 빠져나옴
+                - 101: 초기화 안 됨(init_scan() 실패 또는 init_scan()을 실행하지 않은 경우)
+                - 102: 텍스트 변환 실패
 
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
-            >>> hwp.init_scan()
+            >>> hwp.InitScan()
             >>> while True:
-            ...     state, text = hwp.get_text()
+            ...     state, text = hwp.GetText()
             ...     print(state, text)
             ...     if state <= 1:
             ...         break
-            ... hwp.release_scan()
+            ... hwp.ReleaseScan()
             2
             2
             2 ㅁㄴㅇㄹ
@@ -7901,32 +7862,33 @@ class Hwp:
 
     def get_text_file(self, format="UNICODE", option=""):
         """
-        현재 열린 문서를 문자열로 넘겨준다.
+        현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
 
         이 함수는 JScript나 VBScript와 같이
         직접적으로 local disk를 접근하기 힘든 언어를 위해 만들어졌으므로
         disk를 접근할 수 있는 언어에서는 사용하지 않기를 권장.
         disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
         이 함수 역시 내부적으로는 save나 SaveBlockAction을 호출하도록 되어있고
-        텍스트로 저장된 파일이 메모리에서 3~4번 복사되기 때문에 느리고,
-        메모리를 낭비함.
-        팁: HTML로 추출시 표번호가 유지된다.
+        텍스트로 저장된 파일이 메모리에서 3~4번 복사되기 때문에 느리고, 메모리를 낭비함.
 
-        :param format:
-            파일의 형식. 기본값은 "UNICODE"
-            "HWP": HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
-            "HWPML2X": HWP 형식과 호환. 문서의 모든 정보를 유지
-            "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
-            "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
-            "TEXT": 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
-            소문자로 입력해도 된다.
+        팁1: ``hwp.Copy()``, ``hwp.Paste()`` 대신 get_text_file/set_text_file을 사용하기 추천.
+        팁2: ``format="HTML"``로 추출시 표번호가 유지된다.
 
-        :param option:
-            "saveblock": 선택된 블록만 저장. 개체 선택 상태에서는 동작하지 않는다.
-            기본값은 빈 문자열("")
+        Args:
+            format:
+                파일의 형식. 기본값은 "UNICODE". 내부적으로 str.lower() 메서드가 포함되어 있으므로 소문자로 입력해도 된다.
+
+                    - "HWP": HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+                    - "HWPML2X": HWP 형식과 호환. 문서의 모든 정보를 유지
+                    - "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
+                    - "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
+                    - "TEXT": 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
+
+            option:
+                option 파라미터에 "saveblock"을 지정하면 선택된 블록만 저장한다. 개체 선택 상태에서는 동작하지 않는다.
 
         Returns:
-        지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
+            지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -7938,160 +7900,129 @@ class Hwp:
 
     def GetTextFile(self, format="UNICODE", option=""):
         """
-        현재 열린 문서를 문자열로 넘겨준다.
+        현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
 
         이 함수는 JScript나 VBScript와 같이
         직접적으로 local disk를 접근하기 힘든 언어를 위해 만들어졌으므로
         disk를 접근할 수 있는 언어에서는 사용하지 않기를 권장.
         disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
         이 함수 역시 내부적으로는 save나 SaveBlockAction을 호출하도록 되어있고
-        텍스트로 저장된 파일이 메모리에서 3~4번 복사되기 때문에 느리고,
-        메모리를 낭비함.
-        팁: HTML로 추출시 표번호가 유지된다.
+        텍스트로 저장된 파일이 메모리에서 3~4번 복사되기 때문에 느리고, 메모리를 낭비함.
 
-        :param format:
-            파일의 형식. 기본값은 "UNICODE"
-            "HWP": HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
-            "HWPML2X": HWP 형식과 호환. 문서의 모든 정보를 유지
-            "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
-            "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
-            "TEXT": 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
-            소문자로 입력해도 된다.
+        팁1: ``hwp.Copy()``, ``hwp.Paste()`` 대신 get_text_file/set_text_file을 사용하기 추천.
+        팁2: ``format="HTML"``로 추출시 표번호가 유지된다.
 
-        :param option:
-            "saveblock": 선택된 블록만 저장. 개체 선택 상태에서는 동작하지 않는다.
-            기본값은 빈 문자열("")
+        Args:
+            format:
+                파일의 형식. 기본값은 "UNICODE". 내부적으로 str.lower() 메서드가 포함되어 있으므로 소문자로 입력해도 된다.
+
+                    - "HWP": HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+                    - "HWPML2X": HWP 형식과 호환. 문서의 모든 정보를 유지
+                    - "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
+                    - "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
+                    - "TEXT": 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
+
+            option:
+                option 파라미터에 "saveblock"을 지정하면 선택된 블록만 저장한다. 개체 선택 상태에서는 동작하지 않는다.
 
         Returns:
-        지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
+            지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
 
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
-            >>> hwp.get_text_file()
+            >>> hwp.GetTextFile()
             'ㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\n\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\n'
         """
         return self.hwp.GetTextFile(Format=format, option=option)
 
-    def get_translate_lang_list(self, cur_lang):
-        return self.hwp.GetTranslateLangList(curLang=cur_lang)
-
     def GetTranslateLangList(self, cur_lang):
         return self.hwp.GetTranslateLangList(curLang=cur_lang)
-
-    def get_user_info(self, user_info_id):
-        return self.hwp.GetUserInfo(userInfoId=user_info_id)
 
     def GetUserInfo(self, user_info_id):
         return self.hwp.GetUserInfo(userInfoId=user_info_id)
 
-    def gradation(self, gradation):
-        return self.hwp.Gradation(Gradation=gradation)
-
     def Gradation(self, gradation):
         return self.hwp.Gradation(Gradation=gradation)
-
-    def grid_method(self, grid_method):
-        return self.hwp.GridMethod(GridMethod=grid_method)
 
     def GridMethod(self, grid_method):
         return self.hwp.GridMethod(GridMethod=grid_method)
 
-    def grid_view_line(self, grid_view_line):
-        return self.hwp.GridViewLine(GridViewLine=grid_view_line)
-
     def GridViewLine(self, grid_view_line):
         return self.hwp.GridViewLine(GridViewLine=grid_view_line)
-
-    def gutter_method(self, gutter_type):
-        return self.hwp.GutterMethod(GutterType=gutter_type)
 
     def GutterMethod(self, gutter_type):
         return self.hwp.GutterMethod(GutterType=gutter_type)
 
-    def h_align(self, h_align):
-        return self.hwp.HAlign(HAlign=h_align)
-
     def HAlign(self, h_align):
         return self.hwp.HAlign(HAlign=h_align)
-
-    def handler(self, handler):
-        return self.hwp.Handler(Handler=handler)
 
     def Handler(self, handler):
         return self.hwp.Handler(Handler=handler)
 
-    def hash(self, hash):
-        return self.hwp.Hash(Hash=hash)
-
     def Hash(self, hash):
         return self.hwp.Hash(Hash=hash)
-
-    def hatch_style(self, hatch_style):
-        return self.hwp.HatchStyle(HatchStyle=hatch_style)
 
     def HatchStyle(self, hatch_style):
         return self.hwp.HatchStyle(HatchStyle=hatch_style)
 
-    def head_type(self, heading_type):
-        return self.hwp.HeadType(HeadingType=heading_type)
-
     def HeadType(self, heading_type):
         return self.hwp.HeadType(HeadingType=heading_type)
-
-    def height_rel(self, height_rel):
-        return self.hwp.HeightRel(HeightRel=height_rel)
 
     def HeightRel(self, height_rel):
         return self.hwp.HeightRel(HeightRel=height_rel)
 
-    def hiding(self, hiding):
-        return self.hwp.Hiding(Hiding=hiding)
-
     def Hiding(self, hiding):
         return self.hwp.Hiding(Hiding=hiding)
-
-    def horz_rel(self, horz_rel):
-        return self.hwp.HorzRel(HorzRel=horz_rel)
 
     def HorzRel(self, horz_rel):
         return self.hwp.HorzRel(HorzRel=horz_rel)
 
     def hwp_line_type(self, line_type: Literal[
-        "None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot", "LongDash", "Circle", "DoubleSlim", "SlimThick", "ThickSlim", "SlimThickSlim"] = "Solid"):
+        "None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot", "LongDash", "Circle", "DoubleSlim", "SlimThick", "ThickSlim", "SlimThickSlim"] = "Solid") -> int:
         """
-        "None": 없음(0)
+        한/글에서 표나 개체의 선 타입을 결정하는 헬퍼메서드. 단순히 문자열을 정수로 변환한다.
 
-        "Solid": 실선(1)
-        "Dash": 파선(2)
-        "Dot": 점선(3)
-        "DashDot": 일점쇄선(4)
-        "DashDotDot": 이점쇄선(5)
-        "LongDash": 긴 파선(6)
-        "Circle": 원형 점선(7)
-        "DoubleSlim": 이중 실선(8)
-        "SlimThick": 얇고 굵은 이중선(9)
-        "ThickSlim": 굵고 얇은 이중선(10)
-        "SlimThickSlim": 얇고 굵고 얇은 삼중선(11)
+        Args:
+            line_type:
+                문자열 파라미터. 종류는 아래와 같다.
+
+                    - "None": 없음(0)
+                    - "Solid": 실선(1)
+                    - "Dash": 파선(2)
+                    - "Dot": 점선(3)
+                    - "DashDot": 일점쇄선(4)
+                    - "DashDotDot": 이점쇄선(5)
+                    - "LongDash": 긴 파선(6)
+                    - "Circle": 원형 점선(7)
+                    - "DoubleSlim": 이중 실선(8)
+                    - "SlimThick": 얇고 굵은 이중선(9)
+                    - "ThickSlim": 굵고 얇은 이중선(10)
+                    - "SlimThickSlim": 얇고 굵고 얇은 삼중선(11)
         """
         return self.hwp.HwpLineType(LineType=line_type)
 
     def HwpLineType(self, line_type: Literal[
         "None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot", "LongDash", "Circle", "DoubleSlim", "SlimThick", "ThickSlim", "SlimThickSlim"] = "Solid"):
         """
-        "None": 없음(0)
+        한/글에서 표나 개체의 선 타입을 결정하는 헬퍼메서드. 단순히 문자열을 정수로 변환한다.
 
-        "Solid": 실선(1)
-        "Dash": 파선(2)
-        "Dot": 점선(3)
-        "DashDot": 일점쇄선(4)
-        "DashDotDot": 이점쇄선(5)
-        "LongDash": 긴 파선(6)
-        "Circle": 원형 점선(7)
-        "DoubleSlim": 이중 실선(8)
-        "SlimThick": 얇고 굵은 이중선(9)
-        "ThickSlim": 굵고 얇은 이중선(10)
-        "SlimThickSlim": 얇고 굵고 얇은 삼중선(11)
+        Args:
+            line_type:
+                문자열 파라미터. 종류는 아래와 같다.
+
+                    - "None": 없음(0)
+                    - "Solid": 실선(1)
+                    - "Dash": 파선(2)
+                    - "Dot": 점선(3)
+                    - "DashDot": 일점쇄선(4)
+                    - "DashDotDot": 이점쇄선(5)
+                    - "LongDash": 긴 파선(6)
+                    - "Circle": 원형 점선(7)
+                    - "DoubleSlim": 이중 실선(8)
+                    - "SlimThick": 얇고 굵은 이중선(9)
+                    - "ThickSlim": 굵고 얇은 이중선(10)
+                    - "SlimThickSlim": 얇고 굵고 얇은 삼중선(11)
         """
         return self.hwp.HwpLineType(LineType=line_type)
 
@@ -8139,51 +8070,33 @@ class Hwp:
             """
         return self.hwp.HwpLineWidth(LineWidth=line_width)
 
-    def hwp_outline_style(self, hwp_outline_style):
-        return self.hwp.HwpOutlineStyle(HwpOutlineStyle=hwp_outline_style)
-
     def HwpOutlineStyle(self, hwp_outline_style):
         return self.hwp.HwpOutlineStyle(HwpOutlineStyle=hwp_outline_style)
-
-    def hwp_outline_type(self, hwp_outline_type):
-        return self.hwp.HwpOutlineType(HwpOutlineType=hwp_outline_type)
 
     def HwpOutlineType(self, hwp_outline_type):
         return self.hwp.HwpOutlineType(HwpOutlineType=hwp_outline_type)
 
-    def hwp_underline_shape(self, hwp_underline_shape):
-        return self.hwp.HwpUnderlineShape(HwpUnderlineShape=hwp_underline_shape)
-
     def HwpUnderlineShape(self, hwp_underline_shape):
         return self.hwp.HwpUnderlineShape(HwpUnderlineShape=hwp_underline_shape)
-
-    def hwp_underline_type(self, hwp_underline_type):
-        return self.hwp.HwpUnderlineType(HwpUnderlineType=hwp_underline_type)
 
     def HwpUnderlineType(self, hwp_underline_type):
         return self.hwp.HwpUnderlineType(HwpUnderlineType=hwp_underline_type)
 
-    def hwp_zoom_type(self, zoom_type):
-        return self.hwp.HwpZoomType(ZoomType=zoom_type)
-
     def HwpZoomType(self, zoom_type):
         return self.hwp.HwpZoomType(ZoomType=zoom_type)
-
-    def image_format(self, image_format):
-        return self.hwp.ImageFormat(ImageFormat=image_format)
 
     def ImageFormat(self, image_format):
         return self.hwp.ImageFormat(ImageFormat=image_format)
 
-    def import_style(self, sty_filepath):
+    def import_style(self, sty_filepath: str) -> bool:
         """
         미리 저장된 특정 sty파일의 스타일을 임포트한다.
 
-        :param sty_filepath:
-            sty파일의 경로
+        Args:
+            sty_filepath: sty파일의 경로
 
         Returns:
-        성공시 True, 실패시 False
+            성공시 True, 실패시 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -8198,20 +8111,20 @@ class Hwp:
         style_set.filename = sty_filepath
         return self.hwp.ImportStyle(style_set.HSet)
 
-    def ImportStyle(self, sty_filepath):
+    def ImportStyle(self, sty_filepath: str) -> bool:
         """
         미리 저장된 특정 sty파일의 스타일을 임포트한다.
 
-        :param sty_filepath:
-            sty파일의 경로A
+        Args:
+            sty_filepath: sty파일의 경로
 
         Returns:
-        성공시 True, 실패시 False
+            성공시 True, 실패시 False
 
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
-            >>> hwp.import_style("C:/Users/User/Desktop/new_style.sty")
+            >>> hwp.ImportStyle("C:/Users/User/Desktop/new_style.sty")
             True
         """
         if sty_filepath.lower()[1] != ":":
@@ -8220,9 +8133,6 @@ class Hwp:
         style_set = self.hwp.HParameterSet.HStyleTemplate
         style_set.filename = sty_filepath
         return self.hwp.ImportStyle(style_set.HSet)
-
-    def init_hparameter_set(self):
-        return self.hwp.InitHParameterSet()
 
     def InitHParameterSet(self):
         return self.hwp.InitHParameterSet()
@@ -8236,57 +8146,47 @@ class Hwp:
         GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 수 있다.
         검색이 끝나면 ReleaseScan()을 호출하여 관련 정보를 Release해야 한다.
 
-        :param option: 기본값은 0x7(모든 컨트롤 대상)
-            찾을 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다.
-            생략하면 모든 컨트롤을 찾을 대상으로 한다.
-            0x00: 본문을 대상으로 검색한다.(서브리스트를 검색하지 않는다.) - maskNormal
-            0x01: char 타입 컨트롤 마스크를 대상으로 한다.(강제줄나눔, 문단 끝, 하이픈, 묶움빈칸, 고정폭빈칸, 등...) - maskChar
-            0x02: inline 타입 컨트롤 마스크를 대상으로 한다.(누름틀 필드 끝, 등...) - maskInline
-            0x04: extende 타입 컨트롤 마스크를 대상으로 한다.(바탕쪽, 프레젠테이션, 다단, 누름틀 필드 시작, Shape Object, 머리말, 꼬리말, 각주, 미주, 번호관련 컨트롤, 새 번호 관련 컨트롤, 감추기, 찾아보기, 글자 겹침, 등...) - maskCtrl
+        Args:
+            option:
+                기본값은 0x7(모든 컨트롤 대상) 찾을 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다.
+                생략하면 모든 컨트롤을 찾을 대상으로 한다.
 
-        :param range:
-            검색의 범위를 다음과 같은 옵션을 조합(sum)하여 지정할 수 있다.
-            생략하면 "문서 시작부터 - 문서의 끝까지" 검색 범위가 지정된다.
-            0x0000: 캐럿 위치부터. (시작 위치) - scanSposCurrent
-            0x0010: 특정 위치부터. (시작 위치) - scanSposSpecified
-            0x0020: 줄의 시작부터. (시작 위치) - scanSposLine
-            0x0030: 문단의 시작부터. (시작 위치) - scanSposParagraph
-            0x0040: 구역의 시작부터. (시작 위치) - scanSposSection
-            0x0050: 리스트의 시작부터. (시작 위치) - scanSposList
-            0x0060: 컨트롤의 시작부터. (시작 위치) - scanSposControl
-            0x0070: 문서의 시작부터. (시작 위치) - scanSposDocument
-            0x0000: 캐럿 위치까지. (끝 위치) - scanEposCurrent
-            0x0001: 특정 위치까지. (끝 위치) - scanEposSpecified
-            0x0002: 줄의 끝까지. (끝 위치) - scanEposLine
-            0x0003: 문단의 끝까지. (끝 위치) - scanEposParagraph
-            0x0004: 구역의 끝까지. (끝 위치) - scanEposSection
-            0x0005: 리스트의 끝까지. (끝 위치) - scanEposList
-            0x0006: 컨트롤의 끝까지. (끝 위치) - scanEposControl
-            0x0007: 문서의 끝까지. (끝 위치) - scanEposDocument
-            0x00ff: 검색의 범위를 블록으로 제한. - scanWithinSelection
-            0x0000: 정뱡향. (검색 방향) - scanForward
-            0x0100: 역방향. (검색 방향) - scanBackward
+                    - 0x00: 본문을 대상으로 검색한다.(서브리스트를 검색하지 않는다.) - maskNormal
+                    - 0x01: char 타입 컨트롤 마스크를 대상으로 한다.(강제줄나눔, 문단 끝, 하이픈, 묶움빈칸, 고정폭빈칸, 등...) - maskChar
+                    - 0x02: inline 타입 컨트롤 마스크를 대상으로 한다.(누름틀 필드 끝, 등...) - maskInline
+                    - 0x04: extende 타입 컨트롤 마스크를 대상으로 한다.(바탕쪽, 프레젠테이션, 다단, 누름틀 필드 시작, Shape Object, 머리말, 꼬리말, 각주, 미주, 번호관련 컨트롤, 새 번호 관련 컨트롤, 감추기, 찾아보기, 글자 겹침, 등...) - maskCtrl
 
-        :param spara:
-            검색 시작 위치의 문단 번호.
-            scanSposSpecified 옵션이 지정되었을 때만 유효하다.
-            예) range=0x0011
+            range:
+                검색의 범위를 다음과 같은 옵션을 조합(sum)하여 지정할 수 있다.
+                생략하면 "문서 시작부터 - 문서의 끝까지" 검색 범위가 지정된다.
 
-        :param spos:
-            검색 시작 위치의 문단 중에서 문자의 위치.
-            scanSposSpecified 옵션이 지정되었을 때만 유효하다.
-            예) range=0x0011
+                    - 0x0000: 캐럿 위치부터. (시작 위치) - scanSposCurrent
+                    - 0x0010: 특정 위치부터. (시작 위치) - scanSposSpecified
+                    - 0x0020: 줄의 시작부터. (시작 위치) - scanSposLine
+                    - 0x0030: 문단의 시작부터. (시작 위치) - scanSposParagraph
+                    - 0x0040: 구역의 시작부터. (시작 위치) - scanSposSection
+                    - 0x0050: 리스트의 시작부터. (시작 위치) - scanSposList
+                    - 0x0060: 컨트롤의 시작부터. (시작 위치) - scanSposControl
+                    - 0x0070: 문서의 시작부터. (시작 위치) - scanSposDocument
+                    - 0x0000: 캐럿 위치까지. (끝 위치) - scanEposCurrent
+                    - 0x0001: 특정 위치까지. (끝 위치) - scanEposSpecified
+                    - 0x0002: 줄의 끝까지. (끝 위치) - scanEposLine
+                    - 0x0003: 문단의 끝까지. (끝 위치) - scanEposParagraph
+                    - 0x0004: 구역의 끝까지. (끝 위치) - scanEposSection
+                    - 0x0005: 리스트의 끝까지. (끝 위치) - scanEposList
+                    - 0x0006: 컨트롤의 끝까지. (끝 위치) - scanEposControl
+                    - 0x0007: 문서의 끝까지. (끝 위치) - scanEposDocument
+                    - 0x00ff: 검색의 범위를 블록으로 제한. - scanWithinSelection
+                    - 0x0000: 정뱡향. (검색 방향) - scanForward
+                    - 0x0100: 역방향. (검색 방향) - scanBackward
 
-        :param epara:
-            검색 끝 위치의 문단 번호.
-            scanEposSpecified 옵션이 지정되었을 때만 유효하다.
-
-        :param epos:
-            검색 끝 위치의 문단 중에서 문자의 위치.
-            scanEposSpecified 옵션이 지정되었을 때만 유효하다.
+            spara: 검색 시작 위치의 문단 번호. scanSposSpecified 옵션이 지정되었을 때만 유효하다. (예: range=0x0011)
+            spos: 검색 시작 위치의 문단 중에서 문자의 위치. scanSposSpecified 옵션이 지정되었을 때만 유효하다. (예: range=0x0011)
+            epara: 검색 끝 위치의 문단 번호. scanEposSpecified 옵션이 지정되었을 때만 유효하다.
+            epos: 검색 끝 위치의 문단 중에서 문자의 위치. scanEposSpecified 옵션이 지정되었을 때만 유효하다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -8308,57 +8208,47 @@ class Hwp:
         GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 수 있다.
         검색이 끝나면 ReleaseScan()을 호출하여 관련 정보를 Release해야 한다.
 
-        :param option: 기본값은 0x7(모든 컨트롤 대상)
-            찾을 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다.
-            생략하면 모든 컨트롤을 찾을 대상으로 한다.
-            0x00: 본문을 대상으로 검색한다.(서브리스트를 검색하지 않는다.) - maskNormal
-            0x01: char 타입 컨트롤 마스크를 대상으로 한다.(강제줄나눔, 문단 끝, 하이픈, 묶움빈칸, 고정폭빈칸, 등...) - maskChar
-            0x02: inline 타입 컨트롤 마스크를 대상으로 한다.(누름틀 필드 끝, 등...) - maskInline
-            0x04: extende 타입 컨트롤 마스크를 대상으로 한다.(바탕쪽, 프레젠테이션, 다단, 누름틀 필드 시작, Shape Object, 머리말, 꼬리말, 각주, 미주, 번호관련 컨트롤, 새 번호 관련 컨트롤, 감추기, 찾아보기, 글자 겹침, 등...) - maskCtrl
+        Args:
+            option:
+                기본값은 0x7(모든 컨트롤 대상) 찾을 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다.
+                생략하면 모든 컨트롤을 찾을 대상으로 한다.
 
-        :param range:
-            검색의 범위를 다음과 같은 옵션을 조합(sum)하여 지정할 수 있다.
-            생략하면 "문서 시작부터 - 문서의 끝까지" 검색 범위가 지정된다.
-            0x0000: 캐럿 위치부터. (시작 위치) - scanSposCurrent
-            0x0010: 특정 위치부터. (시작 위치) - scanSposSpecified
-            0x0020: 줄의 시작부터. (시작 위치) - scanSposLine
-            0x0030: 문단의 시작부터. (시작 위치) - scanSposParagraph
-            0x0040: 구역의 시작부터. (시작 위치) - scanSposSection
-            0x0050: 리스트의 시작부터. (시작 위치) - scanSposList
-            0x0060: 컨트롤의 시작부터. (시작 위치) - scanSposControl
-            0x0070: 문서의 시작부터. (시작 위치) - scanSposDocument
-            0x0000: 캐럿 위치까지. (끝 위치) - scanEposCurrent
-            0x0001: 특정 위치까지. (끝 위치) - scanEposSpecified
-            0x0002: 줄의 끝까지. (끝 위치) - scanEposLine
-            0x0003: 문단의 끝까지. (끝 위치) - scanEposParagraph
-            0x0004: 구역의 끝까지. (끝 위치) - scanEposSection
-            0x0005: 리스트의 끝까지. (끝 위치) - scanEposList
-            0x0006: 컨트롤의 끝까지. (끝 위치) - scanEposControl
-            0x0007: 문서의 끝까지. (끝 위치) - scanEposDocument
-            0x00ff: 검색의 범위를 블록으로 제한. - scanWithinSelection
-            0x0000: 정뱡향. (검색 방향) - scanForward
-            0x0100: 역방향. (검색 방향) - scanBackward
+                    - 0x00: 본문을 대상으로 검색한다.(서브리스트를 검색하지 않는다.) - maskNormal
+                    - 0x01: char 타입 컨트롤 마스크를 대상으로 한다.(강제줄나눔, 문단 끝, 하이픈, 묶움빈칸, 고정폭빈칸, 등...) - maskChar
+                    - 0x02: inline 타입 컨트롤 마스크를 대상으로 한다.(누름틀 필드 끝, 등...) - maskInline
+                    - 0x04: extende 타입 컨트롤 마스크를 대상으로 한다.(바탕쪽, 프레젠테이션, 다단, 누름틀 필드 시작, Shape Object, 머리말, 꼬리말, 각주, 미주, 번호관련 컨트롤, 새 번호 관련 컨트롤, 감추기, 찾아보기, 글자 겹침, 등...) - maskCtrl
 
-        :param spara:
-            검색 시작 위치의 문단 번호.
-            scanSposSpecified 옵션이 지정되었을 때만 유효하다.
-            예) range=0x0011
+            range:
+                검색의 범위를 다음과 같은 옵션을 조합(sum)하여 지정할 수 있다.
+                생략하면 "문서 시작부터 - 문서의 끝까지" 검색 범위가 지정된다.
 
-        :param spos:
-            검색 시작 위치의 문단 중에서 문자의 위치.
-            scanSposSpecified 옵션이 지정되었을 때만 유효하다.
-            예) range=0x0011
+                    - 0x0000: 캐럿 위치부터. (시작 위치) - scanSposCurrent
+                    - 0x0010: 특정 위치부터. (시작 위치) - scanSposSpecified
+                    - 0x0020: 줄의 시작부터. (시작 위치) - scanSposLine
+                    - 0x0030: 문단의 시작부터. (시작 위치) - scanSposParagraph
+                    - 0x0040: 구역의 시작부터. (시작 위치) - scanSposSection
+                    - 0x0050: 리스트의 시작부터. (시작 위치) - scanSposList
+                    - 0x0060: 컨트롤의 시작부터. (시작 위치) - scanSposControl
+                    - 0x0070: 문서의 시작부터. (시작 위치) - scanSposDocument
+                    - 0x0000: 캐럿 위치까지. (끝 위치) - scanEposCurrent
+                    - 0x0001: 특정 위치까지. (끝 위치) - scanEposSpecified
+                    - 0x0002: 줄의 끝까지. (끝 위치) - scanEposLine
+                    - 0x0003: 문단의 끝까지. (끝 위치) - scanEposParagraph
+                    - 0x0004: 구역의 끝까지. (끝 위치) - scanEposSection
+                    - 0x0005: 리스트의 끝까지. (끝 위치) - scanEposList
+                    - 0x0006: 컨트롤의 끝까지. (끝 위치) - scanEposControl
+                    - 0x0007: 문서의 끝까지. (끝 위치) - scanEposDocument
+                    - 0x00ff: 검색의 범위를 블록으로 제한. - scanWithinSelection
+                    - 0x0000: 정뱡향. (검색 방향) - scanForward
+                    - 0x0100: 역방향. (검색 방향) - scanBackward
 
-        :param epara:
-            검색 끝 위치의 문단 번호.
-            scanEposSpecified 옵션이 지정되었을 때만 유효하다.
-
-        :param epos:
-            검색 끝 위치의 문단 중에서 문자의 위치.
-            scanEposSpecified 옵션이 지정되었을 때만 유효하다.
+            spara: 검색 시작 위치의 문단 번호. scanSposSpecified 옵션이 지정되었을 때만 유효하다. (예: range=0x0011)
+            spos: 검색 시작 위치의 문단 중에서 문자의 위치. scanSposSpecified 옵션이 지정되었을 때만 유효하다. (예: range=0x0011)
+            epara: 검색 끝 위치의 문단 번호. scanEposSpecified 옵션이 지정되었을 때만 유효하다.
+            epos: 검색 끝 위치의 문단 중에서 문자의 위치. scanEposSpecified 옵션이 지정되었을 때만 유효하다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -8371,74 +8261,83 @@ class Hwp:
         """
         return self.hwp.InitScan(option=option, Range=range, spara=spara, spos=spos, epara=epara, epos=epos)
 
-    def insert(self, path, format="", arg="", move_doc_end=False):
+    def insert(self, path: str, format: str = "", arg: str = "", move_doc_end: bool = False) -> bool:
         """
         현재 캐럿 위치에 문서파일을 삽입한다.
 
         format, arg에 대해서는 self.hwp.open 참조
 
-        :param path:
-            문서파일의 경로
+        Args:
+            path: 문서파일의 경로
+            format:
+                문서형식. **빈 문자열을 지정하면 자동으로 선택한다.**
+                생략하면 빈 문자열이 지정된다.
+                아래에 쓰여 있는 대로 대문자로만 써야 한다.
 
-        :param format:
-            문서형식. **빈 문자열을 지정하면 자동으로 선택한다.**
-            생략하면 빈 문자열이 지정된다.
-            아래에 쓰여 있는 대로 대문자로만 써야 한다.
-            "HWPX": 한/글 hwpx format
-            "HWP": 한/글 native format
-            "HWP30": 한/글 3.X/96/97
-            "HTML": 인터넷 문서
-            "TEXT": 아스키 텍스트 문서
-            "UNICODE": 유니코드 텍스트 문서
-            "HWP20": 한글 2.0
-            "HWP21": 한글 2.1/2.5
-            "HWP15": 한글 1.X
-            "HWPML1X": HWPML 1.X 문서 (Open만 가능)
-            "HWPML2X": HWPML 2.X 문서 (Open / SaveAs 가능)
-            "RTF": 서식 있는 텍스트 문서
-            "DBF": DBASE II/III 문서
-            "HUNMIN": 훈민정음 3.0/2000
-            "MSWORD": 마이크로소프트 워드 문서
-            "DOCRTF": MS 워드 문서 (doc)
-            "OOXML": MS 워드 문서 (docx)
-            "HANA": 하나워드 문서
-            "ARIRANG": 아리랑 문서
-            "ICHITARO": 一太郞 문서 (일본 워드프로세서)
-            "WPS": WPS 문서
-            "DOCIMG": 인터넷 프레젠테이션 문서(SaveAs만 가능)
-            "SWF": Macromedia Flash 문서(SaveAs만 가능)
+                    - "HWPX": 한/글 hwpx format
+                    - "HWP": 한/글 native format
+                    - "HWP30": 한/글 3.X/96/97
+                    - "HTML": 인터넷 문서
+                    - "TEXT": 아스키 텍스트 문서
+                    - "UNICODE": 유니코드 텍스트 문서
+                    - "HWP20": 한글 2.0
+                    - "HWP21": 한글 2.1/2.5
+                    - "HWP15": 한글 1.X
+                    - "HWPML1X": HWPML 1.X 문서 (Open만 가능)
+                    - "HWPML2X": HWPML 2.X 문서 (Open / SaveAs 가능)
+                    - "RTF": 서식 있는 텍스트 문서
+                    - "DBF": DBASE II/III 문서
+                    - "HUNMIN": 훈민정음 3.0/2000
+                    - "MSWORD": 마이크로소프트 워드 문서
+                    - "DOCRTF": MS 워드 문서 (doc)
+                    - "OOXML": MS 워드 문서 (docx)
+                    - "HANA": 하나워드 문서
+                    - "ARIRANG": 아리랑 문서
+                    - "ICHITARO": 一太郞 문서 (일본 워드프로세서)
+                    - "WPS": WPS 문서
+                    - "DOCIMG": 인터넷 프레젠테이션 문서(SaveAs만 가능)
+                    - "SWF": Macromedia Flash 문서(SaveAs만 가능)
+            arg:
+                세부옵션. 의미는 format에 지정한 파일형식에 따라 다르다.
+                조합 가능하며, 생략하면 빈 문자열이 지정된다.
 
-        :param arg:
-            세부옵션. 의미는 format에 지정한 파일형식에 따라 다르다.
-            조합 가능하며, 생략하면 빈 문자열이 지정된다.
-            <공통>
-            "setcurdir:FALSE;" :로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
-            <HWP/HWPX>
-            "lock:TRUE;": 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
-            "notext:FALSE;": 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
-            "template:FALSE;": 새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다. 이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
-            "suspendpassword:FALSE;": TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
-            "forceopen:FALSE;": TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
-            "versionwarning:FALSE;": TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
-            <HTML>
-            "code"(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
-            (코드페이지 종류는 아래와 같다.)
-            ("utf8" : UTF8)
-            ("unicode": 유니코드)
-            ("ks":  한글 KS 완성형)
-            ("acp" : Active Codepage 현재 시스템의 코드 페이지)
-            ("kssm": 한글 조합형)
-            ("sjis" : 일본)
-            ("gb" : 중국 간체)
-            ("big5" : 중국 번체)
-            "textunit:(string, pixel);": Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
-            "formatunit:(string, pixel);": Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
-            <DOCIMG>
-            "asimg:FALSE;": 저장할 때 페이지를 image로 저장
-            "ashtml:FALSE;": 저장할 때 페이지를 html로 저장
-            <TEXT>
-            "code:(string, codepage);": 문서 변환 시 사용되는 코드 페이지를 지정할 수 있으며
-            code키가 존재할 경우 필터 사용 시 사용자 다이얼로그를  띄우지 않는다.
+                <공통>
+
+                    - "setcurdir:FALSE;" :로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
+
+                <HWP/HWPX>
+
+                    - "lock:TRUE;": 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
+                    - "notext:FALSE;": 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
+                    - "template:FALSE;": 새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다. 이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
+                    - "suspendpassword:FALSE;": TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
+                    - "forceopen:FALSE;": TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
+                    - "versionwarning:FALSE;": TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
+
+                <HTML>
+
+                    - "code"(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
+                    - (코드페이지 종류는 아래와 같다.)
+                    - ("utf8" : UTF8)
+                    - ("unicode": 유니코드)
+                    - ("ks":  한글 KS 완성형)
+                    - ("acp" : Active Codepage 현재 시스템의 코드 페이지)
+                    - ("kssm": 한글 조합형)
+                    - ("sjis" : 일본)
+                    - ("gb" : 중국 간체)
+                    - ("big5" : 중국 번체)
+                    - "textunit:(string, pixel);": Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
+                    - "formatunit:(string, pixel);": Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+
+                <DOCIMG>
+
+                    - "asimg:FALSE;": 저장할 때 페이지를 image로 저장
+                    - "ashtml:FALSE;": 저장할 때 페이지를 html로 저장
+
+                <TEXT>
+
+                    - "code:(string, codepage);": 문서 변환 시 사용되는 코드 페이지를 지정할 수 있으며
+                    - code키가 존재할 경우 필터 사용 시 사용자 다이얼로그를  띄우지 않는다.
 
         Returns:
         성공하면 True, 실패하면 False
@@ -8457,60 +8356,55 @@ class Hwp:
                                   contrast=0) -> bool:
         """
         **셀**에 배경이미지를 삽입한다.
+
         CellBorderFill의 SetItem 중 FillAttr 의 SetItem FileName 에
         이미지의 binary data를 지정해 줄 수가 없어서 만든 함수다.
         기타 배경에 대한 다른 조정은 Action과 ParameterSet의 조합으로 가능하다.
 
-        :param path:
-            삽입할 이미지 파일
+        Args:
+            path: 삽입할 이미지 파일
+            border_type:
+                배경 유형을 문자열로 지정(파라미터 이름과는 다르게 삽입/제거 기능이다.)
 
-        :param border_type:
-            배경 유형을 문자열로 지정(파라미터 이름과는 다르게 삽입/제거 기능이다.)
-            "SelectedCell": 현재 선택된 표의 셀의 배경을 변경한다.
-            "SelectedCellDelete": 현재 선택된 표의 셀의 배경을 지운다.
-            단, 배경 제거시 반드시 셀이 선택되어 있어야함.
-            커서가 위치하는 것만으로는 동작하지 않음.
+                    - "SelectedCell": 현재 선택된 표의 셀의 배경을 변경한다.
+                    - "SelectedCellDelete": 현재 선택된 표의 셀의 배경을 지운다.
 
-        :param embedded:
-            이미지 파일을 문서 내에 포함할지 여부 (True/False). 생략하면 True
+                단, 배경 제거시 반드시 셀이 선택되어 있어야함.
+                커서가 위치하는 것만으로는 동작하지 않음.
 
-        :param filloption:
-            삽입할 그림의 크기를 지정하는 옵션
-            0: 바둑판식으로 - 모두
-            1: 바둑판식으로 - 가로/위
-            2: 바둑판식으로 - 가로/아로
-            3: 바둑판식으로 - 세로/왼쪽
-            4: 바둑판식으로 - 세로/오른쪽
-            5: 크기에 맞추어(기본값)
-            6: 가운데로
-            7: 가운데 위로
-            8: 가운데 아래로
-            9: 왼쪽 가운데로
-            10: 왼쪽 위로
-            11: 왼쪽 아래로
-            12: 오른쪽 가운데로
-            13: 오른쪽 위로
-            14: 오른쪽 아래로
+            embedded: 이미지 파일을 문서 내에 포함할지 여부 (True/False). 생략하면 True
+            filloption:
+                삽입할 그림의 크기를 지정하는 옵션
 
-        :param effect:
-            이미지효과
-            0: 원래 그림(기본값)
-            1: 그레이 스케일
-            2: 흑백으로
+                    - 0: 바둑판식으로 - 모두
+                    - 1: 바둑판식으로 - 가로/위
+                    - 2: 바둑판식으로 - 가로/아로
+                    - 3: 바둑판식으로 - 세로/왼쪽
+                    - 4: 바둑판식으로 - 세로/오른쪽
+                    - 5: 크기에 맞추어(기본값)
+                    - 6: 가운데로
+                    - 7: 가운데 위로
+                    - 8: 가운데 아래로
+                    - 9: 왼쪽 가운데로
+                    - 10: 왼쪽 위로
+                    - 11: 왼쪽 아래로
+                    - 12: 오른쪽 가운데로
+                    - 13: 오른쪽 위로
+                    - 14: 오른쪽 아래로
 
-        :param watermark:
-            watermark효과 유무 (True/False)
-            기본값은 False
-            이 옵션이 True이면 brightness 와 contrast 옵션이 무시된다.
+            effect:
+                이미지효과
 
-        :param brightness:
-            밝기 지정(-100 ~ 100), 기본 값은 0
+                    - 0: 원래 그림(기본값)
+                    - 1: 그레이 스케일
+                    - 2: 흑백으로
 
-        :param contrast:
-            선명도 지정(-100 ~ 100), 기본 값은 0
+            watermark: watermark효과 유무(True/False). 기본값은 False. 이 옵션이 True이면 brightness 와 contrast 옵션이 무시된다.
+            brightness: 밝기 지정(-100 ~ 100), 기본 값은 0
+            contrast: 선명도 지정(-100 ~ 100), 기본 값은 0
 
         Returns:
-        성공했을 경우 True, 실패했을 경우 False
+            성공했을 경우 True, 실패했을 경우 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -8537,60 +8431,55 @@ class Hwp:
                                 contrast=0) -> bool:
         """
         **셀**에 배경이미지를 삽입한다.
+
         CellBorderFill의 SetItem 중 FillAttr 의 SetItem FileName 에
         이미지의 binary data를 지정해 줄 수가 없어서 만든 함수다.
         기타 배경에 대한 다른 조정은 Action과 ParameterSet의 조합으로 가능하다.
 
-        :param path:
-            삽입할 이미지 파일
+        Args:
+            path: 삽입할 이미지 파일
+            border_type:
+                배경 유형을 문자열로 지정(파라미터 이름과는 다르게 삽입/제거 기능이다.)
 
-        :param border_type:
-            배경 유형을 문자열로 지정(파라미터 이름과는 다르게 삽입/제거 기능이다.)
-            "SelectedCell": 현재 선택된 표의 셀의 배경을 변경한다.
-            "SelectedCellDelete": 현재 선택된 표의 셀의 배경을 지운다.
-            단, 배경 제거시 반드시 셀이 선택되어 있어야함.
-            커서가 위치하는 것만으로는 동작하지 않음.
+                    - "SelectedCell": 현재 선택된 표의 셀의 배경을 변경한다.
+                    - "SelectedCellDelete": 현재 선택된 표의 셀의 배경을 지운다.
 
-        :param embedded:
-            이미지 파일을 문서 내에 포함할지 여부 (True/False). 생략하면 True
+                단, 배경 제거시 반드시 셀이 선택되어 있어야함.
+                커서가 위치하는 것만으로는 동작하지 않음.
 
-        :param filloption:
-            삽입할 그림의 크기를 지정하는 옵션
-            0: 바둑판식으로 - 모두
-            1: 바둑판식으로 - 가로/위
-            2: 바둑판식으로 - 가로/아로
-            3: 바둑판식으로 - 세로/왼쪽
-            4: 바둑판식으로 - 세로/오른쪽
-            5: 크기에 맞추어(기본값)
-            6: 가운데로
-            7: 가운데 위로
-            8: 가운데 아래로
-            9: 왼쪽 가운데로
-            10: 왼쪽 위로
-            11: 왼쪽 아래로
-            12: 오른쪽 가운데로
-            13: 오른쪽 위로
-            14: 오른쪽 아래로
+            embedded: 이미지 파일을 문서 내에 포함할지 여부 (True/False). 생략하면 True
+            filloption:
+                삽입할 그림의 크기를 지정하는 옵션
 
-        :param effect:
-            이미지효과
-            0: 원래 그림(기본값)
-            1: 그레이 스케일
-            2: 흑백으로
+                    - 0: 바둑판식으로 - 모두
+                    - 1: 바둑판식으로 - 가로/위
+                    - 2: 바둑판식으로 - 가로/아로
+                    - 3: 바둑판식으로 - 세로/왼쪽
+                    - 4: 바둑판식으로 - 세로/오른쪽
+                    - 5: 크기에 맞추어(기본값)
+                    - 6: 가운데로
+                    - 7: 가운데 위로
+                    - 8: 가운데 아래로
+                    - 9: 왼쪽 가운데로
+                    - 10: 왼쪽 위로
+                    - 11: 왼쪽 아래로
+                    - 12: 오른쪽 가운데로
+                    - 13: 오른쪽 위로
+                    - 14: 오른쪽 아래로
 
-        :param watermark:
-            watermark효과 유무 (True/False)
-            기본값은 False
-            이 옵션이 True이면 brightness 와 contrast 옵션이 무시된다.
+            effect:
+                이미지효과
 
-        :param brightness:
-            밝기 지정(-100 ~ 100), 기본 값은 0
+                    - 0: 원래 그림(기본값)
+                    - 1: 그레이 스케일
+                    - 2: 흑백으로
 
-        :param contrast:
-            선명도 지정(-100 ~ 100), 기본 값은 0
+            watermark: watermark효과 유무(True/False). 기본값은 False. 이 옵션이 True이면 brightness 와 contrast 옵션이 무시된다.
+            brightness: 밝기 지정(-100 ~ 100), 기본 값은 0
+            contrast: 선명도 지정(-100 ~ 100), 기본 값은 0
 
         Returns:
-        성공했을 경우 True, 실패했을 경우 False
+            성공했을 경우 True, 실패했을 경우 False
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -8624,14 +8513,12 @@ class Hwp:
         예를 들어 표의 경우 Ctrl.Properties에는 "Table" 셋을 사용하지만,
         생성 시 initparam에 지정하는 값은 "TableCreation" 셋이다.
 
-        :param ctrl_id:
-            삽입할 컨트롤 ID
-
-        :param initparam:
-            컨트롤 초기속성. 생략하면 default 속성으로 생성한다.
+        Args:
+            ctrl_id: 삽입할 컨트롤 ID
+            initparam: 컨트롤 초기속성. 생략하면 default 속성으로 생성한다.
 
         Returns:
-        생성된 컨트롤 object
+            생성된 컨트롤 object
 
         Examples:
             >>> # 3행5열의 표를 삽입한다.
@@ -8651,11 +8538,9 @@ class Hwp:
             >>> col_set.SetItem(2, hwp.mili_to_hwp_unit(26))
             >>> col_set.SetItem(3, hwp.mili_to_hwp_unit(26))
             >>> col_set.SetItem(4, hwp.mili_to_hwp_unit(26))
-            >>> table = hwp.insert_ctrl("tbl", tbset)
+            >>> table = hwp.insert_ctrl("tbl", tbset)  # <---
             >>> sleep(3)  # 표 생성 3초 후 다시 표 삭제
             >>> hwp.delete_ctrl(table)
-
-
         """
         return self.hwp.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
@@ -8671,19 +8556,17 @@ class Hwp:
         예를 들어 표의 경우 Ctrl.Properties에는 "Table" 셋을 사용하지만,
         생성 시 initparam에 지정하는 값은 "TableCreation" 셋이다.
 
-        :param ctrl_id:
-            삽입할 컨트롤 ID
-
-        :param initparam:
-            컨트롤 초기속성. 생략하면 default 속성으로 생성한다.
+        Args:
+            ctrl_id: 삽입할 컨트롤 ID
+            initparam: 컨트롤 초기속성. 생략하면 default 속성으로 생성한다.
 
         Returns:
-        생성된 컨트롤 object
+            생성된 컨트롤 object
 
         Examples:
             >>> # 3행5열의 표를 삽입한다.
-            >>> from time import sleep
             >>> from pyhwpx import Hwp
+            >>> from time import sleep
             >>> hwp = Hwp()
             >>> tbset = hwp.create_set("TableCreation")
             >>> tbset.SetItem("Rows", 3)
@@ -8698,116 +8581,13 @@ class Hwp:
             >>> col_set.SetItem(2, hwp.mili_to_hwp_unit(26))
             >>> col_set.SetItem(3, hwp.mili_to_hwp_unit(26))
             >>> col_set.SetItem(4, hwp.mili_to_hwp_unit(26))
-            >>> table = hwp.insert_ctrl("tbl", tbset)
+            >>> table = hwp.InsertCtrl("tbl", tbset)  # <---
             >>> sleep(3)  # 표 생성 3초 후 다시 표 삭제
             >>> hwp.delete_ctrl(table)
-
-
         """
         return self.hwp.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
-    # def insert_picture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
-    #                    effect=0, width=0, height=0):
-    #     """
-    #     현재 캐럿의 위치에 그림을 삽입한다.
-    #     다만, 그림의 종횡비를 유지한 채로 셀의 높이만 키워주는 옵션이 없다.
-    #     이런 작업을 원하는 경우에는 그림을 클립보드로 복사하고,
-    #     Ctrl-V로 붙여넣기를 하는 수 밖에 없다.
-    #     또한, 셀의 크기를 조절할 때 이미지의 크기도 따라 변경되게 하고 싶다면
-    #     insert_background_picture 함수를 사용하는 것도 좋다.
-    #
-    #     :param path:
-    #         삽입할 이미지 파일의 전체경로
-    #
-    #     :param embedded:
-    #         이미지 파일을 문서 내에 포함할지 여부 (True/False). 생략하면 True
-    #
-    #     :param sizeoption:
-    #         삽입할 그림의 크기를 지정하는 옵션. 기본값은 2
-    #         0: 이미지 원래의 크기로 삽입한다. width와 height를 지정할 필요 없다.(realSize)
-    #         1: width와 height에 지정한 크기로 그림을 삽입한다.(specificSize)
-    #         2: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞게 자동 조절하여 삽입한다. (종횡비 유지안함)(cellSize)
-    #            캐럿이 셀 안에 있지 않으면 이미지의 원래 크기대로 삽입된다.
-    #         3: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞추어 원본 이미지의 가로 세로의 비율이 동일하게 확대/축소하여 삽입한다.(cellSizeWithSameRatio)
-    #
-    #     :param reverse: 이미지의 반전 유무 (True/False). 기본값은 False
-    #
-    #     :param watermark: watermark효과 유무 (True/False). 기본값은 False
-    #
-    #     :param effect:
-    #         그림 효과
-    #         0: 실제 이미지 그대로
-    #         1: 그레이 스케일
-    #         2: 흑백효과
-    #
-    #     :param width:
-    #         그림의 가로 크기 지정. 단위는 mm(HWPUNIT 아님!)
-    #
-    #     :param height:
-    #         그림의 높이 크기 지정. 단위는 mm
-    #
-    #     Returns:
-    #         생성된 컨트롤 object.
-    #
-    #     Examples:
-    #         >>> from pyhwpx import Hwp
-    #         >>> hwp = Hwp()
-    #         >>> path = "C:/Users/Administrator/Desktop/KakaoTalk_20230709_023118549.jpg"
-    #         >>> ctrl = hwp.insert_picture(path)  # 삽입한 이미지 객체를 리턴함.
-    #         >>> pset = ctrl.Properties  # == hwp.create_set("ShapeObject")
-    #         >>> pset.SetItem("TreatAsChar", False)  # 글자처럼취급 해제
-    #         >>> pset.SetItem("TextWrap", 2)  # 그림을 글 뒤로
-    #         >>> ctrl.Properties = pset  # 설정한 값 적용(간단!)
-    #     """
-    #     if sizeoption == 1 and not all([width, height]) and not self.is_cell():
-    #         raise ValueError("sizeoption이 1일 때에는 width와 height를 지정해주셔야 합니다.\n"
-    #                          "단, 셀 안에 있는 경우에는 셀 너비에 맞게 이미지 크기를 자동으로 조절합니다.")
-    #
-    #     if path.startswith("http"):
-    #         temp_path = tempfile.TemporaryFile().name
-    #         request.urlretrieve(path, temp_path)
-    #         path = temp_path
-    #         # request.urlretrieve(path, os.path.join(os.getcwd(), "temp.jpg"))
-    #     elif path.lower()[1] != ":":
-    #         path = os.path.join(os.getcwd(), path)
-    #
-    #     try:
-    #         ctrl = self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption, Reverse=reverse,
-    #                                       watermark=watermark, Effect=effect, Width=width, Height=height)
-    #         pic_prop = ctrl.Properties
-    #         if not all([width, height]) and self.is_cell():
-    #             cell_param = self.hwp.HParameterSet.HShapeObject
-    #             self.hwp.HAction.GetDefault("TablePropertyDialog", cell_param.HSet)
-    #             cell_width = cell_param.ShapeTableCell.Width
-    #             dst_height = pic_prop.Item("Height") / pic_prop.Item("Width") * cell_width
-    #             pic_prop.SetItem("Width", cell_width)
-    #             pic_prop.SetItem("Height", round(dst_height))
-    #         else:
-    #             sec_def = self.HParameterSet.HSecDef
-    #             self.HAction.GetDefault("PageSetup", sec_def.HSet)
-    #             page_width = (
-    #                     sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen)
-    #             page_height = (
-    #                     sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen - sec_def.PageDef.FooterLen)
-    #             pic_width = pic_prop.Item("Width")
-    #             pic_height = pic_prop.Item("Height")
-    #             if pic_width > page_width or pic_height > page_height:
-    #                 width_shrink_ratio = page_width / pic_width
-    #                 height_shrink_ratio = page_height / pic_height
-    #                 if width_shrink_ratio <= height_shrink_ratio:
-    #                     pic_prop.SetItem("Width", page_width)
-    #                     pic_prop.SetItem("Height", pic_height * width_shrink_ratio)
-    #                 else:
-    #                     pic_prop.SetItem("Width", pic_width * height_shrink_ratio)
-    #                     pic_prop.SetItem("Height", page_height)
-    #         pic_prop.SetItem("TreatAsChar", treat_as_char)
-    #         ctrl.Properties = pic_prop
-    #         return ctrl
-    #     finally:
-    #         if os.path.basename(path).startswith("tmp"):
-    #             os.remove(path)
-
-    def insert_picture(self, path, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
+    def insert_picture(self, path: str, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
                        effect=0, width=0, height=0):
         """
         현재 캐럿의 위치에 그림을 삽입한다.
@@ -8818,38 +8598,31 @@ class Hwp:
         또한, 셀의 크기를 조절할 때 이미지의 크기도 따라 변경되게 하고 싶다면
         insert_background_picture 함수를 사용하는 것도 좋다.
 
-        :param path:
-            삽입할 이미지 파일의 전체경로
+        Args:
+            path: 삽입할 이미지 파일의 전체경로
+            embedded: 이미지 파일을 문서 내에 포함할지 여부 (True/False). 생략하면 True
+            sizeoption:
+                삽입할 그림의 크기를 지정하는 옵션. 기본값은 2
 
-        :param embedded:
-            이미지 파일을 문서 내에 포함할지 여부 (True/False). 생략하면 True
+                    - 0: 이미지 원래의 크기로 삽입한다. width와 height를 지정할 필요 없다.(realSize)
+                    - 1: width와 height에 지정한 크기로 그림을 삽입한다.(specificSize)
+                    - 2: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞게 자동 조절하여 삽입한다. (종횡비 유지안함)(cellSize) 캐럿이 셀 안에 있지 않으면 이미지의 원래 크기대로 삽입된다.
+                    - 3: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞추어 원본 이미지의 가로 세로의 비율이 동일하게 확대/축소하여 삽입한다.(cellSizeWithSameRatio)
 
-        :param sizeoption:
-            삽입할 그림의 크기를 지정하는 옵션. 기본값은 2
-            0: 이미지 원래의 크기로 삽입한다. width와 height를 지정할 필요 없다.(realSize)
-            1: width와 height에 지정한 크기로 그림을 삽입한다.(specificSize)
-            2: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞게 자동 조절하여 삽입한다. (종횡비 유지안함)(cellSize)
-               캐럿이 셀 안에 있지 않으면 이미지의 원래 크기대로 삽입된다.
-            3: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞추어 원본 이미지의 가로 세로의 비율이 동일하게 확대/축소하여 삽입한다.(cellSizeWithSameRatio)
+            reverse: 이미지의 반전 유무 (True/False). 기본값은 False
+            watermark: watermark효과 유무 (True/False). 기본값은 False
+            effect:
+                그림 효과
 
-        :param reverse: 이미지의 반전 유무 (True/False). 기본값은 False
+                    - 0: 실제 이미지 그대로
+                    - 1: 그레이 스케일
+                    - 2: 흑백효과
 
-        :param watermark: watermark효과 유무 (True/False). 기본값은 False
-
-        :param effect:
-            그림 효과
-            0: 실제 이미지 그대로
-            1: 그레이 스케일
-            2: 흑백효과
-
-        :param width:
-            그림의 가로 크기 지정. 단위는 mm(HWPUNIT 아님!)
-
-        :param height:
-            그림의 높이 크기 지정. 단위는 mm
+            width: 그림의 가로 크기 지정. 단위는 mm(HWPUNIT 아님!)
+            height: 그림의 높이 크기 지정. 단위는 mm
 
         Returns:
-        생성된 컨트롤 object.
+            생성된 컨트롤 object.
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -8904,28 +8677,44 @@ class Hwp:
                         pic_prop.SetItem("Height", page_height)
             pic_prop.SetItem("TreatAsChar", treat_as_char)
             ctrl.Properties = pic_prop
-            return ctrl
+            return Ctrl(ctrl)
         finally:
             if os.path.basename(path).startswith("tmp"):
                 os.remove(path)
 
-    def insert_random_picture(self, x: int = 200, y: int = 200):
-        return self.insert_picture(f"https://picsum.photos/{x}/{y}")
+    def insert_random_picture(self, x: int = 200, y: int = 200) -> Ctrl:
+        """
+        랜덤 이미지를 삽입한다.
 
-    def is_action_enable(self, action_id):
-        return self.hwp.IsActionEnable(actionID=action_id)
+        내부적으로 ``https://picsum.photos/`` API를 사용한다.
+
+        Args:
+            x: 너비 해상도
+            y: 높이 해상도
+
+        Returns:
+            삽입한 이미지 컨트롤
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.insert_random_picture(640, 480)
+            <CtrlCode: CtrlID=gso, CtrlCH=11, UserDesc=그림>
+        """
+        return self.insert_picture(f"https://picsum.photos/{x}/{y}")
 
     def IsActionEnable(self, action_id):
         return self.hwp.IsActionEnable(actionID=action_id)
 
-    def is_command_lock(self, action_id):
+    def is_command_lock(self, action_id: str) -> bool:
         """
         해당 액션이 잠겨있는지 확인한다.
 
-        :param action_id: 액션 ID. (ActionIDTable.Hwp 참조)
+        Args:
+            action_id: 액션 ID. (ActionIDTable.Hwp 참조)
 
         Returns:
-        잠겨있으면 True, 잠겨있지 않으면 False를 반환한다.
+            잠겨있으면 True, 잠겨있지 않으면 False를 반환한다.
         """
         return self.hwp.IsCommandLock(actionID=action_id)
 
@@ -8933,35 +8722,36 @@ class Hwp:
         """
         해당 액션이 잠겨있는지 확인한다.
 
-        :param action_id: 액션 ID. (ActionIDTable.Hwp 참조)
+        Args:
+            action_id: 액션 ID. (ActionIDTable.Hwp 참조)
 
         Returns:
-        잠겨있으면 True, 잠겨있지 않으면 False를 반환한다.
+            잠겨있으면 True, 잠겨있지 않으면 False를 반환한다.
         """
         return self.hwp.IsCommandLock(actionID=action_id)
 
     def key_indicator(self) -> tuple:
         """
         상태 바의 정보를 얻어온다.
-        (캐럿이 표 안에 있을 때 셀의 주소를 얻어오는 거의 유일한 방법이다.)
 
         Returns:
-        튜플(succ, seccnt, secno, prnpageno, colno, line, pos, over, ctrlname)
-            succ: 성공하면 True, 실패하면 False (항상 True임..)
-            seccnt: 총 구역
-            secno: 현재 구역
-            prnpageno: 쪽
-            colno: 단
-            line: 줄
-            pos: 칸
-            over: 삽입모드 (True: 수정, False: 삽입)
-            ctrlname: 캐럿이 위치한 곳의 컨트롤이름
+            튜플(succ, seccnt, secno, prnpageno, colno, line, pos, over, ctrlname)
+
+                - succ: 성공하면 True, 실패하면 False (항상 True임..)
+                - seccnt: 총 구역
+                - secno: 현재 구역
+                - prnpageno: 쪽
+                - colno: 단
+                - line: 줄
+                - pos: 칸
+                - over: 삽입모드 (True: 수정, False: 삽입)
+                - ctrlname: 캐럿이 위치한 곳의 컨트롤이름
 
         Examples:
             >>> # 현재 셀 주소(표 안에 있을 때)
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
-            >>> hwp.KeyIndicator()[-1][1:].split(")")[0]
+            >>> hwp.key_indicator()[-1][1:].split(")")[0]
             "A1"
         """
         return self.hwp.KeyIndicator()
@@ -8969,19 +8759,19 @@ class Hwp:
     def KeyIndicator(self) -> tuple:
         """
         상태 바의 정보를 얻어온다.
-        (캐럿이 표 안에 있을 때 셀의 주소를 얻어오는 거의 유일한 방법이다.)
 
         Returns:
-        튜플(succ, seccnt, secno, prnpageno, colno, line, pos, over, ctrlname)
-            succ: 성공하면 True, 실패하면 False (항상 True임..)
-            seccnt: 총 구역
-            secno: 현재 구역
-            prnpageno: 쪽
-            colno: 단
-            line: 줄
-            pos: 칸
-            over: 삽입모드 (True: 수정, False: 삽입)
-            ctrlname: 캐럿이 위치한 곳의 컨트롤이름
+            튜플(succ, seccnt, secno, prnpageno, colno, line, pos, over, ctrlname)
+
+                - succ: 성공하면 True, 실패하면 False (항상 True임..)
+                - seccnt: 총 구역
+                - secno: 현재 구역
+                - prnpageno: 쪽
+                - colno: 단
+                - line: 줄
+                - pos: 칸
+                - over: 삽입모드 (True: 수정, False: 삽입)
+                - ctrlname: 캐럿이 위치한 곳의 컨트롤이름
 
         Examples:
             >>> # 현재 셀 주소(표 안에 있을 때)
@@ -8992,36 +8782,29 @@ class Hwp:
         """
         return self.hwp.KeyIndicator()
 
-    def line_spacing_method(self, line_spacing):
-        return self.hwp.LineSpacingMethod(LineSpacing=line_spacing)
-
     def LineSpacingMethod(self, line_spacing):
         return self.hwp.LineSpacingMethod(LineSpacing=line_spacing)
-
-    def line_wrap_type(self, line_wrap):
-        return self.hwp.LineWrapType(LineWrap=line_wrap)
 
     def LineWrapType(self, line_wrap):
         return self.hwp.LineWrapType(LineWrap=line_wrap)
 
-    def lock_command(self, act_id, is_lock):
+    def lock_command(self, act_id: str, is_lock: bool) -> None:
         """
         특정 액션이 실행되지 않도록 잠근다.
 
-        :param act_id: 액션 ID. (ActionIDTable.Hwp 참조)
-
-        :param is_lock:
-            True이면 액션의 실행을 잠그고, False이면 액션이 실행되도록 한다.
+        Args:
+            act_id: 액션 ID. (ActionIDTable.Hwp 참조)
+            is_lock: True이면 액션의 실행을 잠그고, False이면 액션이 실행되도록 한다.
 
         Returns:
-        None
+            None
 
         Examples:
             >>> # Undo와 Redo 잠그기
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
-            >>> hwp.LockCommand("Undo", True)
-            >>> hwp.LockCommand("Redo", True)
+            >>> hwp.lock_command("Undo", True)
+            >>> hwp.lock_command("Redo", True)
         """
         return self.hwp.LockCommand(ActID=act_id, isLock=is_lock)
 
@@ -9029,13 +8812,12 @@ class Hwp:
         """
         특정 액션이 실행되지 않도록 잠근다.
 
-        :param act_id: 액션 ID. (ActionIDTable.Hwp 참조)
-
-        :param is_lock:
-            True이면 액션의 실행을 잠그고, False이면 액션이 실행되도록 한다.
+        Args:
+            act_id: 액션 ID. (ActionIDTable.Hwp 참조)
+            is_lock: True이면 액션의 실행을 잠그고, False이면 액션이 실행되도록 한다.
 
         Returns:
-        None
+            None
 
         Examples:
             >>> # Undo와 Redo 잠그기
@@ -9046,62 +8828,53 @@ class Hwp:
         """
         return self.hwp.LockCommand(ActID=act_id, isLock=is_lock)
 
-    def lunar_to_solar(self, l_year, l_month, l_day, l_leap, s_year, s_month, s_day):
-        return self.hwp.LunarToSolar(lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap, sYear=s_year,
-                                     sMonth=s_month, sDay=s_day)
-
     def LunarToSolar(self, l_year, l_month, l_day, l_leap, s_year, s_month, s_day):
         return self.hwp.LunarToSolar(lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap, sYear=s_year,
                                      sMonth=s_month, sDay=s_day)
 
-    def lunar_to_solar_by_set(self, l_year, l_month, l_day, l_leap):
-        return self.hwp.LunarToSolarBySet(lYear=l_year, lMonth=l_month, lLeap=l_leap)
-
     def LunarToSolarBySet(self, l_year, l_month, l_day, l_leap):
         return self.hwp.LunarToSolarBySet(lYear=l_year, lMonth=l_month, lLeap=l_leap)
 
-    def macro_state(self, macro_state):
-        return self.hwp.MacroState(MacroState=macro_state)
-
     def MacroState(self, macro_state):
         return self.hwp.MacroState(MacroState=macro_state)
-
-    def mail_type(self, mail_type):
-        return self.hwp.MailType(MailType=mail_type)
 
     def MailType(self, mail_type):
         return self.hwp.MailType(MailType=mail_type)
 
     def MarkPenNext(self):
+        """
+        다음 형광펜 삽입 위치로 이동한다.
+        """
         return self.hwp.HAction.Run("MarkPenNext")
 
     def MarkPenPrev(self):
+        """
+        이전 형광펜 삽입 위치로 이동한다.
+        """
         return self.hwp.HAction.Run("MarkPenPrev")
-
-    def metatag_exist(self, tag):
-        return self.hwp.MetatagExist(tag=tag)
 
     def MetatagExist(self, tag):
         return self.hwp.MetatagExist(tag=tag)
 
-    def mili_to_hwp_unit(self, mili):
+    def mili_to_hwp_unit(self, mili: float) -> int:
         return self.hwp.MiliToHwpUnit(mili=mili)
 
-    def MiliToHwpUnit(self, mili):
+    def MiliToHwpUnit(self, mili: float) -> int:
         return self.hwp.MiliToHwpUnit(mili=mili)
 
-    def modify_field_properties(self, field, remove, add):
+    def modify_field_properties(self, field: str, remove: bool, add: bool):
         """
-        지정한 필드의 속성을 바꾼다.
+        지정한 필드의 속성을 바꾼다. (사용안함)
 
         양식모드에서 편집가능/불가 여부를 변경하는 메서드지만,
         현재 양식모드에서 어떤 속성이라도 편집가능하다..
         혹시 필드명이나 메모, 지시문을 수정하고 싶다면
         set_cur_field_name 메서드를 사용하자.
 
-        :param field:
-        :param remove:
-        :param add:
+        Args:
+            field:
+            remove:
+            add:
 
         Returns:
         """
@@ -9109,16 +8882,17 @@ class Hwp:
 
     def ModifyFieldProperties(self, field, remove, add):
         """
-        지정한 필드의 속성을 바꾼다.
+        지정한 필드의 속성을 바꾼다. (사용안함)
 
         양식모드에서 편집가능/불가 여부를 변경하는 메서드지만,
         현재 양식모드에서 어떤 속성이라도 편집가능하다..
         혹시 필드명이나 메모, 지시문을 수정하고 싶다면
         set_cur_field_name 메서드를 사용하자.
 
-        :param field:
-        :param remove:
-        :param add:
+        Args:
+            field:
+            remove:
+            add:
 
         Returns:
         """
@@ -9130,7 +8904,7 @@ class Hwp:
     def ModifyMetatagProperties(self, tag, remove, add):
         return self.hwp.ModifyMetatagProperties(tag=tag, remove=remove, Add=add)
 
-    def move_pos(self, move_id=1, para=0, pos=0):
+    def move_pos(self, move_id: int = 1, para: int = 0, pos: int = 0) -> bool:
         """
         캐럿의 위치를 옮긴다.
 
@@ -9139,59 +8913,55 @@ class Hwp:
         201(moveScanPos)는 문서를 검색하는 중 캐럿을 이동시키려 할 경우에만 사용이 가능하다.
         (솔직히 200 사용법은 잘 모르겠다;)
 
-        :param move_id:
-            아래와 같은 값을 지정할 수 있다. 생략하면 1(moveCurList)이 지정된다.
-            0: 루트 리스트의 특정 위치.(para pos로 위치 지정) moveMain
-            1: 현재 리스트의 특정 위치.(para pos로 위치 지정) moveCurList
-            2: 문서의 시작으로 이동. moveTopOfFile
-            3: 문서의 끝으로 이동. moveBottomOfFile
-            4: 현재 리스트의 시작으로 이동 moveTopOfList
-            5: 현재 리스트의 끝으로 이동 moveBottomOfList
-            6: 현재 위치한 문단의 시작으로 이동 moveStartOfPara
-            7: 현재 위치한 문단의 끝으로 이동 moveEndOfPara
-            8: 현재 위치한 단어의 시작으로 이동.(현재 리스트만을 대상으로 동작한다.) moveStartOfWord
-            9: 현재 위치한 단어의 끝으로 이동.(현재 리스트만을 대상으로 동작한다.) moveEndOfWord
-            10: 다음 문단의 시작으로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextPara
-            11: 앞 문단의 끝으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevPara
-            12: 한 글자 뒤로 이동.(서브 리스트를 옮겨 다닐 수 있다.) moveNextPos
-            13: 한 글자 앞으로 이동.(서브 리스트를 옮겨 다닐 수 있다.) movePrevPos
-            14: 한 글자 뒤로 이동.(서브 리스트를 옮겨 다닐 수 있다. 머리말/꼬리말, 각주/미주, 글상자 포함.) moveNextPosEx
-            15: 한 글자 앞으로 이동.(서브 리스트를 옮겨 다닐 수 있다. 머리말/꼬리말, 각주/미주, 글상자 포함.) movePrevPosEx
-            16: 한 글자 뒤로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextChar
-            17: 한 글자 앞으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevChar
-            18: 한 단어 뒤로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextWord
-            19: 한 단어 앞으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevWord
-            20: 한 줄 아래로 이동. moveNextLine
-            21: 한 줄 위로 이동. movePrevLine
-            22: 현재 위치한 줄의 시작으로 이동. moveStartOfLine
-            23: 현재 위치한 줄의 끝으로 이동. moveEndOfLine
-            24: 한 레벨 상위로 이동한다. moveParentList
-            25: 탑레벨 리스트로 이동한다. moveTopLevelList
-            26: 루트 리스트로 이동한다. 현재 루트 리스트에 위치해 있어 더 이상 상위 리스트가 없을 때는 위치 이동 없이 반환한다. 이동한 후의 위치는 상위 리스트에서 서브리스트가 속한 컨트롤 코드가 위치한 곳이다. 위치 이동시 셀렉션은 무조건 풀린다. moveRootList
-            27: 현재 캐럿이 위치한 곳으로 이동한다. (캐럿 위치가 뷰의 맨 위쪽으로 올라간다.) moveCurrentCaret
-            100: 현재 캐럿이 위치한 셀의 왼쪽 moveLeftOfCell
-            101: 현재 캐럿이 위치한 셀의 오른쪽 moveRightOfCell
-            102: 현재 캐럿이 위치한 셀의 위쪽 moveUpOfCell
-            103: 현재 캐럿이 위치한 셀의 아래쪽 moveDownOfCell
-            104: 현재 캐럿이 위치한 셀에서 행(row)의 시작 moveStartOfCell
-            105: 현재 캐럿이 위치한 셀에서 행(row)의 끝 moveEndOfCell
-            106: 현재 캐럿이 위치한 셀에서 열(column)의 시작 moveTopOfCell
-            107: 현재 캐럿이 위치한 셀에서 열(column)의 끝 moveBottomOfCell
-            200: 한/글 문서창에서의 screen 좌표로서 위치를 설정 한다. moveScrPos
-            201: GetText() 실행 후 위치로 이동한다. moveScanPos
+        Args:
+            move_id:
+                아래와 같은 값을 지정할 수 있다. 생략하면 1(moveCurList)이 지정된다.
 
-        :param para:
-            이동할 문단의 번호.
-            0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다.
-            200(moveScrPos)가 지정되었을 때는 문단번호가 아닌 스크린 좌표로 해석된다.
-            (스크린 좌표 : LOWORD = x좌표, HIWORD = y좌표)
+                    - 0: 루트 리스트의 특정 위치.(para pos로 위치 지정) moveMain
+                    - 1: 현재 리스트의 특정 위치.(para pos로 위치 지정) moveCurList
+                    - 2: 문서의 시작으로 이동. moveTopOfFile
+                    - 3: 문서의 끝으로 이동. moveBottomOfFile
+                    - 4: 현재 리스트의 시작으로 이동 moveTopOfList
+                    - 5: 현재 리스트의 끝으로 이동 moveBottomOfList
+                    - 6: 현재 위치한 문단의 시작으로 이동 moveStartOfPara
+                    - 7: 현재 위치한 문단의 끝으로 이동 moveEndOfPara
+                    - 8: 현재 위치한 단어의 시작으로 이동.(현재 리스트만을 대상으로 동작한다.) moveStartOfWord
+                    - 9: 현재 위치한 단어의 끝으로 이동.(현재 리스트만을 대상으로 동작한다.) moveEndOfWord
+                    - 10: 다음 문단의 시작으로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextPara
+                    - 11: 앞 문단의 끝으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevPara
+                    - 12: 한 글자 뒤로 이동.(서브 리스트를 옮겨 다닐 수 있다.) moveNextPos
+                    - 13: 한 글자 앞으로 이동.(서브 리스트를 옮겨 다닐 수 있다.) movePrevPos
+                    - 14: 한 글자 뒤로 이동.(서브 리스트를 옮겨 다닐 수 있다. 머리말/꼬리말, 각주/미주, 글상자 포함.) moveNextPosEx
+                    - 15: 한 글자 앞으로 이동.(서브 리스트를 옮겨 다닐 수 있다. 머리말/꼬리말, 각주/미주, 글상자 포함.) movePrevPosEx
+                    - 16: 한 글자 뒤로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextChar
+                    - 17: 한 글자 앞으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevChar
+                    - 18: 한 단어 뒤로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextWord
+                    - 19: 한 단어 앞으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevWord
+                    - 20: 한 줄 아래로 이동. moveNextLine
+                    - 21: 한 줄 위로 이동. movePrevLine
+                    - 22: 현재 위치한 줄의 시작으로 이동. moveStartOfLine
+                    - 23: 현재 위치한 줄의 끝으로 이동. moveEndOfLine
+                    - 24: 한 레벨 상위로 이동한다. moveParentList
+                    - 25: 탑레벨 리스트로 이동한다. moveTopLevelList
+                    - 26: 루트 리스트로 이동한다. 현재 루트 리스트에 위치해 있어 더 이상 상위 리스트가 없을 때는 위치 이동 없이 반환한다. 이동한 후의 위치는 상위 리스트에서 서브리스트가 속한 컨트롤 코드가 위치한 곳이다. 위치 이동시 셀렉션은 무조건 풀린다. moveRootList
+                    - 27: 현재 캐럿이 위치한 곳으로 이동한다. (캐럿 위치가 뷰의 맨 위쪽으로 올라간다.) moveCurrentCaret
+                    - 100: 현재 캐럿이 위치한 셀의 왼쪽 moveLeftOfCell
+                    - 101: 현재 캐럿이 위치한 셀의 오른쪽 moveRightOfCell
+                    - 102: 현재 캐럿이 위치한 셀의 위쪽 moveUpOfCell
+                    - 103: 현재 캐럿이 위치한 셀의 아래쪽 moveDownOfCell
+                    - 104: 현재 캐럿이 위치한 셀에서 행(row)의 시작 moveStartOfCell
+                    - 105: 현재 캐럿이 위치한 셀에서 행(row)의 끝 moveEndOfCell
+                    - 106: 현재 캐럿이 위치한 셀에서 열(column)의 시작 moveTopOfCell
+                    - 107: 현재 캐럿이 위치한 셀에서 열(column)의 끝 moveBottomOfCell
+                    - 200: 한/글 문서창에서의 screen 좌표로서 위치를 설정 한다. moveScrPos
+                    - 201: GetText() 실행 후 위치로 이동한다. moveScanPos
+            para:
+                이동할 문단의 번호. 0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다. 200(moveScrPos)가 지정되었을 때는 문단번호가 아닌 스크린 좌표로 해석된다. (스크린 좌표 : LOWORD = x좌표, HIWORD = y좌표)
 
-        :param pos:
-            이동할 문단 중에서 문자의 위치.
-            0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다.
+            pos: 이동할 문단 중에서 문자의 위치. 0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         return self.hwp.MovePos(moveID=move_id, Para=para, pos=pos)
 
@@ -9204,92 +8974,71 @@ class Hwp:
         201(moveScanPos)는 문서를 검색하는 중 캐럿을 이동시키려 할 경우에만 사용이 가능하다.
         (솔직히 200 사용법은 잘 모르겠다;)
 
-        :param move_id:
-            아래와 같은 값을 지정할 수 있다. 생략하면 1(moveCurList)이 지정된다.
-            0: 루트 리스트의 특정 위치.(para pos로 위치 지정) moveMain
-            1: 현재 리스트의 특정 위치.(para pos로 위치 지정) moveCurList
-            2: 문서의 시작으로 이동. moveTopOfFile
-            3: 문서의 끝으로 이동. moveBottomOfFile
-            4: 현재 리스트의 시작으로 이동 moveTopOfList
-            5: 현재 리스트의 끝으로 이동 moveBottomOfList
-            6: 현재 위치한 문단의 시작으로 이동 moveStartOfPara
-            7: 현재 위치한 문단의 끝으로 이동 moveEndOfPara
-            8: 현재 위치한 단어의 시작으로 이동.(현재 리스트만을 대상으로 동작한다.) moveStartOfWord
-            9: 현재 위치한 단어의 끝으로 이동.(현재 리스트만을 대상으로 동작한다.) moveEndOfWord
-            10: 다음 문단의 시작으로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextPara
-            11: 앞 문단의 끝으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevPara
-            12: 한 글자 뒤로 이동.(서브 리스트를 옮겨 다닐 수 있다.) moveNextPos
-            13: 한 글자 앞으로 이동.(서브 리스트를 옮겨 다닐 수 있다.) movePrevPos
-            14: 한 글자 뒤로 이동.(서브 리스트를 옮겨 다닐 수 있다. 머리말/꼬리말, 각주/미주, 글상자 포함.) moveNextPosEx
-            15: 한 글자 앞으로 이동.(서브 리스트를 옮겨 다닐 수 있다. 머리말/꼬리말, 각주/미주, 글상자 포함.) movePrevPosEx
-            16: 한 글자 뒤로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextChar
-            17: 한 글자 앞으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevChar
-            18: 한 단어 뒤로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextWord
-            19: 한 단어 앞으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevWord
-            20: 한 줄 아래로 이동. moveNextLine
-            21: 한 줄 위로 이동. movePrevLine
-            22: 현재 위치한 줄의 시작으로 이동. moveStartOfLine
-            23: 현재 위치한 줄의 끝으로 이동. moveEndOfLine
-            24: 한 레벨 상위로 이동한다. moveParentList
-            25: 탑레벨 리스트로 이동한다. moveTopLevelList
-            26: 루트 리스트로 이동한다. 현재 루트 리스트에 위치해 있어 더 이상 상위 리스트가 없을 때는 위치 이동 없이 반환한다. 이동한 후의 위치는 상위 리스트에서 서브리스트가 속한 컨트롤 코드가 위치한 곳이다. 위치 이동시 셀렉션은 무조건 풀린다. moveRootList
-            27: 현재 캐럿이 위치한 곳으로 이동한다. (캐럿 위치가 뷰의 맨 위쪽으로 올라간다.) moveCurrentCaret
-            100: 현재 캐럿이 위치한 셀의 왼쪽 moveLeftOfCell
-            101: 현재 캐럿이 위치한 셀의 오른쪽 moveRightOfCell
-            102: 현재 캐럿이 위치한 셀의 위쪽 moveUpOfCell
-            103: 현재 캐럿이 위치한 셀의 아래쪽 moveDownOfCell
-            104: 현재 캐럿이 위치한 셀에서 행(row)의 시작 moveStartOfCell
-            105: 현재 캐럿이 위치한 셀에서 행(row)의 끝 moveEndOfCell
-            106: 현재 캐럿이 위치한 셀에서 열(column)의 시작 moveTopOfCell
-            107: 현재 캐럿이 위치한 셀에서 열(column)의 끝 moveBottomOfCell
-            200: 한/글 문서창에서의 screen 좌표로서 위치를 설정 한다. moveScrPos
-            201: GetText() 실행 후 위치로 이동한다. moveScanPos
+        Args:
+            move_id:
+                아래와 같은 값을 지정할 수 있다. 생략하면 1(moveCurList)이 지정된다.
 
-        :param para:
-            이동할 문단의 번호.
-            0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다.
-            200(moveScrPos)가 지정되었을 때는 문단번호가 아닌 스크린 좌표로 해석된다.
-            (스크린 좌표 : LOWORD = x좌표, HIWORD = y좌표)
+                    - 0: 루트 리스트의 특정 위치.(para pos로 위치 지정) moveMain
+                    - 1: 현재 리스트의 특정 위치.(para pos로 위치 지정) moveCurList
+                    - 2: 문서의 시작으로 이동. moveTopOfFile
+                    - 3: 문서의 끝으로 이동. moveBottomOfFile
+                    - 4: 현재 리스트의 시작으로 이동 moveTopOfList
+                    - 5: 현재 리스트의 끝으로 이동 moveBottomOfList
+                    - 6: 현재 위치한 문단의 시작으로 이동 moveStartOfPara
+                    - 7: 현재 위치한 문단의 끝으로 이동 moveEndOfPara
+                    - 8: 현재 위치한 단어의 시작으로 이동.(현재 리스트만을 대상으로 동작한다.) moveStartOfWord
+                    - 9: 현재 위치한 단어의 끝으로 이동.(현재 리스트만을 대상으로 동작한다.) moveEndOfWord
+                    - 10: 다음 문단의 시작으로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextPara
+                    - 11: 앞 문단의 끝으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevPara
+                    - 12: 한 글자 뒤로 이동.(서브 리스트를 옮겨 다닐 수 있다.) moveNextPos
+                    - 13: 한 글자 앞으로 이동.(서브 리스트를 옮겨 다닐 수 있다.) movePrevPos
+                    - 14: 한 글자 뒤로 이동.(서브 리스트를 옮겨 다닐 수 있다. 머리말/꼬리말, 각주/미주, 글상자 포함.) moveNextPosEx
+                    - 15: 한 글자 앞으로 이동.(서브 리스트를 옮겨 다닐 수 있다. 머리말/꼬리말, 각주/미주, 글상자 포함.) movePrevPosEx
+                    - 16: 한 글자 뒤로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextChar
+                    - 17: 한 글자 앞으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevChar
+                    - 18: 한 단어 뒤로 이동.(현재 리스트만을 대상으로 동작한다.) moveNextWord
+                    - 19: 한 단어 앞으로 이동.(현재 리스트만을 대상으로 동작한다.) movePrevWord
+                    - 20: 한 줄 아래로 이동. moveNextLine
+                    - 21: 한 줄 위로 이동. movePrevLine
+                    - 22: 현재 위치한 줄의 시작으로 이동. moveStartOfLine
+                    - 23: 현재 위치한 줄의 끝으로 이동. moveEndOfLine
+                    - 24: 한 레벨 상위로 이동한다. moveParentList
+                    - 25: 탑레벨 리스트로 이동한다. moveTopLevelList
+                    - 26: 루트 리스트로 이동한다. 현재 루트 리스트에 위치해 있어 더 이상 상위 리스트가 없을 때는 위치 이동 없이 반환한다. 이동한 후의 위치는 상위 리스트에서 서브리스트가 속한 컨트롤 코드가 위치한 곳이다. 위치 이동시 셀렉션은 무조건 풀린다. moveRootList
+                    - 27: 현재 캐럿이 위치한 곳으로 이동한다. (캐럿 위치가 뷰의 맨 위쪽으로 올라간다.) moveCurrentCaret
+                    - 100: 현재 캐럿이 위치한 셀의 왼쪽 moveLeftOfCell
+                    - 101: 현재 캐럿이 위치한 셀의 오른쪽 moveRightOfCell
+                    - 102: 현재 캐럿이 위치한 셀의 위쪽 moveUpOfCell
+                    - 103: 현재 캐럿이 위치한 셀의 아래쪽 moveDownOfCell
+                    - 104: 현재 캐럿이 위치한 셀에서 행(row)의 시작 moveStartOfCell
+                    - 105: 현재 캐럿이 위치한 셀에서 행(row)의 끝 moveEndOfCell
+                    - 106: 현재 캐럿이 위치한 셀에서 열(column)의 시작 moveTopOfCell
+                    - 107: 현재 캐럿이 위치한 셀에서 열(column)의 끝 moveBottomOfCell
+                    - 200: 한/글 문서창에서의 screen 좌표로서 위치를 설정 한다. moveScrPos
+                    - 201: GetText() 실행 후 위치로 이동한다. moveScanPos
+            para:
+                이동할 문단의 번호. 0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다. 200(moveScrPos)가 지정되었을 때는 문단번호가 아닌 스크린 좌표로 해석된다. (스크린 좌표 : LOWORD = x좌표, HIWORD = y좌표)
 
-        :param pos:
-            이동할 문단 중에서 문자의 위치.
-            0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다.
+            pos: 이동할 문단 중에서 문자의 위치. 0(moveMain) 또는 1(moveCurList)가 지정되었을 때만 사용된다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         return self.hwp.MovePos(moveID=move_id, Para=para, pos=pos)
 
-    def move_to_field(self, field, idx=0, text=True, start=True, select=False):
+    def move_to_field(self, field, idx=0, text=True, start=True, select=False) -> bool:
         """
         지정한 필드로 캐럿을 이동한다.
 
-        :param field:
-            필드이름. GetFieldText()/PutFieldText()와 같은 형식으로
-            이름 뒤에 ‘{{#}}’로 번호를 지정할 수 있다.
-
-        :param idx:
-            동일명으로 여러 개의 필드가 존재하는 경우,
-            idx번째 필드로 이동하고자 할 때 사용한다. 기본값은 0.
-            idx를 지정하지 않아도, 필드 파라미터 뒤에 ‘{{#}}’를 추가하여 인덱스를 지정할 수 있다.
-            이 경우 기본적으로 f스트링을 사용하며, f스트링 내부에 탈출문자열 \가 적용되지 않으므로
-            중괄호를 다섯 겹 입력해야 한다. 예 : hwp.move_to_field(f"필드명{{{{{i}}}}}")
-
-        :param text:
-            필드가 누름틀일 경우 누름틀 내부의 텍스트로 이동할지(True)
-            누름틀 코드로 이동할지(False)를 지정한다.
-            누름틀이 아닌 필드일 경우 무시된다. 생략하면 True가 지정된다.
-
-        :param start:
-            필드의 처음(True)으로 이동할지 끝(False)으로 이동할지 지정한다.
-            select를 True로 지정하면 무시된다. (캐럿이 처음에 위치해 있게 된다.)
-            생략하면 True가 지정된다.
-
-        :param select:
-            필드 내용을 블록으로 선택할지(True), 캐럿만 이동할지(False) 지정한다.
-            생략하면 False가 지정된다.
+        Args:
+            field: 필드이름. GetFieldText()/PutFieldText()와 같은 형식으로 이름 뒤에 ‘{{#}}’로 번호를 지정할 수 있다.
+            idx: 동일명으로 여러 개의 필드가 존재하는 경우, idx번째 필드로 이동하고자 할 때 사용한다. 기본값은 0. idx를 지정하지 않아도, 필드 파라미터 뒤에 ‘{{#}}’를 추가하여 인덱스를 지정할 수 있다. 이 경우 기본적으로 f스트링을 사용하며, f스트링 내부에 탈출문자열 \가 적용되지 않으므로 중괄호를 다섯 겹 입력해야 한다. 예 : hwp.move_to_field(f"필드명{{{{{i}}}}}")
+            text: 필드가 누름틀일 경우 누름틀 내부의 텍스트로 이동할지(True) 누름틀 코드로 이동할지(False)를 지정한다. 누름틀이 아닌 필드일 경우 무시된다. 생략하면 True가 지정된다.
+            start: 필드의 처음(True)으로 이동할지 끝(False)으로 이동할지 지정한다. select를 True로 지정하면 무시된다. (캐럿이 처음에 위치해 있게 된다.) 생략하면 True가 지정된다.
+            select: 필드 내용을 블록으로 선택할지(True), 캐럿만 이동할지(False) 지정한다. 생략하면 False가 지정된다.
 
         Returns:
+            성공시 True, 실패시 False를 리턴한다.
         """
         if "{{" not in field:
             return self.hwp.MoveToField(Field=f"{field}{{{{{idx}}}}}", Text=text, start=start, select=select)
@@ -9300,32 +9049,15 @@ class Hwp:
         """
         지정한 필드로 캐럿을 이동한다.
 
-        :param field:
-            필드이름. GetFieldText()/PutFieldText()와 같은 형식으로
-            이름 뒤에 ‘{{#}}’로 번호를 지정할 수 있다.
-
-        :param idx:
-            동일명으로 여러 개의 필드가 존재하는 경우,
-            idx번째 필드로 이동하고자 할 때 사용한다. 기본값은 0.
-            idx를 지정하지 않아도, 필드 파라미터 뒤에 ‘{{#}}’를 추가하여 인덱스를 지정할 수 있다.
-            이 경우 기본적으로 f스트링을 사용하며, f스트링 내부에 탈출문자열 \가 적용되지 않으므로
-            중괄호를 다섯 겹 입력해야 한다. 예 : hwp.move_to_field(f"필드명{{{{{i}}}}}")
-
-        :param text:
-            필드가 누름틀일 경우 누름틀 내부의 텍스트로 이동할지(True)
-            누름틀 코드로 이동할지(False)를 지정한다.
-            누름틀이 아닌 필드일 경우 무시된다. 생략하면 True가 지정된다.
-
-        :param start:
-            필드의 처음(True)으로 이동할지 끝(False)으로 이동할지 지정한다.
-            select를 True로 지정하면 무시된다. (캐럿이 처음에 위치해 있게 된다.)
-            생략하면 True가 지정된다.
-
-        :param select:
-            필드 내용을 블록으로 선택할지(True), 캐럿만 이동할지(False) 지정한다.
-            생략하면 False가 지정된다.
+        Args:
+            field: 필드이름. GetFieldText()/PutFieldText()와 같은 형식으로 이름 뒤에 ‘{{#}}’로 번호를 지정할 수 있다.
+            idx: 동일명으로 여러 개의 필드가 존재하는 경우, idx번째 필드로 이동하고자 할 때 사용한다. 기본값은 0. idx를 지정하지 않아도, 필드 파라미터 뒤에 ‘{{#}}’를 추가하여 인덱스를 지정할 수 있다. 이 경우 기본적으로 f스트링을 사용하며, f스트링 내부에 탈출문자열 \가 적용되지 않으므로 중괄호를 다섯 겹 입력해야 한다. 예 : hwp.move_to_field(f"필드명{{{{{i}}}}}")
+            text: 필드가 누름틀일 경우 누름틀 내부의 텍스트로 이동할지(True) 누름틀 코드로 이동할지(False)를 지정한다. 누름틀이 아닌 필드일 경우 무시된다. 생략하면 True가 지정된다.
+            start: 필드의 처음(True)으로 이동할지 끝(False)으로 이동할지 지정한다. select를 True로 지정하면 무시된다. (캐럿이 처음에 위치해 있게 된다.) 생략하면 True가 지정된다.
+            select: 필드 내용을 블록으로 선택할지(True), 캐럿만 이동할지(False) 지정한다. 생략하면 False가 지정된다.
 
         Returns:
+            성공시 True, 실패시 False를 리턴한다.
         """
         if "{{" not in field:
             return self.hwp.MoveToField(Field=f"{field}{{{{{idx}}}}}", Text=text, start=start, select=select)
@@ -9338,88 +9070,78 @@ class Hwp:
     def MoveToMetatag(self, tag, text, start, select):
         return self.hwp.MoveToMetatag(tag=tag, Text=text, start=start, select=select)
 
-    def number_format(self, num_format):
-        return self.hwp.NumberFormat(NumFormat=num_format)
-
     def NumberFormat(self, num_format):
         return self.hwp.NumberFormat(NumFormat=num_format)
-
-    def numbering(self, numbering):
-        return self.hwp.Numbering(Numbering=numbering)
 
     def Numbering(self, numbering):
         return self.hwp.Numbering(Numbering=numbering)
 
-    def open(self, filename, format="", arg=""):
+    def open(self, filename: str, format: str = "", arg: str = ""):
         """
         문서를 연다.
 
-        :param filename:
-            문서 파일의 전체경로
+        Args:
+            filename: 문서 파일의 전체경로
+            format:
+                문서 형식. 빈 문자열을 지정하면 자동으로 인식한다. 생략하면 빈 문자열이 지정된다.
 
-        :param format:
-            문서 형식. 빈 문자열을 지정하면 자동으로 인식한다. 생략하면 빈 문자열이 지정된다.
-            "HWP": 한/글 native format
-            "HWP30": 한/글 3.X/96/97
-            "HTML": 인터넷 문서
-            "TEXT": 아스키 텍스트 문서
-            "UNICODE": 유니코드 텍스트 문서
-            "HWP20": 한글 2.0
-            "HWP21": 한글 2.1/2.5
-            "HWP15": 한글 1.X
-            "HWPML1X": HWPML 1.X 문서 (Open만 가능)
-            "HWPML2X": HWPML 2.X 문서 (Open / SaveAs 가능)
-            "RTF": 서식 있는 텍스트 문서
-            "DBF": DBASE II/III 문서
-            "HUNMIN": 훈민정음 3.0/2000
-            "MSWORD": 마이크로소프트 워드 문서
-            "DOCRTF": MS 워드 문서 (doc)
-            "OOXML": MS 워드 문서 (docx)
-            "HANA": 하나워드 문서
-            "ARIRANG": 아리랑 문서
-            "ICHITARO": 一太郞 문서 (일본 워드프로세서)
-            "WPS": WPS 문서
-            "DOCIMG": 인터넷 프레젠테이션 문서(SaveAs만 가능)
-            "SWF": Macromedia Flash 문서(SaveAs만 가능)
+                    - "HWP": 한/글 native format
+                    - "HWP30": 한/글 3.X/96/97
+                    - "HTML": 인터넷 문서
+                    - "TEXT": 아스키 텍스트 문서
+                    - "UNICODE": 유니코드 텍스트 문서
+                    - "HWP20": 한글 2.0
+                    - "HWP21": 한글 2.1/2.5
+                    - "HWP15": 한글 1.X
+                    - "HWPML1X": HWPML 1.X 문서 (Open만 가능)
+                    - "HWPML2X": HWPML 2.X 문서 (Open / SaveAs 가능)
+                    - "RTF": 서식 있는 텍스트 문서
+                    - "DBF": DBASE II/III 문서
+                    - "HUNMIN": 훈민정음 3.0/2000
+                    - "MSWORD": 마이크로소프트 워드 문서
+                    - "DOCRTF": MS 워드 문서 (doc)
+                    - "OOXML": MS 워드 문서 (docx)
+                    - "HANA": 하나워드 문서
+                    - "ARIRANG": 아리랑 문서
+                    - "ICHITARO": 一太郞 문서 (일본 워드프로세서)
+                    - "WPS": WPS 문서
+                    - "DOCIMG": 인터넷 프레젠테이션 문서(SaveAs만 가능)
+                    - "SWF": Macromedia Flash 문서(SaveAs만 가능)
 
-        :param arg:
-            세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
-            arg에 지정할 수 있는 옵션의 의미는 필터가 정의하기에 따라 다르지만,
-            syntax는 다음과 같이 공통된 형식을 사용한다.
-            "key:value;key:value;..."
-            * key는 A-Z, a-z, 0-9, _ 로 구성된다.
-            * value는 타입에 따라 다음과 같은 3 종류가 있다.
-	        boolean: ex) fullsave:true (== fullsave)
-	        integer: ex) type:20
-	        string:  ex) prefix:_This_
-            * value는 생략 가능하며, 이때는 콜론도 생략한다.
-            * arg에 지정할 수 있는 옵션
-            <모든 파일포맷>
-                - setcurdir(boolean, true/false)
-                    로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다.
-                    hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
-            <HWP(HWPX)>
-                - lock (boolean, TRUE)
-                    로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
-                - notext (boolean, FALSE)
-                    텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
-                - template (boolean, FALSE)
-                    새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다.
-                    이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
-                - suspendpassword (boolean, FALSE)
-                    TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
-                - forceopen (boolean, FALSE)
-                    TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
-                - versionwarning (boolean, FALSE)
-                    TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
-            <HTML>
-                - code(string, codepage)
-                    문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
-                - textunit(boolean, pixel)
-                    Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
-                - formatunit(boolean, pixel)
-                    Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+            arg:
+                세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
+                arg에 지정할 수 있는 옵션의 의미는 필터가 정의하기에 따라 다르지만,
+                syntax는 다음과 같이 공통된 형식을 사용한다.
+                "key:value;key:value;..."
+                * key는 A-Z, a-z, 0-9, _ 로 구성된다.
+                * value는 타입에 따라 다음과 같은 3 종류가 있다.
+                boolean: ex) fullsave:true (== fullsave)
+                integer: ex) type:20
+                string:  ex) prefix:_This_
+                * value는 생략 가능하며, 이때는 콜론도 생략한다.
+                * arg에 지정할 수 있는 옵션
+
+                <모든 파일포맷>
+
+                    - setcurdir(boolean, true/false): 로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
+
+                <HWP(HWPX)>
+
+                    - lock (boolean, TRUE): 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
+                    - notext (boolean, FALSE): 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
+                    - template (boolean, FALSE): 새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다. 이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
+                    - suspendpassword (boolean, FALSE): TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
+                    - forceopen (boolean, FALSE): TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
+                    - versionwarning (boolean, FALSE): TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
+
+                <HTML>
+
+                    - code(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
+                    - textunit(boolean, pixel): Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
+                    - formatunit(boolean, pixel): Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+
                 ※ [codepage 종류]
+
                     - ks :  한글 KS 완성형
                     - kssm: 한글 조합형
                     - sjis : 일본
@@ -9428,14 +9150,14 @@ class Hwp:
                     - gb : 중국 간체
                     - big5 : 중국 번체
                     - acp : Active Codepage 현재 시스템의 코드 페이지
-            <DOCIMG>
-                - asimg(boolean, FALSE)
-                    저장할 때 페이지를 image로 저장
-                - ashtml(boolean, FALSE)
-                    저장할 때 페이지를 html로 저장
+
+                <DOCIMG>
+
+                    - asimg(boolean, FALSE): 저장할 때 페이지를 image로 저장
+                    - ashtml(boolean, FALSE): 저장할 때 페이지를 html로 저장
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         if filename and filename.startswith("http"):
             try:
@@ -9450,76 +9172,72 @@ class Hwp:
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.Open(filename=filename, Format=format, arg=arg)
 
-    def Open(self, filename, format="", arg=""):
+    def Open(self, filename: str, format: str = "", arg: str = "") -> bool:
         """
         문서를 연다.
 
-        :param filename:
-            문서 파일의 전체경로
+        Args:
+            filename: 문서 파일의 전체경로
+            format:
+                문서 형식. 빈 문자열을 지정하면 자동으로 인식한다. 생략하면 빈 문자열이 지정된다.
 
-        :param format:
-            문서 형식. 빈 문자열을 지정하면 자동으로 인식한다. 생략하면 빈 문자열이 지정된다.
-            "HWP": 한/글 native format
-            "HWP30": 한/글 3.X/96/97
-            "HTML": 인터넷 문서
-            "TEXT": 아스키 텍스트 문서
-            "UNICODE": 유니코드 텍스트 문서
-            "HWP20": 한글 2.0
-            "HWP21": 한글 2.1/2.5
-            "HWP15": 한글 1.X
-            "HWPML1X": HWPML 1.X 문서 (Open만 가능)
-            "HWPML2X": HWPML 2.X 문서 (Open / SaveAs 가능)
-            "RTF": 서식 있는 텍스트 문서
-            "DBF": DBASE II/III 문서
-            "HUNMIN": 훈민정음 3.0/2000
-            "MSWORD": 마이크로소프트 워드 문서
-            "DOCRTF": MS 워드 문서 (doc)
-            "OOXML": MS 워드 문서 (docx)
-            "HANA": 하나워드 문서
-            "ARIRANG": 아리랑 문서
-            "ICHITARO": 一太郞 문서 (일본 워드프로세서)
-            "WPS": WPS 문서
-            "DOCIMG": 인터넷 프레젠테이션 문서(SaveAs만 가능)
-            "SWF": Macromedia Flash 문서(SaveAs만 가능)
+                    - "HWP": 한/글 native format
+                    - "HWP30": 한/글 3.X/96/97
+                    - "HTML": 인터넷 문서
+                    - "TEXT": 아스키 텍스트 문서
+                    - "UNICODE": 유니코드 텍스트 문서
+                    - "HWP20": 한글 2.0
+                    - "HWP21": 한글 2.1/2.5
+                    - "HWP15": 한글 1.X
+                    - "HWPML1X": HWPML 1.X 문서 (Open만 가능)
+                    - "HWPML2X": HWPML 2.X 문서 (Open / SaveAs 가능)
+                    - "RTF": 서식 있는 텍스트 문서
+                    - "DBF": DBASE II/III 문서
+                    - "HUNMIN": 훈민정음 3.0/2000
+                    - "MSWORD": 마이크로소프트 워드 문서
+                    - "DOCRTF": MS 워드 문서 (doc)
+                    - "OOXML": MS 워드 문서 (docx)
+                    - "HANA": 하나워드 문서
+                    - "ARIRANG": 아리랑 문서
+                    - "ICHITARO": 一太郞 문서 (일본 워드프로세서)
+                    - "WPS": WPS 문서
+                    - "DOCIMG": 인터넷 프레젠테이션 문서(SaveAs만 가능)
+                    - "SWF": Macromedia Flash 문서(SaveAs만 가능)
 
-        :param arg:
-            세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
-            arg에 지정할 수 있는 옵션의 의미는 필터가 정의하기에 따라 다르지만,
-            syntax는 다음과 같이 공통된 형식을 사용한다.
-            "key:value;key:value;..."
-            * key는 A-Z, a-z, 0-9, _ 로 구성된다.
-            * value는 타입에 따라 다음과 같은 3 종류가 있다.
-	        boolean: ex) fullsave:true (== fullsave)
-	        integer: ex) type:20
-	        string:  ex) prefix:_This_
-            * value는 생략 가능하며, 이때는 콜론도 생략한다.
-            * arg에 지정할 수 있는 옵션
-            <모든 파일포맷>
-                - setcurdir(boolean, true/false)
-                    로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다.
-                    hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
-            <HWP(HWPX)>
-                - lock (boolean, TRUE)
-                    로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
-                - notext (boolean, FALSE)
-                    텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
-                - template (boolean, FALSE)
-                    새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다.
-                    이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
-                - suspendpassword (boolean, FALSE)
-                    TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
-                - forceopen (boolean, FALSE)
-                    TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
-                - versionwarning (boolean, FALSE)
-                    TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
-            <HTML>
-                - code(string, codepage)
-                    문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
-                - textunit(boolean, pixel)
-                    Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
-                - formatunit(boolean, pixel)
-                    Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+            arg:
+                세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
+                arg에 지정할 수 있는 옵션의 의미는 필터가 정의하기에 따라 다르지만,
+                syntax는 다음과 같이 공통된 형식을 사용한다.
+                "key:value;key:value;..."
+                * key는 A-Z, a-z, 0-9, _ 로 구성된다.
+                * value는 타입에 따라 다음과 같은 3 종류가 있다.
+                boolean: ex) fullsave:true (== fullsave)
+                integer: ex) type:20
+                string:  ex) prefix:_This_
+                * value는 생략 가능하며, 이때는 콜론도 생략한다.
+                * arg에 지정할 수 있는 옵션
+
+                <모든 파일포맷>
+
+                    - setcurdir(boolean, true/false): 로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
+
+                <HWP(HWPX)>
+
+                    - lock (boolean, TRUE): 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
+                    - notext (boolean, FALSE): 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
+                    - template (boolean, FALSE): 새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다. 이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
+                    - suspendpassword (boolean, FALSE): TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
+                    - forceopen (boolean, FALSE): TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
+                    - versionwarning (boolean, FALSE): TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
+
+                <HTML>
+
+                    - code(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
+                    - textunit(boolean, pixel): Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
+                    - formatunit(boolean, pixel): Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+
                 ※ [codepage 종류]
+
                     - ks :  한글 KS 완성형
                     - kssm: 한글 조합형
                     - sjis : 일본
@@ -9528,14 +9246,14 @@ class Hwp:
                     - gb : 중국 간체
                     - big5 : 중국 번체
                     - acp : Active Codepage 현재 시스템의 코드 페이지
-            <DOCIMG>
-                - asimg(boolean, FALSE)
-                    저장할 때 페이지를 image로 저장
-                - ashtml(boolean, FALSE)
-                    저장할 때 페이지를 html로 저장
+
+                <DOCIMG>
+
+                    - asimg(boolean, FALSE): 저장할 때 페이지를 image로 저장
+                    - ashtml(boolean, FALSE): 저장할 때 페이지를 html로 저장
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         if filename.startswith("http"):
             try:
@@ -9550,100 +9268,87 @@ class Hwp:
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.Open(filename=filename, Format=format, arg=arg)
 
-    def page_num_position(self, pagenumpos: Literal[
-        "TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter"):
-        return self.hwp.PageNumPosition(pagenumpos=pagenumpos)
-
     def PageNumPosition(self, pagenumpos: Literal[
         "TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter"):
         return self.hwp.PageNumPosition(pagenumpos=pagenumpos)
 
-    def page_type(self, page_type):
-        return self.hwp.PageType(PageType=page_type)
-
     def PageType(self, page_type):
         return self.hwp.PageType(PageType=page_type)
-
-    def para_head_align(self, para_head_align):
-        return self.hwp.ParaHeadAlign(ParaHeadAlign=para_head_align)
 
     def ParaHeadAlign(self, para_head_align):
         return self.hwp.ParaHeadAlign(ParaHeadAlign=para_head_align)
 
-    def pic_effect(self, pic_effect):
-        return self.hwp.PicEffect(PicEffect=pic_effect)
-
     def PicEffect(self, pic_effect):
         return self.hwp.PicEffect(PicEffect=pic_effect)
-
-    def placement_type(self, restart):
-        return self.hwp.PlacementType(Restart=restart)
 
     def PlacementType(self, restart):
         return self.hwp.PlacementType(Restart=restart)
 
     def point_to_hwp_unit(self, point: float) -> int:
+        """
+        글자에 쓰이는 포인트 단위를 HwpUnit으로 변환
+        """
         return self.hwp.PointToHwpUnit(Point=point)
 
     def PointToHwpUnit(self, point: float) -> int:
+        """
+        글자에 쓰이는 포인트 단위를 HwpUnit으로 변환
+        """
         return self.hwp.PointToHwpUnit(Point=point)
 
-    @staticmethod
-    def hwp_unit_to_point(HwpUnit: int) -> float:
+    def hwp_unit_to_point(self, HwpUnit: int) -> float:
+        """
+        HwpUnit을 포인트 단위로 변환
+        """
         return HwpUnit / 100
 
-    @staticmethod
-    def HwpUnitToPoint(HwpUnit: int) -> float:
+    def HwpUnitToPoint(self, HwpUnit: int) -> float:
+        """
+        HwpUnit을 포인트 단위로 변환
+        """
         return HwpUnit / 100
 
-    @staticmethod
-    def hwp_unit_to_inch(HwpUnit: int) -> float:
+    def hwp_unit_to_inch(self, HwpUnit: int) -> float:
+        """
+        HwpUnit을 인치로 변환
+        """
         if HwpUnit == 0:
             return 0
         else:
             return HwpUnit / 7200
 
-    @staticmethod
-    def HwpUnitToInch(HwpUnit: int) -> float:
+    def HwpUnitToInch(self, HwpUnit: int) -> float:
+        """
+        HwpUnit을 인치로 변환
+        """
         if HwpUnit == 0:
             return 0
         else:
             return HwpUnit / 7200
 
-    @staticmethod
-    def inch_to_hwp_unit(inch) -> int:
-        return int(inch * 7200)
+    def inch_to_hwp_unit(self, inch) -> int:
+        """
+        인치 단위를 HwpUnit으로 변환
+        """
+        return round(inch * 7200, 0)
 
-    @staticmethod
-    def InchToHwpUnit(inch) -> int:
-        return int(inch * 7200)
-
-    def present_effect(self, prsnteffect):
-        return self.hwp.PresentEffect(prsnteffect=prsnteffect)
+    def InchToHwpUnit(self, inch) -> int:
+        """
+        인치 단위를 HwpUnit으로 변환
+        """
+        return round(inch * 7200, 0)
 
     def PresentEffect(self, prsnteffect):
         return self.hwp.PresentEffect(prsnteffect=prsnteffect)
 
-    def print_device(self, print_device):
-        return self.hwp.PrintDevice(PrintDevice=print_device)
-
     def PrintDevice(self, print_device):
         return self.hwp.PrintDevice(PrintDevice=print_device)
-
-    def print_paper(self, print_paper):
-        return self.hwp.PrintPaper(PrintPaper=print_paper)
 
     def PrintPaper(self, print_paper):
         return self.hwp.PrintPaper(PrintPaper=print_paper)
 
-    def print_range(self, print_range):
-        return self.hwp.PrintRange(PrintRange=print_range)
-
     def PrintRange(self, print_range):
         return self.hwp.PrintRange(PrintRange=print_range)
-
-    def print_type(self, print_method):
-        return self.hwp.PrintType(PrintMethod=print_method)
 
     def PrintType(self, print_method):
         return self.hwp.PrintType(PrintMethod=print_method)
@@ -9655,15 +9360,12 @@ class Hwp:
         한/글의 경우 “찾아서 보호”와 “선택 글자 보호”를 다른 기능으로 구현하였지만,
         API에서는 하나의 함수로 구현한다.
 
-        :param protecting_char:
-            보호문자. 개인정보는 해당문자로 가려진다.
-
-        :param private_pattern_type:
-            보호유형. 개인정보 유형마다 설정할 수 있는 값이 다르다.
-            0값은 기본 보호유형으로 모든 개인정보를 보호문자로 보호한다.
+        Args:
+            protecting_char: 보호문자. 개인정보는 해당문자로 가려진다.
+            private_pattern_type: 보호유형. 개인정보 유형마다 설정할 수 있는 값이 다르다. 0값은 기본 보호유형으로 모든 개인정보를 보호문자로 보호한다.
 
         Returns:
-        개인정보를 보호문자로 치환한 경우에 true를 반환한다.
+            개인정보를 보호문자로 치환한 경우에 true를 반환한다.
 	        개인정보를 보호하지 못할 경우 false를 반환한다.
 	        문자열이 선택되지 않은 상태이거나, 개체가 선택된 상태에서는 실패한다.
 	        또한, 보호유형이 잘못된 설정된 경우에도 실패한다.
@@ -9678,15 +9380,12 @@ class Hwp:
         한/글의 경우 “찾아서 보호”와 “선택 글자 보호”를 다른 기능으로 구현하였지만,
         API에서는 하나의 함수로 구현한다.
 
-        :param protecting_char:
-            보호문자. 개인정보는 해당문자로 가려진다.
-
-        :param private_pattern_type:
-            보호유형. 개인정보 유형마다 설정할 수 있는 값이 다르다.
-            0값은 기본 보호유형으로 모든 개인정보를 보호문자로 보호한다.
+        Args:
+            protecting_char: 보호문자. 개인정보는 해당문자로 가려진다.
+            private_pattern_type: 보호유형. 개인정보 유형마다 설정할 수 있는 값이 다르다. 0값은 기본 보호유형으로 모든 개인정보를 보호문자로 보호한다.
 
         Returns:
-        개인정보를 보호문자로 치환한 경우에 true를 반환한다.
+            개인정보를 보호문자로 치환한 경우에 true를 반환한다.
 	        개인정보를 보호하지 못할 경우 false를 반환한다.
 	        문자열이 선택되지 않은 상태이거나, 개체가 선택된 상태에서는 실패한다.
 	        또한, 보호유형이 잘못된 설정된 경우에도 실패한다.
@@ -9694,7 +9393,7 @@ class Hwp:
         """
         return self.hwp.ProtectPrivateInfo(PotectingChar=protecting_char, PrivatePatternType=private_pattern_type)
 
-    def put_field_text(self, field:Any="", text: Union[str, list, tuple, pd.Series] = "", idx=None):
+    def put_field_text(self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None):
         """
         지정한 필드의 내용을 채운다.
 
@@ -9703,24 +9402,12 @@ class Hwp:
         fieldlist의 필드 개수와, textlist의 텍스트 개수는 동일해야 한다.
         존재하지 않는 필드에 대해서는 무시한다.
 
-        :param field:
-            내용을 채울 필드 이름의 리스트.
-            한 번에 여러 개의 필드를 지정할 수 있으며,
-            형식은 GetFieldText와 동일하다.
-            다만 필드 이름 뒤에 "{{#}}"로 번호를 지정하지 않으면
-            해당 이름을 가진 모든 필드에 동일한 텍스트를 채워 넣는다.
-            즉, PutFieldText에서는 ‘필드이름’과 ‘필드이름{{0}}’의 의미가 다르다.
-            **단, field에 dict를 입력하는 경우에는 text 파라미터를 무시하고
-            dict.keys를 필드명으로, dict.values를 필드값으로 입력한다.**
-
-
-        :param text:
-            필드에 채워 넣을 문자열의 리스트.
-            형식은 필드 리스트와 동일하게 필드의 개수만큼
-            텍스트를 0x02로 구분하여 지정한다.
+        Args:
+            field: 내용을 채울 필드 이름의 리스트. 한 번에 여러 개의 필드를 지정할 수 있으며, 형식은 GetFieldText와 동일하다. 다만 필드 이름 뒤에 "{{#}}"로 번호를 지정하지 않으면 해당 이름을 가진 모든 필드에 동일한 텍스트를 채워 넣는다. 즉, PutFieldText에서는 ‘필드이름’과 ‘필드이름{{0}}’의 의미가 다르다. **단, field에 dict를 입력하는 경우에는 text 파라미터를 무시하고 dict.keys를 필드명으로, dict.values를 필드값으로 입력한다.**
+            text: 필드에 채워 넣을 문자열의 리스트. 형식은 필드 리스트와 동일하게 필드의 개수만큼 텍스트를 0x02로 구분하여 지정한다.
 
         Returns:
-        None
+            None
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -9826,7 +9513,7 @@ class Hwp:
         else:
             return self.hwp.PutFieldText(Field=field, Text=text)
 
-    def PutFieldText(self, field:Any="", text: Union[str, list, tuple, pd.Series] = "", idx=None) -> None:
+    def PutFieldText(self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None) -> None:
         """
         지정한 필드의 내용을 채운다.
 
@@ -9836,19 +9523,8 @@ class Hwp:
         존재하지 않는 필드에 대해서는 무시한다.
 
         Args:
-            field: 내용을 채울 필드 이름의 리스트.
-                한 번에 여러 개의 필드를 지정할 수 있으며,
-                형식은 GetFieldText와 동일하다.
-                다만 필드 이름 뒤에 "{{#}}"로 번호를 지정하지 않으면
-                해당 이름을 가진 모든 필드에 동일한 텍스트를 채워 넣는다.
-                즉, PutFieldText에서는 ‘필드이름’과 ‘필드이름{{0}}’의 의미가 다르다.
-                **단, field에 dict를 입력하는 경우에는 text 파라미터를 무시하고
-                dict.keys를 필드명으로, dict.values를 필드값으로 입력한다.**
-
-
-            text: 필드에 채워 넣을 문자열의 리스트.
-                형식은 필드 리스트와 동일하게 필드의 개수만큼
-                텍스트를 0x02로 구분하여 지정한다.
+            field: 내용을 채울 필드 이름의 리스트. 한 번에 여러 개의 필드를 지정할 수 있으며, 형식은 GetFieldText와 동일하다. 다만 필드 이름 뒤에 "{{#}}"로 번호를 지정하지 않으면 해당 이름을 가진 모든 필드에 동일한 텍스트를 채워 넣는다. 즉, PutFieldText에서는 ‘필드이름’과 ‘필드이름{{0}}’의 의미가 다르다. **단, field에 dict를 입력하는 경우에는 text 파라미터를 무시하고 dict.keys를 필드명으로, dict.values를 필드값으로 입력한다.**
+            text: 필드에 채워 넣을 문자열의 리스트. 형식은 필드 리스트와 동일하게 필드의 개수만큼 텍스트를 0x02로 구분하여 지정한다.
 
         Returns:
             None
@@ -9857,9 +9533,9 @@ class Hwp:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # 현재 캐럿 위치에 zxcv 필드 생성
-            >>> hwp.create_field("zxcv")
+            >>> hwp.CreateField("zxcv")
             >>> # zxcv 필드에 "Hello world!" 텍스트 삽입
-            >>> hwp.put_field_text("zxcv", "Hello world!")
+            >>> hwp.PutFieldText("zxcv", "Hello world!")
         """
         if isinstance(field, str) and (field.endswith(".xlsx") or field.endswith(".xls")):
             field = pd.read_excel(field)
@@ -9978,16 +9654,16 @@ class Hwp:
         """
         return self.hwp.HAction.Run("PutOutlineNumber")
 
-
-
     def quit(self) -> None:
         """
         한/글을 종료한다.
 
         단, 저장되지 않은 변경사항이 있는 경우 팝업이 뜨므로
         clear나 save 등의 메서드를 실행한 후에 quit을 실행해야 한다.
+        종료시에 hwp.hwp 객체를 삭제한다.
 
         Returns:
+            None
         """
         self.hwp.Quit()
         del self.hwp
@@ -10006,7 +9682,7 @@ class Hwp:
         self.hwp.Quit()
         del self.hwp
 
-    def rgb_color(self, red_or_colorname: str|tuple|int, green:int=255, blue:int=255) -> int:
+    def rgb_color(self, red_or_colorname: str | tuple | int, green: int = 255, blue: int = 255) -> int:
         """
         RGB값을 한/글이 인식하는 정수 형태로 변환해주는 메서드.
 
@@ -10042,20 +9718,20 @@ class Hwp:
             return self.hwp.RGBColor(*color_palette[red_or_colorname])
         return self.hwp.RGBColor(red=red_or_colorname, green=green, blue=blue)
 
-    def RGBColor(self, red_or_colorname: str|tuple|int, green: int=255, blue: int=255) -> int:
+    def RGBColor(self, red_or_colorname: str | tuple | int, green: int = 255, blue: int = 255) -> int:
         """
         RGB값을 한/글이 인식하는 정수 형태로 변환해주는 메서드.
-        
+
         자주 쓰이는 24가지 색깔은 문자열로 입력 가능하다.
-        
+
         Args:
             red_or_colorname: R값(0~255) 또는 색깔 문자열
             green: G값(0~255)
             blue: B값(0~255)
-        
+
         Returns:
             아래아한글이 인식하는 정수 형태의 RGB값.
-            
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -10078,7 +9754,8 @@ class Hwp:
             return self.hwp.RGBColor(*color_palette[red_or_colorname])
         return self.hwp.RGBColor(red=red_or_colorname, green=green, blue=blue)
 
-    def register_module(self, module_type:str="FilePathCheckDLL", module_data:str="FilePathCheckerModule") -> bool:
+    def register_module(self, module_type: str = "FilePathCheckDLL",
+                        module_data: str = "FilePathCheckerModule") -> bool:
         """
         (인스턴스 생성시 자동으로 실행된다.)
 
@@ -10090,15 +9767,12 @@ class Hwp:
         이러한 승인절차가 아무런 의미가 없으며 오히려 불편하기만 하다.
         이런 경우 register_module을 통해 보안승인모듈을 등록하여 승인절차를 생략할 수 있다.
 
-        :param module_type:
-            모듈의 유형. 기본값은 "FilePathCheckDLL"이다.
-            파일경로 승인모듈을 DLL 형태로 추가한다.
-
-        :param module_data:
-            Registry에 등록된 DLL 모듈 ID
+        Args:
+            module_type: 모듈의 유형. 기본값은 "FilePathCheckDLL"이다. 파일경로 승인모듈을 DLL 형태로 추가한다.
+            module_data: Registry에 등록된 DLL 모듈 ID
 
         Returns:
-        추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
+            추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -10112,11 +9786,11 @@ class Hwp:
             self.register_regedit()
         return self.hwp.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
-    def RegisterModule(self, module_type:str="FilePathCheckDLL", module_data:str="FilePathCheckerModule") -> bool:
+    def RegisterModule(self, module_type: str = "FilePathCheckDLL", module_data: str = "FilePathCheckerModule") -> bool:
         """
         한/글 컨트롤에 부가적인 모듈을 등록한다. 기본동작은 "보안모듈 등록"
-        
-        (인스턴스 생성시 자동으로 실행된다.)        
+
+        (인스턴스 생성시 자동으로 실행된다.)
         사용자가 모르는 사이에 파일이 수정되거나 서버로 전송되는 것을 막기 위해
         한/글 오토메이션은 파일을 불러오거나 저장할 때 사용자로부터 승인을 받도록 되어있다.
         그러나 이미 검증받은 웹페이지이거나,
@@ -10135,20 +9809,19 @@ class Hwp:
             self.register_regedit()
         return self.hwp.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
-    @staticmethod
-    def register_regedit() -> None:
+    def register_regedit(self) -> None:
         """
         레지스트리 에디터에 한/글 보안모듈을 자동등록하는 메서드.
-        
+
         가장 먼저 파이썬과 pyhwpx 모듈이 설치된 상태라고 가정하고 'site-packages/pyhwpx' 폴더에서
         'FilePathCheckerModule.dll' 파일을 찾는다.
         두 번째로는 pyinstaller로 컴파일했다고 가정하고, MEIPASS 하위폴더를 탐색한다.
         이후로, 차례대로 실행파일과 동일한 경로, 사용자 폴더를 탐색한 후에도 보안모듈 dll파일을 찾지 못하면
         아래아한글 깃헙 저장소에서 직접 보안모듈을 다운받아 사용자 폴더에 설치하고, 레지스트리를 수정한다.
-        
+
         Returns:
             None
-            
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()  # 이 때 내부적으로 register_regedit를 실행한다.
@@ -10248,28 +9921,30 @@ class Hwp:
 
         (현재 작동하지 않는다.)
 
-        :param private_type:
-            등록할 개인정보 유형. 다음의 값 중 하나다.
-			0x0001: 전화번호
-			0x0002: 주민등록번호
-			0x0004: 외국인등록번호
-			0x0008: 전자우편
-			0x0010: 계좌번호
-			0x0020: 신용카드번호
-			0x0040: IP 주소
-			0x0080: 생년월일
-			0x0100: 주소
-			0x0200: 사용자 정의
+        Args:
+            private_type:
+                등록할 개인정보 유형. 다음의 값 중 하나다.
 
-        :param private_pattern:
-            등록할 개인정보 패턴. 예를 들면 이런 형태로 입력한다.
-			(예) 주민등록번호 - "NNNNNN-NNNNNNN"
-			한/글이 이미 정의한 패턴은 정의하면 안 된다.
-			함수를 여러 번 호출하는 것을 피하기 위해 패턴을 “;”기호로 구분
-			반속해서 입력할 수 있도록 한다.
+                    - 0x0001: 전화번호
+                    - 0x0002: 주민등록번호
+                    - 0x0004: 외국인등록번호
+                    - 0x0008: 전자우편
+                    - 0x0010: 계좌번호
+                    - 0x0020: 신용카드번호
+                    - 0x0040: IP 주소
+                    - 0x0080: 생년월일
+                    - 0x0100: 주소
+                    - 0x0200: 사용자 정의
+
+            private_pattern:
+                등록할 개인정보 패턴. 예를 들면 이런 형태로 입력한다.
+                (예) 주민등록번호 - "NNNNNN-NNNNNNN"
+                한/글이 이미 정의한 패턴은 정의하면 안 된다.
+                함수를 여러 번 호출하는 것을 피하기 위해 패턴을 “;”기호로 구분
+                반속해서 입력할 수 있도록 한다.
 
         Returns:
-        등록이 성공하였으면 True, 실패하였으면 False
+            등록이 성공하였으면 True, 실패하였으면 False
 
         Examples:
             >>> from pyhwpx import Hwp()
@@ -10286,19 +9961,22 @@ class Hwp:
         (현재 작동하지 않는다.)
 
         Args:
-            private_type: 등록할 개인정보 유형. 다음의 값 중 하나다.
-			    0x0001: 전화번호
-			    0x0002: 주민등록번호
-			    0x0004: 외국인등록번호
-			    0x0008: 전자우편
-			    0x0010: 계좌번호
-			    0x0020: 신용카드번호
-			    0x0040: IP 주소
-			    0x0080: 생년월일
-			    0x0100: 주소
-			    0x0200: 사용자 정의
+            private_type:
+                등록할 개인정보 유형. 다음의 값 중 하나다.
 
-            private_pattern: 등록할 개인정보 패턴. 예를 들면 이런 형태로 입력한다.
+                    - 0x0001: 전화번호
+                    - 0x0002: 주민등록번호
+                    - 0x0004: 외국인등록번호
+                    - 0x0008: 전자우편
+                    - 0x0010: 계좌번호
+                    - 0x0020: 신용카드번호
+                    - 0x0040: IP 주소
+                    - 0x0080: 생년월일
+                    - 0x0100: 주소
+                    - 0x0200: 사용자 정의
+
+            private_pattern:
+                등록할 개인정보 패턴. 예를 들면 이런 형태로 입력한다.
 			    (예) 주민등록번호 - "NNNNNN-NNNNNNN"
 			    한/글이 이미 정의한 패턴은 정의하면 안 된다.
 			    함수를 여러 번 호출하는 것을 피하기 위해 패턴을 “;”기호로 구분
@@ -10313,9 +9991,6 @@ class Hwp:
             >>> hwp.register_private_info_pattern(0x01, "NNNN-NNNN;NN-NN-NNNN-NNNN")  # 전화번호패턴
         """
         return self.hwp.RegisterPrivateInfoPattern(PrivateType=private_type, PrivatePattern=private_pattern)
-
-    def release_action(self, action: str):
-        return self.hwp.ReleaseAction(action=action)
 
     def ReleaseAction(self, action: str):
         return self.hwp.ReleaseAction(action=action)
@@ -10392,7 +10067,7 @@ class Hwp:
 
         Returns:
             Action을 바꾸면 True를 바꾸지 못했다면 False를 반환한다.
-        
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -10420,7 +10095,7 @@ class Hwp:
 
         Returns:
             Action을 바꾸면 True를, 바꾸지 못했다면 False를 반환한다.
-        
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -10437,9 +10112,6 @@ class Hwp:
         return self.hwp.ReplaceFont(langid=langid, desFontName=des_font_name, desFontType=des_font_type,
                                     newFontName=new_font_name, newFontType=new_font_type)
 
-    def revision(self, revision):
-        return self.hwp.Revision(Revision=revision)
-
     def Revision(self, revision):
         return self.hwp.Revision(Revision=revision)
 
@@ -10447,8 +10119,8 @@ class Hwp:
 
     def Run(self, act_id: str) -> bool:
         """
-        액션을 실행한다. 
-        
+        액션을 실행한다.
+
         ActionTable.hwp 액션 리스트 중에서 "별도의 파라미터가 필요하지 않은" 단순 액션을 hwp.Run(액션아이디)으로 호출할 수 있다. 단, `hwp.Run("BreakPara")` 처럼 실행하는 대신 `hwp.BreakPara()` 방식으로 실행 가능하다.
 
         Args:
@@ -10462,7 +10134,6 @@ class Hwp:
     def ASendBrowserText(self):
         """
         웹브라우저로 보내기
-
         """
         return self.hwp.HAction.Run("ASendBrowserText")
 
@@ -10476,14 +10147,12 @@ class Hwp:
     def AutoChangeRun(self):
         """
         위 커맨드를 실행할 때마다 "글자판 자동 변경 기능"이 활성화/비활성화로 토글된다. 다만 API 등으로 텍스트를 입력하는 경우 원래 한/영 자동변환이 되지 않으므로, 자동화에는 쓰일 일이 없는 액션.
-
         """
         return self.hwp.HAction.Run("AutoChangeRun")
 
     def AutoSpellRun(self):
         """
         맞춤법 도우미(맞춤법이 틀린 단어 밑에 빨간 점선) 활성화/비활성화를 토글한다. 실행 후(비활성화시) 몇 초 뒤에 붉은 줄이 사라지는 것을 확인할 수 있다. 중간 스페이스에 유의.
-
         """
         return self.hwp.HAction.Run("AutoSpell Run")
 
@@ -10782,7 +10451,9 @@ class Hwp:
         return self.hwp.HAction.Run("CharShapeOutline")
 
     def CharShapePrevFaceName(self):
-        """이전 글꼴 ALT+SHIFT+G"""
+        """
+        이전 글꼴 ALT+SHIFT+G
+        """
         return self.hwp.HAction.Run("CharShapePrevFaceName")
 
     def CharShapeShadow(self):
@@ -10793,7 +10464,9 @@ class Hwp:
         return self.hwp.HAction.Run("CharShapeShadow")
 
     def CharShapeSpacing(self):
-        """글자 자간"""
+        """
+        글자모양(alt-L) 창을 열고, 자간 값에 포커스를 옮긴다.
+        """
         return self.hwp.HAction.Run("CharShapeSpacing")
 
     def CharShapeSpacingDecrease(self):
@@ -10887,12 +10560,8 @@ class Hwp:
         """
         return self.hwp.HAction.Run("CharShapeTextColorYellow")
 
-    def CharShapeTypeface(self):
-        """글자 모양"""
-        return self.hwp.HAction.Run("CharShapTypeface")
-
     def CharShapTypeface(self):
-        """글자 모양"""
+        """글자 모양 (실행 안됨)"""
         return self.hwp.HAction.Run("CharShapTypeface")
 
     def CharShapeUnderline(self):
@@ -10903,7 +10572,7 @@ class Hwp:
         return self.hwp.HAction.Run("CharShapeUnderline")
 
     def CharShapeWidth(self):
-        """글자 장평"""
+        """글자 모양(Alt-L) 창에서 글자 장평에 포커스를 둔다."""
         return self.hwp.HAction.Run("CharShapeWidth")
 
     def CharShapeWidthDecrease(self):
@@ -10922,11 +10591,10 @@ class Hwp:
 
     def Close(self):
         """
-        현재 리스트를 닫고 (최)상위 리스트로 이동하는 액션. 대표적인 예로, 메모나 각주 등을 작성한 후 본문으로 빠져나올 때, 혹은 여러 겹의 표 안에 있을 때 한 번에 표 밖으로 캐럿을 옮길 때 사용한다. 굉장히 자주 쓰이는 액션이며, 경우에 따라 Close가 아니라 CloseEx를 써야 하는 경우도 있다.
+        현재 리스트를 닫고 (최)상위 리스트로 이동하는 액션.
 
+        대표적인 예로, 메모나 각주 등을 작성한 후 본문으로 빠져나올 때, 혹은 여러 겹의 표 안에 있을 때 한 번에 표 밖으로 캐럿을 옮길 때 사용한다. 굉장히 자주 쓰이는 액션이며, 경우에 따라 Close가 아니라 CloseEx를 써야 하는 경우도 있다.
         (레퍼런스 포인트가 등록되어 있으면 그 포인트로, 없으면 루트 리스트로 이동한다. 나머지 특성은 MoveRootList와 동일)
-        명령이 누락되는 경우가 있어 0.05초 인터벌로 최대 5회 재시도.
-        간혹 오류가 나므로, 가급적 hwp.clear() 사용을 권장
         """
         cur_pos = self.GetPos()
         self.hwp.HAction.Run("Close")
@@ -10950,28 +10618,57 @@ class Hwp:
         """
         return self.hwp.HAction.Run("CloseEx")
 
-    def Comment(self):
+    def Comment(self) -> bool:
         """
-        아래아한글에 "숨은 설명"이 있다는 걸 아는 사람도 없다시피 한데, 그 "숨은 설명" 관련한 Run 액션이 세 개나 있다. Comment 액션은 표현 그대로 숨은 설명을 붙일 수 있다. 텍스트만 넣을 수 있을 것 같은 액션이름인데, 사실 표나 그림도 자유롭게 삽입할 수 있기 때문에, 문서 안에 몰래 숨겨놓은 또다른 문서 느낌이다. 파일별로 자동화에 활용할 수 있는 특정 문자열을 파이썬이 아니라 숨은설명 안에 붙여놓고 활용할 수도 있지 않을까 이런저런 고민을 해봤는데, 개인적으로 자동화에 제대로 활용한 적은 한 번도 없었다. 숨은 설명이라고 민감한 정보를 넣으면 안 되는데, 완전히 숨겨져 있는 게 아니기 때문이다. 현재 캐럿위치에 [숨은설명] 조판부호가 삽입되며, 이를 통해 숨은 설명 내용이 확인 가능하므로 유념해야 한다. 재미있는 점은, 숨은설명 안에 또 숨은설명을 삽입할 수 있다. 숨은설명 안에다 숨은설명을 넣고 그 안에 또 숨은설명을 넣는... 이런 테스트를 해봤는데 2,400단계 정도에서 한글이 종료돼버렸다.
+        새로운 숨은설명 컨트롤을 만들고, 해당 숨은설명으로 이동.
 
+        아래아한글에 "숨은 설명"이 있다는 걸 아는 사람도 없다시피 한데,
+        그 "숨은 설명" 관련한 Run 액션이 세 개나 있다.
+        Comment 액션은 표현 그대로 숨은 설명을 붙일 수 있다.
+        텍스트만 넣을 수 있을 것 같은 액션이름인데,
+        사실 표나 그림도 자유롭게 삽입할 수 있기 때문에,
+        문서 안에 몰래 숨겨놓은 또다른 문서 느낌이다.
+        파일별로 자동화에 활용할 수 있는 특정 문자열을
+        파이썬이 아니라 숨은설명 안에 붙여놓고 활용할 수도 있지 않을까
+        이런저런 고민을 해봤는데, 개인적으로 자동화에 제대로 활용한 적은 한 번도 없었다.
+        숨은 설명이라고 민감한 정보를 넣으면 안 되는데,
+        완전히 숨겨져 있는 게 아니기 때문이다.
+        현재 캐럿위치에 [숨은설명] 조판부호가 삽입되며,
+        이를 통해 숨은 설명 내용이 확인 가능하므로 유념해야 한다.
+        재미있는 점은, 숨은설명 안에 또 숨은설명을 삽입할 수 있다.
+        숨은설명 안에다 숨은설명을 넣고 그 안에 또 숨은설명을 넣는...
+        이런 테스트를 해봤는데 2,400단계 정도에서 한글이 종료돼버렸다.
+
+        Returns:
+            성공시 True, 실패시 False를 리턴.
         """
         return self.hwp.HAction.Run("Comment")
 
     def CommentDelete(self):
         """
-        단어 그대로 숨은 설명을 지우는 액션이다. 단, 사용방법이 까다로운데 숨은 설명 안에 들어가서 CommentDelete를 실행하면, 지울지 말지(Yes/No) 팝업이 나타난다. 나중에 자세히 설명하겠지만 이런 팝업을 자동처리하는 방법은 hwp.SetMessageBoxMode() 메서드를 미리 실행해놓는 것이다. Yes/No 방식의 팝업에서 Yes를 선택하는 파라미터는 0x10000 (또는 65536)이므로, hwp.SetMessageBoxMode(0x10000) 를 사용하면 된다.
+        숨은설명 지우기
 
+        단어 그대로 숨은 설명을 지우는 액션이다.
+        단, 사용방법이 까다로운데 숨은 설명 안에 들어가서 CommentDelete를 실행하면,
+        지울지 말지(Yes/No) 팝업이 나타난다.
+        나중에 자세히 설명하겠지만 이런 팝업을 자동처리하는 방법은 hwp.SetMessageBoxMode() 메서드를 미리 실행해놓는 것이다.
+        Yes/No 방식의 팝업에서 Yes를 선택하는 파라미터는 0x10000 (또는 65536)이므로,
+        hwp.SetMessageBoxMode(0x10000) 를 사용하면 된다.
         """
         return self.hwp.HAction.Run("CommentDelete")
 
-    def CommentModify(self):
+    def CommentModify(self) -> bool:
         """
-        단어 그대로 숨은 설명을 수정하는 액션이다. 캐럿은 [숨은설명] 조판부호 바로 앞에 위치하고 있어야 한다.
+        숨은설명 수정하기
+
+        단어 그대로 숨은 설명을 수정하는 액션이다.
+        캐럿은 해당 [숨은설명] 조판부호 바로 앞에 위치하고 있어야 한다.
 
         """
         return self.hwp.HAction.Run("CommentModify")
 
-    def ComposeChars(self, Chars: str | int = "", CharSize: int = -3, CheckCompose: int = 0, CircleType: int = 0, **kwargs) -> bool:
+    def ComposeChars(self, Chars: str | int = "", CharSize: int = -3, CheckCompose: int = 0, CircleType: int = 0,
+                     **kwargs) -> bool:
         """
         글자 겹치기 메서드(원문자 만들기)
 
@@ -10984,7 +10681,7 @@ class Hwp:
             CircleType: 테두리 모양(0:없음, 1:원, 2:반전원, 3:사각, 4:반전사각, 5:삼각, 6:반전삼각, 7:해, 8:마름모, 9:반전마름모, 10:뭉툭사각, 11:재활용빈화살표, 12:재활용화살표, 13:재활용채운화살표)
 
         Returns:
-        성공하면 True, 실패하면 False를 리턴
+            성공하면 True, 실패하면 False를 리턴
         """
         pset = self.HParameterSet.HChCompose
         self.HAction.GetDefault("ComposeChars", pset.HSet)
@@ -10999,7 +10696,17 @@ class Hwp:
 
     def Copy(self):
         """
-        복사하기. 선택되어 있는 문자열 혹은 개체(표, 이미지 등)를 클립보드에 저장한다. 파이썬에서 클립보드를 다루는 모듈은 pyperclip이나, pywin32의 win32clipboard 두 가지가 가장 많이 쓰이는데, 단순한 문자열의 경우 아래처럼
+        복사하기. (비추천)
+
+        선택되어 있는 문자열 혹은 개체(표, 이미지 등)를 클립보드에 저장한다.
+        파이썬에서 클립보드를 다루는 모듈은 pyperclip이나,
+        pywin32의 win32clipboard 두 가지가 가장 많이 쓰이는데,
+        단순한 문자열의 경우 hwp.Copy() 실행 후 pyperclip.paste()로 파이썬으로 가져올 수 있지만,
+        서식 등의 메타 정보를 모두 잃어버린다.
+
+        또한 빠른 반복작업시 윈도우OS의 클립보드 잠금 때문에 오류가 발생할 수 있다.
+
+        hwp.Copy()나 hwp.Paste() 대신 hwp.GetTextFile()이나 hwp.save_block_as 등의 메서드를 사용하는 것을 추천.
 
         """
         return self.hwp.HAction.Run("Copy")
@@ -11008,6 +10715,7 @@ class Hwp:
         """
         쪽 복사
 
+        한글2014 이하의 버전에서는 사용할 수 없다.
         """
         return self.hwp.HAction.Run("CopyPage")
 
@@ -11057,7 +10765,11 @@ class Hwp:
 
     def Cut(self, remove_cell=True) -> bool:
         """
-        잘라내기. Copy 액션과 유사하지만, 복사 대신 잘라내기 기능을 수행한다. 자주 쓰이는 메서드이다.
+        잘라내기.
+
+        Copy 액션과 유사하지만,
+        복사 대신 잘라내기 기능을 수행한다.
+        유용하지만, 빠른 반복작업에서는 윈도우OS의 클립보드 잠금 때문에 오류가 발생할 수 있다.
 
         """
         if remove_cell:
@@ -11073,13 +10785,20 @@ class Hwp:
             finally:
                 self.set_message_box_mode(0xF000)
 
-    def Delete(self, delete_ctrl=True):
+    def Delete(self, delete_ctrl: bool = True) -> bool:
         """
-        삭제액션. 키보드의 Del 키를 눌렀을 때와 대부분(?) 유사하다. 아주 사용빈도가 높은 액션이다.
+        삭제(Del키).
 
-        :param delete_ctrl: 컨트롤(표, 이미지, 겹침문자 등)을 삭제할 때 처리방법(True: 삭제, False: 삭제안함)
+        키보드의 Del 키를 눌렀을 때와 거의(?) 유사하다.
+        아주 사용빈도가 높은 액션이다.
+        수작업과 달리 표나 이미지 등의 컨트롤을 삭제할 때에도 팝업으로 묻지 않는다.
+        (``hwp.Delete(False)``로 실행하면 경고팝업이 뜬다.)
+
+        Args:
+            delete_ctrl: 컨트롤(표, 이미지, 겹침문자 등)을 삭제할 때 처리방법(True: 삭제(기본값), False: 삭제안함)
 
         Returns:
+            성공시 True, 실패시 False를 리턴
         """
         cur_mode = self.hwp.GetMessageBoxMode()
         if delete_ctrl:
@@ -11091,9 +10810,14 @@ class Hwp:
         finally:
             self.hwp.SetMessageBoxMode(cur_mode)
 
-    def DeleteBack(self, delete_ctrl=True):
+    def DeleteBack(self, delete_ctrl=True) -> bool:
         """
+        백스페이스 삭제
+
         Delete와 유사하지만, 이건 Backspace처럼 우측에서 좌측으로 삭제해준다. 많이 쓰인다.
+
+        Args:
+            delete_ctrl: 컨트롤 삭제시 경고팝업을 띄울지(기본값은 True)
 
         """
         cur_mode = self.hwp.GetMessageBoxMode()
@@ -11106,9 +10830,18 @@ class Hwp:
         finally:
             self.hwp.SetMessageBoxMode(cur_mode)
 
-    def DeleteField(self):
+    def DeleteField(self) -> bool:
         """
-        누름틀지우기. 누름틀 안의 내용은 지우지 않고, 단순히 누름틀만 지운다. 지울 때 캐럿의 위치는 누름틀 안이든, 앞이나 뒤든 붙어있기만 하면 된다. 만약 최종문서에는 누름틀을 넣지 않고 모두 일반 텍스트로 변환하려고 하면 이 기능을 활용할 수 있다.
+        누름틀지우기.
+
+        누름틀 안의 내용은 지우지 않고, 단순히 누름틀만 지운다.
+        지울 때 캐럿의 위치는 누름틀 안이든, 앞이나 뒤든 붙어있기만 하면 된다.
+        만약 최종문서에는 누름틀을 넣지 않고
+        모두 일반 텍스트로 변환하려고 할 때
+        이 기능을 활용하면 된다.
+
+        Returns:
+            성공시 True, 실패시 False를 리턴.
 
         """
         return self.hwp.HAction.Run("DeleteField")
@@ -11166,12 +10899,16 @@ class Hwp:
         """
         쪽 지우기
 
+        한글2014 이하의 버전에서는 사용할 수 없다.
+
         """
         return self.hwp.HAction.Run("DeletePage")
 
     def DeleteWord(self, delete_ctrl=True):
         """
-        단어 지우기(Ctrl-T) 액션. 단, 커서 우측에 위치한 단어 한 개씩 삭제하며, 커서가 단어 중간에 있는 경우 우측 글자만 삭제한다.
+        단어 지우기(Ctrl-T) 액션.
+
+        단, 커서 우측에 위치한 단어 한 개씩 삭제하며, 커서가 단어 중간에 있는 경우 우측 글자만 삭제한다.
 
         """
         cur_mode = self.hwp.GetMessageBoxMode()
@@ -11186,7 +10923,10 @@ class Hwp:
 
     def DeleteWordBack(self, delete_ctrl=True):
         """
-        한 단어씩 좌측으로 삭제하는 액션(Ctrl-백스페이스). DeleteWord와 마찬가지로 커서가 단어 중간에 있는 경우 좌측 글자만 삭제한다.
+        한 단어씩 좌측으로 삭제하는 액션(Ctrl-백스페이스).
+
+        DeleteWord와 마찬가지로 커서가 단어 중간에 있는 경우
+        좌측 글자만 삭제한다.
 
         """
         cur_mode = self.hwp.GetMessageBoxMode()
@@ -11201,54 +10941,89 @@ class Hwp:
 
     def DrawObjCancelOneStep(self):
         """
-        다각형(곡선) 그리는 중 이전 선 지우기. 현재 사용 안함(?)
+        다각형(곡선) 그리는 중 이전 선 지우기.
+
+        현재 사용 안함(?)
 
         """
         return self.hwp.HAction.Run("DrawObjCancelOneStep")
 
     def DrawObjEditDetail(self):
         """
-        그리기 개체 중 다각형 점편집 액션. 다각형이 선택된 상태에서만 실행가능.
+        그리기 개체 중 다각형 점편집 액션.
+
+        다각형이 선택된 상태에서만 실행가능.
 
         """
         return self.hwp.HAction.Run("DrawObjEditDetail")
 
     def DrawObjOpenClosePolygon(self):
         """
-        닫힌 다각형 열기 또는 열린 다각형 닫기 토글.①다각형 개체 선택상태가 아니라 편집상태에서만 위 명령어가 실행된다.②닫힌다각형을 열 때는 마지막으로 봉합된 점에서 아주 조금만 열린다.③아주 조금만 열린 상태에서 닫으면 노드(꼭지점)가 추가되지 않지만, 적절한 거리를 벌리고 닫기를 하면 추가됨.
+        닫힌 다각형 열기 또는 열린 다각형 닫기 토글.
+
+        ①다각형 개체 선택상태가 아니라 편집상태에서만 위 명령어가 실행된다.
+
+        ②닫힌 다각형을 열 때는 마지막으로 봉합된 점에서 아주 조금만 열린다.
+
+        ③아주 조금만 열린 상태에서 닫으면 노드(꼭지점)가 추가되지 않지만, 적절한 거리를 벌리고 닫기를 하면 추가됨.
 
         """
         return self.hwp.HAction.Run("DrawObjOpenClosePolygon")
 
     def DrawObjTemplateSave(self):
         """
-        그리기개체를 그리기마당에 템플릿으로 등록하는 액션(어떻게 써먹고 싶어도 방법을 모르겠다...)그리기개체가 선택된 상태에서만 실행 가능하다.여담으로, 그리기 마당에 임의로 등록한 개체 삭제 아이콘을 못 찾고 있는데; 한글2020 기준으로, 개체 이름을 "얼굴"이라고 "기본도형"에 저장했을 경우, 찾아가서 아래의 파일을 삭제해도 된다."C:/Users/이름/AppData/Roaming/HNC/User/Shared110/HwpTemplate/Draw/FG_Basic_Shapes/얼굴.drt"
+        그리기개체를 그리기마당에 템플릿으로 등록하는 액션
+
+        (어떻게 써먹고 싶어도 방법을 모르겠다...)
+        그리기개체가 선택된 상태에서만 실행 가능하다.
+        여담으로, 그리기 마당에 임의로 등록한 개체 삭제 아이콘을 못 찾고 있는데;
+        한글2020 기준으로, 개체 이름을 "얼굴"이라고 "기본도형"에 저장했을 경우,
+        찾아가서 아래의 파일을 삭제해도 된다.
+        `"C:/Users/이름/AppData/Roaming/HNC/User/Shared110/HwpTemplate/Draw/FG_Basic_Shapes/얼굴.drt"`
 
         """
         return self.hwp.HAction.Run("DrawObjTemplateSave")
 
-    def EasyFind(self):
-        """쉬운 찾기"""
+    def EasyFind(self) -> bool:
+        """
+        쉬운 찾기
+
+        사용하지 않음.
+
+        """
         return self.hwp.HAction.Run("EasyFind")
 
-    def EditFieldMemo(self):
+    def EditFieldMemo(self) -> bool:
         """
-        메모 내용 편집 액션. "메모 내용 보기" 창이 하단에 열린다. SplitMemoOpen과 동일한 기능으로 보이며, 메모내용보기창에서 두 번째 이후의 메모 클릭시 메모내용보기창이 닫히는 버그가 있다.(한/글 2020 기준)참고로 메모내용 보기 창을 닫을 때는 SplitMemoClose 커맨드를 쓰면 된다.
+        메모 내용 편집 액션.
 
+        "메모 내용 보기" 창이 하단에 열린다.
+        SplitMemoOpen과 동일한 기능으로 보이며,
+        메모내용보기창에서 두 번째 이후의 메모 클릭시 메모내용 보기 창이 닫히는 버그가 있다.(한/글 2020 기준)참고로 메모내용 보기 창을 닫을 때는 SplitMemoClose 커맨드를 쓰면 된다.
+
+        Returns:
+            성공시 True, 실패시 False를 리턴
         """
         return self.hwp.HAction.Run("EditFieldMemo")
 
-    def Erase(self):
+    def Erase(self) -> bool:
         """
-        선택한 문자나 개체 삭제. 문자열이나 컨트롤 등을 삭제한다는 점에서는 Delete나 DeleteBack과 유사하지만, 가장 큰 차이점은, 아무 것도 선택되어 있지 않은 상태일 때 Erase는 아무 것도 지우지 않는다는 점이다. (Delete나 DeleteBack은 어찌됐든 앞뒤의 뭔가를 지운다.)
+        선택한 문자나 개체 삭제.
 
+        문자열이나 컨트롤 등을 삭제한다는 점에서는 Delete나 DeleteBack과 유사하지만,
+        가장 큰 차이점은, 아무 것도 선택되어 있지 않은 상태일 때 Erase는 아무 것도 지우지 않는다는 점이다.
+        (Delete나 DeleteBack은 어찌됐든 앞뒤의 뭔가를 지운다.)
+
+        Returns:
+            성공시 True, 실패시 False를 리턴
         """
         return self.hwp.HAction.Run("Erase")
 
     def FileClose(self):
         """
-        문서 닫기. 한/글을 종료하는 명령어는 아니다. 다만 문서저장 이후 수정을 한 상태이거나, 빈 문서를 열어서 편집한 경우에는, 팝업이 나타나고 사용자 입력을 요구하므로 자동화작업에 걸림돌이 된다.이를 해결하는 세 가지(?) 옵션이 있는데,①문서를 저장한 후 FileClose 실행저장하는 방법은, hwp.SaveAs(Path)②변경된 내용을 버린 후 FileClose 실행(탬플릿문서를 쓰고 있거나, 이미 PDF로 저장했다든지, 캡쳐를 완료한 경우 등)버리는 방법은 hwp.Clear(option=1)※ Clear 메서드는 경우에 따라 심각한 오류를 뱉기도 한다. 그것도 상당히 빈도가 잦아서 필자는 Clear를 사용하지 않는 편이다. 대신 아래의 XHwpDocument.Close(False)를 사용하는 편.③변경된 내용을 버리고 문서를 닫는 명령 실행hwp.XHwpDocuments.Item(0).Close(isDirty=False)위 명령어는 다소 길어 보이지만 hwp.Clear(option=1), hwp.HAction.Run("FileClose")와 동일하게 작동한다.
+        문서 닫기.
 
+        저장 이후 변경사항이 있으면 팝업이 뜨므로 주의
         """
         return self.hwp.HAction.Run("FileClose")
 
@@ -11258,16 +11033,21 @@ class Hwp:
 
     def FileNew(self):
         """
-        새 문서 창을 여는 명령어. 참고로 현재 창에서 새 탭을 여는 명령어는 hwp.HAction.Run("FileNewTab").
+        새 문서 창을 여는 명령어.
+
+        참고로 현재 창에서 새 탭을 여는 명령어는 ``hwp.FileNewTab()``
 
         여담이지만 한/글2020 기준으로 새 창은 30개까지 열 수 있다.
         그리고 한 창에는 탭을 30개까지 열 수 있다.
-        즉, (리소스만 충분하다면) 동시에 열어서 자동화를 돌릴 수 있는 문서 갯수는 900개.
+        즉, (리소스만 충분하다면) 동시에 열어서 자동화를 돌릴 수 있는
+        문서 갯수는 900개!
         """
         return self.hwp.HAction.Run("FileNew")
 
     def FileNewTab(self):
-        """새 탭"""
+        """
+        새 탭을 여는 명령어.
+        """
         return self.hwp.HAction.Run("FileNewTab")
 
     def FileNextVersionDiff(self):
@@ -11280,42 +11060,67 @@ class Hwp:
 
     def FileOpen(self):
         """
-        문서를 여는 명령어. 단 파일선택 팝업이 뜨므로, 자동화작업시에는 이 명령어를 사용하지 않는다.  대신 hwp.Open(파일명)을 사용해야 한다. 레지스트리에디터에 보안모듈 등록(링크)을 해놓으면 hwp.Open 명령 실행시에 보안팝업도 뜨지 않는다.
+        문서를 여는 명령어.
 
+        단 파일선택 팝업이 뜨므로,
+        자동화작업시에는 이 명령어를 사용하지 않는다.
+        대신 hwp.open(파일명)을 사용해야 한다.
         """
         return self.hwp.HAction.Run("FileOpen")
 
     def FileOpenMRU(self):
         """
-        API매뉴얼엔 "최근 작업 문서"를 여는 명령어라고 나와 있지만, 현재는 FileOpen과 동일한 동작을 하는 것으로 보인다. 이 액션 역시 사용자입력을 요구하는 팝업이 뜨므로 자동화에 사용하지 않으며, hwp.Open(Path)을 써야 한다.
+        최근 작업문서 열기
+
+        현재는 FileOpen과 동일한 동작을 하는 것으로 보임.
+        사용자입력을 요구하는 팝업이 뜨므로
+        자동화에 사용하지 않으며, hwp.open(Path)을 써야 한다.
 
         """
         return self.hwp.HAction.Run("FileOpenMRU")
 
     def FilePreview(self):
         """
-        미리보기 창을 열어준다. 자동화와 큰 연관이 없어 자주 쓰이지도 않고, 더군다나 닫는 명령어가 없다.또한 이 명령어는 hwp.XHwpDocuments.Item(0).XHwpPrint.RunFilePreview()와 동일한 동작을 하는데,재미있는 점은,①스크립트 매크로 녹화 진행중에 hwp.HAction.Run("FilePreview")는 실행해도 반응이 없고, 녹화 로그에도 잡히지 않는다.②그리고 스크립트매크로 녹화 진행중에 [파일] - [미리보기(V)] 메뉴도 비활성화되어 있어 코드를 알 수 없다.③그런데 hwp.XHwpDocuments.Item(0).XHwpPrint.RunFilePreview()는 녹화중에도 실행이 된다.녹화된 코드와 관련하여 남기고 싶은 코멘트가 많은데, 별도의 포스팅으로 남길 예정.
+        미리보기 창을 열어준다.
 
+        자동화와 큰 연관이 없어 자주 쓰이지도 않고,
+        더군다나 닫는 명령어가 없다.
+        또한 이 명령어는 hwp.XHwpDocuments.Item(0).XHwpPrint.RunFilePreview()와 동일한 동작을 하는데,
+        재미있는 점은,
+
+            - ①스크립트 매크로 녹화 진행중에 ``hwp.FilePreview()``는 실행해도 반응이 없고, 녹화 로그에도 잡히지 않는다.
+            - ②그리고 스크립트매크로 녹화 진행중에 [파일] - [미리보기(V)] 메뉴도 비활성화되어 있어 코드를 알 수 없다.
+            - ③그런데 hwp.XHwpDocuments.Item(0).XHwpPrint.RunFilePreview()는 녹화중에도 실행이 된다. 녹화된 코드와 관련하여 남기고 싶은 코멘트가 많은데, 별도의 포스팅으로 남길 예정.
         """
         return self.hwp.HAction.Run("FilePreview")
 
     def FileQuit(self):
         """
-        한/글 프로그램을 종료한다. 단, 저장 이후 문서수정이 있는 경우에는 팝업이 뜨므로, ①저장하거나 ②수정내용을 버리는 메서드를 활용해야 한다.
+        한/글 프로그램을 종료한다.
+
+        단, 저장 이후 문서수정이 있는 경우에는 팝업이 뜨므로,
+        ①저장하거나 ②수정내용을 버리는 메서드를 활용해야 한다.
 
         """
         return self.hwp.HAction.Run("FileQuit")
 
     def FileSave(self):
         """
-        파일을 저장하는 액션(Alt-S). 자동화프로세스 중 빈 문서를 열어 작성하는 경우에는, 저장액션 실행시 아래와 같이 경로선택 팝업이 뜨므로, hwp.SaveAs(Path) 메서드를 사용하여 저장한 후 Run("FileSave")를 써야 한다.Run("FileSave")는 hwp.Save() 메서드와 거의 동일하지만 한 가지 차이점이 있는데,- hwp.Save()는 수정사항이 있는 경우에만 저장 프로세스를 실행하여 부하를 줄이는데 반해 hwp.HAction.Run("FileSave")는 매번 실행할 때마다 변동사항이 없더라도 저장 프로세스를 실행한다.단, hwp.Save(save_if_dirty=False) 방식으로 파라미터를 주고 실행하면 Run("FileSave")와 동일하게, 수정이 없더라도 매번 저장을 수행하게 된다.
+        문서 저장(Alt-S).
 
+        가급적 ``hwp.save()``를 사용하자.
+        ``hwp.save()``와 ``hwp.FileSave()``에 차이가 있는데
+        ``hwp.save()``는 실제 변경이 없으면 저장을 수행하지 않지만
+        ``hwp.FileSave()``는 변경이 없어도 저장을 수행하므로 수정일자가 바뀐다.
         """
         return self.hwp.HAction.Run("FileSave")
 
     def FileSaveAs(self):
         """
-        다른 이름으로 저장(Alt-V). 사용자입력을 필요로 하므로 이 액션은 사용하지 않는다.대신 hwp.SaveAs(Path)를 사용하면 된다.
+        다른 이름으로 저장(Alt-V).
+
+        사용자입력을 필요로 하므로 이 액션은 사용하지 않는다.
+        대신 hwp.save_as(Path)를 사용하면 된다.
 
         """
         return self.hwp.HAction.Run("FileSaveAs")
@@ -11346,43 +11151,54 @@ class Hwp:
 
     def FindForeBackBookmark(self):
         """
-        책갈피 찾아가기. 사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
+        책갈피 찾아가기.
+
+        사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
 
         """
         return self.hwp.HAction.Run("FindForeBackBookmark")
 
     def FindForeBackCtrl(self):
         """
-        조판부호 찾아가기. FindForeBackBookmark와 마찬가지로 사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
+        조판부호 찾아가기.
 
-        참고로 FindForeBackSelectCtrl은 선택.
+        사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
+        참고로 ``hwp.FindForeBackSelectCtrl``은 선택.
         """
         return self.hwp.HAction.Run("FindForeBackCtrl")
 
     def FindForeBackFind(self):
         """
-        찾기. FindForeBackBookmark와 마찬가지로 사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
+        찾기.
+
+        사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
 
         """
         return self.hwp.HAction.Run("FindForeBackFind")
 
     def FindForeBackLine(self):
         """
-        줄 찾아가기. FindForeBackBookmark와 마찬가지로 사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
+        줄 찾아가기.
+
+        사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
 
         """
         return self.hwp.HAction.Run("FindForeBackLine")
 
     def FindForeBackPage(self):
         """
-        쪽 찾아가기. FindForeBackBookmark와 마찬가지로 사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
+        쪽 찾아가기.
+
+        사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
 
         """
         return self.hwp.HAction.Run("FindForeBackPage")
 
     def FindForeBackSection(self):
         """
-        구역 찾아가기. FindForeBackBookmark와 마찬가지로 사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
+        구역 찾아가기.
+
+        사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
 
         """
         return self.hwp.HAction.Run("FindForeBackSection")
@@ -11393,7 +11209,9 @@ class Hwp:
 
     def FindForeBackStyle(self):
         """
-        스타일 찾아가기. FindForeBackBookmark와 마찬가지로 사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
+        스타일 찾아가기.
+
+        사용자 입력을 요구하므로 자동화에는 사용하지 않는다.
 
         """
         return self.hwp.HAction.Run("FindForeBackStyle")
@@ -11470,29 +11288,41 @@ class Hwp:
 
     def HeaderFooterDelete(self):
         """
-        머리말/꼬리말 지우기. 본문이 아니라 머리말/꼬리말 편집상태에서 실행해야 삭제 팝업이 뜬다.삭제팝업 없이 머리말/꼬리말을 삭제하려면 hwp.SetMessageBoxMode(0x10000)을 미리 실행해놓아야 한다.참고로 아래 영상에서는 마우스 더블클릭을 했지만, 자동화작업시에는 아래의 Run("HeaderFooterModify")을 통해 편집상태로 들어가야 한다.
+        머리말/꼬리말 지우기.
+
+        본문이 아니라 머리말/꼬리말 편집상태에서 실행해야
+        삭제 팝업이 뜬다.
+        삭제팝업 없이 머리말/꼬리말을 삭제하려면
+        hwp.SetMessageBoxMode(0x10000)을 미리 실행해놓아야 한다.
+
+        자동화작업시에는 ``hwp.HeaderFooterModify()``을 통해
+        편집상태로 들어가야 한다.
 
         """
         return self.hwp.HAction.Run("HeaderFooterDelete")
 
     def HeaderFooterModify(self):
         """
-        머리말/꼬리말 고치기. 마우스를 쓰지 않고 머리말/꼬리말 편집상태로 들어갈 수 있다. 단, 커서가 조판부호에 닿아 있는 상태에서 실행해야 한다.
+        머리말/꼬리말 고치기.
 
+        마우스를 쓰지 않고 머리말/꼬리말 편집상태로 들어갈 수 있다.
+        단, 커서가 머리말/꼬리말 컨트롤에 닿아 있는 상태에서 실행해야 한다.
         """
         return self.hwp.HAction.Run("HeaderFooterModify")
 
     def HeaderFooterToNext(self):
         """
-        다음 머리말/꼬리말. 당장은 사용방법을 모르겠다..
+        다음 머리말/꼬리말.
 
+        당장은 사용방법을 모르겠다..
         """
         return self.hwp.HAction.Run("HeaderFooterToNext")
 
     def HeaderFooterToPrev(self):
         """
-        이전 머리말. 당장은 사용방법을 모르겠다..
+        이전 머리말.
 
+        당장은 사용방법을 모르겠다..
         """
         return self.hwp.HAction.Run("HeaderFooterToPrev")
 
@@ -11510,21 +11340,32 @@ class Hwp:
 
     def HiddenCredits(self):
         """
-        인터넷 정보. 사용방법을 모르겠다.
+        인터넷 정보.
+
+        사용방법을 모르겠다.
 
         """
         return self.hwp.HAction.Run("HiddenCredits")
 
     def HideTitle(self):
         """
-        차례 숨기기([도구 - 차례/색인 - 차례 숨기기] 메뉴에 대응(Ctrl-K-S). 실행한 개요라인을 자동생성되는 제목차례에서 숨긴다. 즉시 변경되지 않으며, "모든 차례 새로고침(Ctrl-K-A)" 실행시 제목차례가 업데이트된다.모든차례 새로고침 명령어는 hwp.HAction.Run("UpdateAllContents") 이다.적용여부는 Ctrl+G,C를 이용해 조판부호를 확인하면 알 수 있다.
+        차례 숨기기(Ctrl-K-S)
 
+        ([도구 - 차례/색인 - 차례 숨기기] 메뉴에 대응.
+        실행한 개요라인을 자동생성되는 제목차례에서 숨긴다.
+        즉시 변경되지 않으며,
+        ``hwp.UpdateAllContents()``(모든 차례 새로고침, Ctrl-KA) 실행시
+        제목차례가 업데이트된다.
         """
         return self.hwp.HAction.Run("HideTitle")
 
     def HimConfig(self):
         """
-        입력기 언어별 환경설정. 현재는 실행되지 않는 듯 하다. 대신 Run("HimKbdChange")로 환경설정창을 띄울 수 있다.자동화에는 쓰이지 않는다.
+        입력기 언어별 환경설정.
+
+        현재는 실행되지 않는 듯 하다.
+        대신 ``hwp.HimKbdChange()``로 환경설정창을 띄울 수 있다.
+        자동화에는 쓰이지 않는다.
 
         """
         return self.hwp.HAction.Run("Him Config")
@@ -11542,56 +11383,72 @@ class Hwp:
 
     def HwpCtrlEquationCreate97(self):
         """
-        "한/글97버전 수식 만들기"라고 하는데, 실행되지 않는 듯 하다.
+        한/글97버전 수식 만들기
+
+        실행되지 않는 듯 하다.
 
         """
         return self.hwp.HAction.Run("HwpCtrlEquationCreate97")
 
     def HwpCtrlFileNew(self):
         """
-        한글컨트롤 전용 새문서. 실행되지 않는 듯 하다.
+        한글컨트롤 전용 새문서.
+
+        실행되지 않는 듯 하다.
 
         """
         return self.hwp.HAction.Run("HwpCtrlFileNew")
 
     def HwpCtrlFileOpen(self):
         """
-        한글컨트롤 전용 파일 열기. 실행되지 않는 듯 하다.
+        한글컨트롤 전용 파일 열기.
+
+        실행되지 않는 듯 하다.
 
         """
         return self.hwp.HAction.Run("HwpCtrlFileOpen")
 
     def HwpCtrlFileSave(self):
         """
-        한글컨트롤 전용 파일 저장. 실행되지 않는다.
+        한글컨트롤 전용 파일 저장.
+
+        실행되지 않는다.
 
         """
         return self.hwp.HAction.Run("HwpCtrlFileSave")
 
     def HwpCtrlFileSaveAs(self):
         """
-        한글컨트롤 전용 다른 이름으로 저장. 실행되지 않는다.
+        한글컨트롤 전용 다른 이름으로 저장.
+
+        실행되지 않는다.
 
         """
         return self.hwp.HAction.Run("HwpCtrlFileSaveAs")
 
     def HwpCtrlFileSaveAsAutoBlock(self):
         """
-        한글컨트롤 전용 다른이름으로 블록 저장. 실행되지 않는다.
+        한글컨트롤 전용 다른이름으로 블록 저장.
+
+        실행되지 않는다.
 
         """
         return self.hwp.HAction.Run("HwpCtrlFileSaveAsAutoBlock")
 
     def HwpCtrlFileSaveAutoBlock(self):
         """
-        한/글 컨트롤 전용 블록 저장. 실행되지 않는다.
+        한/글 컨트롤 전용 블록 저장.
+
+        실행되지 않는다.
 
         """
         return self.hwp.HAction.Run("HwpCtrlFileSaveAutoBlock")
 
     def HwpCtrlFindDlg(self):
         """
-        한/글 컨트롤 전용 찾기 대화상자. 실행되지 않는다.
+        한/글 컨트롤 전용 찾기 대화상자.
+
+        실행되지 않는다.
 
         """
         return self.hwp.HAction.Run("HwpCtrlFindDlg")
@@ -11605,7 +11462,9 @@ class Hwp:
 
     def HwpDic(self):
         """
-        한컴 사전(F12). 현재 캐럿이 닿아 있거나, 블록선택한 구간을 검색어에 자동으로 넣는다.
+        한컴 사전(F12).
+
+        현재 캐럿이 닿아 있거나, 블록선택한 구간을 검색어에 자동으로 넣는다.
 
         """
         return self.hwp.HAction.Run("HwpDic")
@@ -11652,84 +11511,111 @@ class Hwp:
 
     def HyperlinkBackward(self):
         """
-        하이퍼링크 뒤로. 하이퍼링크를 통해서 문서를 탐색하여 페이지나 캐럿을 이동한 경우, (브라우저의 "뒤로가기"처럼) 이동 전의 위치로 돌아간다.
+        하이퍼링크 뒤로.
+
+        하이퍼링크를 통해서 문서를 탐색하여 페이지나 캐럿을 이동한 경우, (브라우저의 "뒤로가기"처럼) 이동 전의 위치로 돌아간다.
 
         """
         return self.hwp.HAction.Run("HyperlinkBackward")
 
     def HyperlinkForward(self):
         """
-        하이퍼링크 앞으로. Run("HyperlinkBackward") 에 상반되는 명령어로, 브라우저의 "앞으로 가기"나 한/글의 재실행과 유사하다. 하이퍼링크 등으로 이동한 후에 뒤로가기를 눌렀다면, 캐럿이 뒤로가기 전 위치로 다시 이동한다.
+        하이퍼링크 앞으로.
+
+        ``hwp.HyperlinkBackward()`` 에 상반되는 명령어로, 브라우저의 "앞으로 가기"나 한/글의 재실행과 유사하다. 하이퍼링크 등으로 이동한 후에 뒤로가기를 눌렀다면, 캐럿이 뒤로가기 전 위치로 다시 이동한다.
 
         """
         return self.hwp.HAction.Run("HyperlinkForward")
 
     def ImageFindPath(self):
         """
-        그림 경로 찾기. 현재는 실행되지 않는 듯.
+        그림 경로 찾기.
+
+        현재는 실행되지 않는 듯.
 
         """
         return self.hwp.HAction.Run("ImageFindPath")
 
     def InputCodeChange(self):
         """
-        문자/코드 변환.. 현재 캐럿의 바로 앞 문자를 찾아서 문자이면 코드로, 코드이면 문자로 변환해준다.(변환 가능한 코드영역 0x0020 ~ 0x10FFFF 까지)
+        문자/코드 변환
+
+        현재 캐럿의 바로 앞 문자를 찾아서 문자이면 코드로, 코드이면 문자로 변환해준다.(변환 가능한 코드영역 0x0020 ~ 0x10FFFF 까지)
 
         """
         return self.hwp.HAction.Run("InputCodeChange")
 
     def InputHanja(self):
         """
-        한자로 바꾸기 창을 띄워준다. 추가입력이 필요하여 자동화에는 쓰이지 않음.
+        한자로 바꾸기 창을 띄워준다.
+
+        추가입력이 필요하여 자동화에는 쓰이지 않음.
 
         """
         return self.hwp.HAction.Run("InputHanja")
 
     def InputHanjaBusu(self):
         """
-        부수로 입력. 자동화에는 쓰이지 않음.
+        부수로 입력.
+
+        자동화에는 쓰이지 않음.
 
         """
         return self.hwp.HAction.Run("InputHanjaBusu")
 
     def InputHanjaMean(self):
         """
-        한자 새김 입력창 띄우기. 뜻과 음을 입력하면 적절한 한자를 삽입해준다.입력시 뜻과 음은 붙여서 입력. (예)하늘천
+        한자 새김 입력창 띄우기.
+
+        뜻과 음을 입력하면 적절한 한자를 삽입해준다.입력시 뜻과 음은 붙여서 입력. (예)하늘천
 
         """
         return self.hwp.HAction.Run("InputHanjaMean")
 
     def InsertAutoNum(self):
         """
-        번호 다시 넣기(?) 실행이 안되는 듯.
+        번호 다시 넣기(?)
+
+        실행이 안되는 듯.
 
         """
         return self.hwp.HAction.Run("InsertAutoNum")
 
     def InsertCpNo(self):
         """
-        현재 쪽번호(상용구) 삽입. 쪽번호와 마찬가지로, 문자열이 실시간으로 변경된다.※유의사항 : 이 쪽번호는 찾기, 찾아바꾸기, GetText 및 누름틀 안에 넣고 GetFieldText나 복붙 등 그 어떤 방법으로도 추출되지 않는다.한 마디로 눈에는 보이는 것 같지만 실재하지 않는 숫자임. 참고로 표번호도 그렇다. 값이 아니라 속성이라서 그렇다.
+        현재 쪽번호(상용구) 삽입.
+
+        쪽번호와 마찬가지로, 문자열이 실시간으로 변경된다.
+
+        ※유의사항 : 이 쪽번호는 찾기, 찾아바꾸기, GetText 및 누름틀 안에 넣고 GetFieldText나 복붙 등 그 어떤 방법으로도 추출되지 않는다.
+        한 마디로 눈에는 보이는 것 같지만 실재하지 않는 숫자임. 참고로 표번호도 그렇다. 값이 아니라 속성이라서 그렇다.
 
         """
         return self.hwp.HAction.Run("InsertCpNo")
 
     def InsertCpTpNo(self):
         """
-        상용구 코드 넣기(현재 쪽/전체 쪽). 실시간으로 변경된다.
+        상용구 코드 넣기(현재 쪽/전체 쪽).
+
+        실시간으로 변경된다.
 
         """
         return self.hwp.HAction.Run("InsertCpTpNo")
 
     def InsertDateCode(self):
         """
-        상용구 코드 넣기(만든 날짜). 현재날짜가 아님에 유의.
+        상용구 코드 넣기(만든 날짜).
+
+        현재날짜가 아님에 유의.
 
         """
         return self.hwp.HAction.Run("InsertDateCode")
 
     def InsertDocInfo(self):
         """
-        상용구 코드 넣기(만든 사람, 현재 쪽, 만든 날짜)
+        상용구 코드 넣기
+
+        (만든 사람, 현재 쪽, 만든 날짜)
 
         """
         return self.hwp.HAction.Run("InsertDocInfo")
@@ -11757,7 +11643,9 @@ class Hwp:
 
     def InsertFieldRevisionChagne(self):
         """
-        메모고침표 넣기(현재 한/글메뉴에 없음, 메모와 동일한 기능)
+        메모고침표 넣기
+
+        (현재 한/글메뉴에 없음, 메모와 동일한 기능)
 
         """
         return self.hwp.HAction.Run("InsertFieldRevisionChagne")
@@ -11884,7 +11772,9 @@ class Hwp:
 
     def LinkTextBox(self):
         """
-        글상자 연결. 글상자가 선택되지 않았거나, 캐럿이 글상자 내부에 있지 않으면 동작하지 않는다.
+        글상자 연결.
+
+        글상자가 선택되지 않았거나, 캐럿이 글상자 내부에 있지 않으면 동작하지 않는다.
 
         """
         return self.hwp.HAction.Run("LinkTextBox")
@@ -11902,20 +11792,6 @@ class Hwp:
 
         """
         return self.hwp.HAction.Run("MacroPlay1")
-
-    def MacroPlay10(self):
-        """
-        매크로 10
-
-        """
-        return self.hwp.HAction.Run("MacroPlay10")
-
-    def MacroPlay11(self):
-        """
-        매크로 11
-
-        """
-        return self.hwp.HAction.Run("MacroPlay11")
 
     def MacroPlay2(self):
         """
@@ -11973,6 +11849,20 @@ class Hwp:
         """
         return self.hwp.HAction.Run("MacroPlay9")
 
+    def MacroPlay10(self):
+        """
+        매크로 10
+
+        """
+        return self.hwp.HAction.Run("MacroPlay10")
+
+    def MacroPlay11(self):
+        """
+        매크로 11
+
+        """
+        return self.hwp.HAction.Run("MacroPlay11")
+
     def MacroRepeat(self):
         """
         매크로 실행
@@ -12003,7 +11893,9 @@ class Hwp:
 
     def ManualChangeHangul(self):
         """
-        한영 수동 전환.. 현재 커서위치 또는 문단나누기 이전에 입력된 내용에 대해서 강제적으로 한/영 전환을 한다.
+        한영 수동 전환
+
+        현재 커서위치 또는 문단나누기 이전에 입력된 내용에 대해서 강제적으로 한/영 전환을 한다.
 
         """
         return self.hwp.HAction.Run("ManualChangeHangul")
@@ -12014,7 +11906,10 @@ class Hwp:
 
     def MarkTitle(self):
         """
-        제목 차례 표시([도구-차례/찾아보기-제목 차례 표시]메뉴에 대응). 차례 코드가 삽입되어 나중에 차례 만들기에서 사용할 수 있다.적용여부는 Ctrl+G,C를 이용해 조판부호를 확인하면 알 수 있다.
+        제목 차례 표시([도구-차례/찾아보기-제목 차례 표시]메뉴에 대응).
+
+        차례 코드가 삽입되어 나중에 차례 만들기에서 사용할 수 있다.
+        적용여부는 Ctrl+G,C를 이용해 조판부호를 확인하면 알 수 있다.
 
         """
         return self.hwp.HAction.Run("MarkTitle")
@@ -12028,7 +11923,9 @@ class Hwp:
 
     def MasterPageDuplicate(self):
         """
-        기존 바탕쪽과 겹침. 바탕쪽 편집상태가 활성화되어 있으며 [구역 마지막쪽], [구역임의 쪽]일 경우에만 사용 가능하다.
+        기존 바탕쪽과 겹침.
+
+        바탕쪽 편집상태가 활성화되어 있으며 [구역 마지막쪽], [구역임의 쪽]일 경우에만 사용 가능하다.
 
         """
         return self.hwp.HAction.Run("MasterPageDuplicate")
@@ -12042,7 +11939,9 @@ class Hwp:
 
     def MasterPageFront(self):
         """
-        바탕쪽 앞으로 보내기. 바탕쪽 편집모드일 경우에만 동작한다.
+        바탕쪽 앞으로 보내기.
+
+        바탕쪽 편집모드일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("MasterPageFront")
@@ -12099,14 +11998,20 @@ class Hwp:
 
     def ModifyFillProperty(self):
         """
-        고치기(채우기 속성 탭으로). 만약 Ctrl(ShapeObject,누름틀, 날짜/시간 코드 등)이 선택되지 않았다면 역방향탐색(SelectCtrlReverse)을 이용해서 개체를 탐색한다. 채우기 속성이 없는 Ctrl일 경우에는 첫 번째 탭이 선택된 상태로 고치기 창이 뜬다.
+        고치기(채우기 속성 탭으로).
+
+        만약 Ctrl(ShapeObject,누름틀, 날짜/시간 코드 등)이 선택되지 않았다면 역방향탐색(SelectCtrlReverse)을 이용해서 개체를 탐색한다.
+        채우기 속성이 없는 Ctrl일 경우에는 첫 번째 탭이 선택된 상태로 고치기 창이 뜬다.
 
         """
         return self.hwp.HAction.Run("ModifyFillProperty")
 
     def ModifyLineProperty(self):
         """
-        고치기(선/테두리 속성 탭으로). 만약 Ctrl(ShapeObject,누름틀, 날짜/시간 코드 등)이 선택되지 않았다면 역방향탐색(SelectCtrlReverse)을 이용해서 개체를 탐색한다. 선/테두리 속성이 없는 Ctrl일 경우에는 첫 번째 탭이 선택된 상태로 고치기 창이 뜬다.
+        고치기(선/테두리 속성 탭으로).
+
+        만약 Ctrl(ShapeObject,누름틀, 날짜/시간 코드 등)이 선택되지 않았다면 역방향탐색(SelectCtrlReverse)을 이용해서 개체를 탐색한다.
+        선/테두리 속성이 없는 Ctrl일 경우에는 첫 번째 탭이 선택된 상태로 고치기 창이 뜬다.
 
         """
         return self.hwp.HAction.Run("ModifyLineProperty")
@@ -12120,28 +12025,38 @@ class Hwp:
 
     def MoveColumnBegin(self):
         """
-        단의 시작점으로 이동한다. 단이 없을 경우에는 아무동작도 하지 않는다. 해당 리스트 안에서만 동작한다.
+        단의 시작점으로 이동
+
+        단이 없을 경우에는 아무동작도 하지 않는다. 해당 리스트 안에서만 동작한다.
 
         """
         return self.hwp.HAction.Run("MoveColumnBegin")
 
     def MoveColumnEnd(self):
         """
-        단의 끝점으로 이동한다. 단이 없을 경우에는 아무동작도 하지 않는다. 해당 리스트 안에서만 동작한다.
+        단의 끝점으로 이동한다.
+
+        단이 없을 경우에는 아무동작도 하지 않는다. 해당 리스트 안에서만 동작한다.
 
         """
         return self.hwp.HAction.Run("MoveColumnEnd")
 
     def MoveDocBegin(self):
         """
-        문서의 시작으로 이동.. 만약 셀렉션을 확장하는 경우에는 LIST_BEGIN/END와 동일하다. 현재 서브 리스트 내에 있으면 빠져나간다.
+        문서의 시작으로 이동
+
+        만약 셀렉션을 확장하는 경우에는 LIST_BEGIN/END와 동일하다.
+        현재 서브 리스트 내에 있으면 빠져나간다. 자동화에 아주 많이 사용된다.
 
         """
         return self.hwp.HAction.Run("MoveDocBegin")
 
     def MoveDocEnd(self):
         """
-        문서의 끝으로 이동.. 만약 셀렉션을 확장하는 경우에는 LIST_BEGIN/END와 동일하다. 현재 서브 리스트 내에 있으면 빠져나간다.
+        문서의 끝으로 이동
+
+        만약 셀렉션을 확장하는 경우에는 LIST_BEGIN/END와 동일하다.
+        현재 서브 리스트 내에 있으면 빠져나간다.
 
         """
         return self.hwp.HAction.Run("MoveDocEnd")
@@ -12224,7 +12139,9 @@ class Hwp:
 
     def MoveNextChar(self):
         """
-        한 글자 뒤로 이동. 현재 리스트만을 대상으로 동작한다.
+        한 글자 뒤로 이동.
+
+        현재 리스트만을 대상으로 동작한다.
 
         """
         cwd = self.get_pos()
@@ -12248,7 +12165,9 @@ class Hwp:
 
     def MoveNextParaBegin(self):
         """
-        앞 문단의 끝/다음 문단의 시작으로 이동. 현재 리스트만을 대상으로 동작한다.
+        앞 문단의 끝/다음 문단의 시작으로 이동.
+
+        현재 리스트만을 대상으로 동작한다.
 
         """
         cwd = self.get_pos()
@@ -12260,7 +12179,9 @@ class Hwp:
 
     def MoveNextPos(self):
         """
-        한 글자 뒤로 이동. 서브 리스트를 옮겨 다닐 수 있다.
+        한 글자 뒤로 이동.
+
+        서브 리스트를 옮겨 다닐 수 있다.
 
         """
         cwd = self.get_pos()
@@ -12289,7 +12210,9 @@ class Hwp:
 
     def MoveNextWord(self):
         """
-        한 단어 뒤로 이동. 현재 리스트만을 대상으로 동작한다.
+        한 단어 뒤로 이동.
+
+        현재 리스트만을 대상으로 동작한다.
 
         """
         cwd = self.get_pos()
@@ -12301,14 +12224,18 @@ class Hwp:
 
     def MovePageBegin(self):
         """
-        현재 페이지의 시작점으로 이동한다.. 만약 캐럿의 위치가 변경되었다면 화면이 전환되어 쪽의 상단으로 페이지뷰잉이 맞춰진다.
+        현재 페이지의 시작점으로 이동한다.
+
+        만약 캐럿의 위치가 변경되었다면 화면이 전환되어 쪽의 상단으로 페이지뷰잉이 맞춰진다.
 
         """
         return self.hwp.HAction.Run("MovePageBegin")
 
     def MovePageDown(self):
         """
-        앞 페이지의 시작으로 이동. 현재 탑레벨 리스트가 아니면 탑레벨 리스트로 빠져나온다.
+        앞 페이지의 시작으로 이동.
+
+        현재 탑레벨 리스트가 아니면 탑레벨 리스트로 빠져나온다.
 
         """
         cwd = self.get_pos()
@@ -12320,7 +12247,9 @@ class Hwp:
 
     def MovePageEnd(self):
         """
-        현재 페이지의 끝점으로 이동한다. 만약 캐럿의 위치가 변경되었다면 화면이 전환되어 쪽의 하단으로 페이지뷰잉이 맞춰진다.
+        현재 페이지의 끝점으로 이동한다.
+
+        만약 캐럿의 위치가 변경되었다면 화면이 전환되어 쪽의 하단으로 페이지뷰잉이 맞춰진다.
 
         """
         cwd = self.get_pos()
@@ -12332,7 +12261,9 @@ class Hwp:
 
     def MovePageUp(self):
         """
-        뒤 페이지의 시작으로 이동. 현재 탑레벨 리스트가 아니면 탑레벨 리스트로 빠져나온다.
+        뒤 페이지의 시작으로 이동.
+
+        현재 탑레벨 리스트가 아니면 탑레벨 리스트로 빠져나온다.
 
         """
         cwd = self.get_pos()
@@ -12358,14 +12289,20 @@ class Hwp:
 
     def MoveParentList(self):
         """
-        한 레벨 상위/탑레벨/루트 리스트로 이동한다.. 현재 루트 리스트에 위치해 있어 더 이상 상위 리스트가 없을 때는 위치 이동 없이 리턴한다. 이동한 후의 위치는 상위 리스트에서 서브리스트가 속한 컨트롤 코드가 위치한 곳이다. 위치 이동시 셀렉션은 무조건 풀린다.
+        한 레벨 상위/탑레벨/루트 리스트로 이동한다
+
+        현재 루트 리스트에 위치해 있어 더 이상 상위 리스트가 없을 때는 위치 이동 없이 리턴한다.
+        이동한 후의 위치는 상위 리스트에서 서브리스트가 속한 컨트롤 코드가 위치한 곳이다.
+        위치 이동시 셀렉션은 무조건 풀린다.
 
         """
         return self.hwp.HAction.Run("MoveParentList")
 
     def MovePrevChar(self):
         """
-        한 글자 앞 이동. 현재 리스트만을 대상으로 동작한다.
+        한 글자 앞 이동.
+
+        현재 리스트만을 대상으로 동작한다.
 
         """
         cwd = self.get_pos()
@@ -12389,7 +12326,9 @@ class Hwp:
 
     def MovePrevParaBegin(self):
         """
-        앞 문단의 시작으로 이동. 현재 리스트만을 대상으로 동작한다.
+        앞 문단의 시작으로 이동.
+
+        현재 리스트만을 대상으로 동작한다.
 
         """
         cwd = self.get_pos()
@@ -12401,7 +12340,9 @@ class Hwp:
 
     def MovePrevParaEnd(self):
         """
-        앞 문단의 끝으로 이동. 현재 리스트만을 대상으로 동작한다.
+        앞 문단의 끝으로 이동.
+
+        현재 리스트만을 대상으로 동작한다.
 
         """
         cwd = self.get_pos()
@@ -12413,7 +12354,9 @@ class Hwp:
 
     def MovePrevPos(self):
         """
-        한 글자 앞으로 이동. 서브 리스트를 옮겨 다닐 수 있다.
+        한 글자 앞으로 이동.
+
+        서브 리스트를 옮겨 다닐 수 있다.
 
         """
         cwd = self.get_pos()
@@ -12425,8 +12368,9 @@ class Hwp:
 
     def MovePrevPosEx(self):
         """
-        한 글자 앞으로 이동. 서브 리스트를 옮겨 다닐 수 있다.
+        한 글자 앞으로 이동.
 
+        서브 리스트를 옮겨 다닐 수 있다.
         (머리말, 꼬리말, 각주, 미주, 글상자 포함)
         """
         cwd = self.get_pos()
@@ -12438,7 +12382,9 @@ class Hwp:
 
     def MovePrevWord(self):
         """
-        한 단어 앞으로 이동. 현재 리스트만을 대상으로 동작한다.
+        한 단어 앞으로 이동.
+
+        현재 리스트만을 대상으로 동작한다.
 
         """
         cwd = self.get_pos()
@@ -12462,7 +12408,11 @@ class Hwp:
 
     def MoveRootList(self):
         """
-        한 레벨 상위/탑레벨/루트 리스트로 이동한다.. 현재 루트 리스트에 위치해 있어 더 이상 상위 리스트가 없을 때는 위치 이동 없이 리턴한다. 이동한 후의 위치는 상위 리스트에서 서브리스트가 속한 컨트롤 코드가 위치한 곳이다. 위치 이동시 셀렉션은 무조건 풀린다.
+        한 레벨 상위/탑레벨/루트 리스트로 이동한다
+
+        현재 루트 리스트에 위치해 있어 더 이상 상위 리스트가 없을 때는 위치 이동 없이 리턴한다.
+        이동한 후의 위치는 상위 리스트에서 서브리스트가 속한 컨트롤 코드가 위치한 곳이다.
+        위치 이동시 셀렉션은 무조건 풀린다.
 
         """
         return self.hwp.HAction.Run("MoveRootList")
@@ -12497,7 +12447,9 @@ class Hwp:
 
     def MoveSectionDown(self):
         """
-        뒤 섹션으로 이동. 현재 루트 리스트가 아니면 루트 리스트로 빠져나온다.
+        뒤 섹션으로 이동.
+
+        현재 루트 리스트가 아니면 루트 리스트로 빠져나온다.
 
         """
         cwd = self.get_pos()
@@ -12509,7 +12461,9 @@ class Hwp:
 
     def MoveSectionUp(self):
         """
-        앞 섹션으로 이동. 현재 루트 리스트가 아니면 루트 리스트로 빠져나온다.
+        앞 섹션으로 이동.
+
+        현재 루트 리스트가 아니면 루트 리스트로 빠져나온다.
 
         """
         cwd = self.get_pos()
@@ -12521,21 +12475,21 @@ class Hwp:
 
     def MoveSelDocBegin(self):
         """
-        셀렉션: 문서 처음
+        선택 상태로 문서 처음으로 이동
 
         """
         return self.hwp.HAction.Run("MoveSelDocBegin")
 
     def MoveSelDocEnd(self):
         """
-        셀렉션: 문서 끝
+        선택 상태로 문서 끝으로 이동
 
         """
         return self.hwp.HAction.Run("MoveSelDocEnd")
 
     def MoveSelDown(self):
         """
-        셀렉션: 캐럿을 (논리적 방향) 아래로 이동
+        선택 상태로 캐럿을 (논리적 방향) 아래로 이동
 
         """
         cwd = self.get_pos()
@@ -12547,7 +12501,7 @@ class Hwp:
 
     def MoveSelLeft(self):
         """
-        셀렉션: 캐럿을 (논리적 방향) 왼쪽으로 이동
+        선택 상태로 캐럿을 (논리적 방향) 왼쪽으로 이동
 
         """
         cwd = self.get_pos()
@@ -12559,14 +12513,14 @@ class Hwp:
 
     def MoveSelLineBegin(self):
         """
-        셀렉션: 줄 처음
+        선택 상태로 줄 처음으로 이동
 
         """
         return self.hwp.HAction.Run("MoveSelLineBegin")
 
     def MoveSelLineDown(self):
         """
-        셀렉션: 한줄 아래
+        선택 상태로 한줄 아래로 이동
 
         """
         cwd = self.get_pos()
@@ -12578,14 +12532,14 @@ class Hwp:
 
     def MoveSelLineEnd(self):
         """
-        셀렉션: 줄 끝
+        선택 상태로 줄 끝으로 이동
 
         """
         return self.hwp.HAction.Run("MoveSelLineEnd")
 
     def MoveSelLineUp(self):
         """
-        셀렉션: 한줄 위
+        선택 상태로 한줄 위로 이동
 
         """
         cwd = self.get_pos()
@@ -12597,21 +12551,21 @@ class Hwp:
 
     def MoveSelListBegin(self):
         """
-        셀렉션: 리스트 처음
+        선택 상태로 리스트 처음으로 이동
 
         """
         return self.hwp.HAction.Run("MoveSelListBegin")
 
     def MoveSelListEnd(self):
         """
-        셀렉션: 리스트 끝
+        선택 상태로 리스트 끝으로 이동
 
         """
         return self.hwp.HAction.Run("MoveSelListEnd")
 
     def MoveSelNextChar(self):
         """
-        셀렉션: 다음 글자
+        선택 상태로 다음 글자로 이동
 
         """
         cwd = self.get_pos()
@@ -12623,7 +12577,7 @@ class Hwp:
 
     def MoveSelNextParaBegin(self):
         """
-        셀렉션: 다음 문단 처음
+        선택 상태로 다음 문단 처음으로 이동
 
         """
         cwd = self.get_pos()
@@ -12635,7 +12589,7 @@ class Hwp:
 
     def MoveSelNextPos(self):
         """
-        셀렉션: 다음 위치
+        선택 상태로 다음 커서위치(글자)로 이동
 
         """
         cwd = self.get_pos()
@@ -12647,7 +12601,7 @@ class Hwp:
 
     def MoveSelNextWord(self):
         """
-        셀렉션: 다음 단어
+        선택 상태로 다음 단어로 이동
 
         """
         cwd = self.get_pos()
@@ -12659,7 +12613,7 @@ class Hwp:
 
     def MoveSelPageDown(self):
         """
-        셀렉션: 페이지다운
+        선택 상태로 PageDown 이동
 
         """
         cwd = self.get_pos()
@@ -12671,7 +12625,7 @@ class Hwp:
 
     def MoveSelPageUp(self):
         """
-        셀렉션: 페이지 업
+        선택 상태로 PageUp 이동
 
         """
         cwd = self.get_pos()
@@ -12683,21 +12637,21 @@ class Hwp:
 
     def MoveSelParaBegin(self):
         """
-        셀렉션: 문단 처음
+        선택 상태로 문단 처음으로 이동
 
         """
         return self.hwp.HAction.Run("MoveSelParaBegin")
 
     def MoveSelParaEnd(self):
         """
-        셀렉션: 문단 끝
+        선택 상태로 문단 끝으로 이동
 
         """
         return self.hwp.HAction.Run("MoveSelParaEnd")
 
     def MoveSelPrevChar(self):
         """
-        셀렉션: 이전 글자
+        선택 상태로 이전 글자로 이동
 
         """
         cwd = self.get_pos()
@@ -12709,7 +12663,7 @@ class Hwp:
 
     def MoveSelPrevParaBegin(self):
         """
-        셀렉션: 이전 문단 시작
+        선택 상태로 이전 문단 시작으로 이동
 
         """
         cwd = self.get_pos()
@@ -12721,7 +12675,7 @@ class Hwp:
 
     def MoveSelPrevParaEnd(self):
         """
-        셀렉션: 이전 문단 끝
+        선택 상태로 이전 문단 끝으로 이동
 
         """
         cwd = self.get_pos()
@@ -12733,7 +12687,7 @@ class Hwp:
 
     def MoveSelPrevPos(self):
         """
-        셀렉션: 이전 위치
+        선택 상태로 이전 위치(글자)로 이동
 
         """
         cwd = self.get_pos()
@@ -12745,7 +12699,7 @@ class Hwp:
 
     def MoveSelPrevWord(self):
         """
-        셀렉션: 이전 단어
+        선택 상태로 이전 단어로 이동
 
         """
         cwd = self.get_pos()
@@ -12757,7 +12711,7 @@ class Hwp:
 
     def MoveSelRight(self):
         """
-        셀렉션: 캐럿을 (논리적 방향) 오른쪽으로 이동
+        선택 상태로 캐럿을 (논리적 방향) 오른쪽으로 이동
 
         """
         cwd = self.get_pos()
@@ -12769,21 +12723,21 @@ class Hwp:
 
     def MoveSelTopLevelBegin(self):
         """
-        셀렉션: 처음
+        선택 상태로 문서의 탑레벨 처음으로 이동(==``hwp.MoveDocBegin()``)
 
         """
         return self.hwp.HAction.Run("MoveSelTopLevelBegin")
 
     def MoveSelTopLevelEnd(self):
         """
-        셀렉션: 끝
+        선택 상태로 탑레벨 끝으로 이동
 
         """
         return self.hwp.HAction.Run("MoveSelTopLevelEnd")
 
     def MoveSelUp(self):
         """
-        셀렉션: 캐럿을 (논리적 방향) 위로 이동
+        선택 상태로 캐럿을 (논리적 방향) 위로 이동
 
         """
         cwd = self.get_pos()
@@ -12795,7 +12749,9 @@ class Hwp:
 
     def MoveSelViewDown(self):
         """
-        셀렉션: 아래
+        선택 상태로 화면 시점의 아래로 이동
+
+        Shift-PgDn 기능과 동일
 
         """
         cwd = self.get_pos()
@@ -12807,7 +12763,9 @@ class Hwp:
 
     def MoveSelViewUp(self):
         """
-        셀렉션: 위
+        선택 상태로 화면 시점의 위로 이동
+
+        Shift-PgUp 기능과 동일
 
         """
         cwd = self.get_pos()
@@ -12819,14 +12777,14 @@ class Hwp:
 
     def MoveSelWordBegin(self):
         """
-        셀렉션: 단어 처음
+        선택 상태로 단어 처음으로 이동
 
         """
         return self.hwp.HAction.Run("MoveSelWordBegin")
 
     def MoveSelWordEnd(self):
         """
-        셀렉션: 단어 끝
+        선택 상태로 단어 끝으로 이동
 
         """
         return self.hwp.HAction.Run("MoveSelWordEnd")
@@ -12847,7 +12805,11 @@ class Hwp:
 
     def MoveTopLevelList(self):
         """
-        한 레벨 상위/탑레벨/루트 리스트로 이동한다.. 현재 루트 리스트에 위치해 있어 더 이상 상위 리스트가 없을 때는 위치 이동 없이 리턴한다. 이동한 후의 위치는 상위 리스트에서 서브리스트가 속한 컨트롤 코드가 위치한 곳이다. 위치 이동시 셀렉션은 무조건 풀린다.
+        한 레벨 상위/탑레벨/루트 리스트로 이동
+
+        현재 루트 리스트에 위치해 있어 더 이상 상위 리스트가 없을 때는 위치 이동 없이 리턴한다.
+        이동한 후의 위치는 상위 리스트에서 서브리스트가 속한 컨트롤 코드가 위치한 곳이다.
+        위치 이동시 셀렉션은 무조건 풀린다.
 
         """
         return self.hwp.HAction.Run("MoveTopLevelList")
@@ -13139,16 +13101,21 @@ class Hwp:
 
     def paste(self, option: Literal[0, 1, 2, 3, 4, 5, 6] = 4):
         """
-        붙여넣기 확장메서드. (참고로 paste가 아닌 Paste는 API 그대로 작동한다.)
+        붙여넣기 확장메서드.
 
-        option 파라미터에 할당할 수 있는 값은 모두 7가지로,
-        0: (셀) 왼쪽에 끼워넣기
-        1: 오른쪽에 끼워넣기
-        2: 위쪽에 끼워넣기
-        3: 아래쪽에 끼워넣기
-        4: 덮어쓰기
-        5: 내용만 덮어쓰기
-        6: 셀 안에 표로 넣기
+        (참고로 paste가 아닌 Paste는 API 그대로 작동한다.)
+
+        Args:
+            option:
+                파라미터에 할당할 수 있는 값은 모두 7가지로,
+
+                    - 0: (셀) 왼쪽에 끼워넣기
+                    - 1: 오른쪽에 끼워넣기
+                    - 2: 위쪽에 끼워넣기
+                    - 3: 아래쪽에 끼워넣기
+                    - 4: 덮어쓰기
+                    - 5: 내용만 덮어쓰기
+                    - 6: 셀 안에 표로 넣기
         """
         pset = self.hwp.HParameterSet.HSelectionOpt
         self.hwp.HAction.GetDefault("Paste", pset.HSet)
@@ -13157,7 +13124,7 @@ class Hwp:
 
     def Paste(self):
         """
-        붙이기
+        일반 붙이기(Ctrl-V)
 
         """
         return self.hwp.HAction.Run("Paste")
@@ -13165,6 +13132,8 @@ class Hwp:
     def PastePage(self):
         """
         쪽 붙여넣기
+
+        한글2014 이하의 버전에서는 작동하지 않는다.
 
         """
         return self.hwp.HAction.Run("PastePage")
@@ -13234,7 +13203,9 @@ class Hwp:
 
     def PictureInsertDialog(self):
         """
-        그림 넣기 (대화상자를 띄워 선택한 이미지 파일을 문서에 삽입하는 액션 : API용)
+        그림 넣기 대화상자
+
+        (대화상자를 띄워 선택한 이미지 파일을 문서에 삽입하는 액션 : API용)
 
         """
         return self.hwp.HAction.Run("PictureInsertDialog")
@@ -13262,14 +13233,16 @@ class Hwp:
 
     def PictureToOriginal(self):
         """
-        그림 원래 그림으로
+        그림을 원래 그림으로
 
         """
         return self.hwp.HAction.Run("PictureToOriginal")
 
     def PrevTextBoxLinked(self):
         """
-        연결된 글상자의 이전 글상자로 이동. 현재 글상자가 선택되거나, 글상자 내부에 캐럿이 존재하지 않으면 동작하지 않는다.
+        연결된 글상자의 이전 글상자로 이동.
+
+        현재 글상자가 선택되거나, 글상자 내부에 캐럿이 존재하지 않으면 동작하지 않는다.
 
         """
         return self.hwp.HAction.Run("PrevTextBoxLinked")
@@ -13314,7 +13287,7 @@ class Hwp:
 
     def QuickCorrectRun(self):
         """
-        빠른 교정 ―내용 편집
+        빠른 교정 ― 내용 편집
 
         """
         return self.hwp.HAction.Run("QuickCorrect Run")
@@ -13335,133 +13308,133 @@ class Hwp:
 
     def QuickMarkInsert1(self):
         """
-        쉬운 책갈피 - 삽입
+        쉬운 책갈피1 - 삽입
 
         """
         return self.hwp.HAction.Run("QuickMarkInsert1")
 
     def QuickMarkInsert2(self):
         """
-        쉬운 책갈피 - 삽입
+        쉬운 책갈피2 - 삽입
 
         """
         return self.hwp.HAction.Run("QuickMarkInsert2")
 
     def QuickMarkInsert3(self):
         """
-        쉬운 책갈피 - 삽입
+        쉬운 책갈피3 - 삽입
 
         """
         return self.hwp.HAction.Run("QuickMarkInsert3")
 
     def QuickMarkInsert4(self):
         """
-        쉬운 책갈피 - 삽입
+        쉬운 책갈피4 - 삽입
 
         """
         return self.hwp.HAction.Run("QuickMarkInsert4")
 
     def QuickMarkInsert5(self):
         """
-        쉬운 책갈피 - 삽입
+        쉬운 책갈피5 - 삽입
 
         """
         return self.hwp.HAction.Run("QuickMarkInsert5")
 
     def QuickMarkInsert6(self):
         """
-        쉬운 책갈피 - 삽입
+        쉬운 책갈피6 - 삽입
 
         """
         return self.hwp.HAction.Run("QuickMarkInsert6")
 
     def QuickMarkInsert7(self):
         """
-        쉬운 책갈피 - 삽입
+        쉬운 책갈피7 - 삽입
 
         """
         return self.hwp.HAction.Run("QuickMarkInsert7")
 
     def QuickMarkInsert8(self):
         """
-        쉬운 책갈피 - 삽입
+        쉬운 책갈피8 - 삽입
 
         """
         return self.hwp.HAction.Run("QuickMarkInsert8")
 
     def QuickMarkInsert9(self):
         """
-        쉬운 책갈피 - 삽입
+        쉬운 책갈피9 - 삽입
 
         """
         return self.hwp.HAction.Run("QuickMarkInsert9")
 
     def QuickMarkMove0(self):
         """
-        쉬운 책갈피 - 이동
+        쉬운 책갈피0 - 이동
 
         """
         return self.hwp.HAction.Run("QuickMarkMove0")
 
     def QuickMarkMove1(self):
         """
-        쉬운 책갈피 - 이동
+        쉬운 책갈피1 - 이동
 
         """
         return self.hwp.HAction.Run("QuickMarkMove1")
 
     def QuickMarkMove2(self):
         """
-        쉬운 책갈피 - 이동
+        쉬운 책갈피2 - 이동
 
         """
         return self.hwp.HAction.Run("QuickMarkMove2")
 
     def QuickMarkMove3(self):
         """
-        쉬운 책갈피 - 이동
+        쉬운 책갈피3 - 이동
 
         """
         return self.hwp.HAction.Run("QuickMarkMove3")
 
     def QuickMarkMove4(self):
         """
-        쉬운 책갈피 - 이동
+        쉬운 책갈피4 - 이동
 
         """
         return self.hwp.HAction.Run("QuickMarkMove4")
 
     def QuickMarkMove5(self):
         """
-        쉬운 책갈피 - 이동
+        쉬운 책갈피5 - 이동
 
         """
         return self.hwp.HAction.Run("QuickMarkMove5")
 
     def QuickMarkMove6(self):
         """
-        쉬운 책갈피 - 이동
+        쉬운 책갈피6 - 이동
 
         """
         return self.hwp.HAction.Run("QuickMarkMove6")
 
     def QuickMarkMove7(self):
         """
-        쉬운 책갈피 - 이동
+        쉬운 책갈피7 - 이동
 
         """
         return self.hwp.HAction.Run("QuickMarkMove7")
 
     def QuickMarkMove8(self):
         """
-        쉬운 책갈피 - 이동
+        쉬운 책갈피8 - 이동
 
         """
         return self.hwp.HAction.Run("QuickMarkMove8")
 
     def QuickMarkMove9(self):
         """
-        쉬운 책갈피 - 이동
+        쉬운 책갈피9 - 이동
 
         """
         return self.hwp.HAction.Run("QuickMarkMove9")
@@ -13475,7 +13448,9 @@ class Hwp:
 
     def RecentCode(self):
         """
-        최근에 사용한 문자표 입력. 최근에 사용한 문자표가 없을 경우에는 문자표 대화상자를 띄운다.
+        최근에 사용한 문자표 입력.
+
+        최근에 사용한 문자표가 없을 경우에는 문자표 대화상자를 띄운다.
 
         """
         return self.hwp.HAction.Run("RecentCode")
@@ -13499,6 +13474,8 @@ class Hwp:
         """
         캐럿이 필드 안에 위치한 상태에서 return Key에 대한 액션 분기
 
+        첫 글자 r은 오타인 것으로 추정.
+
         """
         return self.hwp.HAction.Run("returnKeyInField")
 
@@ -13513,13 +13490,14 @@ class Hwp:
         """
         직전위치로 돌아가기
 
+        첫 글자 r은 오타인 것으로 추정.
+
         """
         return self.hwp.HAction.Run("returnPrevPos")
 
     def ReturnPrevPos(self):
         """
         직전위치로 돌아가기
-
         """
         return self.hwp.HAction.Run("returnPrevPos")
 
@@ -13544,77 +13522,77 @@ class Hwp:
 
     def ScrMacroPlay1(self):
         """
-        #번 매크로 실행(Alt+Shift+#)
+        1번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay1")
 
     def ScrMacroPlay2(self):
         """
-        #번 매크로 실행(Alt+Shift+#)
+        2번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay2")
 
     def ScrMacroPlay3(self):
         """
-        #번 매크로 실행(Alt+Shift+#)
+       3#번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay3")
 
     def ScrMacroPlay4(self):
         """
-        #번 매크로 실행(Alt+Shift+#)
+        4번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay4")
 
     def ScrMacroPlay5(self):
         """
-        #번 매크로 실행(Alt+Shift+#)
+        5번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay5")
 
     def ScrMacroPlay6(self):
         """
-        #번 매크로 실행(Alt+Shift+#)
+        6번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay6")
 
     def ScrMacroPlay7(self):
         """
-        #번 매크로 실행(Alt+Shift+#)
+        7번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay7")
 
     def ScrMacroPlay8(self):
         """
-        #번 매크로 실행(Alt+Shift+#)
+        8번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay8")
 
     def ScrMacroPlay9(self):
         """
-        #번 매크로 실행(Alt+Shift+#)
+        9번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay9")
 
     def ScrMacroPlay10(self):
         """
-        #번 매크로 실행(Alt+Shift+#)
+        10번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay10")
 
     def ScrMacroPlay11(self):
         """
-        #번 매크로 실행(Alt+Shift+#)
+        11번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay11")
@@ -13642,7 +13620,7 @@ class Hwp:
 
     def SelectAll(self):
         """
-        모두 선택
+        모두 선택(Ctrl-A)
 
         """
         return self.hwp.HAction.Run("SelectAll")
@@ -13656,14 +13634,14 @@ class Hwp:
 
     def SelectCtrlFront(self):
         """
-        개체선택 정방향
+        정방향으로 가장 가까운 컨트롤을 찾아 선택
 
         """
         return self.hwp.HAction.Run("SelectCtrlFront")
 
     def SelectCtrlReverse(self):
         """
-        개체선택 역방향
+        역방향으로 가장 가까운 컨트롤을 찾아 선택
 
         """
         return self.hwp.HAction.Run("SelectCtrlReverse")
@@ -13672,6 +13650,7 @@ class Hwp:
         """
         브라우저로 보내기
 
+        브라우저가 실행되고, 현재 문서가 브라우저에 나타난다.
         """
         return self.hwp.HAction.Run("SendBrowserText")
 
@@ -13757,39 +13736,49 @@ class Hwp:
         return self.hwp.HAction.Run("ShapeObjAlignWidth")
 
     def ShapeObjAttachCaption(self):
+        """
+        역방향으로 가장 가까운 컨트롤에 캡션 추가
+
+        캐럿 위쪽의 표, 이미지 등에 캡션을 생성한다.
+        실행 후에는 캡션 안에 캐럿이 있으므로
+        직접 insert_text 등으로 입력하고 CloseEx로 빠져나오면 된다.
+
+        위쪽 컨트롤에 캡션이 있을 때에는 캡션 시작부분으로 진입한다.
+        """
         return self.hwp.HAction.Run("ShapeObjAttachCaption")
 
     def ShapeObjAttachTextBox(self):
         """
-        글 상자로 만들기
+        사각형을 글상자로 변경
 
+        사각형 선택 상태에서 실행하면 글을 삽입할 수 있게 된다.
         """
         return self.hwp.HAction.Run("ShapeObjAttachTextBox")
 
     def ShapeObjBringForward(self):
         """
-        앞으로
+        선택개체를 앞으로
 
         """
         return self.hwp.HAction.Run("ShapeObjBringForward")
 
     def ShapeObjBringInFrontOfText(self):
         """
-        글 앞으로
+        선택개체를 글 앞으로
 
         """
         return self.hwp.HAction.Run("ShapeObjBringInFrontOfText")
 
     def ShapeObjBringToFront(self):
         """
-        맨 앞으로
+        선택개체를 맨 앞으로
 
         """
         return self.hwp.HAction.Run("ShapeObjBringToFront")
 
     def ShapeObjCtrlSendBehindText(self):
         """
-        글 뒤로
+        선택개체를 글 뒤로
 
         """
         return self.hwp.HAction.Run("ShapeObjCtrlSendBehindText")
@@ -13803,8 +13792,9 @@ class Hwp:
 
     def ShapeObjDetachTextBox(self):
         """
-        글상자 속성 없애기
+        글상자를 사각형으로 변경
 
+        (주의)글상자 속의 텍스트는 사라짐
         """
         return self.hwp.HAction.Run("ShapeObjDetachTextBox")
 
@@ -13831,7 +13821,7 @@ class Hwp:
 
     def ShapeObjHorzFlipOrgState(self):
         """
-        그리기 개체 좌우 뒤집기 원상태로 되돌리기
+        그리기 개체 좌우 뒤집기를 원상태로 되돌리기
 
         """
         return self.hwp.HAction.Run("ShapeObjHorzFlipOrgState")
@@ -13936,12 +13926,15 @@ class Hwp:
 
     def ShapeObjRightAngleRotater(self):
         """
-        90도 회전
+        90도 시계방향 회전
 
         """
         return self.hwp.HAction.Run("ShapeObjRightAngleRotater")
 
     def ShapeObjRightAngleRotaterAnticlockwise(self):
+        """
+        90도 반시계 방향 회전
+        """
         return self.hwp.HAction.Run("ShapeObjRightAngleRotaterAnticlockwise")
 
     def ShapeObjRotater(self):
@@ -13953,7 +13946,7 @@ class Hwp:
 
     def ShapeObjSaveAsPicture(self):
         """
-        그리기개체를 그림으로 저장하기
+        개체를 그림으로 저장하기
 
         """
         return self.hwp.HAction.Run("ShapeObjSaveAsPicture")
@@ -13967,7 +13960,7 @@ class Hwp:
 
     def ShapeObjSendBack(self):
         """
-        뒤로
+        개체를 뒤로 보내기
 
         """
         return self.hwp.HAction.Run("ShapeObjSendBack")
@@ -13981,8 +13974,12 @@ class Hwp:
 
     def ShapeObjTableSelCell(self):
         """
-        테이블 선택상태에서 첫 번째 셀 선택하기
+        표의 첫 번째 셀 선택
 
+        테이블 선택상태에서 실행해야 한다.
+        비슷한 명령어로 ``hwp.ShapeObjTextBoxEdit()``가 있다.
+        ``hwp.ShapeObjTableSelCell()``이 셀블록상태인데 반해
+        ``hwp.ShapeObjTextBoxEdit()``는 편집상태이다.
         """
         # return self.hwp.HAction.Run("ShapeObjTableSelCell")
         pset = self.HParameterSet.HInsertText
@@ -13991,21 +13988,23 @@ class Hwp:
 
     def ShapeObjTextBoxEdit(self):
         """
-        글상자 선택상태에서 편집모드로 들어가기
+        표나 글상자 선택상태에서 편집모드로 들어가기
+
+        표를 선택하고 있는 경우 A1 셀 안으로 이동한다.
 
         """
         return self.hwp.HAction.Run("ShapeObjTextBoxEdit")
 
     def ShapeObjUngroup(self):
         """
-        틀 풀기
+        틀 풀기(그룹해제)
 
         """
         return self.hwp.HAction.Run("ShapeObjUngroup")
 
     def ShapeObjUnlockAll(self):
         """
-        개체 Unlock All
+        개체 잠금해제(Unlock All)
 
         """
         return self.hwp.HAction.Run("ShapeObjUnlockAll")
@@ -14127,101 +14126,101 @@ class Hwp:
 
     def StyleShortcut1(self):
         """
-        스타일 단축키
+        스타일 단축키1
 
         """
         return self.hwp.HAction.Run("StyleShortcut1")
 
     def StyleShortcut2(self):
         """
-        스타일 단축키
+        스타일 단축키2
 
         """
         return self.hwp.HAction.Run("StyleShortcut2")
 
     def StyleShortcut3(self):
         """
-        스타일 단축키
+        스타일 단축키3
 
         """
         return self.hwp.HAction.Run("StyleShortcut3")
 
     def StyleShortcut4(self):
         """
-        스타일 단축키
+        스타일 단축키4
 
         """
         return self.hwp.HAction.Run("StyleShortcut4")
 
     def StyleShortcut5(self):
         """
-        스타일 단축키
+        스타일 단축키5
 
         """
         return self.hwp.HAction.Run("StyleShortcut5")
 
     def StyleShortcut6(self):
         """
-        스타일 단축키
+        스타일 단축키6
 
         """
         return self.hwp.HAction.Run("StyleShortcut6")
 
     def StyleShortcut7(self):
         """
-        스타일 단축키
+        스타일 단축키7
 
         """
         return self.hwp.HAction.Run("StyleShortcut7")
 
     def StyleShortcut8(self):
         """
-        스타일 단축키
+        스타일 단축키8
 
         """
         return self.hwp.HAction.Run("StyleShortcut8")
 
     def StyleShortcut9(self):
         """
-        스타일 단축키
+        스타일 단축키9
 
         """
         return self.hwp.HAction.Run("StyleShortcut9")
 
     def StyleShortcut10(self):
         """
-        스타일 단축키
+        스타일 단축키10
 
         """
         return self.hwp.HAction.Run("StyleShortcut10")
 
     def TabClose(self):
         """
-        현재탭 닫기
+        현재 탭 닫기
 
         """
         return self.hwp.HAction.Run("TabClose")
 
     def TableAppendRow(self):
         """
-        줄 추가
+        표 안에서, 현재 행 아래에 새 행 추가
 
         """
         return self.hwp.HAction.Run("TableAppendRow")
 
     def TableSubtractRow(self):
         """
-        줄 삭제
+        표 안에서, 현재 행 삭제
 
         """
         return self.hwp.HAction.Run("TableSubtractRow")
 
     def TableAutoFill(self):
-        """자동 채우기"""
+        """표 자동 채우기"""
         return self.hwp.HAction.Run("TableAutoFill")
 
     def TableAutoFillDlg(self):
-        """자동 채우기 내용"""
+        """자동 채우기 창 열기"""
         return self.hwp.HAction.Run("TableAutoFillDlg")
 
     def TableCellAlignCenterBottom(self):
@@ -14262,17 +14261,14 @@ class Hwp:
 
     def TableCellBlock(self):
         """
-        셀 블록
+        셀 블록 상태로 전환
 
         """
-        # return self.hwp.HAction.Run("TableCellBlock")
-        pset = self.HParameterSet.HInsertText
-        self.HAction.GetDefault("TableCellBlock", pset.HSet)
-        return self.HAction.Execute("TableCellBlock", pset.HSet)
+        return self.hwp.HAction.Run("TableCellBlock")
 
     def TableCellBlockCol(self):
         """
-        셀 블록 (칸)
+        표 안에서 현재 열(Column) 전체 선택
 
         """
         return self.hwp.HAction.Run("TableCellBlockCol")
@@ -14280,6 +14276,8 @@ class Hwp:
     def TableCellBlockExtend(self):
         """
         셀 블록 연장(F5 + F5)
+
+        실행 전 hwp.TableCellBlock()을 실행해야 한다.
 
         """
         return self.hwp.HAction.Run("TableCellBlockExtend")
@@ -14293,126 +14291,159 @@ class Hwp:
 
     def TableCellBlockRow(self):
         """
-        셀 블록(줄)
+        현재 셀이 포함된 행 전체 선택
 
         """
         return self.hwp.HAction.Run("TableCellBlockRow")
 
     def TableCellBorderAll(self):
         """
-        모든 셀 테두리 toggle(있음/없음). 셀 블록 상태일 경우에만 동작한다.
+        모든 셀 테두리 toggle(있음/없음).
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderAll")
 
     def TableCellBorderBottom(self):
         """
-        가장 아래 셀 테두리 toggle(있음/없음). 셀 블록 상태일 경우에만 동작한다.
+        가장 아래 셀 테두리 toggle(있음/없음).
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderBottom")
 
     def TableCellBorderDiagonalDown(self):
         """
-        대각선(⍂) 셀 테두리 toggle(있음/없음). 셀 블록 상태일 경우에만 동작한다.
+        대각선(⍂) 셀 테두리 toggle(있음/없음).
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderDiagonalDown")
 
     def TableCellBorderDiagonalUp(self):
         """
-        대각선(⍁) 셀 테두리 toggle(있음/없음). 셀 블록 상태일 경우에만 동작한다.
+        대각선(⍁) 셀 테두리 toggle(있음/없음).
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderDiagonalUp")
 
     def TableCellBorderInside(self):
         """
-        모든 안쪽 셀 테두리 toggle(있음/없음). 셀 블록 상태일 경우에만 동작한다.
+        모든 안쪽 셀 테두리 toggle(있음/없음).
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderInside")
 
     def TableCellBorderInsideHorz(self):
         """
-        모든 안쪽 가로 셀 테두리 toggle(있음/없음). 셀 블록 상태일 경우에만 동작한다.
+        모든 안쪽 가로 셀 테두리 toggle(있음/없음).
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderInsideHorz")
 
     def TableCellBorderInsideVert(self):
         """
-        모든 안쪽 세로 셀 테두리 toggle(있음/없음). 셀 블록 상태일 경우에만 동작한다.
+        모든 안쪽 세로 셀 테두리 toggle(있음/없음).
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderInsideVert")
 
     def TableCellBorderLeft(self):
         """
-        가장 왼쪽의 셀 테두리 toggle(있음/없음) 셀 블록 상태일 경우에만 동작한다.
+        가장 왼쪽의 셀 테두리 toggle(있음/없음)
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderLeft")
 
     def TableCellBorderNo(self):
         """
-        모든 셀 테두리 지움. 셀 블록 상태일 경우에만 동작한다.
+        모든 셀 테두리 지움.
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderNo")
 
     def TableCellBorderOutside(self):
         """
-        바깥 셀 테두리 toggle(있음/없음) 셀 블록 상태일 경우에만 동작한다.
+        바깥 셀 테두리 toggle(있음/없음)
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderOutside")
 
     def TableCellBorderRight(self):
         """
-        가장 오른쪽의 셀 테두리 toggle(있음/없음) 셀 블록 상태일 경우에만 동작한다.
+        가장 오른쪽의 셀 테두리 toggle(있음/없음)
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderRight")
 
     def TableCellBorderTop(self):
         """
-        가장 위의 셀 테두리 toggle(있음/없음) 셀 블록 상태일 경우에만 동작한다.
+        가장 위의 셀 테두리 toggle(있음/없음)
+
+        셀 블록 상태일 경우에만 동작한다.
 
         """
         return self.hwp.HAction.Run("TableCellBorderTop")
 
     def TableColBegin(self):
         """
-        셀 이동: 열 시작
+        셀 이동: 현재 행의 가장 왼쪽 셀로 이동
 
         """
         return self.hwp.HAction.Run("TableColBegin")
 
     def TableColEnd(self):
         """
-        셀 이동: 열 끝
+        셀 이동: 현재 행의 가장 오른쪽 셀로 이동
 
         """
         return self.hwp.HAction.Run("TableColEnd")
 
     def TableColPageDown(self):
         """
-        셀 이동: 페이지다운
+        셀 이동: 현재 열의 맨 아래로 이동
 
         """
         return self.hwp.HAction.Run("TableColPageDown")
 
     def TableColPageUp(self):
         """
-        셀 이동: 페이지 업
+        셀 이동: 현재 열의 맨 위로 이동
 
         """
         return self.hwp.HAction.Run("TableColPageUp")
 
-    def TableDeleteCell(self, remain_cell=False):
+    def TableDeleteCell(self, remain_cell=False) -> bool:
         """
         셀 삭제
+
+        셀블록 상태에서 실행해야 한다.
+        행 또는 열 전체 선택상태에서는 해당 행/열을 제거한다.
+
+        Args:
+             remain_cell: 지울 때 빈 셀은 남겨둘 것인가? (기본값은 남겨두지 않음=False)
+
+        Returns:
+            성공시 True, 실패시 False를 리턴.
 
         """
         if remain_cell:
@@ -14426,14 +14457,14 @@ class Hwp:
 
     def TableDistributeCellHeight(self):
         """
-        셀 높이를 같게
+        표 안에서 셀 높이를 같게
 
         """
         return self.hwp.HAction.Run("TableDistributeCellHeight")
 
     def TableDistributeCellWidth(self):
         """
-        셀 너비를 같게
+        표 안에서 셀 너비를 같게
 
         """
         return self.hwp.HAction.Run("TableDistributeCellWidth")
@@ -14462,63 +14493,63 @@ class Hwp:
 
     def TableFormulaAvgAuto(self):
         """
-        블록 평균
+        표 안에 블록 평균 수식 삽입
 
         """
         return self.hwp.HAction.Run("TableFormulaAvgAuto")
 
     def TableFormulaAvgHor(self):
         """
-        가로 평균
+        표 안에 가로 평균 수식 삽입
 
         """
         return self.hwp.HAction.Run("TableFormulaAvgHor")
 
     def TableFormulaAvgVer(self):
         """
-        세로 평균
+        표 안에 세로 평균 수식 삽입
 
         """
         return self.hwp.HAction.Run("TableFormulaAvgVer")
 
     def TableFormulaProAuto(self):
         """
-        블록 곱
+        표 안에 블록 자동곱 수식 삽입
 
         """
         return self.hwp.HAction.Run("TableFormulaProAuto")
 
     def TableFormulaProHor(self):
         """
-        가로 곱
+        표 안에 가로 곱 수식 삽입
 
         """
         return self.hwp.HAction.Run("TableFormulaProHor")
 
     def TableFormulaProVer(self):
         """
-        세로 곱
+        표 안에 세로 곱 수식 삽입
 
         """
         return self.hwp.HAction.Run("TableFormulaProVer")
 
     def TableFormulaSumAuto(self):
         """
-        블록 합계
+        표 안에 블록 합계 수식 삽입
 
         """
         return self.hwp.HAction.Run("TableFormulaSumAuto")
 
     def TableFormulaSumHor(self):
         """
-        가로 합계
+        표 안에 가로 합계 수식 삽입
 
         """
         return self.hwp.HAction.Run("TableFormulaSumHor")
 
     def TableFormulaSumVer(self):
         """
-        세로 합계
+        표 안에 세로 합계 수식 삽입
 
         """
         return self.hwp.HAction.Run("TableFormulaSumVer")
@@ -14541,12 +14572,13 @@ class Hwp:
         """
         셀 합치기
 
+        셀 병합(m)
         """
         return self.hwp.HAction.Run("TableMergeCell")
 
     def TableMergeTable(self):
         """
-        표 붙이기
+        표와 표 붙이기
 
         """
         self.Cancel()
@@ -14589,42 +14621,51 @@ class Hwp:
 
     def TableResizeDown(self):
         """
-        셀 크기 변경
+        셀 크기 변경: 셀 아래
 
         """
         return self.hwp.HAction.Run("TableResizeDown")
 
     def TableResizeExDown(self):
         """
-        셀 크기 변경: 셀 아래. TebleResizeDown과 다른 점은 셀 블록 상태가 아니어도 동작한다는 점이다.
+        셀 크기 변경: 셀 아래.
+
+        TebleResizeDown과 다른 점은
+        셀 블록 상태가 아니어도 동작한다는 점이다.
 
         """
         return self.hwp.HAction.Run("TableResizeExDown")
 
     def TableResizeExLeft(self):
         """
-        셀 크기 변경: 셀 왼쪽. TebleResizeLeft와 다른 점은 셀 블록 상태가 아니어도 동작한다는 점이다.
+        셀 크기 변경: 셀 왼쪽.
+
+        TableResizeLeft와 다른 점은 셀 블록 상태가 아니어도 동작한다는 점이다.
 
         """
         return self.hwp.HAction.Run("TableResizeExLeft")
 
     def TableResizeExRight(self):
         """
-        셀 크기 변경: 셀 오른쪽. TebleResizeRight와 다른 점은 셀 블록 상태가 아니어도 동작한다는 점이다.
+        셀 크기 변경: 셀 오른쪽.
+
+        TableResizeRight와 다른 점은 셀 블록 상태가 아니어도 동작한다는 점이다.
 
         """
         return self.hwp.HAction.Run("TableResizeExRight")
 
     def TableResizeExUp(self):
         """
-        셀 크기 변경: 셀 위쪽. TebleResizeUp과 다른 점은 셀 블록 상태가 아니어도 동작한다는 점이다.
+        셀 크기 변경: 셀 위쪽.
+
+        TableResizeUp과 다른 점은 셀 블록 상태가 아니어도 동작한다는 점이다.
 
         """
         return self.hwp.HAction.Run("TableResizeExUp")
 
     def TableResizeLeft(self):
         """
-        셀 크기 변경
+        셀 크기 변경: 왼쪽
 
         """
         return self.hwp.HAction.Run("TableResizeLeft")
@@ -14659,14 +14700,14 @@ class Hwp:
 
     def TableResizeRight(self):
         """
-        셀 크기 변경
+        셀 크기 변경: 우측으로
 
         """
         return self.hwp.HAction.Run("TableResizeRight")
 
     def TableResizeUp(self):
         """
-        셀 크기 변경
+        셀 크기 변경: 위로
 
         """
         return self.hwp.HAction.Run("TableResizeUp")
@@ -14685,6 +14726,9 @@ class Hwp:
         """
         셀 이동: 셀 오른쪽에 이어서
 
+        우측 셀로 이동하다 끝에 도달하면 다음 행의 첫 번째 셀로 이동.
+        그리고 다음 행이 없는 경우에는 새 행을 아래 추가하고 첫 번째 셀로 이동.
+
         """
         # return self.hwp.HAction.Run("TableRightCellAppend")
         pset = self.HParameterSet.HInsertText
@@ -14693,14 +14737,13 @@ class Hwp:
 
     def TableSplitCell(self, Rows=2, Cols=0, DistributeHeight=0, Merge=0):
         """
-        셀 나누기. Run메서드 같아 보이지만,
+        셀 나누기.
 
-        엄연히 파라미터셋이 필수인 정통액션이다.
-
-        :param Rows: 나눌 행 수(기본값:2)
-        :param Cols: 나눌 열 수(기본값:0)
-        :param DistributeHeight: 줄 높이를 같게 나누기(0 or 1)
-        :param Merge: 셀을 합친 후 나누기(0 or 1)
+        Args:
+            Rows: 나눌 행 수(기본값:2)
+            Cols: 나눌 열 수(기본값:0)
+            DistributeHeight: 줄 높이를 같게 나누기(0 or 1)
+            Merge: 셀을 합친 후 나누기(0 or 1)
         """
         pset = self.HParameterSet.HTableSplitCell
         pset.Rows = Rows
@@ -14713,6 +14756,10 @@ class Hwp:
         """
         표 나누기
 
+        현재 캐럿이 있는 행을 포함한 아랫쪽 부분을 잘라서
+        별도의 표로 만든다.
+
+        셀 블록 상태에서는 작동하지 않는다. 일반 편집상태여야 한다.
         """
         if self.get_cell_addr("tuple")[0] == 0:
             return False
@@ -14720,28 +14767,28 @@ class Hwp:
 
     def TableUpperCell(self):
         """
-        셀 이동: 셀 위
+        셀 이동: 셀 위로
 
         """
         return self.hwp.HAction.Run("TableUpperCell")
 
     def TableVAlignBottom(self):
         """
-        셀 세로정렬 아래
+        셀의 텍스트를 아래로 세로정렬
 
         """
         return self.hwp.HAction.Run("TableVAlignBottom")
 
     def TableVAlignCenter(self):
         """
-        셀 세로정렬 가운데
+        셀의 텍스트를 가운데로 세로정렬
 
         """
         return self.hwp.HAction.Run("TableVAlignCenter")
 
     def TableVAlignTop(self):
         """
-        셀 세로정렬 위
+        셀의 텍스트를 위로 세로정렬
 
         """
         return self.hwp.HAction.Run("TableVAlignTop")
@@ -14759,22 +14806,19 @@ class Hwp:
 
     def Undo(self):
         """
-        되살리기
-
+        실행 취소(Ctrl-Z)
         """
         return self.hwp.HAction.Run("Undo")
 
     def UnlinkTextBox(self):
         """
         글상자 연결 끊기
-
         """
         return self.hwp.HAction.Run("UnlinkTextBox")
 
     def VersionDeleteAll(self):
         """
         모든 버전정보 지우기
-
         """
         return self.hwp.HAction.Run("VersionDeleteAll")
 
@@ -14791,62 +14835,71 @@ class Hwp:
 
     def ViewOptionCtrlMark(self):
         """
-        조판 부호
+        조판 부호 보기 토글
 
         """
         return self.hwp.HAction.Run("ViewOptionCtrlMark")
 
     def ViewOptionGuideLine(self):
         """
-        안내선
-
+        안내선 보기 토글
         """
         return self.hwp.HAction.Run("ViewOptionGuideLine")
 
     def ViewOptionMemo(self):
         """
-        메모 보이기/숨기기([보기-메모-메모 보이기/숨기기]메뉴와 동일)
+        메모 보이기/숨기기 토글
+
+        ([보기-메모-메모 보이기/숨기기]메뉴와 동일)
 
         """
         return self.hwp.HAction.Run("ViewOptionMemo")
 
     def ViewOptionMemoGuideline(self):
         """
-        메모 안내선 표시([보기-메모-메모 안내선 표시]메뉴와 동일)
+        메모 안내선 표시 토글
+
+        ([보기-메모-메모 안내선 표시]메뉴와 동일)
 
         """
         return self.hwp.HAction.Run("ViewOptionMemoGuideline")
 
     def ViewOptionPaper(self):
         """
-        쪽 윤곽 보기/숨기기
+        쪽 윤곽 보기/숨기기 토글
 
         """
         return self.hwp.HAction.Run("ViewOptionPaper")
 
     def ViewOptionParaMark(self):
         """
-        문단 부호 보기/숨기기
+        문단 부호 보기/숨기기 토글
 
         """
         return self.hwp.HAction.Run("ViewOptionParaMark")
 
     def ViewOptionPicture(self):
         """
-        그림 보이기/숨기기([보기-그림]메뉴와 동일)
+        그림 보이기/숨기기 토글
+
+        ([보기-그림]메뉴와 동일)
 
         """
         return self.hwp.HAction.Run("ViewOptionPicture")
 
     def ViewOptionRevision(self):
         """
-        교정부호 보이기/숨기기([보기-교정부호]메뉴와 동일)
+        교정부호 보이기/숨기기 토글
+
+        ([보기-교정부호]메뉴와 동일)
 
         """
         return self.hwp.HAction.Run("ViewOptionRevision")
 
     def ViewTabButton(self):
-        """문서탭 보이기/감추기"""
+        """
+        문서탭 보이기/감추기 토글
+        """
         return self.hwp.HAction.Run("ViewTabButton")
 
     def ViewZoomFitPage(self):
@@ -14868,21 +14921,18 @@ class Hwp:
     def VoiceCommandConfig(self):
         """
         음성 명령 설정
-
         """
         return self.hwp.HAction.Run("VoiceCommand Config")
 
     def VoiceCommandResume(self):
         """
         음성 명령 레코딩 시작
-
         """
         return self.hwp.HAction.Run("VoiceCommand Resume")
 
     def VoiceCommandStop(self):
         """
         음성 명령 레코딩 중지
-
         """
         return self.hwp.HAction.Run("VoiceCommand Stop")
 
@@ -14897,20 +14947,20 @@ class Hwp:
         (진입점이 되어야 함)
         self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 있다.
 
-        :param function_name:
-            실행할 매크로 함수이름(전체이름)
+        Args:
+            function_name: 실행할 매크로 함수이름(전체이름)
+            u_macro_type:
+                매크로의 유형. 밑의 값 중 하나이다.
 
-        :param u_macro_type:
-            매크로의 유형. 밑의 값 중 하나이다.
-            0: 스크립트 매크로(전역 매크로-HWP_GLOBAL_MACRO_TYPE, 기본값)
-            1: 문서 매크로(해당문서에만 저장/적용되는 매크로-HWP_DOCUMENT_MACRO_TYPE)
+                    - 0: 스크립트 매크로(전역 매크로-HWP_GLOBAL_MACRO_TYPE, 기본값)
+                    - 1: 문서 매크로(해당문서에만 저장/적용되는 매크로-HWP_DOCUMENT_MACRO_TYPE)
 
-        :param u_script_type:
-            스크립트의 유형. 현재는 javascript만을 유일하게 지원한다.
-            아무 정수나 입력하면 된다. (기본값: 0)
+            u_script_type:
+                스크립트의 유형. 현재는 javascript만을 유일하게 지원한다.
+                아무 정수나 입력하면 된다. (기본값: 0)
 
         Returns:
-        무조건 True를 반환(매크로의 실행여부와 상관없음)
+            무조건 True를 반환(매크로의 실행여부와 상관없음)
 
         Examples:
             >>> hwp.run_script_macro("OnDocument_New", u_macro_type=1)
@@ -14931,20 +14981,20 @@ class Hwp:
         (진입점이 되어야 함)
         self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 있다.
 
-        :param function_name:
-            실행할 매크로 함수이름(전체이름)
+        Args:
+            function_name: 실행할 매크로 함수이름(전체이름)
+            u_macro_type:
+                매크로의 유형. 밑의 값 중 하나이다.
 
-        :param u_macro_type:
-            매크로의 유형. 밑의 값 중 하나이다.
-            0: 스크립트 매크로(전역 매크로-HWP_GLOBAL_MACRO_TYPE, 기본값)
-            1: 문서 매크로(해당문서에만 저장/적용되는 매크로-HWP_DOCUMENT_MACRO_TYPE)
+                    - 0: 스크립트 매크로(전역 매크로-HWP_GLOBAL_MACRO_TYPE, 기본값)
+                    - 1: 문서 매크로(해당문서에만 저장/적용되는 매크로-HWP_DOCUMENT_MACRO_TYPE)
 
-        :param u_script_type:
-            스크립트의 유형. 현재는 javascript만을 유일하게 지원한다.
-            아무 정수나 입력하면 된다. (기본값: 0)
+            u_script_type:
+                스크립트의 유형. 현재는 javascript만을 유일하게 지원한다.
+                아무 정수나 입력하면 된다. (기본값: 0)
 
         Returns:
-        무조건 True를 반환(매크로의 실행여부와 상관없음)
+            무조건 True를 반환(매크로의 실행여부와 상관없음)
 
         Examples:
             >>> hwp.run_script_macro("OnDocument_New", u_macro_type=1)
@@ -14960,13 +15010,14 @@ class Hwp:
 
         문서의 경로가 지정되어있지 않으면 “새 이름으로 저장” 대화상자가 뜬다.
 
-        :param save_if_dirty:
-            True를 지정하면 문서가 변경된 경우에만 저장한다.
-            False를 지정하면 변경여부와 상관없이 무조건 저장한다.
-            생략하면 True가 지정된다.
+        Args:
+            save_if_dirty:
+                True를 지정하면 문서가 변경된 경우에만 저장한다.
+                False를 지정하면 변경여부와 상관없이 무조건 저장한다.
+                생략하면 True가 지정된다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         return self.hwp.Save(save_if_dirty=save_if_dirty)
 
@@ -14976,13 +15027,14 @@ class Hwp:
 
         문서의 경로가 지정되어있지 않으면 “새 이름으로 저장” 대화상자가 뜬다.
 
-        :param save_if_dirty:
-            True를 지정하면 문서가 변경된 경우에만 저장한다.
-            False를 지정하면 변경여부와 상관없이 무조건 저장한다.
-            생략하면 True가 지정된다.
+        Args:
+            save_if_dirty:
+                True를 지정하면 문서가 변경된 경우에만 저장한다.
+                False를 지정하면 변경여부와 상관없이 무조건 저장한다.
+                생략하면 True가 지정된다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         return self.hwp.Save(save_if_dirty=save_if_dirty)
 
@@ -14991,29 +15043,27 @@ class Hwp:
         현재 편집중인 문서를 지정한 이름으로 저장한다.
 
         format, arg의 일반적인 개념에 대해서는 Open()참조.
-        "Hwp" 포맷으로 파일 저장 시 arg에 지정할 수 있는 옵션은 다음과 같다.
-        "lock:true" - 저장한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
-        "backup:false" - 백업 파일 생성 여부
-        "compress:true" - 압축 여부
-        "fullsave:false" - 스토리지 파일을 완전히 새로 생성하여 저장
-        "prvimage:2" - 미리보기 이미지 (0=off, 1=BMP, 2=GIF)
-        "prvtext:1" - 미리보기 텍스트 (0=off, 1=on)
-        "autosave:false" - 자동저장 파일로 저장할 지 여부 (TRUE: 자동저장, FALSE: 지정 파일로 저장)
-        "export" - 다른 이름으로 저장하지만 열린 문서는 바꾸지 않는다.(lock:false와 함께 설정되어 있을 시 동작)
-        여러 개를 한꺼번에 할 경우에는 세미콜론으로 구분하여 연속적으로 사용할 수 있다.
-        "lock:TRUE;backup:FALSE;prvtext:1"
 
-        :param path:
-            문서 파일의 전체경로
+        Args:
+            path: 문서 파일의 전체경로
+            format: 문서 형식. 생략하면 "HWP"가 지정된다.
+            arg:
+                세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
+                여러 개를 한꺼번에 할 경우에는 세미콜론으로 구분하여 연속적으로 사용할 수 있다.
 
-        :param format:
-            문서 형식. 생략하면 "HWP"가 지정된다.
+                "lock:TRUE;backup:FALSE;prvtext:1"
 
-        :param arg:
-            세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
+                    - "lock:true": 저장한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
+                    - "backup:false": 백업 파일 생성 여부
+                    - "compress:true": 압축 여부
+                    - "fullsave:false": 스토리지 파일을 완전히 새로 생성하여 저장
+                    - "prvimage:2": 미리보기 이미지 (0=off, 1=BMP, 2=GIF)
+                    - "prvtext:1": 미리보기 텍스트 (0=off, 1=on)
+                    - "autosave:false": 자동저장 파일로 저장할 지 여부 (TRUE: 자동저장, FALSE: 지정 파일로 저장)
+                    - "export": 다른 이름으로 저장하지만 열린 문서는 바꾸지 않는다.(lock:false와 함께 설정되어 있을 시 동작)
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
 
         if path.lower()[1] != ":":
@@ -15053,19 +15103,19 @@ class Hwp:
                             ("time", ctypes.c_ulong),
                             ("dwExtraInfo", PUL)]
 
-            class InputI(ctypes.Union):
+            class Input_I(ctypes.Union):
                 _fields_ = [("ki", KeyBdInput),
                             ("mi", MouseInput),
                             ("hi", HardwareInput)]
 
             class Input(ctypes.Structure):
                 _fields_ = [("type", ctypes.c_ulong),
-                            ("ii", InputI)]
+                            ("ii", Input_I)]
 
             # 키를 누르는 함수
             def press_key(hexKeyCode):
                 extra = ctypes.c_ulong(0)
-                ii_ = InputI()
+                ii_ = Input_I()
                 ii_.ki = KeyBdInput(hexKeyCode, 0, 0, 0, ctypes.pointer(extra))
                 x = Input(ctypes.c_ulong(1), ii_)
                 ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
@@ -15073,7 +15123,7 @@ class Hwp:
             # 키를 떼는 함수
             def release_key(hexKeyCode):
                 extra = ctypes.c_ulong(0)
-                ii_ = InputI()
+                ii_ = Input_I()
                 ii_.ki = KeyBdInput(hexKeyCode, 0, 0x0002, 0, ctypes.pointer(extra))
                 x = Input(ctypes.c_ulong(1), ii_)
                 ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
@@ -15176,27 +15226,27 @@ class Hwp:
         현재 편집중인 문서를 지정한 이름으로 저장한다.
 
         format, arg의 일반적인 개념에 대해서는 Open()참조.
-        "Hwp" 포맷으로 파일 저장 시 arg에 지정할 수 있는 옵션은 다음과 같다.
-        "lock:true" - 저장한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
-        "backup:false" - 백업 파일 생성 여부
-        "compress:true" - 압축 여부
-        "fullsave:false" - 스토리지 파일을 완전히 새로 생성하여 저장
-        "prvimage:2" - 미리보기 이미지 (0=off, 1=BMP, 2=GIF)
-        "prvtext:1" - 미리보기 텍스트 (0=off, 1=on)
-        "autosave:false" - 자동저장 파일로 저장할 지 여부 (TRUE: 자동저장, FALSE: 지정 파일로 저장)
-        "export" - 다른 이름으로 저장하지만 열린 문서는 바꾸지 않는다.(lock:false와 함께 설정되어 있을 시 동작)
-        여러 개를 한꺼번에 할 경우에는 세미콜론으로 구분하여 연속적으로 사용할 수 있다.
-        "lock:TRUE;backup:FALSE;prvtext:1"
 
-        :param path:
-            문서 파일의 전체경로
-        :param format:
-            문서 형식. 생략하면 "HWP"가 지정된다.
-        :param arg:
-            세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
+        Args:
+            path: 문서 파일의 전체경로
+            format: 문서 형식. 생략하면 "HWP"가 지정된다.
+            arg:
+                세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
+                여러 개를 한꺼번에 할 경우에는 세미콜론으로 구분하여 연속적으로 사용할 수 있다.
+
+                "lock:TRUE;backup:FALSE;prvtext:1"
+
+                    - "lock:true": 저장한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
+                    - "backup:false": 백업 파일 생성 여부
+                    - "compress:true": 압축 여부
+                    - "fullsave:false": 스토리지 파일을 완전히 새로 생성하여 저장
+                    - "prvimage:2": 미리보기 이미지 (0=off, 1=BMP, 2=GIF)
+                    - "prvtext:1": 미리보기 텍스트 (0=off, 1=on)
+                    - "autosave:false": 자동저장 파일로 저장할 지 여부 (TRUE: 자동저장, FALSE: 지정 파일로 저장)
+                    - "export": 다른 이름으로 저장하지만 열린 문서는 바꾸지 않는다.(lock:false와 함께 설정되어 있을 시 동작)
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         if path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
@@ -15211,8 +15261,6 @@ class Hwp:
     def select_text_by_get_pos(self, s_getpos, e_getpos):
         """
         hwp.get_pos()로 얻은 두 튜플 사이의 텍스트를 선택하는 메서드.
-
-        의외로 유용하지 않다!
         """
         self.set_pos(s_getpos[0], 0, 0)
         return self.hwp.SelectText(spara=s_getpos[1], spos=s_getpos[2], epara=e_getpos[1], epos=e_getpos[2])
@@ -15223,17 +15271,14 @@ class Hwp:
 
         epos가 가리키는 문자는 포함되지 않는다.
 
-        :param spara:
-            블록 시작 위치의 문단 번호.
-        :param spos:
-            블록 시작 위치의 문단 중에서 문자의 위치.
-        :param epara:
-            블록 끝 위치의 문단 번호.
-        :param epos:
-            블록 끝 위치의 문단 중에서 문자의 위치.
+        Args:
+            spara: 블록 시작 위치의 문단 번호.
+            spos: 블록 시작 위치의 문단 중에서 문자의 위치.
+            epara: 블록 끝 위치의 문단 번호.
+            epos: 블록 끝 위치의 문단 중에서 문자의 위치.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         if type(spara) in [list, tuple]:
             _, slist, spara, spos, elist, epara, epos = spara
@@ -15250,17 +15295,14 @@ class Hwp:
 
         epos가 가리키는 문자는 포함되지 않는다.
 
-        :param spara:
-            블록 시작 위치의 문단 번호.
-        :param spos:
-            블록 시작 위치의 문단 중에서 문자의 위치.
-        :param epara:
-            블록 끝 위치의 문단 번호.
-        :param epos:
-            블록 끝 위치의 문단 중에서 문자의 위치.
+        Args:
+            spara: 블록 시작 위치의 문단 번호.
+            spos: 블록 시작 위치의 문단 중에서 문자의 위치.
+            epara: 블록 끝 위치의 문단 번호.
+            epos: 블록 끝 위치의 문단 중에서 문자의 위치.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         if type(spara) in [list, tuple]:
             _, slist, spara, spos, elist, epara, epos = spara
@@ -15284,7 +15326,7 @@ class Hwp:
         return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index, X=x, Y=y, Width=width,
                                         Height=height)
 
-    def set_cur_field_name(self, field:str="", direction:str="", memo:str="", option:int=0) -> bool:
+    def set_cur_field_name(self, field: str = "", direction: str = "", memo: str = "", option: int = 0) -> bool:
         """
         표 안에서 현재 캐럿이 위치하는 셀, 또는 블록선택한 셀들의 필드이름을 설정한다.
 
@@ -15298,8 +15340,9 @@ class Hwp:
             memo: 누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
             option:
                 다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
-                1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
-                2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
+
+                    - 1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+                    - 2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
 
         Returns:
             성공하면 True, 실패하면 False
@@ -15329,7 +15372,7 @@ class Hwp:
         else:
             return self.hwp.SetCurFieldName(Field=field, option=option, Direction=direction, memo=memo)
 
-    def SetCurFieldName(self, field:str="", direction:str="", memo:str="", option:int=0) -> bool:
+    def SetCurFieldName(self, field: str = "", direction: str = "", memo: str = "", option: int = 0) -> bool:
         """
         표 안에서 현재 캐럿이 위치하는 셀, 또는 블록선택한 셀들의 필드이름을 설정한다.
 
@@ -15343,8 +15386,9 @@ class Hwp:
             memo: 누름틀 필드의 메모. 누름틀 필드일 때만 유효하다.
             option:
                 다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.
-                1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
-                2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
+
+                    - 1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+                    - 2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
 
         Returns:
             성공하면 True, 실패하면 False
@@ -15392,15 +15436,16 @@ class Hwp:
         EditMode와 비슷하게 현재 열려있는 문서에 대한 속성이다. 따라서 저장되지 않는다.
         (작동하지 않음)
 
-        :param option:
-            겉보기 속성 bit
-            1: 누름틀의 『』을 표시하지 않음, 기타필드의 『』을 표시하지 않음
-            2: 누름틀의 『』을 빨간색으로 표시, 기타필드의 『』을 흰색으로 표시(기본값)
-            3: 누름틀의 『』을 흰색으로 표시, 기타필드의 『』을 흰색으로 표시
+        Args:
+            option:
+                겉보기 속성 bit
+
+                - 1: 누름틀의 『』을 표시하지 않음, 기타필드의 『』을 표시하지 않음
+                - 2: 누름틀의 『』을 빨간색으로 표시, 기타필드의 『』을 흰색으로 표시(기본값)
+                - 3: 누름틀의 『』을 흰색으로 표시, 기타필드의 『』을 흰색으로 표시
 
         Returns:
-        설정된 속성이 반환된다.
-            에러일 경우 0이 반환된다.
+            설정된 속성이 반환된다. 에러일 경우 0이 반환된다.
         """
         return self.hwp.SetFieldViewOption(option=option)
 
@@ -15411,20 +15456,23 @@ class Hwp:
         EditMode와 비슷하게 현재 열려있는 문서에 대한 속성이다. 따라서 저장되지 않는다.
         (작동하지 않음)
 
-        :param option:
-            겉보기 속성 bit
-            1: 누름틀의 『』을 표시하지 않음, 기타필드의 『』을 표시하지 않음
-            2: 누름틀의 『』을 빨간색으로 표시, 기타필드의 『』을 흰색으로 표시(기본값)
-            3: 누름틀의 『』을 흰색으로 표시, 기타필드의 『』을 흰색으로 표시
+        Args:
+            option:
+                겉보기 속성 bit
+
+                - 1: 누름틀의 『』을 표시하지 않음, 기타필드의 『』을 표시하지 않음
+                - 2: 누름틀의 『』을 빨간색으로 표시, 기타필드의 『』을 흰색으로 표시(기본값)
+                - 3: 누름틀의 『』을 흰색으로 표시, 기타필드의 『』을 흰색으로 표시
 
         Returns:
-        설정된 속성이 반환된다.
-            에러일 경우 0이 반환된다.
+            설정된 속성이 반환된다. 에러일 경우 0이 반환된다.
         """
         return self.hwp.SetFieldViewOption(option=option)
 
     def set_message_box_mode(self, mode):
         """
+        메시지박스 버튼 자동클릭
+
         한/글에서 쓰는 다양한 메시지박스가 뜨지 않고,
 
         자동으로 특정 버튼을 클릭한 효과를 주기 위해 사용한다.
@@ -15434,42 +15482,58 @@ class Hwp:
         예를 들어, MB_OK_IDOK (0x00000001)값을 주면,
         MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.
 
-        :param mode:
-            // 메시지 박스의 종류
-            #define MB_MASK						0x00FFFFFF
-            // 1. 확인(MB_OK) : IDOK(1)
-            #define MB_OK_IDOK						0x00000001
-            #define MB_OK_MASK						0x0000000F
-            // 2. 확인/취소(MB_OKCANCEL) : IDOK(1), IDCANCEL(2)
-            #define MB_OKCANCEL_IDOK					0x00000010
-            #define MB_OKCANCEL_IDCANCEL				0x00000020
-            #define MB_OKCANCEL_MASK					0x000000F0
-            // 3. 종료/재시도/무시(MB_ABORTRETRYIGNORE) : IDABORT(3), IDRETRY(4), IDIGNORE(5)
-            #define MB_ABORTRETRYIGNORE_IDABORT			0x00000100
-            #define MB_ABORTRETRYIGNORE_IDRETRY			0x00000200
-            #define MB_ABORTRETRYIGNORE_IDIGNORE			0x00000400
-            #define MB_ABORTRETRYIGNORE_MASK				0x00000F00
-            // 4. 예/아니오/취소(MB_YESNOCANCEL) : IDYES(6), IDNO(7), IDCANCEL(2)
-            #define MB_YESNOCANCEL_IDYES				0x00001000
-            #define MB_YESNOCANCEL_IDNO				0x00002000
-            #define MB_YESNOCANCEL_IDCANCEL				0x00004000
-            #define MB_YESNOCANCEL_MASK				0x0000F000
-            // 5. 예/아니오(MB_YESNO) : IDYES(6), IDNO(7)
-            #define MB_YESNO_IDYES					0x00010000
-            #define MB_YESNO_IDNO					0x00020000
-            #define MB_YESNO_MASK					0x000F0000
-            // 6. 재시도/취소(MB_RETRYCANCEL) : IDRETRY(4), IDCANCEL(2)
-            #define MB_RETRYCANCEL_IDRETRY				0x00100000
-            #define MB_RETRYCANCEL_IDCANCEL				0x00200000
-            #define MB_RETRYCANCEL_MASK				0x00F00000
+        Args:
+            mode:
+                메시지 박스 자동선택 종류
+
+                0. 모든 자동설정 해제: 0xFFFFFF
+
+                1. 확인 버튼만 있는 팝업의 경우
+
+                    - 확인 자동누르기: 0x1
+                    - 확인 자동누르기 해제: 0xF
+
+                2. 확인/취소 버튼이 있는 팝업의 경우
+
+                    - 확인 자동누르기: 0x10
+                    - 취소 자동누르기: 0x20
+                    - 확인/취소 옵션 해제: 0xF0
+
+                3. 종료/재시도/무시 팝업의 경우
+
+                    - 종료 자동누르기: 0x100
+                    - 재시도 자동누르기: 0x200
+                    - 무시 자동누르기: 0x400
+                    - 종료/재시도/무시 옵션 해제: 0xF00
+
+                4. 예/아니오/취소 팝업의 경우
+
+                    - 예 자동누르기: 0x1000
+                    - 아니오 자동누르기: 0x2000
+                    - 취소 자동누르기: 0x4000
+                    - 예/아니오/취소 옵션 해제: 0xF000
+
+                5. 예/아니오 팝업의 경우
+
+                    - 예 자동누르기: 0x10000
+                    - 아니오 자동누르기: 0x20000
+                    - 예/아니오 옵션 해제: 0xF0000
+
+                6. 재시도/취소 팝업의 경우
+
+                    - 재시도 자동누르기: 0x100000
+                    - 취소 자동누르기: 0x200000
+                    - 재시도/취소 옵션 해제: 0xF00000
 
         Returns:
-        실행 전의 MessageBoxMode
+            실행 직전의 MessageBoxMode(현재 값이 아님에 주의)
         """
         return self.hwp.SetMessageBoxMode(Mode=mode)
 
     def SetMessageBoxMode(self, mode):
         """
+        메시지박스 버튼 자동클릭
+
         한/글에서 쓰는 다양한 메시지박스가 뜨지 않고,
 
         자동으로 특정 버튼을 클릭한 효과를 주기 위해 사용한다.
@@ -15479,82 +15543,67 @@ class Hwp:
         예를 들어, MB_OK_IDOK (0x00000001)값을 주면,
         MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.
 
-        :param mode:
-            // 메시지 박스의 종류
+        Args:
+            mode:
+                메시지 박스 자동선택 종류
 
-            #define MB_MASK						0x00FFFFFF
+                0. 모든 자동설정 해제: 0xFFFFFF
 
-            // 1. 확인(MB_OK) : IDOK(1)
+                1. 확인 버튼만 있는 팝업의 경우
 
-            #define MB_OK_IDOK						0x00000001
+                    - 확인 자동누르기: 0x1
+                    - 확인 자동누르기 해제: 0xF
 
-            #define MB_OK_MASK						0x0000000F
+                2. 확인/취소 버튼이 있는 팝업의 경우
 
-            // 2. 확인/취소(MB_OKCANCEL) : IDOK(1), IDCANCEL(2)
+                    - 확인 자동누르기: 0x10
+                    - 취소 자동누르기: 0x20
+                    - 확인/취소 옵션 해제: 0xF0
 
-            #define MB_OKCANCEL_IDOK					0x00000010
+                3. 종료/재시도/무시 팝업의 경우
 
-            #define MB_OKCANCEL_IDCANCEL				0x00000020
+                    - 종료 자동누르기: 0x100
+                    - 재시도 자동누르기: 0x200
+                    - 무시 자동누르기: 0x400
+                    - 종료/재시도/무시 옵션 해제: 0xF00
 
-            #define MB_OKCANCEL_MASK					0x000000F0
+                4. 예/아니오/취소 팝업의 경우
 
-            // 3. 종료/재시도/무시(MB_ABORTRETRYIGNORE) : IDABORT(3), IDRETRY(4), IDIGNORE(5)
+                    - 예 자동누르기: 0x1000
+                    - 아니오 자동누르기: 0x2000
+                    - 취소 자동누르기: 0x4000
+                    - 예/아니오/취소 옵션 해제: 0xF000
 
-            #define MB_ABORTRETRYIGNORE_IDABORT			0x00000100
+                5. 예/아니오 팝업의 경우
 
-            #define MB_ABORTRETRYIGNORE_IDRETRY			0x00000200
+                    - 예 자동누르기: 0x10000
+                    - 아니오 자동누르기: 0x20000
+                    - 예/아니오 옵션 해제: 0xF0000
 
-            #define MB_ABORTRETRYIGNORE_IDIGNORE			0x00000400
+                6. 재시도/취소 팝업의 경우
 
-            #define MB_ABORTRETRYIGNORE_MASK				0x00000F00
-
-            // 4. 예/아니오/취소(MB_YESNOCANCEL) : IDYES(6), IDNO(7), IDCANCEL(2)
-
-            #define MB_YESNOCANCEL_IDYES				0x00001000
-
-            #define MB_YESNOCANCEL_IDNO				0x00002000
-
-            #define MB_YESNOCANCEL_IDCANCEL				0x00004000
-
-            #define MB_YESNOCANCEL_MASK				0x0000F000
-
-            // 5. 예/아니오(MB_YESNO) : IDYES(6), IDNO(7)
-
-            #define MB_YESNO_IDYES					0x00010000
-
-            #define MB_YESNO_IDNO					0x00020000
-
-            #define MB_YESNO_MASK					0x000F0000
-
-            // 6. 재시도/취소(MB_RETRYCANCEL) : IDRETRY(4), IDCANCEL(2)
-
-            #define MB_RETRYCANCEL_IDRETRY				0x00100000
-
-            #define MB_RETRYCANCEL_IDCANCEL				0x00200000
-
-            #define MB_RETRYCANCEL_MASK				0x00F00000
+                    - 재시도 자동누르기: 0x100000
+                    - 취소 자동누르기: 0x200000
+                    - 재시도/취소 옵션 해제: 0xF00000
 
         Returns:
-        실행 전의 MessageBoxMode
+            실행 직전의 MessageBoxMode(현재 값이 아님에 주의)
         """
         return self.hwp.SetMessageBoxMode(Mode=mode)
 
-    def set_pos(self, list, para, pos):
+    def set_pos(self, list: int, para: int, pos: int) -> bool:
         """
-        캐럿을 문서 내 특정 위치로 옮긴다.
+        캐럿을 문서 내 특정 위치로 옮기기
 
-        지정된 위치로 캐럿을 옮겨준다.
+        지정된 좌표로 캐럿을 옮겨준다.
 
-        :param list:
-            캐럿이 위치한 문서 내 list ID
-        :param para:
-            캐럿이 위치한 문단 ID. 음수거나, 범위를 넘어가면 문서의 시작으로 이동하며, pos는 무시한다.
-        :param pos:
-            캐럿이 위치한 문단 내 글자 위치. -1을 주면 해당문단의 끝으로 이동한다.
-            단 para가 범위 밖일 경우 pos는 무시되고 문서의 시작으로 캐럿을 옮긴다.
+        Args:
+            list: 캐럿이 위치한 문서 내 list ID
+            para: 캐럿이 위치한 문단 ID. 음수거나, 범위를 넘어가면 문서의 시작으로 이동하며, pos는 무시한다.
+            pos: 캐럿이 위치한 문단 내 글자 위치. -1을 주면 해당문단의 끝으로 이동한다. 단 para가 범위 밖일 경우 pos는 무시되고 문서의 시작으로 캐럿을 옮긴다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         self.hwp.SetPos(List=list, Para=para, pos=pos)
         if (list, para) == self.get_pos()[:2]:
@@ -15562,22 +15611,19 @@ class Hwp:
         else:
             return False
 
-    def SetPos(self, list, para, pos):
+    def SetPos(self, list: int, para: int, pos: int) -> bool:
         """
-        캐럿을 문서 내 특정 위치로 옮긴다.
+        캐럿을 문서 내 특정 위치로 옮기기
 
         지정된 위치로 캐럿을 옮겨준다.
 
-        :param list:
-            캐럿이 위치한 문서 내 list ID
-        :param para:
-            캐럿이 위치한 문단 ID. 음수거나, 범위를 넘어가면 문서의 시작으로 이동하며, pos는 무시한다.
-        :param pos:
-            캐럿이 위치한 문단 내 글자 위치. -1을 주면 해당문단의 끝으로 이동한다.
-            단 para가 범위 밖일 경우 pos는 무시되고 문서의 시작으로 캐럿을 옮긴다.
+        Args:
+            list: 캐럿이 위치한 문서 내 list ID
+            para: 캐럿이 위치한 문단 ID. 음수거나, 범위를 넘어가면 문서의 시작으로 이동하며, pos는 무시한다.
+            pos: 캐럿이 위치한 문단 내 글자 위치. -1을 주면 해당문단의 끝으로 이동한다. 단 para가 범위 밖일 경우 pos는 무시되고 문서의 시작으로 캐럿을 옮긴다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         self.hwp.SetPos(List=list, Para=para, pos=pos)
         if para == self.get_pos()[1]:
@@ -15589,11 +15635,12 @@ class Hwp:
         """
         캐럿을 ParameterSet으로 얻어지는 위치로 옮긴다.
 
-        :param disp_val:
-            캐럿을 옮길 위치에 대한 ParameterSet 정보
+        Args:
+            disp_val: 캐럿을 옮길 위치에 대한 ParameterSet 정보
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -15606,11 +15653,12 @@ class Hwp:
         """
         캐럿을 ParameterSet으로 얻어지는 위치로 옮긴다.
 
-        :param disp_val:
-            캐럿을 옮길 위치에 대한 ParameterSet 정보
+        Args:
+            disp_val: 캐럿을 옮길 위치에 대한 ParameterSet 정보
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -15629,11 +15677,11 @@ class Hwp:
         반드시 이 함수를 호출해야 한다.
         (현재 작동하지 않는다.)
 
-        :param password:
-            새 암호
+        Args:
+            password: 새 암호
 
         Returns:
-        정상적으로 암호가 설정되면 true를 반환한다.
+            정상적으로 암호가 설정되면 true를 반환한다.
             암호설정에 실패하면 false를 반환한다. false를 반환하는 경우는 다음과 같다
             1. 암호의 길이가 너무 짧거나 너무 길 때 (영문: 5~44자, 한글: 3~22자)
             2. 암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임
@@ -15650,11 +15698,11 @@ class Hwp:
         반드시 이 함수를 호출해야 한다.
         (현재 작동하지 않는다.)
 
-        :param password:
-            새 암호
+        Args:
+            password: 새 암호
 
         Returns:
-        정상적으로 암호가 설정되면 true를 반환한다.
+            정상적으로 암호가 설정되면 true를 반환한다.
             암호설정에 실패하면 false를 반환한다. false를 반환하는 경우는 다음과 같다
             1. 암호의 길이가 너무 짧거나 너무 길 때 (영문: 5~44자, 한글: 3~22자)
             2. 암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임
@@ -15664,44 +15712,44 @@ class Hwp:
     def set_text_file(self, data: str, format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
                       option="insertfile"):
         """
-        문서를 문자열로 지정한다.
+        GetTextFile로 저장한 문자열 정보를 문서에 삽입
 
-        :param data:
-            문자열로 변경된 text 파일
-        :param format:
-            파일의 형식
-            "HWP": HWP native format. BASE64 로 인코딩되어 있어야 한다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
-            "HWPML2X": HWP 형식과 호환. 문서의 모든 정보를 유지
-            "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
-            "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장
-            "TEXT": 일반 텍스트, 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
-        :param option:
-            "insertfile": 현재커서 이후에 지정된 파일 삽입
+        Args:
+            data: 문자열로 변경된 text 파일
+            format:
+                파일의 형식
+
+                    - "HWP": HWP native format. BASE64 로 인코딩되어 있어야 한다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+                    - "HWPML2X": HWP 형식과 호환. 문서의 모든 정보를 유지
+                    - "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
+                    - "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장
+                    - "TEXT": 일반 텍스트, 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
+            option: "insertfile"을 지정하면 현재커서 이후에 지정된 파일을 삽입(기본값)
 
         Returns:
-        성공이면 1을, 실패하면 0을 반환한다.
+            성공이면 1을, 실패하면 0을 반환한다.
         """
         return self.hwp.SetTextFile(data=data, Format=format, option=option)
 
     def SetTextFile(self, data: str, format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
                     option="insertfile"):
         """
-        문서를 문자열로 지정한다.
+        GetTextFile로 저장한 문자열 정보를 문서에 삽입
 
-        :param data:
-            문자열로 변경된 text 파일
-        :param format:
-            파일의 형식
-            "HWP": HWP native format. BASE64 로 인코딩되어 있어야 한다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
-            "HWPML2X": HWP 형식과 호환. 문서의 모든 정보를 유지
-            "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
-            "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장
-            "TEXT": 일반 텍스트, 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
-        :param option:
-            "insertfile": 현재커서 이후에 지정된 파일 삽입
+        Args:
+            data: 문자열로 변경된 text 파일
+            format:
+                파일의 형식
+
+                    - "HWP": HWP native format. BASE64 로 인코딩되어 있어야 한다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+                    - "HWPML2X": HWP 형식과 호환. 문서의 모든 정보를 유지
+                    - "HTML": 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
+                    - "UNICODE": 유니코드 텍스트, 서식정보가 없는 텍스트만 저장
+                    - "TEXT": 일반 텍스트, 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
+            option: "insertfile"을 지정하면 현재커서 이후에 지정된 파일을 삽입(기본값)
 
         Returns:
-        성공이면 1을, 실패하면 0을 반환한다.
+            성공이면 1을, 실패하면 0을 반환한다.
         """
         return self.hwp.SetTextFile(data=data, Format=format, option=option)
 
@@ -15723,8 +15771,7 @@ class Hwp:
         """
         return win32gui.GetWindowText(self.hwp.XHwpWindows.Active_XHwpWindow.WindowHandle)
 
-
-    def set_title_name(self, title:str="") -> bool:
+    def set_title_name(self, title: str = "") -> bool:
         """
         한/글 프로그램의 타이틀을 변경한다.
 
@@ -15749,7 +15796,7 @@ class Hwp:
         """
         return self.hwp.SetTitleName(Title=title)
 
-    def SetTitleName(self, title:str="") -> bool:
+    def SetTitleName(self, title: str = "") -> bool:
         """
         한/글 프로그램의 타이틀을 변경한다.
 
@@ -15774,128 +15821,63 @@ class Hwp:
         """
         return self.hwp.SetTitleName(Title=title)
 
-    def set_user_info(self, user_info_id, value):
-        return self.hwp.SetUserInfo(userInfoId=user_info_id, Value=value)
-
     def SetUserInfo(self, user_info_id, value):
         return self.hwp.SetUserInfo(userInfoId=user_info_id, Value=value)
-
-    def side_type(self, side_type):
-        return self.hwp.SideType(SideType=side_type)
 
     def SideType(self, side_type):
         return self.hwp.SideType(SideType=side_type)
 
-    def signature(self, signature):
-        return self.hwp.Signature(Signature=signature)
-
     def Signature(self, signature):
         return self.hwp.Signature(Signature=signature)
 
-    def slash(self, slash):
-        return self.hwp.Slash(Slash=slash)
-
     def Slash(self, slash):
         return self.hwp.Slash(Slash=slash)
-
-    def solar_to_lunar(self, s_year, s_month, s_day, l_year, l_month, l_day, l_leap):
-        return self.hwp.SolarToLunar(sYear=s_year, sMonth=s_month, sDay=s_day, lYear=l_year, lMonth=l_month, lDay=l_day,
-                                     lLeap=l_leap)
 
     def SolarToLunar(self, s_year, s_month, s_day, l_year, l_month, l_day, l_leap):
         return self.hwp.SolarToLunar(sYear=s_year, sMonth=s_month, sDay=s_day, lYear=l_year, lMonth=l_month, lDay=l_day,
                                      lLeap=l_leap)
 
-    def solar_to_lunar_by_set(self, s_year, s_month, s_day):
-        return self.hwp.SolarToLunarBySet(sYear=s_year, sMonth=s_month, sDay=s_day)
-
     def SolarToLunarBySet(self, s_year, s_month, s_day):
         return self.hwp.SolarToLunarBySet(sYear=s_year, sMonth=s_month, sDay=s_day)
-
-    def sort_delimiter(self, sort_delimiter):
-        return self.hwp.SortDelimiter(SortDelimiter=sort_delimiter)
 
     def SortDelimiter(self, sort_delimiter):
         return self.hwp.SortDelimiter(SortDelimiter=sort_delimiter)
 
-    def strike_out(self, strike_out_type):
-        return self.hwp.StrikeOut(StrikeOutType=strike_out_type)
-
     def StrikeOut(self, strike_out_type):
         return self.hwp.StrikeOut(StrikeOutType=strike_out_type)
-
-    def style_type(self, style_type):
-        return self.hwp.StyleType(StyleType=style_type)
 
     def StyleType(self, style_type):
         return self.hwp.StyleType(StyleType=style_type)
 
-    def subt_pos(self, subt_pos):
-        return self.hwp.SubtPos(SubtPos=subt_pos)
-
     def SubtPos(self, subt_pos):
         return self.hwp.SubtPos(SubtPos=subt_pos)
-
-    def table_break(self, page_break):
-        return self.hwp.TableBreak(PageBreak=page_break)
 
     def TableBreak(self, page_break):
         return self.hwp.TableBreak(PageBreak=page_break)
 
-    def table_format(self, table_format):
-        return self.hwp.TableFormat(TableFormat=table_format)
-
     def TableFormat(self, table_format):
         return self.hwp.TableFormat(TableFormat=table_format)
-
-    def table_swap_type(self, tableswap):
-        return self.hwp.TableSwapType(tableswap=tableswap)
 
     def TableSwapType(self, tableswap):
         return self.hwp.TableSwapType(tableswap=tableswap)
 
-    def table_target(self, table_target):
-        return self.hwp.TableTarget(TableTarget=table_target)
-
     def TableTarget(self, table_target):
         return self.hwp.TableTarget(TableTarget=table_target)
-
-    def text_align(self, text_align):
-        return self.hwp.TextAlign(TextAlign=text_align)
 
     def TextAlign(self, text_align):
         return self.hwp.TextAlign(TextAlign=text_align)
 
-    def text_art_align(self, text_art_align):
-        return self.hwp.TextArtAlign(TextArtAlign=text_art_align)
-
     def TextArtAlign(self, text_art_align):
         return self.hwp.TextArtAlign(TextArtAlign=text_art_align)
-
-    def text_dir(self, text_direction):
-        return self.hwp.TextDir(TextDirection=text_direction)
 
     def TextDir(self, text_direction):
         return self.hwp.TextDir(TextDirection=text_direction)
 
-    def text_flow_type(self, text_flow):
-        return self.hwp.TextFlowType(TextFlow=text_flow)
-
     def TextFlowType(self, text_flow):
         return self.hwp.TextFlowType(TextFlow=text_flow)
 
-    def text_wrap_type(self, text_wrap):
-        return self.hwp.TextWrapType(TextWrap=text_wrap)
-
     def TextWrapType(self, text_wrap):
         return self.hwp.TextWrapType(TextWrap=text_wrap)
-
-    def un_select_ctrl(self):
-        """
-        선택중인 컨트롤 선택해제
-
-        """
-        return self.hwp.UnSelectCtrl()
 
     def UnSelectCtrl(self):
         """
@@ -15904,32 +15886,17 @@ class Hwp:
         """
         return self.hwp.UnSelectCtrl()
 
-    def v_align(self, v_align):
-        return self.hwp.VAlign(VAlign=v_align)
-
     def VAlign(self, v_align):
         return self.hwp.VAlign(VAlign=v_align)
-
-    def vert_rel(self, vert_rel):
-        return self.hwp.VertRel(VertRel=vert_rel)
 
     def VertRel(self, vert_rel):
         return self.hwp.VertRel(VertRel=vert_rel)
 
-    def view_flag(self, view_flag):
-        return self.hwp.ViewFlag(ViewFlag=view_flag)
-
     def ViewFlag(self, view_flag):
         return self.hwp.ViewFlag(ViewFlag=view_flag)
 
-    def watermark_brush(self, watermark_brush):
-        return self.hwp.WatermarkBrush(WatermarkBrush=watermark_brush)
-
     def WatermarkBrush(self, watermark_brush):
         return self.hwp.WatermarkBrush(WatermarkBrush=watermark_brush)
-
-    def width_rel(self, width_rel):
-        return self.hwp.WidthRel(WidthRel=width_rel)
 
     def WidthRel(self, width_rel):
         return self.hwp.WidthRel(WidthRel=width_rel)
@@ -15965,44 +15932,3 @@ class Hwp:
     def WindowPrevTab(self):
         """이전 창 활성화"""
         return self.hwp.HAction.Run("WindowPrevTab")
-
-
-    def test_docstring(self) -> int:
-        """
-        독스트링 테스트용 메서드. 실행하지 말 것.
-
-        Returns:
-            int: 리턴하는 정수는 각각 다음과 같다.
-                - 1: 예약
-                - 2: 구역/단 정의
-                - 3: 필드 시작
-                - 4: 필드 끝
-                - 5: 예약
-                - 6: 예약
-                - 7: 예약
-                - 8: 예약
-                - 9: 탭
-                - 10: 강제 줄 나눔
-                - 11: 그리기 개체 / 표
-                - 12: 예약
-                - 13: 문단 나누기
-                - 14: 예약
-                - 15: 주석
-                - 16: 머리말 / 꼬리말
-                - 17: 각주 / 미주
-                - 18: 자동 번호
-                - 19: 예약
-                - 20: 예약
-                - 21: 쪽바뀜
-                - 22: 책갈피 / 찾아보기 표시
-                - 23: 덧말 / 글자 겹침
-                - 24: 하이픈
-                - 25: 예약
-                - 26: 예약
-                - 27: 예약
-                - 28: 예약
-                - 29: 예약
-                - 30: 묶음 빈칸
-                - 31: 고정 폭 빈칸
-        """
-        return 1
