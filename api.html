@@ -8751,6 +8751,17 @@
       </tbody>
     </table>
 
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>  <span class="c1"># 표 두 개가 들어있는 문서에서</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ctrl</span> <span class="ow">in</span> <span class="n">hwp</span><span class="o">.</span><span class="n">ctrl_list</span><span class="p">:</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">ctrl</span><span class="o">.</span><span class="n">CtrlCh</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">...</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">11</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="go">11</span>
+</code></pre></div>
+
     </div>
 
 </div>
@@ -8793,41 +8804,55 @@
               <div class="doc-md-description">
                 <p>해당 컨트롤의 컨트롤아이디</p>
 <ul>
-<li>cold(ColDef): 단</li>
-<li>secd(SecDef): 구역</li>
-<li>fn(FootnoteShape): 각주</li>
-<li>en(FootnoteShape): 미주</li>
-<li>tbl(TableCreation): 표</li>
-<li>eqed(EqEdit): 수식</li>
-<li>gso(ShapeObject): 그리기 개체</li>
-<li>atno(AutoNum): 번호 넣기</li>
-<li>nwno(AutoNum): 새 번호로</li>
-<li>pgct(PageNumCtrl): 페이지 번호 제어(97의 홀수 쪽에서 시작)</li>
-<li>pghd(PageHiding): 감추기</li>
-<li>pgnp(PageNumPos): 쪽 번호 위치</li>
-<li>head(HeaderFooter): 머리말</li>
-<li>foot(HeaderFooter): 꼬리말</li>
-<li>%dte(FieldCtrl): 현재의 날짜/시간 필드</li>
-<li>%ddt(FieldCtrl): 파일 작성 날짜/시간 필드</li>
-<li>%pat(FieldCtrl): 문서 경로 필드</li>
-<li>%bmk(FieldCtrl): 블록 책갈피</li>
-<li>%mmg(FieldCtrl): 메일 머지</li>
-<li>%xrf(FieldCtrl): 상호 참조</li>
-<li>%fmu(FieldCtrl): 계산식</li>
-<li>%clk(FieldCtrl): 누름틀</li>
-<li>%smr(FieldCtrl): 문서 요약 정보 필드</li>
-<li>%usr(FieldCtrl): 사용자 정보 필드</li>
-<li>%hlk(FieldCtrl): 하이퍼링크</li>
-<li>bokm(TextCtrl): 책갈피</li>
-<li>idxm(IndexMark): 찾아보기</li>
-<li>tdut(Dutmal): 덧말</li>
-<li>tcmt(None): 주석</li>
+<li>"cold" : (ColDef) 단</li>
+<li>"secd" : (SecDef) 구역</li>
+<li>"fn" : (FootnoteShape) 각주</li>
+<li>"en" : (FootnoteShape) 미주</li>
+<li>"tbl" : (TableCreation) 표</li>
+<li>"eqed" : (EqEdit) 수식</li>
+<li>"gso" : (ShapeObject) 그리기 개체</li>
+<li>"atno" : (AutoNum) 번호 넣기</li>
+<li>"nwno" : (AutoNum) 새 번호로</li>
+<li>"pgct" : (PageNumCtrl) 페이지 번호 제어(97의 홀수 쪽에서 시작)</li>
+<li>"pghd" : (PageHiding) 감추기</li>
+<li>"pgnp" : (PageNumPos) 쪽 번호 위치</li>
+<li>"head" : (HeaderFooter) 머리말</li>
+<li>"foot" : (HeaderFooter) 꼬리말</li>
+<li>"%dte" : (FieldCtrl) 현재의 날짜/시간 필드</li>
+<li>"%ddt" : (FieldCtrl) 파일 작성 날짜/시간 필드</li>
+<li>"%pat" : (FieldCtrl) 문서 경로 필드</li>
+<li>"%bmk" : (FieldCtrl) 블록 책갈피</li>
+<li>"%mmg" : (FieldCtrl) 메일 머지</li>
+<li>"%xrf" : (FieldCtrl) 상호 참조</li>
+<li>"%fmu" : (FieldCtrl) 계산식</li>
+<li>"%clk" : (FieldCtrl) 누름틀</li>
+<li>"%smr" : (FieldCtrl) 문서 요약 정보 필드</li>
+<li>"%usr" : (FieldCtrl) 사용자 정보 필드</li>
+<li>"%hlk" : (FieldCtrl) 하이퍼링크</li>
+<li>"bokm" : (TextCtrl) 책갈피</li>
+<li>"idxm" : (IndexMark) 찾아보기</li>
+<li>"tdut" : (Dutmal) 덧말</li>
+<li>"tcmt" : (None) 주석</li>
 </ul>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>  <span class="c1"># 2x2 표의 각 셀 안에 이미지가 총 4장 들어있는 문서</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ctrl</span> <span class="ow">in</span> <span class="n">hwp</span><span class="o">.</span><span class="n">ctrl_list</span><span class="p">:</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">ctrl</span><span class="o">.</span><span class="n">CtrlID</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">...</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">tbl</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="go">gso</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">gso</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="go">gso</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">gso</span>
+</code></pre></div>
 
     </div>
 
@@ -8852,6 +8877,37 @@
         <p>다음 컨트롤.</p>
 <p>문서 중의 모든 컨트롤(표, 그림 등의 특수 문자들)은 linked list로 서로 연결되어 있는데, list 중 다음 컨트롤을 나타낸다.</p>
 
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="Ctrl (pyhwpx.pyhwpx.Ctrl)" href="#pyhwpx.Ctrl">Ctrl</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 컨트롤의 다음 컨트롤</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>  <span class="c1"># 표 하나만 들어 있는 문서에서</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">hwp</span><span class="o">.</span><span class="n">HeadCtrl</span><span class="o">.</span><span class="n">Next</span><span class="o">.</span><span class="n">Next</span><span class="o">.</span><span class="n">UserDesc</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">표</span>
+</code></pre></div>
+
     </div>
 
 </div>
@@ -8874,6 +8930,37 @@
 
         <p>앞 컨트롤.</p>
 <p>문서 중의 모든 컨트롤(표, 그림 등의 특수 문자들)은 linked list로 서로 연결되어 있는데, list 중 앞 컨트롤을 나타낸다.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="Ctrl (pyhwpx.pyhwpx.Ctrl)" href="#pyhwpx.Ctrl">Ctrl</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 컨트롤의 이전 컨트롤</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>  <span class="c1"># 표 두 개 들어 있는 문서에서</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">hwp</span><span class="o">.</span><span class="n">LastCtrl</span><span class="o">.</span><span class="n">Prev</span><span class="o">.</span><span class="n">UserDesc</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">그림</span>
+</code></pre></div>
 
     </div>
 
@@ -15424,7 +15511,7 @@ OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
 
 
 <h4 id="pyhwpx.Hwp.GetTextFile" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">GetTextFile</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;UNICODE&#39;</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">GetTextFile</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;UNICODE&#39;</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="s1">&#39;saveblock:true&#39;</span><span class="p">)</span></code>
 
 </h4>
 
@@ -31596,7 +31683,7 @@ function OnDocument_Open() {
 
 
 <h4 id="pyhwpx.Hwp.get_text_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_text_file</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;UNICODE&#39;</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">get_text_file</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;UNICODE&#39;</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="s1">&#39;saveblock:true&#39;</span><span class="p">)</span></code>
 
 </h4>
 
@@ -36721,6 +36808,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>option</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36746,6 +36834,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -37094,7 +37183,8 @@ df로 변환시작할 행을 특정할 때 사용된다.</p>
 
     <div class="doc doc-contents ">
 
-        <p>엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 (row, col) 튜플로 변환하는 헬퍼함수입니다.
+        <p>엑셀주소를 튜플로 변환하는 헬퍼함수</p>
+<p>엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 (row, col) 튜플로 변환하는 헬퍼함수입니다.
 예를 들어 addr_to_tuple("C3")을 실행하면 (3, 3)을 리턴하는 식입니다.
 pyhwpx 일부 메서드의 내부 연산에 사용됩니다.</p>
 
@@ -37128,8 +37218,29 @@ pyhwpx 일부 메서드의 내부 연산에 사용됩니다.</p>
           </tr>
       </tbody>
     </table>
-        <p>Returns:
-    (row, column) 형식의 주소 튜플</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(row, column) 형식의 주소 튜플</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
