@@ -1,5 +1,16 @@
 # 📦 Changelog
 
+## [0.50.7] - 2025-04-06
+### 🐛 Fixed
+- self.switch_to 실행시, 인덱스를 넘었을 때 com_error 대신 IndexError를 리턴 
+
+---
+
+### 📝 Misc
+- 일부 static 방식 메서드에 @staticmethod 데코레이터 추가
+
+---
+
 ## [0.50.6] - 2025-04-06
 ### 🐛 Fixed
 - self.Version을 문자열에서 리스트로 변경함
