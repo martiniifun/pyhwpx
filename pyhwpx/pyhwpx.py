@@ -4321,7 +4321,7 @@ class Hwp:
             >>> # 문서 마지막 컨트롤 선택하기
             >>> hwp.SelectCtrl(hwp.LastCtrl.GetCtrlInstID(), 0)
         """
-        if int(self.Version.split(", ")[0]) >= 13:  # 한/글2024 이상이면
+        if int(self.Version[0]) >= 13:  # 한/글2024 이상이면
             return self.hwp.SelectCtrl(ctrllist=ctrllist, option=option)
         else:
             raise NotImplementedError("아래아한글 버전이 2024 미만입니다. hwp.select_ctrl()을 대신 사용하셔야 합니다.")
@@ -4341,7 +4341,7 @@ class Hwp:
 
         Returns:
         """
-        if int(self.Version.split(", ")[0]) >= 13:  # 한/글2024 이상이면
+        if int(self.Version[0]) >= 13:  # 한/글2024 이상이면
             self.hwp.SelectCtrl(ctrl.GetCtrlInstID(), option=option)
         else:  # 이하 버전이면
             cur_view_state = self.ViewProperties.Item("OptionFlag")
@@ -5640,14 +5640,14 @@ class Hwp:
         each_col_width = round((total_width - self.mili_to_hwp_unit(3.6 * cols)) / cols)
         for i in range(cols):
             pset.ColWidth.SetItem(i, each_col_width)  # 1열
-        if self.Version.split(", ")[0] == "8":
+        if self.Version[0] == "8":
             pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
         pset.TableProperties.Width = total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
         try:
             return self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
         finally:
             # 글자처럼 취급 여부 적용(treat_as_char)
-            if self.Version.split(", ")[0] != "8":
+            if self.Version[0] != "8":
                 ctrl = self.hwp.CurSelectedCtrl or self.hwp.ParentCtrl
                 pset = self.hwp.CreateSet("Table")
                 pset.SetItem("TreatAsChar", treat_as_char)
