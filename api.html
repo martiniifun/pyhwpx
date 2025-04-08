@@ -20600,8 +20600,28 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
     "Table": 표
     "Endnote": 미주
     "Equation": 수식</p>
-<p>Returns:
-성공시 True, 실패시 False를 리턴</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -20643,8 +20663,28 @@ Todo: 페이지 내에 캐럿 뒤쪽으로 [새번호]조판이 있는 경우 �
     "Table": 표
     "Endnote": 미주
     "Equation": 수식</p>
-<p>Returns:
-성공시 True, 실패시 False를 리턴</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -21117,8 +21157,28 @@ string:  ex) prefix:<em>This</em>
     줄표 삽입 여부(bool)
     True : 줄표 삽입(기본값)
     False : 줄표 삽입하지 않음</p>
-<p>Returns:
-성공시 True, 실패시 False를 리턴</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -23312,6 +23372,7 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
                 <code>function_name</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23327,6 +23388,7 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
                 <code>u_macro_type</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23346,6 +23408,7 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
                 <code>u_script_type</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23372,6 +23435,7 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23384,10 +23448,12 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">run_script_macro</span><span class="p">(</span><span class="s2">&quot;OnDocument_New&quot;</span><span class="p">,</span> <span class="n">u_macro_type</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">True</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">run_script_macro</span><span class="p">(</span><span class="s2">&quot;OnScriptMacro_중국어1성&quot;</span><span class="p">)</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">run_script_macro</span><span class="p">(</span><span class="s2">&quot;OnDocument_New&quot;</span><span class="p">,</span> <span class="n">u_macro_type</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">True</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">run_script_macro</span><span class="p">(</span><span class="s2">&quot;OnScriptMacro_중국어1성&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">True</span>
 </code></pre></div>
 
 
@@ -23444,6 +23510,7 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
                 <code>save_if_dirty</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23471,6 +23538,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23517,6 +23585,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
                 <code>path</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23532,6 +23601,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
                 <code>format</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23547,6 +23617,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
                 <code>arg</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23590,6 +23661,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -24368,6 +24440,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>mode</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -24447,6 +24520,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -29872,12 +29946,62 @@ API 사용시 발생하는 오류로 인해 현재는 한글 폰트만 지원하
 
     <div class="doc doc-contents ">
 
-        <p>표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 조회하는 메서드. (표 안에서만 실행가능)
-단, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 조회되지 않음.
-차례대로 왼쪽, 오른쪽, 상단, 하단의 여백을 밀리미터로 지정.</p>
-<p>:param as_: 리턴값의 단위("mm" 또는 "hwpunit" 중 지정가능. 기본값은 "mm")</p>
-<p>Returns:
-dict</p>
+        <p>표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 조회하는 메서드.</p>
+<p>표 안에서만 실행가능하며, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 조회되지 않음.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>리턴값의 단위("mm" 또는 "hwpunit" 중 지정가능. 기본값은 "mm")</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>None | <span title="dict">dict</span>[<span title="str">str</span>, <span title="int">int</span>] | <span title="bool">bool</span> | <span title="dict">dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>모든 셀의 안여백을 dict로 리턴. 표 안에 있지 않으면 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -30202,7 +30326,7 @@ GetFieldList()의 옵션 중에 hwpFieldSelection(=4)옵션은 사용하지 않�
 <span class="normal">7</span>
 <span class="normal">8</span>
 <span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code>    Returns:
-    [{&#39;name&#39;: &#39;zxcv&#39;, &#39;direction&#39;: &#39;adsf&#39;, &#39;memo&#39;: &#39;qwer&#39;}] 형식의 사전 리스트
+        [{&#39;name&#39;: &#39;zxcv&#39;, &#39;direction&#39;: &#39;adsf&#39;, &#39;memo&#39;: &#39;qwer&#39;}] 형식의 사전 리스트
 
     Examples:
         &gt;&gt;&gt; from pyhwpx import Hwp
@@ -30689,8 +30813,29 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
 
         <p>표 캡션(정확히는 표번호가 있는 리스트공간)으로 이동하는 메서드.</p>
 <p>(추후 개선예정 : 캡션 스타일로 찾아가기 기능 추가할 것)</p>
-<p>Returns:
-성공시 True, 실패시 False를 리턴</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -31538,8 +31683,8 @@ function OnDocument_Open() {
 
     <div class="doc doc-contents ">
 
-        <p>선택한 범위의 셀주소를</p>
-<p>리스트로 리턴함</p>
+        <p>선택한 범위의 셀주소를 리스트로 리턴함</p>
+<p>캐럿이 표 안에 있어야 함</p>
 
 
     </div>
@@ -31578,8 +31723,29 @@ function OnDocument_Open() {
     <div class="doc doc-contents ">
 
         <p>현재 캐럿이 위치한 문단의 스타일정보를 사전 형태로 리턴한다.</p>
-<p>Returns:
-스타일 목록 딕셔너리</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>스타일 목록 딕셔너리</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -31590,7 +31756,7 @@ function OnDocument_Open() {
 
 
 <h4 id="pyhwpx.Hwp.get_style_dict" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_style_dict</span><span class="p">(</span><span class="n">as_</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">get_style_dict</span><span class="p">(</span><span class="n">as_</span><span class="o">=</span><span class="s1">&#39;list&#39;</span><span class="p">)</span></code>
 
 </h4>
 
@@ -31685,7 +31851,7 @@ function OnDocument_Open() {
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code>None | <span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | <span title="bool">bool</span> | <span title="dict">dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+                  <code>None | <span title="dict">dict</span>[<span title="str">str</span>, <span title="int">int</span>] | <span title="bool">bool</span> | <span title="dict">dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -35772,6 +35938,7 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
                 <code>function_name</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -35787,6 +35954,7 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
                 <code>u_macro_type</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -35806,6 +35974,7 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
                 <code>u_script_type</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -35832,6 +36001,7 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -35886,6 +36056,7 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
                 <code>save_if_dirty</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -35913,6 +36084,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -35985,6 +36157,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
                 <code>path</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36000,6 +36173,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
                 <code>format</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36015,6 +36189,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
                 <code>arg</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36041,6 +36216,22 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
             </td>
             <td>
                   <code>&#39;&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>split_page</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>html+ 포맷으로 저장할 때, 페이지 나누기 여부</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
             </td>
           </tr>
       </tbody>
@@ -36174,6 +36365,7 @@ PDF로 저장하는 메서드.
                 <code>spos</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36189,6 +36381,7 @@ PDF로 저장하는 메서드.
                 <code>epara</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36204,6 +36397,7 @@ PDF로 저장하는 메서드.
                 <code>epos</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36229,6 +36423,7 @@ PDF로 저장하는 메서드.
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36273,16 +36468,127 @@ PDF로 저장하는 메서드.
 
     <div class="doc doc-contents ">
 
-        <p>표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 지정하는 메서드. (표 안에서만 실행가능)
-단, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 적용되지 않음.
+        <p>표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 지정하는 메서드.</p>
+<p>표 안에서만 실행가능하며, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 적용되지 않음.
 차례대로 왼쪽, 오른쪽, 상단, 하단의 여백을 밀리미터(기본값) 또는 HwpUnit 단위로 지정.</p>
-<p>:param left: 셀의 좌측 안여백
-:param right: 셀의 우측 안여백
-:param top: 셀의 상단 안여백
-:param bottom: 셀의 하단 안여백
-:param as_: 입력단위. ["mm", "hwpunit"] 중 기본값은 "mm"</p>
-<p>Returns:
-성공시 True, 실패시 False를 리턴함</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>left</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>셀의 좌측 안여백</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.8</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>right</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>셀의 우측 안여백</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.8</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>top</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>셀의 상단 안여백</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.5</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bottom</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>셀의 하단 안여백</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.5</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>입력단위. ["mm", "hwpunit"] 중 기본값은 "mm"</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴함</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -36526,6 +36832,7 @@ Examples:
                 <code>option</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36556,6 +36863,7 @@ Examples:
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36695,6 +37003,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>mode</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36774,6 +37083,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -37142,8 +37452,60 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 
         <p>현재 캐럿이 위치한 문단의 스타일을 변경한다.</p>
 <p>스타일 입력은 style 인수로 정수값(스타일번호) 또는 문자열(스타일이름)을 넣으면 된다.</p>
-<p>:param style:</p>
-<p>Returns:</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>style</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | <span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 문단에 적용할 스타일 번호(int) 또는 스타일이름(str)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -37163,13 +37525,124 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 
         <p>표 내부 모든 셀의 안여백을 일괄설정하는 메서드.</p>
 <p>표 전체를 선택하지 않고 표 내부에 커서가 있기만 하면 모든 셀에 적용됨.</p>
-<p>:param left: 모든 셀의 좌측여백(mm)
-:param right: 모든 셀의 우측여백(mm)
-:param top: 모든 셀의 상단여백(mm)
-:param bottom: 모든 셀의 하단여백(mm)
-:param <code>as_</code>: 입력단위. "mm", "hwpunit" 중 택일. 기본값은 "mm"</p>
-<p>Returns:
-성공시 True, 실패시 False를 리턴</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>left</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>모든 셀의 좌측여백(mm)</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.8</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>right</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>모든 셀의 우측여백(mm)</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.8</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>top</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>모든 셀의 상단여백(mm)</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.5</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bottom</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>모든 셀의 하단여백(mm)</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.5</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>입력단위. "mm", "hwpunit" 중 택일. 기본값은 "mm"</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
