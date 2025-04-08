@@ -15076,7 +15076,7 @@ class Hwp:
         """
         return self.hwp.HAction.Run("ViewOptionMemo")
 
-    def ViewOptionMemoGuideline(self):
+    def ViewOptionMemoGuideline(self) -> bool:
         """
         메모 안내선 표시 토글
 
@@ -15085,21 +15085,21 @@ class Hwp:
         """
         return self.hwp.HAction.Run("ViewOptionMemoGuideline")
 
-    def ViewOptionPaper(self):
+    def ViewOptionPaper(self) -> bool:
         """
         쪽 윤곽 보기/숨기기 토글
 
         """
         return self.hwp.HAction.Run("ViewOptionPaper")
 
-    def ViewOptionParaMark(self):
+    def ViewOptionParaMark(self) -> bool:
         """
         문단 부호 보기/숨기기 토글
 
         """
         return self.hwp.HAction.Run("ViewOptionParaMark")
 
-    def ViewOptionPicture(self):
+    def ViewOptionPicture(self) -> bool:
         """
         그림 보이기/숨기기 토글
 
@@ -15108,7 +15108,7 @@ class Hwp:
         """
         return self.hwp.HAction.Run("ViewOptionPicture")
 
-    def ViewOptionRevision(self):
+    def ViewOptionRevision(self) -> bool:
         """
         교정부호 보이기/숨기기 토글
 
@@ -15117,47 +15117,47 @@ class Hwp:
         """
         return self.hwp.HAction.Run("ViewOptionRevision")
 
-    def ViewTabButton(self):
+    def ViewTabButton(self) -> bool:
         """
         문서탭 보이기/감추기 토글
         """
         return self.hwp.HAction.Run("ViewTabButton")
 
-    def ViewZoomFitPage(self):
+    def ViewZoomFitPage(self) -> bool:
         """화면 확대: 페이지에 맞춤"""
         return self.hwp.HAction.Run("ViewZoomFitPage")
 
-    def ViewZoomNormal(self):
+    def ViewZoomNormal(self) -> bool:
         """화면 확대: 폭에 맞춤"""
         return self.hwp.HAction.Run("ViewZoomFitNormal")
 
-    def ViewZoomFitWidth(self):
+    def ViewZoomFitWidth(self) -> bool:
         """화면 확대: 폭에 맞춤"""
         return self.hwp.HAction.Run("ViewZoomFitWidth")
 
-    def ViewZoomRibon(self):
+    def ViewZoomRibon(self) -> bool:
         """화면 확대"""
         return self.hwp.HAction.Run("ViewZoomRibon")
 
-    def VoiceCommandConfig(self):
+    def VoiceCommandConfig(self) -> bool:
         """
         음성 명령 설정
         """
         return self.hwp.HAction.Run("VoiceCommand Config")
 
-    def VoiceCommandResume(self):
+    def VoiceCommandResume(self) -> bool:
         """
         음성 명령 레코딩 시작
         """
         return self.hwp.HAction.Run("VoiceCommand Resume")
 
-    def VoiceCommandStop(self):
+    def VoiceCommandStop(self) -> bool:
         """
         음성 명령 레코딩 중지
         """
         return self.hwp.HAction.Run("VoiceCommand Stop")
 
-    def run_script_macro(self, function_name, u_macro_type=0, u_script_type=0):
+    def run_script_macro(self, function_name:str, u_macro_type:int=0, u_script_type:int=0) -> bool:
         """
         한/글 문서 내에 존재하는 매크로를 실행한다.
 
@@ -15191,7 +15191,7 @@ class Hwp:
         """
         return self.hwp.RunScriptMacro(FunctionName=function_name, uMacroType=u_macro_type, uScriptType=u_script_type)
 
-    def RunScriptMacro(self, function_name, u_macro_type=0, u_script_type=0):
+    def RunScriptMacro(self, function_name:str, u_macro_type:int=0, u_script_type:int=0) -> bool:
         """
         한/글 문서 내에 존재하는 매크로를 실행한다.
 
@@ -15218,6 +15218,8 @@ class Hwp:
             무조건 True를 반환(매크로의 실행여부와 상관없음)
 
         Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
             >>> hwp.run_script_macro("OnDocument_New", u_macro_type=1)
             True
             >>> hwp.run_script_macro("OnScriptMacro_중국어1성")
@@ -15225,7 +15227,7 @@ class Hwp:
         """
         return self.hwp.RunScriptMacro(FunctionName=function_name, uMacroType=u_macro_type, uScriptType=u_script_type)
 
-    def save(self, save_if_dirty=True):
+    def save(self, save_if_dirty:bool=True) -> bool:
         """
         현재 편집중인 문서를 저장한다.
 
@@ -15242,7 +15244,7 @@ class Hwp:
         """
         return self.hwp.Save(save_if_dirty=save_if_dirty)
 
-    def Save(self, save_if_dirty=True):
+    def Save(self, save_if_dirty:bool=True) -> bool:
         """
         현재 편집중인 문서를 저장한다.
 
@@ -15259,7 +15261,7 @@ class Hwp:
         """
         return self.hwp.Save(save_if_dirty=save_if_dirty)
 
-    def save_as(self, path, format="HWP", arg="", split_page=False):
+    def save_as(self, path:str, format:str="HWP", arg:str="", split_page:bool=False):
         """
         현재 편집중인 문서를 지정한 이름으로 저장한다.
 
@@ -15282,6 +15284,8 @@ class Hwp:
                     - "prvtext:1": 미리보기 텍스트 (0=off, 1=on)
                     - "autosave:false": 자동저장 파일로 저장할 지 여부 (TRUE: 자동저장, FALSE: 지정 파일로 저장)
                     - "export": 다른 이름으로 저장하지만 열린 문서는 바꾸지 않는다.(lock:false와 함께 설정되어 있을 시 동작)
+
+            split_page: html+ 포맷으로 저장할 때, 페이지 나누기 여부
 
         Returns:
             성공하면 True, 실패하면 False
@@ -15442,7 +15446,7 @@ class Hwp:
         else:
             return self.hwp.SaveAs(Path=path, Format=format, arg=arg)
 
-    def SaveAs(self, path, format="HWP", arg=""):
+    def SaveAs(self, path:str, format:str="HWP", arg:str="") -> bool:
         """
         현재 편집중인 문서를 지정한 이름으로 저장한다.
 
@@ -15479,14 +15483,14 @@ class Hwp:
     def ScanFont(self):
         return self.hwp.ScanFont()
 
-    def select_text_by_get_pos(self, s_getpos, e_getpos):
+    def select_text_by_get_pos(self, s_getpos:tuple, e_getpos:tuple) -> bool:
         """
         hwp.get_pos()로 얻은 두 튜플 사이의 텍스트를 선택하는 메서드.
         """
         self.set_pos(s_getpos[0], 0, 0)
         return self.hwp.SelectText(spara=s_getpos[1], spos=s_getpos[2], epara=e_getpos[1], epos=e_getpos[2])
 
-    def select_text(self, spara: Union[int, list, tuple] = 0, spos=0, epara=0, epos=0, slist=0):
+    def select_text(self, spara:Union[int, list, tuple]=0, spos:int=0, epara:int=0, epos:int=0, slist:int=0) -> bool:
         """
         특정 범위의 텍스트를 블록선택한다.
 
@@ -15650,7 +15654,7 @@ class Hwp:
     def SetDRMAuthority(self, authority):
         return self.hwp.SetDRMAuthority(authority=authority)
 
-    def set_field_view_option(self, option):
+    def set_field_view_option(self, option:int) -> int:
         """
         양식모드와 읽기전용모드일 때 현재 열린 문서의 필드의 겉보기 속성(『』표시)을 바꾼다.
 
@@ -15690,7 +15694,7 @@ class Hwp:
         """
         return self.hwp.SetFieldViewOption(option=option)
 
-    def set_message_box_mode(self, mode):
+    def set_message_box_mode(self, mode:int) -> int:
         """
         메시지박스 버튼 자동클릭
 
@@ -15751,7 +15755,7 @@ class Hwp:
         """
         return self.hwp.SetMessageBoxMode(Mode=mode)
 
-    def SetMessageBoxMode(self, mode):
+    def SetMessageBoxMode(self, mode:int) -> int:
         """
         메시지박스 버튼 자동클릭
 
