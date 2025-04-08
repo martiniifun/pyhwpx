@@ -393,7 +393,6 @@ class Ctrl:
     def GetCtrlInstID(self) -> Any:
         return self._com_obj.GetCtrlInstID()
 
-
     def GetAnchorPos(self, type_: int = 0) -> Any:
         """
         해당 컨트롤의 앵커(조판부호)의 위치를 반환한다.
@@ -565,9 +564,9 @@ class Ctrl:
 
         Examples:
             >>> from pyhwpx import Hwp
-            >>> hwp = Hwp()  # 표 두 개 들어 있는 문서에서
+            >>> hwp = Hwp()  # 빈 표, 그 아래에 그림 한 개 삽입된 문서에서
             >>> print(hwp.LastCtrl.Prev.UserDesc)
-            그림
+            표
         """
         return Ctrl(self._com_obj.Prev)
 
@@ -577,8 +576,25 @@ class Ctrl:
         컨트롤의 속성을 나타낸다.
 
         모든 컨트롤은 대응하는 parameter set으로 속성을 읽고 쓸 수 있다.
+
+        Examples:
+            >>> # 문서의 모든 그림의 너비, 높이를 각각 절반으로 줄이는 코드
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> for ctrl in hwp.ctrl_list:
+            ...     if ctrl.UserDesc == "그림":
+            ...         prop = ctrl.Properties
+            ...         width = prop.Item("Width")
+            ...         height = prop.Item("Height")
+            ...         prop.SetItem("Width", width // 2)
+            ...         prop.SetItem("Height", height // 2)
+            ...         ctrl.Properties = prop
         """
         return self._com_obj.Properties
+
+    @Properties.setter
+    def Properties(self, prop: Any) -> None:
+        self._com_obj.Properties = prop
 
     @property
     def UserDesc(self):
