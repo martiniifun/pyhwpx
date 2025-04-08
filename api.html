@@ -7674,6 +7674,51 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pyhwpx.Hwp.get_table_outside_margin" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_table_outside_margin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyhwpx.Hwp.get_table_outside_margin_bottom" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_table_outside_margin_bottom
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyhwpx.Hwp.get_table_outside_margin_left" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_table_outside_margin_left
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyhwpx.Hwp.get_table_outside_margin_right" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_table_outside_margin_right
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyhwpx.Hwp.get_table_outside_margin_top" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_table_outside_margin_top
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyhwpx.Hwp.get_table_width" class="md-nav__link">
     <span class="md-ellipsis">
       get_table_width
@@ -24635,6 +24680,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>password</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -24660,6 +24706,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -24669,6 +24716,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -24678,23 +24726,25 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <ol>
-<li>암호의 길이가 너무 짧거나 너무 길 때 (영문: 5~44자, 한글: 3~22자)</li>
-</ol>
+                <ul>
+<li>암호의 길이가 너무 짧거나 너무 길 때 (영문 5~44자, 한글 3~22자)</li>
+</ul>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <ol>
+                <ul>
 <li>암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임</li>
-</ol>
+</ul>
               </div>
             </td>
           </tr>
@@ -31579,6 +31629,422 @@ function OnDocument_Open() {
 <div class="doc doc-object doc-function">
 
 
+<h4 id="pyhwpx.Hwp.get_table_outside_margin" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_table_outside_margin</span><span class="p">(</span><span class="n">as_</span><span class="o">=</span><span class="s1">&#39;mm&#39;</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>표의 바깥 여백을 딕셔너리로 한 번에 리턴하는 메서드</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>리턴하는 여백값의 단위</p>
+<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
+- &quot;hwpunit&quot;: HwpUnit
+</code></pre></div></td></tr></table></div>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>None | <span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | <span title="bool">bool</span> | <span title="dict">dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>표의 상하좌우 바깥여백값을 담은 딕셔너리. 표 안에서 실행하지 않은 경우에는 False를 리턴한다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_table_outside_margin</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">{&#39;left&#39;: 4.0, &#39;right&#39;: 3.0, &#39;top&#39;: 2.0, &#39;bottom&#39;: 1.0}</span>
+</code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.Hwp.get_table_outside_margin_bottom" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_table_outside_margin_bottom</span><span class="p">(</span><span class="n">as_</span><span class="o">=</span><span class="s1">&#39;mm&#39;</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>표의 바깥 하단 여백값을 리턴하는 메서드</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>리턴하는 여백값의 단위</p>
+<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
+- &quot;hwpunit&quot;: HwpUnit
+</code></pre></div></td></tr></table></div>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>표의 아랫쪽 바깥여백값. 단위에 따라 int|float을 리턴하며, 표 안에서 실행하지 않은 경우에는 False를 리턴한다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_table_outside_margin_bottom</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">1.0</span>
+</code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.Hwp.get_table_outside_margin_left" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_table_outside_margin_left</span><span class="p">(</span><span class="n">as_</span><span class="o">=</span><span class="s1">&#39;mm&#39;</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>표의 바깥 왼쪽 여백값을 리턴하는 메서드</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>리턴하는 여백값의 단위</p>
+<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
+- &quot;hwpunit&quot;: HwpUnit
+</code></pre></div></td></tr></table></div>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>표의 좌측 바깥여백값. 단위에 따라 int|float을 리턴하며, 표 안에서 실행하지 않은 경우에는 False를 리턴한다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_table_outside_margin_left</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">4.0</span>
+</code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.Hwp.get_table_outside_margin_right" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_table_outside_margin_right</span><span class="p">(</span><span class="n">as_</span><span class="o">=</span><span class="s1">&#39;mm&#39;</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>표의 바깥 오른쪽 여백값을 리턴하는 메서드</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>리턴하는 여백값의 단위</p>
+<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
+- &quot;hwpunit&quot;: HwpUnit
+</code></pre></div></td></tr></table></div>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>표의 우측 바깥여백값. 단위에 따라 int|float을 리턴하며, 표 안에서 실행하지 않은 경우에는 False를 리턴한다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_table_outside_margin_left</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">3.0</span>
+</code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.Hwp.get_table_outside_margin_top" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_table_outside_margin_top</span><span class="p">(</span><span class="n">as_</span><span class="o">=</span><span class="s1">&#39;mm&#39;</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>표의 바깥 상단 여백값을 리턴하는 메서드</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>리턴하는 여백값의 단위</p>
+<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
+- &quot;hwpunit&quot;: HwpUnit
+</code></pre></div></td></tr></table></div>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>표의 위쪽 바깥여백값. 단위에 따라 int|float을 리턴하며, 표 안에서 실행하지 않은 경우에는 False를 리턴한다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_table_outside_margin_top</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">2.0</span>
+</code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="pyhwpx.Hwp.get_table_width" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">get_table_width</span><span class="p">(</span><span class="n">as_</span><span class="o">=</span><span class="s1">&#39;mm&#39;</span><span class="p">)</span></code>
 
@@ -36520,8 +36986,9 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 <p><span class="doc-section-title">Examples:</span></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">start_pos</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">GetPosBySet</span><span class="p">()</span>  <span class="c1"># 현재 위치를 저장하고,</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_pos_by_set</span><span class="p">(</span><span class="n">start_pos</span><span class="p">)</span>  <span class="c1"># 특정 작업 후에 저장위치로 재이동</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">start_pos</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">GetPosBySet</span><span class="p">()</span>  <span class="c1"># 현재 위치를 체크포인트처럼 저장하고,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 특정 작업(이동 및 입력작업) 후에</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_pos_by_set</span><span class="p">(</span><span class="n">start_pos</span><span class="p">)</span>  <span class="c1"># 저장했던 위치로 되돌아가기</span>
 </code></pre></div>
 
 
@@ -36564,6 +37031,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>password</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36589,15 +37057,17 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>정상적으로 암호가 설정되면 true를 반환한다.</p>
+                <p>정상적으로 암호가 설정되면 True를 반환한다.</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36607,23 +37077,25 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <ol>
-<li>암호의 길이가 너무 짧거나 너무 길 때 (영문: 5~44자, 한글: 3~22자)</li>
-</ol>
+                <ul>
+<li>암호의 길이가 너무 짧거나 너무 길 때 (영문 5~44자, 한글 3~22자)</li>
+</ul>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <ol>
+                <ul>
 <li>암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임</li>
-</ol>
+</ul>
               </div>
             </td>
           </tr>
@@ -36688,8 +37160,8 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 
     <div class="doc doc-contents ">
 
-        <p>표 내부 모든 셀의 안여백을 일괄설정하는 메서드.
-표 전체를 선택하지 않고 표 내부에 커서가 있기만 하면 모든 셀에 적용됨.</p>
+        <p>표 내부 모든 셀의 안여백을 일괄설정하는 메서드.</p>
+<p>표 전체를 선택하지 않고 표 내부에 커서가 있기만 하면 모든 셀에 적용됨.</p>
 <p>:param left: 모든 셀의 좌측여백(mm)
 :param right: 모든 셀의 우측여백(mm)
 :param top: 모든 셀의 상단여백(mm)
@@ -36714,15 +37186,126 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 
     <div class="doc doc-contents ">
 
-        <p>표의 바깥여백을 변경하는 메서드.
-기본 입력단위는 "mm"이며, "HwpUnit" 단위로 변경 가능.
-:param left: 표의 좌측 바깥여백
-:param right: 표의 우측 바깥여백
-:param top: 표의 상단 바깥여백
-:param bottom: 표의 하단 바깥여백
-:param <code>as_</code>: 입력단위. ["mm", "hwpunit"] 중 기본값은 "mm"</p>
-<p>Returns:
-성공시 True, 실패시 False를 리턴</p>
+        <p>표의 바깥여백을 변경하는 메서드.</p>
+<p>기본 입력단위는 "mm"이며, "HwpUnit" 단위로 변경 가능.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>left</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>표의 좌측 바깥여백</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>right</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>표의 우측 바깥여백</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>top</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>표의 상단 바깥여백</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bottom</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>표의 하단 바깥여백</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>입력단위. ["mm", "hwpunit"] 중 기본값은 "mm"</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -36741,11 +37324,88 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
     <div class="doc doc-contents ">
 
         <p>표 전체의 너비를 원래 열들의 비율을 유지하면서 조정하는 메서드.</p>
-<p>내부적으로 xml 파싱을 사용하는 방식으로 변경.
-:param width: 너비(단위는 기본 mm이며, hwpunit으로 변경 가능)
-:param <code>as_</code>: 단위("mm" or "hwpunit")</p>
-<p>Returns:
-성공시 True</p>
+<p>내부적으로 xml 파싱을 사용하는 방식으로 변경.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>width</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>너비(단위는 기본 mm이며, hwpunit으로 변경 가능)</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;, &#39;hu&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>단위("mm" or "hwpunit")</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 모든 표의 너비를 본문여백(용지너비 - 좌측여백 - 우측여백 - 제본여백 - 표 좌우 바깥여백)에 맞추기</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="n">hwp</span><span class="o">.</span><span class="n">get_into_nth_table</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">... </span>    <span class="n">hwp</span><span class="o">.</span><span class="n">set_table_width</span><span class="p">()</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="go">True</span>
+</code></pre></div>
 
 
     </div>
