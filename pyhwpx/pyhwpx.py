@@ -3235,7 +3235,7 @@ class Hwp:
     #         self.set_pos(init, 0, 0)
     #         return False
 
-    def get_field_info(self):
+    def get_field_info(self) -> list[dict]:
         """
         문서 내의 모든 누름틀의 정보(지시문 및 메모)를 추출하는 메서드.
 
@@ -3244,7 +3244,7 @@ class Hwp:
         hwp.get_field_list().split("\r\n") 메서드를 쓰면 된다.
 
         Returns:
-        [{'name': 'zxcv', 'direction': 'adsf', 'memo': 'qwer'}] 형식의 사전 리스트
+            [{'name': 'zxcv', 'direction': 'adsf', 'memo': 'qwer'}] 형식의 사전 리스트
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -3335,7 +3335,7 @@ class Hwp:
         if type(style) == int:
             style_idx = style + 1
         elif type(style) == str:
-            style_dict = self.get_style_dict(as_=dict)
+            style_dict = self.get_style_dict(as_="dict")
             if style in [style_dict[i]["name"] for i in style_dict]:
                 style_idx = [i for i in style_dict if style_dict[i]["name"] == style][0] + 1
             else:
@@ -3360,14 +3360,14 @@ class Hwp:
         finally:
             self.hwp.SetMessageBoxMode(cur_messagebox_mode)
 
-    def get_into_table_caption(self):
+    def get_into_table_caption(self) -> bool:
         """
         표 캡션(정확히는 표번호가 있는 리스트공간)으로 이동하는 메서드.
 
         (추후 개선예정 : 캡션 스타일로 찾아가기 기능 추가할 것)
 
         Returns:
-        성공시 True, 실패시 False를 리턴
+            성공시 True, 실패시 False를 리턴
         """
         pset = self.hwp.HParameterSet.HGotoE
         pset.HSet.SetItem("DialogResult", 56)  # 표번호
@@ -3494,17 +3494,17 @@ class Hwp:
         self.EquationRefresh()
         return True
 
-    def maximize_window(self):
+    def maximize_window(self) -> int:
         """현재 창 최대화"""
         win32gui.ShowWindow(
             self.XHwpWindows.Active_XHwpWindow.WindowHandle, 3)
 
-    def minimize_window(self):
+    def minimize_window(self) -> int:
         """현재 창 최소화"""
         win32gui.ShowWindow(
             self.XHwpWindows.Active_XHwpWindow.WindowHandle, 6)
 
-    def delete_style_by_name(self, src: int | str, dst: int | str):
+    def delete_style_by_name(self, src: int | str, dst: int | str) -> bool:
         """
         **주의사항**
 
@@ -3514,7 +3514,7 @@ class Hwp:
         특정 스타일을 이름 (또는 인덱스번호)로 삭제하고
         대체할 스타일 또한 이름 (또는 인덱스번호)로 지정해주는 메서드.
         """
-        style_dict = self.get_style_dict(as_=dict)
+        style_dict = self.get_style_dict(as_="dict")
         pset = self.HParameterSet.HStyleDelete
         self.HAction.GetDefault("StyleDelete", pset.HSet)
         if type(src) == int:
@@ -3529,7 +3529,7 @@ class Hwp:
             pset.Alternation = [i for i in style_dict if style_dict[i]["name"] == dst][0]
         else:
             raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
-        self.HAction.Execute("StyleDelete", pset.HSet)
+        return self.HAction.Execute("StyleDelete", pset.HSet)
 
     # def register_font_ui(self):  # 느리고 불안정한 관계로 도입 보류
     #     """
@@ -3553,14 +3553,12 @@ class Hwp:
     #     font_cond = uia.CreatePropertyCondition(30012, "FontNameComboImpl")  # 30012는 UIA_ClassNamePropertyId
     #     self.cur_font_ui = element.FindFirst(4, font_cond)  # 4는 TreeScope.Descendants에 해당
 
-    def get_style_dict(self, as_: Type[list] | Type[dict] = None) -> dict:
+    def get_style_dict(self, as_: Literal["list", "dict"] = "list") -> list|dict:
         """
         스타일 목록을 사전 데이터로 리턴하는 메서드.
 
         (도움 주신 kosohn님께 아주 큰 감사!!!)
         """
-        if as_ is None:
-            as_ = list
         cur_pos = self.get_pos()
         if not self.MoveSelRight():
             self.MoveSelLeft()
@@ -3572,7 +3570,7 @@ class Hwp:
 
         tree = ET.parse("temp.xml")
         root = tree.getroot()
-        if as_ == list:
+        if as_ == "list":
             styles = [
                 {
                     'index': int(style.get("Id")),
@@ -3582,7 +3580,7 @@ class Hwp:
                 }
                 for style in root.findall('.//STYLE')
             ]
-        elif as_ == dict:
+        elif as_ == "dict":
             styles = {
                 int(style.get('Id')): {
                     'type': style.get('Type'),
@@ -3591,6 +3589,8 @@ class Hwp:
                 }
                 for style in root.findall('.//STYLE')
             }
+        else:
+            raise TypeError("as_ 파라미터는 'list'또는 'dict' 중 하나로 설정해주세요. 기본값은 'list'입니다.")
         os.remove("temp.xml")
         return styles
 
@@ -3599,26 +3599,28 @@ class Hwp:
         현재 캐럿이 위치한 문단의 스타일정보를 사전 형태로 리턴한다.
 
         Returns:
-        스타일 목록 딕셔너리
+            스타일 목록 딕셔너리
         """
-        style_dict = self.get_style_dict(as_=list)
+        style_dict = self.get_style_dict(as_="list")
         pset = self.HParameterSet.HStyle
         self.HAction.GetDefault("Style", pset.HSet)
         return style_dict[pset.Apply]
 
-    def set_style(self, style: int | str):
+    def set_style(self, style:int|str) -> bool:
         """
         현재 캐럿이 위치한 문단의 스타일을 변경한다.
 
         스타일 입력은 style 인수로 정수값(스타일번호) 또는 문자열(스타일이름)을 넣으면 된다.
 
-        :param style:
+        Args:
+            style: 현재 문단에 적용할 스타일 번호(int) 또는 스타일이름(str)
 
         Returns:
+            성공시 True, 실패시 False를 리턴
         """
         pset = self.HParameterSet.HStyle
         if type(style) != int:
-            style_dict = self.get_style_dict(as_=dict)
+            style_dict = self.get_style_dict(as_="dict")
             for key, value in style_dict.items():
                 if value.get('name') == style:
                     style = key
@@ -3631,11 +3633,11 @@ class Hwp:
         pset.Apply = style
         return self.HAction.Execute("Style", pset.HSet)
 
-    def get_selected_range(self):
+    def get_selected_range(self) -> list[str]:
         """
-        선택한 범위의 셀주소를
+        선택한 범위의 셀주소를 리스트로 리턴함
 
-        리스트로 리턴함
+        캐럿이 표 안에 있어야 함
         """
         if not self.is_cell():
             raise AttributeError("캐럿이 표 안에 있어야 합니다.")
@@ -3901,16 +3903,17 @@ class Hwp:
             pset.ShapeTableCell.MarginBottom = bottom
         return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
-    def get_cell_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> Union[dict, bool]:
+    def get_cell_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> dict|bool:
         """
-        표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 조회하는 메서드. (표 안에서만 실행가능)
-        단, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 조회되지 않음.
-        차례대로 왼쪽, 오른쪽, 상단, 하단의 여백을 밀리미터로 지정.
+        표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 조회하는 메서드.
 
-        :param as_: 리턴값의 단위("mm" 또는 "hwpunit" 중 지정가능. 기본값은 "mm")
+        표 안에서만 실행가능하며, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 조회되지 않음.
+
+        Args:
+            as_: 리턴값의 단위("mm" 또는 "hwpunit" 중 지정가능. 기본값은 "mm")
 
         Returns:
-        dict
+            모든 셀의 안여백을 dict로 리턴. 표 안에 있지 않으면 False를 리턴
         """
         if not self.is_cell():
             return False
@@ -3959,7 +3962,7 @@ class Hwp:
         pset.CellMarginBottom = bottom
         return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
-    def get_table_inside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> None | dict[str, Any] | bool | dict[str, float]:
+    def get_table_inside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> None | dict[str, int] | bool | dict[str, float]:
         if not self.is_cell():
             return False
         cur_pos = self.get_pos()
@@ -3985,7 +3988,7 @@ class Hwp:
                 "bottom": margin_bottom,
             }
 
-    def get_table_outside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> None | dict[str, Any] | bool | dict[str, float]:
+    def get_table_outside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> None | dict[str, int] | bool | dict[str, float]:
         """
         표의 바깥 여백을 딕셔너리로 한 번에 리턴하는 메서드
 
