@@ -71,7 +71,16 @@
     
     
     
-  </head>
+   <link href="assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="assets/javascripts/glightbox.min.js"></script></head>
   
   
     
@@ -8656,6 +8665,7 @@
 
 
 <h1 id="api">API 문서</h1>
+<p><a class="glightbox" href="assets/logo.png" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="Image title" loading="lazy" src="assets/logo.png" /></a></p>
 
 
 <div class="doc doc-object doc-module">
@@ -8700,6 +8710,9 @@
 
     <div class="doc doc-contents ">
 
+
+        <p>아래아한글의 모든 개체(표, 그림, 글상자 및 각주/미주 등)를 다루는 클래스.</p>
+<p><a class="glightbox" href="assets/logo.png" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="Image title" loading="lazy" src="assets/logo.png" /></a></p>
 
 
 
@@ -10848,28 +10861,18 @@ BreakLine과 마찬가지로 보고서 작성시 자주 사용해야 하는 액�
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code>    줄바꿈(문단 나누기). 일반적인 엔터와 동일하다.
+        <div class="codehilite"><pre><span></span><code>    <span class="n">줄바꿈</span><span class="p">(</span><span class="n">문단</span> <span class="n">나누기</span><span class="p">)</span><span class="o">.</span> <span class="n">일반적인</span> <span class="n">엔터와</span> <span class="n">동일하다</span><span class="o">.</span>
 
-    Returns:
-        True
+    <span class="n">Returns</span><span class="p">:</span>
+        <span class="kc">True</span>
 
-    Examples:
-        &gt;&gt;&gt; from pyhwpx import Hwp
-        &gt;&gt;&gt; hwp = Hwp()  # 한/글 창이 열림
-        &gt;&gt;&gt; hwp.BreakPara()  # 줄바꿈 삽입!
-        True
-        &gt;&gt;&gt; hwp.insert_text(&quot;
-</code></pre></div></td></tr></table></div>
+    <span class="n">Examples</span><span class="p">:</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>  <span class="c1"># 한/글 창이 열림</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">BreakPara</span><span class="p">()</span>  <span class="c1"># 줄바꿈 삽입!</span>
+        <span class="kc">True</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s2">&quot;</span>
+</code></pre></div>
 
 <p>")  # BreakPara와 동일
             True</p>
@@ -11577,14 +11580,11 @@ BreakLine과 마찬가지로 보고서 작성시 자주 사용해야 하는 액�
         <p>현재 편집중인 문서의 내용을 닫고 빈문서 편집 상태로 돌아간다.</p>
 <p>:param option:
     편집중인 문서의 내용에 대한 처리 방법, 생략하면 1(hwpDiscard)가 선택된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>    - 0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
+<div class="codehilite"><pre><span></span><code>    - 0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
     - 1: 문서의 내용을 버린다. (hwpDiscard, 기본값)
     - 2: 문서가 변경된 경우 저장한다. (hwpSaveIfDirty)
     - 3: 무조건 저장한다. (hwpSave)
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -13612,12 +13612,10 @@ SplitMemoOpen과 동일한 기능으로 보이며,
 더군다나 닫는 명령어가 없다.
 또한 이 명령어는 hwp.XHwpDocuments.Item(0).XHwpPrint.RunFilePreview()와 동일한 동작을 하는데,
 재미있는 점은,</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>- ①스크립트 매크로 녹화 진행중에 ``hwp.FilePreview()``는 실행해도 반응이 없고, 녹화 로그에도 잡히지 않는다.
+<div class="codehilite"><pre><span></span><code>- ①스크립트 매크로 녹화 진행중에 ``hwp.FilePreview()``는 실행해도 반응이 없고, 녹화 로그에도 잡히지 않는다.
 - ②그리고 스크립트매크로 녹화 진행중에 [파일] - [미리보기(V)] 메뉴도 비활성화되어 있어 코드를 알 수 없다.
 - ③그런데 hwp.XHwpDocuments.Item(0).XHwpPrint.RunFilePreview()는 녹화중에도 실행이 된다. 녹화된 코드와 관련하여 남기고 싶은 코멘트가 많은데, 별도의 포스팅으로 남길 예정.
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 
     </div>
@@ -13980,17 +13978,7 @@ SplitMemoOpen과 동일한 기능으로 보이며,
             <td>
               <div class="doc-md-description">
                 <p>보호할 개인정보 유형. 다음의 값을 하나이상 조합한다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0x0001: 전화번호
+<div class="codehilite"><pre><span></span><code>- 0x0001: 전화번호
 - 0x0002: 주민등록번호
 - 0x0004: 외국인등록번호
 - 0x0008: 전자우편
@@ -14001,7 +13989,7 @@ SplitMemoOpen과 동일한 기능으로 보이며,
 - 0x0100: 주소
 - 0x0200: 사용자 정의
 - 0x0400: 기타
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -14506,12 +14494,10 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
 예를 들어 문서 중 title, body, title, body, footer 순으로
 5개의 필드가 존재할 때, hwpFieldPlain, hwpFieldNumber, HwpFieldCount
 세 가지 형식에 따라 다음과 같은 내용이 돌아온다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>- hwpFieldPlain: &quot;titlebodytitlebodyfooter&quot;
-- hwpFieldNumber: &quot;title{{0}}body{{0}}title{{1}}body{{1}}footer{{0}}&quot;
-- hwpFieldCount: &quot;title{{2}}body{{2}}footer{{1}}&quot;
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="x">- hwpFieldPlain: &quot;titlebodytitlebodyfooter&quot;</span>
+<span class="x">- hwpFieldNumber: &quot;title</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">body</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">title</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">body</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">footer</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&quot;</span>
+<span class="x">- hwpFieldCount: &quot;title</span><span class="cp">{{</span><span class="m">2</span><span class="cp">}}</span><span class="x">body</span><span class="cp">{{</span><span class="m">2</span><span class="cp">}}</span><span class="x">footer</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">&quot;</span>
+</code></pre></div>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -14534,12 +14520,10 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
             <td>
               <div class="doc-md-description">
                 <p>문서 내에서 동일한 이름의 필드가 여러 개 존재할 경우 이를 구별하기 위한 식별방법을 지정한다. 생략하면 0(hwpFieldPlain)이 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 아무 기호 없이 순서대로 필드의 이름을 나열한다.(hwpFieldPlain)
-- 1: 필드이름 뒤에 일련번호가 ``{{#}}``과 같은 형식으로 붙는다.(hwpFieldNumber)
-- 2: 필드이름 뒤에 그 필드의 개수가 ``{{#}}``과 같은 형식으로 붙는다.(hwpFieldCount)
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="x">- 0: 아무 기호 없이 순서대로 필드의 이름을 나열한다.(hwpFieldPlain)</span>
+<span class="x">- 1: 필드이름 뒤에 일련번호가 ``</span><span class="cp">{{</span><span class="err">#</span><span class="cp">}}</span><span class="x">``과 같은 형식으로 붙는다.(hwpFieldNumber)</span>
+<span class="x">- 2: 필드이름 뒤에 그 필드의 개수가 ``</span><span class="cp">{{</span><span class="err">#</span><span class="cp">}}</span><span class="x">``과 같은 형식으로 붙는다.(hwpFieldCount)</span>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -14555,12 +14539,10 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
             <td>
               <div class="doc-md-description">
                 <p>다음과 같은 옵션을 조합할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0x01: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere과는 함께 지정할 수 없다.(hwpFieldCell)
+<div class="codehilite"><pre><span></span><code>- 0x01: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere과는 함께 지정할 수 없다.(hwpFieldCell)
 - 0x02: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
 - 0x04: 선택된 내용 안에 존재하는 필드 리스트를 구한다.(HwpFieldSelection)
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -14626,52 +14608,30 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code>    지정한 필드에서 문자열을 구한다.
+        <div class="codehilite"><pre><span></span><code><span class="x">    지정한 필드에서 문자열을 구한다.</span>
 
-    Args:
-        field:
-            텍스트를 구할 필드 이름의 리스트.
-            다음과 같이 필드 사이를 문자 코드 0x02로 구분하여
-            한 번에 여러 개의 필드를 지정할 수 있다.
-            &quot;필드이름#1필드이름#2...필드이름#n&quot;
-            지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.
-            &quot;필드이름&quot;: 이름의 필드 중 첫 번째
-            &quot;필드이름{{n}}&quot;: 지정한 이름의 필드 중 n 번째
-            예를 들어 &quot;제목{{1}}본문이름{{0}}&quot; 과 같이 지정하면
-            &#39;제목&#39;이라는 이름의 필드 중 두 번째,
-            &#39;본문&#39;이라는 이름의 필드 중 첫 번째,
-            &#39;이름&#39;이라는 이름의 필드 중 첫 번째를 각각 지정한다.
-            즉, &#39;필드이름&#39;과 &#39;필드이름{{0}}&#39;은 동일한 의미로 해석된다.
-        idx:
-            특정 필드가 여러 개이고, 각각의 값이 다를 때, ``field{{n}}`` 대신 ``hwp.GetFieldText(field, idx=n)``라고 작성할 수 있다.
+<span class="x">    Args:</span>
+<span class="x">        field:</span>
+<span class="x">            텍스트를 구할 필드 이름의 리스트.</span>
+<span class="x">            다음과 같이 필드 사이를 문자 코드 0x02로 구분하여</span>
+<span class="x">            한 번에 여러 개의 필드를 지정할 수 있다.</span>
+<span class="x">            &quot;필드이름#1필드이름#2...필드이름#n&quot;</span>
+<span class="x">            지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.</span>
+<span class="x">            &quot;필드이름&quot;: 이름의 필드 중 첫 번째</span>
+<span class="x">            &quot;필드이름</span><span class="cp">{{</span><span class="nv">n</span><span class="cp">}}</span><span class="x">&quot;: 지정한 이름의 필드 중 n 번째</span>
+<span class="x">            예를 들어 &quot;제목</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">본문이름</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&quot; 과 같이 지정하면</span>
+<span class="x">            &#39;제목&#39;이라는 이름의 필드 중 두 번째,</span>
+<span class="x">            &#39;본문&#39;이라는 이름의 필드 중 첫 번째,</span>
+<span class="x">            &#39;이름&#39;이라는 이름의 필드 중 첫 번째를 각각 지정한다.</span>
+<span class="x">            즉, &#39;필드이름&#39;과 &#39;필드이름</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&#39;은 동일한 의미로 해석된다.</span>
+<span class="x">        idx:</span>
+<span class="x">            특정 필드가 여러 개이고, 각각의 값이 다를 때, ``field</span><span class="cp">{{</span><span class="nv">n</span><span class="cp">}}</span><span class="x">`` 대신 ``hwp.GetFieldText(field, idx=n)``라고 작성할 수 있다.</span>
 
-    Returns:
-        텍스트 데이터가 돌아온다.
-        텍스트에서 탭은 &#39;  &#39;(0x9),
-        문단 바뀜은 CR/LF(0x0D/0x0A ==
-</code></pre></div></td></tr></table></div>
+<span class="x">    Returns:</span>
+<span class="x">        텍스트 데이터가 돌아온다.</span>
+<span class="x">        텍스트에서 탭은 &#39;  &#39;(0x9),</span>
+<span class="x">        문단 바뀜은 CR/LF(0x0D/0x0A ==</span>
+</code></pre></div>
 
 <p>)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
@@ -15020,10 +14980,9 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
         <p>페이지 단위의 텍스트 추출.</p>
 <p>일반 텍스트(글자처럼 취급 도형 포함)를 우선적으로 추출하고,
 도형(표, 글상자) 내의 텍스트를 추출한다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- 팁1: get_text로는 글머리를 추출하지 않지만, get_page_text는 추출한다.
-- 팁2: 아무리 get_page_text라도 유일하게 표번호는 추출하지 못한다. 표번호는 XML태그 속성 안에 저장되기 때문이다.
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="k">-</span> 팁1: get_text로는 글머리를 추출하지 않지만, get_page_text는 추출한다.
+<span class="k">-</span> 팁2: 아무리 get_page_text라도 유일하게 표번호는 추출하지 못한다. 표번호는 XML태그 속성 안에 저장되기 때문이다.
+</code></pre></div>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -15270,14 +15229,11 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
 
         <p>문서에 포함된 매크로(스크립트매크로 제외) 소스코드를 가져온다.
 문서포함 매크로는 기본적으로</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>function OnDocument_New() {
+<div class="codehilite"><pre><span></span><code>function OnDocument_New() {
 }
 function OnDocument_Open() {
 }
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 <p>형태로 비어있는 상태이며,
 OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
@@ -15481,16 +15437,7 @@ OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code>    문서 내에서 텍스트를 얻어온다.
+        <div class="codehilite"><pre><span></span><code>    문서 내에서 텍스트를 얻어온다.
 
     줄바꿈 기준으로 텍스트를 얻어오므로 반복실행해야 한다.
     get_text()의 사용이 끝나면 release_scan()을 반드시 호출하여
@@ -15500,68 +15447,40 @@ OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
 
     Returns:
         (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 &#39;       &#39;(0x9), 문단 바뀜은 &#39;
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 <p>'(0x0D/0x0A)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code>        state의 의미는 아래와 같다.
+<div class="codehilite"><pre><span></span><code>        <span class="n">state의</span> <span class="n">의미는</span> <span class="n">아래와</span> <span class="n">같다</span><span class="o">.</span>
 
-            - 0: 텍스트 정보 없음
-            - 1: 리스트의 끝
-            - 2: 일반 텍스트
-            - 3: 다음 문단
-            - 4: 제어문자 내부로 들어감
-            - 5: 제어문자를 빠져나옴
-            - 101: 초기화 안 됨(init_scan() 실패 또는 init_scan()을 실행하지 않은 경우)
-            - 102: 텍스트 변환 실패
+            <span class="o">-</span> <span class="mi">0</span><span class="p">:</span> <span class="n">텍스트</span> <span class="n">정보</span> <span class="n">없음</span>
+            <span class="o">-</span> <span class="mi">1</span><span class="p">:</span> <span class="n">리스트의</span> <span class="n">끝</span>
+            <span class="o">-</span> <span class="mi">2</span><span class="p">:</span> <span class="n">일반</span> <span class="n">텍스트</span>
+            <span class="o">-</span> <span class="mi">3</span><span class="p">:</span> <span class="n">다음</span> <span class="n">문단</span>
+            <span class="o">-</span> <span class="mi">4</span><span class="p">:</span> <span class="n">제어문자</span> <span class="n">내부로</span> <span class="n">들어감</span>
+            <span class="o">-</span> <span class="mi">5</span><span class="p">:</span> <span class="n">제어문자를</span> <span class="n">빠져나옴</span>
+            <span class="o">-</span> <span class="mi">101</span><span class="p">:</span> <span class="n">초기화</span> <span class="n">안</span> <span class="n">됨</span><span class="p">(</span><span class="n">init_scan</span><span class="p">()</span> <span class="n">실패</span> <span class="n">또는</span> <span class="n">init_scan</span><span class="p">()</span><span class="n">을</span> <span class="n">실행하지</span> <span class="n">않은</span> <span class="n">경우</span><span class="p">)</span>
+            <span class="o">-</span> <span class="mi">102</span><span class="p">:</span> <span class="n">텍스트</span> <span class="n">변환</span> <span class="n">실패</span>
 
-    Examples:
-        &gt;&gt;&gt; from pyhwpx import Hwp
-        &gt;&gt;&gt; hwp = Hwp()
-        &gt;&gt;&gt; hwp.InitScan()
-        &gt;&gt;&gt; while True:
-        ...     state, text = hwp.GetText()
-        ...     print(state, text)
-        ...     if state &lt;= 1:
-        ...         break
-        ... hwp.ReleaseScan()
-        2
-        2
-        2 ㅁㄴㅇㄹ
-        3
-        4 ㅂㅈㄷㄱ
-        2 ㅂㅈㄷㄱ
-        5
-        1
-</code></pre></div></td></tr></table></div>
+    <span class="n">Examples</span><span class="p">:</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">InitScan</span><span class="p">()</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="o">...</span>     <span class="n">state</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">GetText</span><span class="p">()</span>
+        <span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="o">...</span>     <span class="k">if</span> <span class="n">state</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="o">...</span>         <span class="k">break</span>
+        <span class="o">...</span> <span class="n">hwp</span><span class="o">.</span><span class="n">ReleaseScan</span><span class="p">()</span>
+        <span class="mi">2</span>
+        <span class="mi">2</span>
+        <span class="mi">2</span> <span class="n">ㅁㄴㅇㄹ</span>
+        <span class="mi">3</span>
+        <span class="mi">4</span> <span class="n">ㅂㅈㄷㄱ</span>
+        <span class="mi">2</span> <span class="n">ㅂㅈㄷㄱ</span>
+        <span class="mi">5</span>
+        <span class="mi">1</span>
+</code></pre></div>
 
 
     </div>
@@ -15579,39 +15498,7 @@ OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code>    현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
+        <div class="codehilite"><pre><span></span><code>    현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
 
     이 함수는 JScript나 VBScript와 같이
     직접적으로 local disk를 접근하기 힘든 언어를 위해 만들어졌으므로
@@ -15627,11 +15514,11 @@ OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
         format:
             파일의 형식. 기본값은 &quot;UNICODE&quot;. 내부적으로 str.lower() 메서드가 포함되어 있으므로 소문자로 입력해도 된다.
 
-                - &quot;HWP&quot;: HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
-                - &quot;HWPML2X&quot;: HWP 형식과 호환. 문서의 모든 정보를 유지
-                - &quot;HTML&quot;: 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
-                - &quot;UNICODE&quot;: 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
-                - &quot;TEXT&quot;: 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
+                <span class="k">-</span> &quot;HWP&quot;: HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+                <span class="k">-</span> &quot;HWPML2X&quot;: HWP 형식과 호환. 문서의 모든 정보를 유지
+                <span class="k">-</span> &quot;HTML&quot;: 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
+                <span class="k">-</span> &quot;UNICODE&quot;: 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
+                <span class="k">-</span> &quot;TEXT&quot;: 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
 
         option:
             option 파라미터에 &quot;saveblock&quot;을 지정하면 선택된 블록만 저장한다. 개체 선택 상태에서는 동작하지 않는다.
@@ -15644,7 +15531,7 @@ OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
         &gt;&gt;&gt; hwp = Hwp()
         &gt;&gt;&gt; hwp.GetTextFile()
         &#39;ㅁㄴㅇㄹ
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 <p>ㅁㄴㅇㄹ
 ㅁㄴㅇㄹ</p>
@@ -16153,18 +16040,7 @@ hwp.SetMessageBoxMode(0x10000)을 미리 실행해놓아야 한다.</p>
             <td>
               <div class="doc-md-description">
                 <p>문자열 파라미터. 종류는 아래와 같다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;None&quot;: 없음(0)
+<div class="codehilite"><pre><span></span><code>- &quot;None&quot;: 없음(0)
 - &quot;Solid&quot;: 실선(1)
 - &quot;Dash&quot;: 파선(2)
 - &quot;Dot&quot;: 점선(3)
@@ -16176,7 +16052,7 @@ hwp.SetMessageBoxMode(0x10000)을 미리 실행해놓아야 한다.</p>
 - &quot;SlimThick&quot;: 얇고 굵은 이중선(9)
 - &quot;ThickSlim&quot;: 굵고 얇은 이중선(10)
 - &quot;SlimThickSlim&quot;: 얇고 굵고 얇은 삼중선(11)
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -16655,14 +16531,11 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
               <div class="doc-md-description">
                 <p>기본값은 0x7(모든 컨트롤 대상) 찾을 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다.
 생략하면 모든 컨트롤을 찾을 대상으로 한다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0x00: 본문을 대상으로 검색한다.(서브리스트를 검색하지 않는다.) - maskNormal
+<div class="codehilite"><pre><span></span><code>- 0x00: 본문을 대상으로 검색한다.(서브리스트를 검색하지 않는다.) - maskNormal
 - 0x01: char 타입 컨트롤 마스크를 대상으로 한다.(강제줄나눔, 문단 끝, 하이픈, 묶움빈칸, 고정폭빈칸, 등...) - maskChar
 - 0x02: inline 타입 컨트롤 마스크를 대상으로 한다.(누름틀 필드 끝, 등...) - maskInline
 - 0x04: extende 타입 컨트롤 마스크를 대상으로 한다.(바탕쪽, 프레젠테이션, 다단, 누름틀 필드 시작, Shape Object, 머리말, 꼬리말, 각주, 미주, 번호관련 컨트롤, 새 번호 관련 컨트롤, 감추기, 찾아보기, 글자 겹침, 등...) - maskCtrl
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -16679,25 +16552,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
               <div class="doc-md-description">
                 <p>검색의 범위를 다음과 같은 옵션을 조합(sum)하여 지정할 수 있다.
 생략하면 "문서 시작부터 - 문서의 끝까지" 검색 범위가 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0x0000: 캐럿 위치부터. (시작 위치) - scanSposCurrent
+<div class="codehilite"><pre><span></span><code>- 0x0000: 캐럿 위치부터. (시작 위치) - scanSposCurrent
 - 0x0010: 특정 위치부터. (시작 위치) - scanSposSpecified
 - 0x0020: 줄의 시작부터. (시작 위치) - scanSposLine
 - 0x0030: 문단의 시작부터. (시작 위치) - scanSposParagraph
@@ -16716,7 +16571,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
 - 0x00ff: 검색의 범위를 블록으로 제한. - scanWithinSelection
 - 0x0000: 정뱡향. (검색 방향) - scanForward
 - 0x0100: 역방향. (검색 방향) - scanBackward
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -16972,10 +16827,9 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
             <td>
               <div class="doc-md-description">
                 <p>배경 유형을 문자열로 지정(파라미터 이름과는 다르게 삽입/제거 기능이다.)</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;SelectedCell&quot;: 현재 선택된 표의 셀의 배경을 변경한다.
+<div class="codehilite"><pre><span></span><code>- &quot;SelectedCell&quot;: 현재 선택된 표의 셀의 배경을 변경한다.
 - &quot;SelectedCellDelete&quot;: 현재 선택된 표의 셀의 배경을 지운다.
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 <p>단, 배경 제거시 반드시 셀이 선택되어 있어야함.
 커서가 위치하는 것만으로는 동작하지 않음.</p>
@@ -17009,21 +16863,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
             <td>
               <div class="doc-md-description">
                 <p>삽입할 그림의 크기를 지정하는 옵션</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 바둑판식으로 - 모두
+<div class="codehilite"><pre><span></span><code>- 0: 바둑판식으로 - 모두
 - 1: 바둑판식으로 - 가로/위
 - 2: 바둑판식으로 - 가로/아로
 - 3: 바둑판식으로 - 세로/왼쪽
@@ -17038,7 +16878,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
 - 12: 오른쪽 가운데로
 - 13: 오른쪽 위로
 - 14: 오른쪽 아래로
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -17054,12 +16894,10 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
             <td>
               <div class="doc-md-description">
                 <p>이미지효과</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 원래 그림(기본값)
+<div class="codehilite"><pre><span></span><code>- 0: 원래 그림(기본값)
 - 1: 그레이 스케일
 - 2: 흑백으로
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -19271,44 +19109,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
             <td>
               <div class="doc-md-description">
                 <p>아래와 같은 값을 지정할 수 있다. 생략하면 1(moveCurList)이 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 루트 리스트의 특정 위치.(para pos로 위치 지정) moveMain
+<div class="codehilite"><pre><span></span><code>- 0: 루트 리스트의 특정 위치.(para pos로 위치 지정) moveMain
 - 1: 현재 리스트의 특정 위치.(para pos로 위치 지정) moveCurList
 - 2: 문서의 시작으로 이동. moveTopOfFile
 - 3: 문서의 끝으로 이동. moveBottomOfFile
@@ -19346,7 +19147,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
 - 107: 현재 캐럿이 위치한 셀에서 열(column)의 끝 moveBottomOfCell
 - 200: 한/글 문서창에서의 screen 좌표로서 위치를 설정 한다. moveScrPos
 - 201: GetText() 실행 후 위치로 이동한다. moveScanPos
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -20976,28 +20777,7 @@ Todo: 페이지 내에 캐럿 뒤쪽으로 [새번호]조판이 있는 경우 �
             <td>
               <div class="doc-md-description">
                 <p>문서 형식. 빈 문자열을 지정하면 자동으로 인식한다. 생략하면 빈 문자열이 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;HWP&quot;: 한/글 native format
+<div class="codehilite"><pre><span></span><code>- &quot;HWP&quot;: 한/글 native format
 - &quot;HWP30&quot;: 한/글 3.X/96/97
 - &quot;HTML&quot;: 인터넷 문서
 - &quot;TEXT&quot;: 아스키 텍스트 문서
@@ -21019,7 +20799,7 @@ Todo: 페이지 내에 캐럿 뒤쪽으로 [새번호]조판이 있는 경우 �
 - &quot;WPS&quot;: WPS 문서
 - &quot;DOCIMG&quot;: 인터넷 프레젠테이션 문서(SaveAs만 가능)
 - &quot;SWF&quot;: Macromedia Flash 문서(SaveAs만 가능)
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -21047,22 +20827,17 @@ string:  ex) prefix:<em>This</em>
 * value는 생략 가능하며, 이때는 콜론도 생략한다.
 * arg에 지정할 수 있는 옵션</p>
 <p>&lt;모든 파일포맷&gt;</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>- setcurdir(boolean, true/false): 로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code>- setcurdir(boolean, true/false): 로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
+</code></pre></div>
 
 <p><HWP(HWPX)></p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>- lock (boolean, TRUE): 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
+<div class="codehilite"><pre><span></span><code>- lock (boolean, TRUE): 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
 - notext (boolean, FALSE): 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
 - template (boolean, FALSE): 새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다. 이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
 - suspendpassword (boolean, FALSE): TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
 - forceopen (boolean, FALSE): TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
 - versionwarning (boolean, FALSE): TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 <HTML>
 
@@ -22696,40 +22471,24 @@ clear나 save 등의 메서드를 실행한 후에 Quit을 실행해야 한다.
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code>    RGB값을 한/글이 인식하는 정수 형태로 변환해주는 메서드.
+        <div class="codehilite"><pre><span></span><code>    <span class="n">RGB값을</span> <span class="n">한</span><span class="o">/</span><span class="n">글이</span> <span class="n">인식하는</span> <span class="n">정수</span> <span class="n">형태로</span> <span class="n">변환해주는</span> <span class="n">메서드</span><span class="o">.</span>
 
-    자주 쓰이는 24가지 색깔은 문자열로 입력 가능하다.
+    <span class="n">자주</span> <span class="n">쓰이는</span> <span class="mi">24</span><span class="n">가지</span> <span class="n">색깔은</span> <span class="n">문자열로</span> <span class="n">입력</span> <span class="n">가능하다</span><span class="o">.</span>
 
-    Args:
-        red_or_colorname: R값(0~255) 또는 색깔 문자열
-        green: G값(0~255)
-        blue: B값(0~255)
+    <span class="n">Args</span><span class="p">:</span>
+        <span class="n">red_or_colorname</span><span class="p">:</span> <span class="n">R값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span> <span class="n">또는</span> <span class="n">색깔</span> <span class="n">문자열</span>
+        <span class="n">green</span><span class="p">:</span> <span class="n">G값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span>
+        <span class="n">blue</span><span class="p">:</span> <span class="n">B값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span>
 
-    Returns:
-        아래아한글이 인식하는 정수 형태의 RGB값.
+    <span class="n">Returns</span><span class="p">:</span>
+        <span class="n">아래아한글이</span> <span class="n">인식하는</span> <span class="n">정수</span> <span class="n">형태의</span> <span class="n">RGB값</span><span class="o">.</span>
 
-    Examples:
-        &gt;&gt;&gt; from pyhwpx import Hwp
-        &gt;&gt;&gt; hwp = Hwp()
-        &gt;&gt;&gt; hwp.set_font(TextColor=hwp.RGBColor(&quot;Red&quot;))  # 글자색 빨강
-        &gt;&gt;&gt; hwp.insert_text(&quot;빨간 글자색
-</code></pre></div></td></tr></table></div>
+    <span class="n">Examples</span><span class="p">:</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="n">TextColor</span><span class="o">=</span><span class="n">hwp</span><span class="o">.</span><span class="n">RGBColor</span><span class="p">(</span><span class="s2">&quot;Red&quot;</span><span class="p">))</span>  <span class="c1"># 글자색 빨강</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s2">&quot;빨간 글자색</span>
+</code></pre></div>
 
 <p>")
             &gt;&gt;&gt; hwp.set_font(ShadeColor=hwp.RGBColor(0, 255, 0))  # 음영색 초록
@@ -22962,16 +22721,7 @@ clear나 save 등의 메서드를 실행한 후에 Quit을 실행해야 한다.
             <td>
               <div class="doc-md-description">
                 <p>등록할 개인정보 유형. 다음의 값 중 하나다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0x0001: 전화번호
+<div class="codehilite"><pre><span></span><code>- 0x0001: 전화번호
 - 0x0002: 주민등록번호
 - 0x0004: 외국인등록번호
 - 0x0008: 전자우편
@@ -22981,7 +22731,7 @@ clear나 save 등의 메서드를 실행한 후에 Quit을 실행해야 한다.
 - 0x0080: 생년월일
 - 0x0100: 주소
 - 0x0200: 사용자 정의
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -23393,10 +23143,9 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
             <td>
               <div class="doc-md-description">
                 <p>매크로의 유형. 밑의 값 중 하나이다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 스크립트 매크로(전역 매크로-HWP_GLOBAL_MACRO_TYPE, 기본값)
-- 1: 문서 매크로(해당문서에만 저장/적용되는 매크로-HWP_DOCUMENT_MACRO_TYPE)
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="k">-</span> 0: 스크립트 매크로(전역 매크로-HWP_GLOBAL_MACRO_TYPE, 기본값)
+<span class="k">-</span> 1: 문서 매크로(해당문서에만 저장/적용되는 매크로-HWP_DOCUMENT_MACRO_TYPE)
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -23624,22 +23373,15 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
                 <p>세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
 여러 개를 한꺼번에 할 경우에는 세미콜론으로 구분하여 연속적으로 사용할 수 있다.</p>
 <p>"lock:TRUE;backup:FALSE;prvtext:1"</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;lock:true&quot;: 저장한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
-- &quot;backup:false&quot;: 백업 파일 생성 여부
-- &quot;compress:true&quot;: 압축 여부
-- &quot;fullsave:false&quot;: 스토리지 파일을 완전히 새로 생성하여 저장
-- &quot;prvimage:2&quot;: 미리보기 이미지 (0=off, 1=BMP, 2=GIF)
-- &quot;prvtext:1&quot;: 미리보기 텍스트 (0=off, 1=on)
-- &quot;autosave:false&quot;: 자동저장 파일로 저장할 지 여부 (TRUE: 자동저장, FALSE: 지정 파일로 저장)
-- &quot;export&quot;: 다른 이름으로 저장하지만 열린 문서는 바꾸지 않는다.(lock:false와 함께 설정되어 있을 시 동작)
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="o">-</span><span class="w"> </span><span class="s2">&quot;lock:true&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">저장한</span><span class="w"> </span><span class="err">후</span><span class="w"> </span><span class="err">해당</span><span class="w"> </span><span class="err">파일을</span><span class="w"> </span><span class="err">계속</span><span class="w"> </span><span class="err">오픈한</span><span class="w"> </span><span class="err">상태로</span><span class="w"> </span><span class="n">lock을</span><span class="w"> </span><span class="err">걸지</span><span class="w"> </span><span class="err">여부</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;backup:false&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">백업</span><span class="w"> </span><span class="err">파일</span><span class="w"> </span><span class="err">생성</span><span class="w"> </span><span class="err">여부</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;compress:true&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">압축</span><span class="w"> </span><span class="err">여부</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;fullsave:false&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">스토리지</span><span class="w"> </span><span class="err">파일을</span><span class="w"> </span><span class="err">완전히</span><span class="w"> </span><span class="err">새로</span><span class="w"> </span><span class="err">생성하여</span><span class="w"> </span><span class="err">저장</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;prvimage:2&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">미리보기</span><span class="w"> </span><span class="err">이미지</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="o">=</span><span class="n">off</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="o">=</span><span class="n">BMP</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">=</span><span class="n">GIF</span><span class="p">)</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;prvtext:1&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">미리보기</span><span class="w"> </span><span class="err">텍스트</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="o">=</span><span class="n">off</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="o">=</span><span class="n">on</span><span class="p">)</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;autosave:false&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">자동저장</span><span class="w"> </span><span class="err">파일로</span><span class="w"> </span><span class="err">저장할</span><span class="w"> </span><span class="err">지</span><span class="w"> </span><span class="err">여부</span><span class="w"> </span><span class="p">(</span><span class="n">TRUE</span><span class="p">:</span><span class="w"> </span><span class="err">자동저장</span><span class="p">,</span><span class="w"> </span><span class="n">FALSE</span><span class="p">:</span><span class="w"> </span><span class="err">지정</span><span class="w"> </span><span class="err">파일로</span><span class="w"> </span><span class="err">저장</span><span class="p">)</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;export&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">다른</span><span class="w"> </span><span class="err">이름으로</span><span class="w"> </span><span class="err">저장하지만</span><span class="w"> </span><span class="err">열린</span><span class="w"> </span><span class="err">문서는</span><span class="w"> </span><span class="err">바꾸지</span><span class="w"> </span><span class="err">않는다</span><span class="o">.</span><span class="p">(</span><span class="n">lock</span><span class="p">:</span><span class="n">false와</span><span class="w"> </span><span class="err">함께</span><span class="w"> </span><span class="err">설정되어</span><span class="w"> </span><span class="err">있을</span><span class="w"> </span><span class="err">시</span><span class="w"> </span><span class="err">동작</span><span class="p">)</span>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -24272,10 +24014,9 @@ Examples:
             <td>
               <div class="doc-md-description">
                 <p>다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- 1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+<div class="codehilite"><pre><span></span><code>- 1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
 - 2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -24358,6 +24099,7 @@ Examples:
                 <code>option</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -24388,6 +24130,7 @@ Examples:
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -24671,6 +24414,11 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>disp_val</code>
             </td>
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -24696,6 +24444,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -24881,16 +24630,12 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
             <td>
               <div class="doc-md-description">
                 <p>파일의 형식</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;HWP&quot;: HWP native format. BASE64 로 인코딩되어 있어야 한다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+<div class="codehilite"><pre><span></span><code>- &quot;HWP&quot;: HWP native format. BASE64 로 인코딩되어 있어야 한다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
 - &quot;HWPML2X&quot;: HWP 형식과 호환. 문서의 모든 정보를 유지
 - &quot;HTML&quot;: 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
 - &quot;UNICODE&quot;: 유니코드 텍스트, 서식정보가 없는 텍스트만 저장
 - &quot;TEXT&quot;: 일반 텍스트, 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -24902,6 +24647,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>option</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -24927,6 +24673,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -27154,6 +26901,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>remain_cell</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -27899,6 +27647,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>Rows</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -27914,6 +27663,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>Cols</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -27929,6 +27679,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>DistributeHeight</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -27944,6 +27695,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>Merge</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -28789,6 +28541,43 @@ Examples:
         <p>현재 편집중인 문서의 내용을 닫고 빈문서 편집 상태로 돌아간다.</p>
 
 
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>option</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>편집중인 문서의 내용에 대한 처리 방법, 생략하면 1(hwpDiscard)가 선택된다.</p>
+<ul>
+<li>0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)</li>
+<li>1: 문서의 내용을 버린다. (hwpDiscard, 기본값)</li>
+<li>2: 문서가 변경된 경우 저장한다. (hwpSaveIfDirty)</li>
+<li>3: 무조건 저장한다. (hwpSave)</li>
+</ul>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
       <thead>
@@ -28921,6 +28710,7 @@ Examples:
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="typing.Any">Any</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -29679,21 +29469,12 @@ Examples:
                 <code>private_type</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>보호할 개인정보 유형. 다음의 값을 하나이상 조합한다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0x0001: 전화번호
+<div class="codehilite"><pre><span></span><code>- 0x0001: 전화번호
 - 0x0002: 주민등록번호
 - 0x0004: 외국인등록번호
 - 0x0008: 전자우편
@@ -29704,7 +29485,7 @@ Examples:
 - 0x0100: 주소
 - 0x0200: 사용자 정의
 - 0x0400: 기타
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -29716,6 +29497,7 @@ Examples:
                 <code>private_string</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -29741,6 +29523,7 @@ Examples:
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -30222,6 +30005,7 @@ GetFieldList()의 옵션 중에 hwpFieldSelection(=4)옵션은 사용하지 않�
                 <code>option</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -30306,36 +30090,24 @@ GetFieldList()의 옵션 중에 hwpFieldSelection(=4)옵션은 사용하지 않�
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>    문서 내의 모든 누름틀의 정보(지시문 및 메모)를 추출하는 메서드.
+        <div class="codehilite"><pre><span></span><code>    문서 내의 모든 누름틀의 정보(지시문 및 메모)를 추출하는 메서드.
 
     셀필드는 지시문과 메모가 없으므로 이 메서드에서는 추출하지 않는다.
     만약 셀필드를 포함하여 모든 필드의 이름만 추출하고 싶다면
     hwp.get_field_list().split(&quot;
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 <p>") 메서드를 쓰면 된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code>    Returns:
-        [{&#39;name&#39;: &#39;zxcv&#39;, &#39;direction&#39;: &#39;adsf&#39;, &#39;memo&#39;: &#39;qwer&#39;}] 형식의 사전 리스트
+<div class="codehilite"><pre><span></span><code>    <span class="n">Returns</span><span class="p">:</span>
+        <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;zxcv&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span> <span class="s1">&#39;adsf&#39;</span><span class="p">,</span> <span class="s1">&#39;memo&#39;</span><span class="p">:</span> <span class="s1">&#39;qwer&#39;</span><span class="p">}]</span> <span class="n">형식의</span> <span class="n">사전</span> <span class="n">리스트</span>
 
-    Examples:
-        &gt;&gt;&gt; from pyhwpx import Hwp
-        &gt;&gt;&gt; hwp = Hwp()
-        &gt;&gt;&gt; hwp.get_field_info()
-        [{&#39;name&#39;: &#39;누름틀1&#39;, &#39;direction&#39;: &#39;안내문1&#39;, &#39;memo&#39;: &#39;메모1&#39;},
-        {&#39;name&#39;: &#39;누름틀2&#39;, &#39;direction&#39;: &#39;안내문2&#39;, &#39;memo&#39;: &#39;메모2&#39;}]
-</code></pre></div></td></tr></table></div>
+    <span class="n">Examples</span><span class="p">:</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">get_field_info</span><span class="p">()</span>
+        <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;누름틀1&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span> <span class="s1">&#39;안내문1&#39;</span><span class="p">,</span> <span class="s1">&#39;memo&#39;</span><span class="p">:</span> <span class="s1">&#39;메모1&#39;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;누름틀2&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span> <span class="s1">&#39;안내문2&#39;</span><span class="p">,</span> <span class="s1">&#39;memo&#39;</span><span class="p">:</span> <span class="s1">&#39;메모2&#39;</span><span class="p">}]</span>
+</code></pre></div>
 
 
     </div>
@@ -30359,12 +30131,10 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
 예를 들어 문서 중 title, body, title, body, footer 순으로
 5개의 필드가 존재할 때, hwpFieldPlain, hwpFieldNumber, HwpFieldCount
 세 가지 형식에 따라 다음과 같은 내용이 돌아온다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>- hwpFieldPlain: &quot;titlebodytitlebodyfooter&quot;
-- hwpFieldNumber: &quot;title{{0}}body{{0}}title{{1}}body{{1}}footer{{0}}&quot;
-- hwpFieldCount: &quot;title{{2}}body{{2}}footer{{1}}&quot;
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="x">- hwpFieldPlain: &quot;titlebodytitlebodyfooter&quot;</span>
+<span class="x">- hwpFieldNumber: &quot;title</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">body</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">title</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">body</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">footer</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&quot;</span>
+<span class="x">- hwpFieldCount: &quot;title</span><span class="cp">{{</span><span class="m">2</span><span class="cp">}}</span><span class="x">body</span><span class="cp">{{</span><span class="m">2</span><span class="cp">}}</span><span class="x">footer</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">&quot;</span>
+</code></pre></div>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -30388,12 +30158,10 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
             <td>
               <div class="doc-md-description">
                 <p>문서 내에서 동일한 이름의 필드가 여러 개 존재할 경우 이를 구별하기 위한 식별방법을 지정한다. 생략하면 0(hwpFieldPlain)이 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 아무 기호 없이 순서대로 필드의 이름을 나열한다.(hwpFieldPlain)
-- 1: 필드이름 뒤에 일련번호가 ``{{#}}``과 같은 형식으로 붙는다.(hwpFieldNumber)
-- 2: 필드이름 뒤에 그 필드의 개수가 ``{{#}}``과 같은 형식으로 붙는다.(hwpFieldCount)
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="x">- 0: 아무 기호 없이 순서대로 필드의 이름을 나열한다.(hwpFieldPlain)</span>
+<span class="x">- 1: 필드이름 뒤에 일련번호가 ``</span><span class="cp">{{</span><span class="err">#</span><span class="cp">}}</span><span class="x">``과 같은 형식으로 붙는다.(hwpFieldNumber)</span>
+<span class="x">- 2: 필드이름 뒤에 그 필드의 개수가 ``</span><span class="cp">{{</span><span class="err">#</span><span class="cp">}}</span><span class="x">``과 같은 형식으로 붙는다.(hwpFieldCount)</span>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -30410,12 +30178,10 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
             <td>
               <div class="doc-md-description">
                 <p>다음과 같은 옵션을 조합할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0x01: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere과는 함께 지정할 수 없다.(hwpFieldCell)
+<div class="codehilite"><pre><span></span><code>- 0x01: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere과는 함께 지정할 수 없다.(hwpFieldCell)
 - 0x02: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
 - 0x04: 선택된 내용 안에 존재하는 필드 리스트를 구한다.(HwpFieldSelection)
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -30484,52 +30250,30 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code>    지정한 필드에서 문자열을 구한다.
+        <div class="codehilite"><pre><span></span><code><span class="x">    지정한 필드에서 문자열을 구한다.</span>
 
-    Args:
-        field:
-            텍스트를 구할 필드 이름의 리스트.
-            다음과 같이 필드 사이를 문자 코드 0x02로 구분하여
-            한 번에 여러 개의 필드를 지정할 수 있다.
-            &quot;필드이름#1필드이름#2...필드이름#n&quot;
-            지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.
-            &quot;필드이름&quot;: 이름의 필드 중 첫 번째
-            &quot;필드이름{{n}}&quot;: 지정한 이름의 필드 중 n 번째
-            예를 들어 &quot;제목{{1}}본문이름{{0}}&quot; 과 같이 지정하면
-            &#39;제목&#39;이라는 이름의 필드 중 두 번째,
-            &#39;본문&#39;이라는 이름의 필드 중 첫 번째,
-            &#39;이름&#39;이라는 이름의 필드 중 첫 번째를 각각 지정한다.
-            즉, &#39;필드이름&#39;과 &#39;필드이름{{0}}&#39;은 동일한 의미로 해석된다.
-        idx:
-            특정 필드가 여러 개이고, 각각의 값이 다를 때, ``field{{n}}`` 대신 ``hwp.get_field_text(field, idx=n)``라고 작성할 수 있다.
+<span class="x">    Args:</span>
+<span class="x">        field:</span>
+<span class="x">            텍스트를 구할 필드 이름의 리스트.</span>
+<span class="x">            다음과 같이 필드 사이를 문자 코드 0x02로 구분하여</span>
+<span class="x">            한 번에 여러 개의 필드를 지정할 수 있다.</span>
+<span class="x">            &quot;필드이름#1필드이름#2...필드이름#n&quot;</span>
+<span class="x">            지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.</span>
+<span class="x">            &quot;필드이름&quot;: 이름의 필드 중 첫 번째</span>
+<span class="x">            &quot;필드이름</span><span class="cp">{{</span><span class="nv">n</span><span class="cp">}}</span><span class="x">&quot;: 지정한 이름의 필드 중 n 번째</span>
+<span class="x">            예를 들어 &quot;제목</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">본문이름</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&quot; 과 같이 지정하면</span>
+<span class="x">            &#39;제목&#39;이라는 이름의 필드 중 두 번째,</span>
+<span class="x">            &#39;본문&#39;이라는 이름의 필드 중 첫 번째,</span>
+<span class="x">            &#39;이름&#39;이라는 이름의 필드 중 첫 번째를 각각 지정한다.</span>
+<span class="x">            즉, &#39;필드이름&#39;과 &#39;필드이름</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&#39;은 동일한 의미로 해석된다.</span>
+<span class="x">        idx:</span>
+<span class="x">            특정 필드가 여러 개이고, 각각의 값이 다를 때, ``field</span><span class="cp">{{</span><span class="nv">n</span><span class="cp">}}</span><span class="x">`` 대신 ``hwp.get_field_text(field, idx=n)``라고 작성할 수 있다.</span>
 
-    Returns:
-        텍스트 데이터가 돌아온다.
-        텍스트에서 탭은 &#39;  &#39;(0x9),
-        문단 바뀜은 CR/LF(0x0D/0x0A ==
-</code></pre></div></td></tr></table></div>
+<span class="x">    Returns:</span>
+<span class="x">        텍스트 데이터가 돌아온다.</span>
+<span class="x">        텍스트에서 탭은 &#39;  &#39;(0x9),</span>
+<span class="x">        문단 바뀜은 CR/LF(0x0D/0x0A ==</span>
+</code></pre></div>
 
 <p>)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
@@ -30693,6 +30437,7 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -30953,6 +30698,7 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
                 <code>x_rel_to</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -30972,6 +30718,7 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
                 <code>y_rel_to</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31001,6 +30748,11 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31010,6 +30762,11 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31198,28 +30955,18 @@ set_pagedef 실행시 내부적으로 HWPUnit으로 자동변환하여 적용한
 (as_ 파라미터를 "eng"로 변경하면 원래 영문 아이템명의 사전을 리턴한다.)</p>
         <p>현재 페이지의 용지정보(dict)
     각 키의 원래 아이템명은 아래와 같다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code>PaperWidth: 용지폭
-PaperHeight: 용지길이
-Landscape: 용지방향(0: 가로, 1:세로)
-GutterType: 제본타입(0: 한쪽, 1:맞쪽, 2:위쪽)
-TopMargin: 위쪽
-HeaderLen: 머리말
-LeftMargin: 왼쪽
-GutterLen: 제본여백
-RightMargin: 오른쪽
-FooterLen: 꼬리말
-BottomMargin: 아래쪽
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="n">PaperWidth</span><span class="o">:</span><span class="w"> </span><span class="err">용지폭</span>
+<span class="n">PaperHeight</span><span class="o">:</span><span class="w"> </span><span class="err">용지길이</span>
+<span class="n">Landscape</span><span class="o">:</span><span class="w"> </span><span class="err">용지방향</span><span class="o">(</span><span class="mi">0</span><span class="o">:</span><span class="w"> </span><span class="err">가로</span><span class="o">,</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="err">세로</span><span class="o">)</span>
+<span class="n">GutterType</span><span class="o">:</span><span class="w"> </span><span class="err">제본타입</span><span class="o">(</span><span class="mi">0</span><span class="o">:</span><span class="w"> </span><span class="err">한쪽</span><span class="o">,</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="err">맞쪽</span><span class="o">,</span><span class="w"> </span><span class="mi">2</span><span class="o">:</span><span class="err">위쪽</span><span class="o">)</span>
+<span class="n">TopMargin</span><span class="o">:</span><span class="w"> </span><span class="err">위쪽</span>
+<span class="n">HeaderLen</span><span class="o">:</span><span class="w"> </span><span class="err">머리말</span>
+<span class="n">LeftMargin</span><span class="o">:</span><span class="w"> </span><span class="err">왼쪽</span>
+<span class="n">GutterLen</span><span class="o">:</span><span class="w"> </span><span class="err">제본여백</span>
+<span class="n">RightMargin</span><span class="o">:</span><span class="w"> </span><span class="err">오른쪽</span>
+<span class="n">FooterLen</span><span class="o">:</span><span class="w"> </span><span class="err">꼬리말</span>
+<span class="n">BottomMargin</span><span class="o">:</span><span class="w"> </span><span class="err">아래쪽</span>
+</code></pre></div>
 
 
     </div>
@@ -31301,6 +31048,11 @@ BottomMargin: 아래쪽
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31310,6 +31062,11 @@ BottomMargin: 아래쪽
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31319,6 +31076,11 @@ BottomMargin: 아래쪽
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31328,6 +31090,11 @@ BottomMargin: 아래쪽
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31337,6 +31104,11 @@ BottomMargin: 아래쪽
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31424,14 +31196,11 @@ BottomMargin: 아래쪽
 
         <p>문서에 포함된 매크로(스크립트매크로 제외) 소스코드를 가져온다.
 문서포함 매크로는 기본적으로</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>function OnDocument_New() {
+<div class="codehilite"><pre><span></span><code>function OnDocument_New() {
 }
 function OnDocument_Open() {
 }
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 <p>형태로 비어있는 상태이며, OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만 코드를 추가하고 실행할 수 있다.</p>
 
@@ -31539,6 +31308,7 @@ function OnDocument_Open() {
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="tuple">tuple</span>[<span title="bool">bool</span>, <span title="str">str</span>, <span title="str">str</span>, <span title="int">int</span>, <span title="str">str</span>, <span title="str">str</span>, <span title="int">int</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31604,6 +31374,7 @@ function OnDocument_Open() {
                 <code>sset</code>
             </td>
             <td>
+                  <code><span title="typing.Any">Any</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31619,6 +31390,7 @@ function OnDocument_Open() {
                 <code>eset</code>
             </td>
             <td>
+                  <code><span title="typing.Any">Any</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31827,10 +31599,9 @@ function OnDocument_Open() {
             <td>
               <div class="doc-md-description">
                 <p>리턴하는 여백값의 단위</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
+<div class="codehilite"><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
 - &quot;hwpunit&quot;: HwpUnit
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -31911,10 +31682,9 @@ function OnDocument_Open() {
             <td>
               <div class="doc-md-description">
                 <p>리턴하는 여백값의 단위</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
+<div class="codehilite"><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
 - &quot;hwpunit&quot;: HwpUnit
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -31936,6 +31706,7 @@ function OnDocument_Open() {
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="int">int</span> | <span title="float">float</span> | <span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -31994,10 +31765,9 @@ function OnDocument_Open() {
             <td>
               <div class="doc-md-description">
                 <p>리턴하는 여백값의 단위</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
+<div class="codehilite"><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
 - &quot;hwpunit&quot;: HwpUnit
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -32019,6 +31789,7 @@ function OnDocument_Open() {
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -32077,10 +31848,9 @@ function OnDocument_Open() {
             <td>
               <div class="doc-md-description">
                 <p>리턴하는 여백값의 단위</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
+<div class="codehilite"><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
 - &quot;hwpunit&quot;: HwpUnit
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -32102,6 +31872,7 @@ function OnDocument_Open() {
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -32160,10 +31931,9 @@ function OnDocument_Open() {
             <td>
               <div class="doc-md-description">
                 <p>리턴하는 여백값의 단위</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
+<div class="codehilite"><pre><span></span><code>- &quot;mm&quot;: 밀리미터(기본값)
 - &quot;hwpunit&quot;: HwpUnit
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -32185,6 +31955,7 @@ function OnDocument_Open() {
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -32240,16 +32011,7 @@ function OnDocument_Open() {
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code>    문서 내에서 텍스트를 얻어온다.
+        <div class="codehilite"><pre><span></span><code>    문서 내에서 텍스트를 얻어온다.
 
     줄바꿈 기준으로 텍스트를 얻어오므로 반복실행해야 한다.
     get_text()의 사용이 끝나면 release_scan()을 반드시 호출하여
@@ -32259,68 +32021,40 @@ function OnDocument_Open() {
 
     Returns:
         (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 &#39;       &#39;(0x9), 문단 바뀜은 &#39;
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 <p>'(0x0D/0x0A)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code>        state의 의미는 아래와 같다.
+<div class="codehilite"><pre><span></span><code>        <span class="n">state의</span> <span class="n">의미는</span> <span class="n">아래와</span> <span class="n">같다</span><span class="o">.</span>
 
-            - 0: 텍스트 정보 없음
-            - 1: 리스트의 끝
-            - 2: 일반 텍스트
-            - 3: 다음 문단
-            - 4: 제어문자 내부로 들어감
-            - 5: 제어문자를 빠져나옴
-            - 101: 초기화 안 됨(init_scan() 실패 또는 init_scan()을 실행하지 않은 경우)
-            - 102: 텍스트 변환 실패
+            <span class="o">-</span> <span class="mi">0</span><span class="p">:</span> <span class="n">텍스트</span> <span class="n">정보</span> <span class="n">없음</span>
+            <span class="o">-</span> <span class="mi">1</span><span class="p">:</span> <span class="n">리스트의</span> <span class="n">끝</span>
+            <span class="o">-</span> <span class="mi">2</span><span class="p">:</span> <span class="n">일반</span> <span class="n">텍스트</span>
+            <span class="o">-</span> <span class="mi">3</span><span class="p">:</span> <span class="n">다음</span> <span class="n">문단</span>
+            <span class="o">-</span> <span class="mi">4</span><span class="p">:</span> <span class="n">제어문자</span> <span class="n">내부로</span> <span class="n">들어감</span>
+            <span class="o">-</span> <span class="mi">5</span><span class="p">:</span> <span class="n">제어문자를</span> <span class="n">빠져나옴</span>
+            <span class="o">-</span> <span class="mi">101</span><span class="p">:</span> <span class="n">초기화</span> <span class="n">안</span> <span class="n">됨</span><span class="p">(</span><span class="n">init_scan</span><span class="p">()</span> <span class="n">실패</span> <span class="n">또는</span> <span class="n">init_scan</span><span class="p">()</span><span class="n">을</span> <span class="n">실행하지</span> <span class="n">않은</span> <span class="n">경우</span><span class="p">)</span>
+            <span class="o">-</span> <span class="mi">102</span><span class="p">:</span> <span class="n">텍스트</span> <span class="n">변환</span> <span class="n">실패</span>
 
-    Examples:
-        &gt;&gt;&gt; from pyhwpx import Hwp
-        &gt;&gt;&gt; hwp = Hwp()
-        &gt;&gt;&gt; hwp.init_scan()
-        &gt;&gt;&gt; while True:
-        ...     state, text = hwp.get_text()
-        ...     print(state, text)
-        ...     if state &lt;= 1:
-        ...         break
-        ... hwp.release_scan()
-        2
-        2
-        2 ㅁㄴㅇㄹ
-        3
-        4 ㅂㅈㄷㄱ
-        2 ㅂㅈㄷㄱ
-        5
-        1
-</code></pre></div></td></tr></table></div>
+    <span class="n">Examples</span><span class="p">:</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">init_scan</span><span class="p">()</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="o">...</span>     <span class="n">state</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+        <span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="o">...</span>     <span class="k">if</span> <span class="n">state</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="o">...</span>         <span class="k">break</span>
+        <span class="o">...</span> <span class="n">hwp</span><span class="o">.</span><span class="n">release_scan</span><span class="p">()</span>
+        <span class="mi">2</span>
+        <span class="mi">2</span>
+        <span class="mi">2</span> <span class="n">ㅁㄴㅇㄹ</span>
+        <span class="mi">3</span>
+        <span class="mi">4</span> <span class="n">ㅂㅈㄷㄱ</span>
+        <span class="mi">2</span> <span class="n">ㅂㅈㄷㄱ</span>
+        <span class="mi">5</span>
+        <span class="mi">1</span>
+</code></pre></div>
 
 
     </div>
@@ -32338,39 +32072,7 @@ function OnDocument_Open() {
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code>    현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
+        <div class="codehilite"><pre><span></span><code>    현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
 
     이 함수는 JScript나 VBScript와 같이
     직접적으로 local disk를 접근하기 힘든 언어를 위해 만들어졌으므로
@@ -32386,11 +32088,11 @@ function OnDocument_Open() {
         format:
             파일의 형식. 기본값은 &quot;UNICODE&quot;. 내부적으로 str.lower() 메서드가 포함되어 있으므로 소문자로 입력해도 된다.
 
-                - &quot;HWP&quot;: HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
-                - &quot;HWPML2X&quot;: HWP 형식과 호환. 문서의 모든 정보를 유지
-                - &quot;HTML&quot;: 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
-                - &quot;UNICODE&quot;: 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
-                - &quot;TEXT&quot;: 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
+                <span class="k">-</span> &quot;HWP&quot;: HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+                <span class="k">-</span> &quot;HWPML2X&quot;: HWP 형식과 호환. 문서의 모든 정보를 유지
+                <span class="k">-</span> &quot;HTML&quot;: 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
+                <span class="k">-</span> &quot;UNICODE&quot;: 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
+                <span class="k">-</span> &quot;TEXT&quot;: 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
 
         option:
             option 파라미터에 &quot;saveblock&quot;을 지정하면 선택된 블록만 저장한다. 개체 선택 상태에서는 동작하지 않는다.
@@ -32403,7 +32105,7 @@ function OnDocument_Open() {
         &gt;&gt;&gt; hwp = Hwp()
         &gt;&gt;&gt; hwp.get_text_file()
         &#39;ㅁㄴㅇㄹ
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 <p>ㅁㄴㅇㄹ
 ㅁㄴㅇㄹ</p>
@@ -32600,18 +32302,7 @@ False를 리턴
             <td>
               <div class="doc-md-description">
                 <p>문자열 파라미터. 종류는 아래와 같다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;None&quot;: 없음(0)
+<div class="codehilite"><pre><span></span><code>- &quot;None&quot;: 없음(0)
 - &quot;Solid&quot;: 실선(1)
 - &quot;Dash&quot;: 파선(2)
 - &quot;Dot&quot;: 점선(3)
@@ -32623,7 +32314,7 @@ False를 리턴
 - &quot;SlimThick&quot;: 얇고 굵은 이중선(9)
 - &quot;ThickSlim&quot;: 굵고 얇은 이중선(10)
 - &quot;SlimThickSlim&quot;: 얇고 굵고 얇은 삼중선(11)
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -32879,19 +32570,17 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>option</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>기본값은 0x7(모든 컨트롤 대상) 찾을 대상을 다음과 같은 옵션을 조합하여 지정할 수 있다.
 생략하면 모든 컨트롤을 찾을 대상으로 한다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0x00: 본문을 대상으로 검색한다.(서브리스트를 검색하지 않는다.) - maskNormal
+<div class="codehilite"><pre><span></span><code>- 0x00: 본문을 대상으로 검색한다.(서브리스트를 검색하지 않는다.) - maskNormal
 - 0x01: char 타입 컨트롤 마스크를 대상으로 한다.(강제줄나눔, 문단 끝, 하이픈, 묶움빈칸, 고정폭빈칸, 등...) - maskChar
 - 0x02: inline 타입 컨트롤 마스크를 대상으로 한다.(누름틀 필드 끝, 등...) - maskInline
 - 0x04: extende 타입 컨트롤 마스크를 대상으로 한다.(바탕쪽, 프레젠테이션, 다단, 누름틀 필드 시작, Shape Object, 머리말, 꼬리말, 각주, 미주, 번호관련 컨트롤, 새 번호 관련 컨트롤, 감추기, 찾아보기, 글자 겹침, 등...) - maskCtrl
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -32903,30 +32592,13 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>range</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>검색의 범위를 다음과 같은 옵션을 조합(sum)하여 지정할 수 있다.
 생략하면 "문서 시작부터 - 문서의 끝까지" 검색 범위가 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0x0000: 캐럿 위치부터. (시작 위치) - scanSposCurrent
+<div class="codehilite"><pre><span></span><code>- 0x0000: 캐럿 위치부터. (시작 위치) - scanSposCurrent
 - 0x0010: 특정 위치부터. (시작 위치) - scanSposSpecified
 - 0x0020: 줄의 시작부터. (시작 위치) - scanSposLine
 - 0x0030: 문단의 시작부터. (시작 위치) - scanSposParagraph
@@ -32945,7 +32617,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
 - 0x00ff: 검색의 범위를 블록으로 제한. - scanWithinSelection
 - 0x0000: 정뱡향. (검색 방향) - scanForward
 - 0x0100: 역방향. (검색 방향) - scanBackward
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -32957,6 +32629,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>spara</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -32972,6 +32645,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>spos</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -32987,6 +32661,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>epara</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33002,6 +32677,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>epos</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33027,6 +32703,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33107,29 +32784,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <p>문서형식. <strong>빈 문자열을 지정하면 자동으로 선택한다.</strong>
 생략하면 빈 문자열이 지정된다.
 아래에 쓰여 있는 대로 대문자로만 써야 한다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;HWPX&quot;: 한/글 hwpx format
+<div class="codehilite"><pre><span></span><code>- &quot;HWPX&quot;: 한/글 hwpx format
 - &quot;HWP&quot;: 한/글 native format
 - &quot;HWP30&quot;: 한/글 3.X/96/97
 - &quot;HTML&quot;: 인터넷 문서
@@ -33152,7 +32807,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
 - &quot;WPS&quot;: WPS 문서
 - &quot;DOCIMG&quot;: 인터넷 프레젠테이션 문서(SaveAs만 가능)
 - &quot;SWF&quot;: Macromedia Flash 문서(SaveAs만 가능)
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -33171,22 +32826,17 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <p>세부옵션. 의미는 format에 지정한 파일형식에 따라 다르다.
 조합 가능하며, 생략하면 빈 문자열이 지정된다.</p>
 <p>&lt;공통&gt;</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;setcurdir:FALSE;&quot; :로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="nt">-</span><span class="w"> </span><span class="s2">&quot;setcurdir:FALSE;&quot;</span><span class="w"> </span><span class="p">:</span><span class="nd">로드한</span><span class="w"> </span><span class="nt">후</span><span class="w"> </span><span class="nt">해당</span><span class="w"> </span><span class="nt">파일이</span><span class="w"> </span><span class="nt">존재하는</span><span class="w"> </span><span class="nt">폴더로</span><span class="w"> </span><span class="nt">현재</span><span class="w"> </span><span class="nt">위치를</span><span class="w"> </span><span class="nt">변경한다</span><span class="o">.</span><span class="w"> </span><span class="nt">hyperlink</span><span class="w"> </span><span class="nt">정보가</span><span class="w"> </span><span class="nt">상대적인</span><span class="w"> </span><span class="nt">위치로</span><span class="w"> </span><span class="nt">되어</span><span class="w"> </span><span class="nt">있을</span><span class="w"> </span><span class="nt">때</span><span class="w"> </span><span class="nt">유용하다</span><span class="o">.</span>
+</code></pre></div>
 
 <p><HWP/HWPX></p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;lock:TRUE;&quot;: 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
-- &quot;notext:FALSE;&quot;: 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
-- &quot;template:FALSE;&quot;: 새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다. 이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
-- &quot;suspendpassword:FALSE;&quot;: TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
-- &quot;forceopen:FALSE;&quot;: TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
-- &quot;versionwarning:FALSE;&quot;: TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="nt">-</span><span class="w"> </span><span class="s2">&quot;lock:TRUE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">로드한</span><span class="w"> </span><span class="nt">후</span><span class="w"> </span><span class="nt">해당</span><span class="w"> </span><span class="nt">파일을</span><span class="w"> </span><span class="nt">계속</span><span class="w"> </span><span class="nt">오픈한</span><span class="w"> </span><span class="nt">상태로</span><span class="w"> </span><span class="nt">lock을</span><span class="w"> </span><span class="nt">걸지</span><span class="w"> </span><span class="nt">여부</span>
+<span class="nt">-</span><span class="w"> </span><span class="s2">&quot;notext:FALSE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">텍스트</span><span class="w"> </span><span class="nt">내용을</span><span class="w"> </span><span class="nt">읽지</span><span class="w"> </span><span class="nt">않고</span><span class="w"> </span><span class="nt">헤더</span><span class="w"> </span><span class="nt">정보만</span><span class="w"> </span><span class="nt">읽을지</span><span class="w"> </span><span class="nt">여부</span><span class="o">.</span><span class="w"> </span><span class="o">(</span><span class="nt">스타일</span><span class="w"> </span><span class="nt">로드</span><span class="w"> </span><span class="nt">등에</span><span class="w"> </span><span class="nt">사용</span><span class="o">)</span>
+<span class="nt">-</span><span class="w"> </span><span class="s2">&quot;template:FALSE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">새로운</span><span class="w"> </span><span class="nt">문서를</span><span class="w"> </span><span class="nt">생성하기</span><span class="w"> </span><span class="nt">위해</span><span class="w"> </span><span class="nt">템플릿</span><span class="w"> </span><span class="nt">파일을</span><span class="w"> </span><span class="nt">오픈한다</span><span class="o">.</span><span class="w"> </span><span class="nt">이</span><span class="w"> </span><span class="nt">옵션이</span><span class="w"> </span><span class="nt">주어지면</span><span class="w"> </span><span class="nt">lock은</span><span class="w"> </span><span class="nt">무조건</span><span class="w"> </span><span class="nt">FALSE로</span><span class="w"> </span><span class="nt">처리된다</span><span class="o">.</span>
+<span class="nt">-</span><span class="w"> </span><span class="s2">&quot;suspendpassword:FALSE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">TRUE로</span><span class="w"> </span><span class="nt">지정하면</span><span class="w"> </span><span class="nt">암호가</span><span class="w"> </span><span class="nt">있는</span><span class="w"> </span><span class="nt">파일일</span><span class="w"> </span><span class="nt">경우</span><span class="w"> </span><span class="nt">암호를</span><span class="w"> </span><span class="nt">묻지</span><span class="w"> </span><span class="nt">않고</span><span class="w"> </span><span class="nt">무조건</span><span class="w"> </span><span class="nt">읽기에</span><span class="w"> </span><span class="nt">실패한</span><span class="w"> </span><span class="nt">것으로</span><span class="w"> </span><span class="nt">처리한다</span><span class="o">.</span>
+<span class="nt">-</span><span class="w"> </span><span class="s2">&quot;forceopen:FALSE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">TRUE로</span><span class="w"> </span><span class="nt">지정하면</span><span class="w"> </span><span class="nt">읽기</span><span class="w"> </span><span class="nt">전용으로</span><span class="w"> </span><span class="nt">읽어야</span><span class="w"> </span><span class="nt">하는</span><span class="w"> </span><span class="nt">경우</span><span class="w"> </span><span class="nt">대화상자를</span><span class="w"> </span><span class="nt">띄우지</span><span class="w"> </span><span class="nt">않는다</span><span class="o">.</span>
+<span class="nt">-</span><span class="w"> </span><span class="s2">&quot;versionwarning:FALSE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">TRUE로</span><span class="w"> </span><span class="nt">지정하면</span><span class="w"> </span><span class="nt">문서가</span><span class="w"> </span><span class="nt">상위버전일</span><span class="w"> </span><span class="nt">경우</span><span class="w"> </span><span class="nt">메시지</span><span class="w"> </span><span class="nt">박스를</span><span class="w"> </span><span class="nt">띄우게</span><span class="w"> </span><span class="nt">된다</span><span class="o">.</span>
+</code></pre></div>
 
 <HTML>
 
@@ -33261,6 +32911,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>path</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33281,10 +32932,9 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
             <td>
               <div class="doc-md-description">
                 <p>배경 유형을 문자열로 지정(파라미터 이름과는 다르게 삽입/제거 기능이다.)</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;SelectedCell&quot;: 현재 선택된 표의 셀의 배경을 변경한다.
+<div class="codehilite"><pre><span></span><code>- &quot;SelectedCell&quot;: 현재 선택된 표의 셀의 배경을 변경한다.
 - &quot;SelectedCellDelete&quot;: 현재 선택된 표의 셀의 배경을 지운다.
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 <p>단, 배경 제거시 반드시 셀이 선택되어 있어야함.
 커서가 위치하는 것만으로는 동작하지 않음.</p>
@@ -33299,6 +32949,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>embedded</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33314,25 +32965,12 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>filloption</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>삽입할 그림의 크기를 지정하는 옵션</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 바둑판식으로 - 모두
+<div class="codehilite"><pre><span></span><code>- 0: 바둑판식으로 - 모두
 - 1: 바둑판식으로 - 가로/위
 - 2: 바둑판식으로 - 가로/아로
 - 3: 바둑판식으로 - 세로/왼쪽
@@ -33347,7 +32985,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
 - 12: 오른쪽 가운데로
 - 13: 오른쪽 위로
 - 14: 오른쪽 아래로
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -33359,16 +32997,15 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>effect</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>이미지효과</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 원래 그림(기본값)
+<div class="codehilite"><pre><span></span><code>- 0: 원래 그림(기본값)
 - 1: 그레이 스케일
 - 2: 흑백으로
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -33380,6 +33017,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>watermark</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33395,6 +33033,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>brightness</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33410,6 +33049,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
                 <code>contrast</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33496,6 +33136,7 @@ initparam에는 컨트롤의 초기 속성을 지정한다.
                 <code>ctrl_id</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33511,6 +33152,7 @@ initparam에는 컨트롤의 초기 속성을 지정한다.
                 <code>initparam</code>
             </td>
             <td>
+                  <code><span title="typing.Any">Any</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33536,6 +33178,7 @@ initparam에는 컨트롤의 초기 속성을 지정한다.
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="Ctrl (pyhwpx.pyhwpx.Ctrl)" href="#pyhwpx.Ctrl">Ctrl</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33649,6 +33292,7 @@ insert_background_picture 함수를 사용하는 것도 좋다.</p>
                 <code>embedded</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33664,18 +33308,16 @@ insert_background_picture 함수를 사용하는 것도 좋다.</p>
                 <code>sizeoption</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>삽입할 그림의 크기를 지정하는 옵션. 기본값은 2</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 이미지 원래의 크기로 삽입한다. width와 height를 지정할 필요 없다.(realSize)
+<div class="codehilite"><pre><span></span><code>- 0: 이미지 원래의 크기로 삽입한다. width와 height를 지정할 필요 없다.(realSize)
 - 1: width와 height에 지정한 크기로 그림을 삽입한다.(specificSize)
 - 2: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞게 자동 조절하여 삽입한다. (종횡비 유지안함)(cellSize) 캐럿이 셀 안에 있지 않으면 이미지의 원래 크기대로 삽입된다.
 - 3: 현재 캐럿이 표의 셀 안에 있을 경우, 셀의 크기에 맞추어 원본 이미지의 가로 세로의 비율이 동일하게 확대/축소하여 삽입한다.(cellSizeWithSameRatio)
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -33687,6 +33329,7 @@ insert_background_picture 함수를 사용하는 것도 좋다.</p>
                 <code>reverse</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33702,6 +33345,7 @@ insert_background_picture 함수를 사용하는 것도 좋다.</p>
                 <code>watermark</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33717,16 +33361,15 @@ insert_background_picture 함수를 사용하는 것도 좋다.</p>
                 <code>effect</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>그림 효과</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 실제 이미지 그대로
+<div class="codehilite"><pre><span></span><code>- 0: 실제 이미지 그대로
 - 1: 그레이 스케일
 - 2: 흑백효과
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -33738,6 +33381,7 @@ insert_background_picture 함수를 사용하는 것도 좋다.</p>
                 <code>width</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33753,6 +33397,7 @@ insert_background_picture 함수를 사용하는 것도 좋다.</p>
                 <code>height</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33778,6 +33423,7 @@ insert_background_picture 함수를 사용하는 것도 좋다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="Ctrl (pyhwpx.pyhwpx.Ctrl)" href="#pyhwpx.Ctrl">Ctrl</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -34414,44 +34060,7 @@ set_cur_field_name 메서드를 사용하자.</p>
             <td>
               <div class="doc-md-description">
                 <p>아래와 같은 값을 지정할 수 있다. 생략하면 1(moveCurList)이 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 루트 리스트의 특정 위치.(para pos로 위치 지정) moveMain
+<div class="codehilite"><pre><span></span><code>- 0: 루트 리스트의 특정 위치.(para pos로 위치 지정) moveMain
 - 1: 현재 리스트의 특정 위치.(para pos로 위치 지정) moveCurList
 - 2: 문서의 시작으로 이동. moveTopOfFile
 - 3: 문서의 끝으로 이동. moveBottomOfFile
@@ -34489,7 +34098,7 @@ set_cur_field_name 메서드를 사용하자.</p>
 - 107: 현재 캐럿이 위치한 셀에서 열(column)의 끝 moveBottomOfCell
 - 200: 한/글 문서창에서의 screen 좌표로서 위치를 설정 한다. moveScrPos
 - 201: GetText() 실행 후 위치로 이동한다. moveScanPos
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -34609,6 +34218,7 @@ set_cur_field_name 메서드를 사용하자.</p>
                 <code>field</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -34624,6 +34234,7 @@ set_cur_field_name 메서드를 사용하자.</p>
                 <code>idx</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -34639,6 +34250,7 @@ set_cur_field_name 메서드를 사용하자.</p>
                 <code>text</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -34654,6 +34266,7 @@ set_cur_field_name 메서드를 사용하자.</p>
                 <code>start</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -34669,6 +34282,7 @@ set_cur_field_name 메서드를 사용하자.</p>
                 <code>select</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -34761,28 +34375,7 @@ set_cur_field_name 메서드를 사용하자.</p>
             <td>
               <div class="doc-md-description">
                 <p>문서 형식. 빈 문자열을 지정하면 자동으로 인식한다. 생략하면 빈 문자열이 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;HWP&quot;: 한/글 native format
+<div class="codehilite"><pre><span></span><code>- &quot;HWP&quot;: 한/글 native format
 - &quot;HWP30&quot;: 한/글 3.X/96/97
 - &quot;HTML&quot;: 인터넷 문서
 - &quot;TEXT&quot;: 아스키 텍스트 문서
@@ -34804,7 +34397,7 @@ set_cur_field_name 메서드를 사용하자.</p>
 - &quot;WPS&quot;: WPS 문서
 - &quot;DOCIMG&quot;: 인터넷 프레젠테이션 문서(SaveAs만 가능)
 - &quot;SWF&quot;: Macromedia Flash 문서(SaveAs만 가능)
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -34832,22 +34425,17 @@ string:  ex) prefix:<em>This</em>
 * value는 생략 가능하며, 이때는 콜론도 생략한다.
 * arg에 지정할 수 있는 옵션</p>
 <p>&lt;모든 파일포맷&gt;</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>- setcurdir(boolean, true/false): 로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code>- setcurdir(boolean, true/false): 로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
+</code></pre></div>
 
 <p><HWP(HWPX)></p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>- lock (boolean, TRUE): 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
+<div class="codehilite"><pre><span></span><code>- lock (boolean, TRUE): 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
 - notext (boolean, FALSE): 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
 - template (boolean, FALSE): 새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다. 이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
 - suspendpassword (boolean, FALSE): TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
 - forceopen (boolean, FALSE): TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
 - versionwarning (boolean, FALSE): TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
 
 <HTML>
 
@@ -34891,6 +34479,7 @@ string:  ex) prefix:<em>This</em>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -34967,20 +34556,14 @@ string:  ex) prefix:<em>This</em>
             <td>
               <div class="doc-md-description">
                 <p>파라미터에 할당할 수 있는 값은 모두 7가지로,</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: (셀) 왼쪽에 끼워넣기
+<div class="codehilite"><pre><span></span><code>- 0: (셀) 왼쪽에 끼워넣기
 - 1: 오른쪽에 끼워넣기
 - 2: 위쪽에 끼워넣기
 - 3: 아래쪽에 끼워넣기
 - 4: 덮어쓰기
 - 5: 내용만 덮어쓰기
 - 6: 셀 안에 표로 넣기
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -35045,6 +34628,7 @@ API에서는 하나의 함수로 구현한다.</p>
                 <code>protecting_char</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -35060,6 +34644,7 @@ API에서는 하나의 함수로 구현한다.</p>
                 <code>private_pattern_type</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -35085,6 +34670,7 @@ API에서는 하나의 함수로 구현한다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -35391,16 +34977,7 @@ clear나 save 등의 메서드를 실행한 후에 quit을 실행해야 한다.
             <td>
               <div class="doc-md-description">
                 <p>등록할 개인정보 유형. 다음의 값 중 하나다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0x0001: 전화번호
+<div class="codehilite"><pre><span></span><code>- 0x0001: 전화번호
 - 0x0002: 주민등록번호
 - 0x0004: 외국인등록번호
 - 0x0008: 전자우편
@@ -35410,7 +34987,7 @@ clear나 save 등의 메서드를 실행한 후에 quit을 실행해야 한다.
 - 0x0080: 생년월일
 - 0x0100: 주소
 - 0x0200: 사용자 정의
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -35863,40 +35440,24 @@ NewActionID의 값을 원래의 Action으로 설정한 뒤 호출한다. 이를�
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code>    RGB값을 한/글이 인식하는 정수 형태로 변환해주는 메서드.
+        <div class="codehilite"><pre><span></span><code>    <span class="n">RGB값을</span> <span class="n">한</span><span class="o">/</span><span class="n">글이</span> <span class="n">인식하는</span> <span class="n">정수</span> <span class="n">형태로</span> <span class="n">변환해주는</span> <span class="n">메서드</span><span class="o">.</span>
 
-    자주 쓰이는 24가지 색깔은 문자열로 입력 가능하다.
+    <span class="n">자주</span> <span class="n">쓰이는</span> <span class="mi">24</span><span class="n">가지</span> <span class="n">색깔은</span> <span class="n">문자열로</span> <span class="n">입력</span> <span class="n">가능하다</span><span class="o">.</span>
 
-    Args:
-        red_or_colorname: R값(0~255) 또는 색깔 문자열
-        green: G값(0~255)
-        blue: B값(0~255)
+    <span class="n">Args</span><span class="p">:</span>
+        <span class="n">red_or_colorname</span><span class="p">:</span> <span class="n">R값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span> <span class="n">또는</span> <span class="n">색깔</span> <span class="n">문자열</span>
+        <span class="n">green</span><span class="p">:</span> <span class="n">G값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span>
+        <span class="n">blue</span><span class="p">:</span> <span class="n">B값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span>
 
-    Returns:
-        아래아한글이 인식하는 정수 형태의 RGB값.
+    <span class="n">Returns</span><span class="p">:</span>
+        <span class="n">아래아한글이</span> <span class="n">인식하는</span> <span class="n">정수</span> <span class="n">형태의</span> <span class="n">RGB값</span><span class="o">.</span>
 
-    Examples:
-        &gt;&gt;&gt; from pyhwpx import Hwp
-        &gt;&gt;&gt; hwp = Hwp()
-        &gt;&gt;&gt; hwp.set_font(TextColor=hwp.RGBColor(&quot;Red&quot;))  # 글자색 빨강
-        &gt;&gt;&gt; hwp.insert_text(&quot;빨간 글자색
-</code></pre></div></td></tr></table></div>
+    <span class="n">Examples</span><span class="p">:</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="n">TextColor</span><span class="o">=</span><span class="n">hwp</span><span class="o">.</span><span class="n">RGBColor</span><span class="p">(</span><span class="s2">&quot;Red&quot;</span><span class="p">))</span>  <span class="c1"># 글자색 빨강</span>
+        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s2">&quot;빨간 글자색</span>
+</code></pre></div>
 
 <p>")
             &gt;&gt;&gt; hwp.set_font(ShadeColor=hwp.RGBColor(0, 255, 0))  # 음영색 초록
@@ -35964,10 +35525,9 @@ self.hwp.run_script_macro 명령어를 통해서는 제한없이 실행할 수 �
             <td>
               <div class="doc-md-description">
                 <p>매크로의 유형. 밑의 값 중 하나이다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- 0: 스크립트 매크로(전역 매크로-HWP_GLOBAL_MACRO_TYPE, 기본값)
-- 1: 문서 매크로(해당문서에만 저장/적용되는 매크로-HWP_DOCUMENT_MACRO_TYPE)
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="k">-</span> 0: 스크립트 매크로(전역 매크로-HWP_GLOBAL_MACRO_TYPE, 기본값)
+<span class="k">-</span> 1: 문서 매크로(해당문서에만 저장/적용되는 매크로-HWP_DOCUMENT_MACRO_TYPE)
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -36201,22 +35761,15 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
                 <p>세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
 여러 개를 한꺼번에 할 경우에는 세미콜론으로 구분하여 연속적으로 사용할 수 있다.</p>
 <p>"lock:TRUE;backup:FALSE;prvtext:1"</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;lock:true&quot;: 저장한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
-- &quot;backup:false&quot;: 백업 파일 생성 여부
-- &quot;compress:true&quot;: 압축 여부
-- &quot;fullsave:false&quot;: 스토리지 파일을 완전히 새로 생성하여 저장
-- &quot;prvimage:2&quot;: 미리보기 이미지 (0=off, 1=BMP, 2=GIF)
-- &quot;prvtext:1&quot;: 미리보기 텍스트 (0=off, 1=on)
-- &quot;autosave:false&quot;: 자동저장 파일로 저장할 지 여부 (TRUE: 자동저장, FALSE: 지정 파일로 저장)
-- &quot;export&quot;: 다른 이름으로 저장하지만 열린 문서는 바꾸지 않는다.(lock:false와 함께 설정되어 있을 시 동작)
-</code></pre></div></td></tr></table></div>
+<div class="codehilite"><pre><span></span><code><span class="o">-</span><span class="w"> </span><span class="s2">&quot;lock:true&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">저장한</span><span class="w"> </span><span class="err">후</span><span class="w"> </span><span class="err">해당</span><span class="w"> </span><span class="err">파일을</span><span class="w"> </span><span class="err">계속</span><span class="w"> </span><span class="err">오픈한</span><span class="w"> </span><span class="err">상태로</span><span class="w"> </span><span class="n">lock을</span><span class="w"> </span><span class="err">걸지</span><span class="w"> </span><span class="err">여부</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;backup:false&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">백업</span><span class="w"> </span><span class="err">파일</span><span class="w"> </span><span class="err">생성</span><span class="w"> </span><span class="err">여부</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;compress:true&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">압축</span><span class="w"> </span><span class="err">여부</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;fullsave:false&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">스토리지</span><span class="w"> </span><span class="err">파일을</span><span class="w"> </span><span class="err">완전히</span><span class="w"> </span><span class="err">새로</span><span class="w"> </span><span class="err">생성하여</span><span class="w"> </span><span class="err">저장</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;prvimage:2&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">미리보기</span><span class="w"> </span><span class="err">이미지</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="o">=</span><span class="n">off</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="o">=</span><span class="n">BMP</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">=</span><span class="n">GIF</span><span class="p">)</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;prvtext:1&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">미리보기</span><span class="w"> </span><span class="err">텍스트</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="o">=</span><span class="n">off</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="o">=</span><span class="n">on</span><span class="p">)</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;autosave:false&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">자동저장</span><span class="w"> </span><span class="err">파일로</span><span class="w"> </span><span class="err">저장할</span><span class="w"> </span><span class="err">지</span><span class="w"> </span><span class="err">여부</span><span class="w"> </span><span class="p">(</span><span class="n">TRUE</span><span class="p">:</span><span class="w"> </span><span class="err">자동저장</span><span class="p">,</span><span class="w"> </span><span class="n">FALSE</span><span class="p">:</span><span class="w"> </span><span class="err">지정</span><span class="w"> </span><span class="err">파일로</span><span class="w"> </span><span class="err">저장</span><span class="p">)</span>
+<span class="o">-</span><span class="w"> </span><span class="s2">&quot;export&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">다른</span><span class="w"> </span><span class="err">이름으로</span><span class="w"> </span><span class="err">저장하지만</span><span class="w"> </span><span class="err">열린</span><span class="w"> </span><span class="err">문서는</span><span class="w"> </span><span class="err">바꾸지</span><span class="w"> </span><span class="err">않는다</span><span class="o">.</span><span class="p">(</span><span class="n">lock</span><span class="p">:</span><span class="n">false와</span><span class="w"> </span><span class="err">함께</span><span class="w"> </span><span class="err">설정되어</span><span class="w"> </span><span class="err">있을</span><span class="w"> </span><span class="err">시</span><span class="w"> </span><span class="err">동작</span><span class="p">)</span>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -36724,10 +36277,9 @@ Examples:
             <td>
               <div class="doc-md-description">
                 <p>다음과 같은 옵션을 지정할 수 있다. 0을 지정하면 모두 off이다. 생략하면 0이 지정된다.</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>- 1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
+<div class="codehilite"><pre><span></span><code>- 1: 셀에 부여된 필드 리스트만을 구한다. hwpFieldClickHere와는 함께 지정할 수 없다.(hwpFieldCell)
 - 2: 누름틀에 부여된 필드 리스트만을 구한다. hwpFieldCell과는 함께 지정할 수 없다.(hwpFieldClickHere)
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -37943,16 +37495,12 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
             <td>
               <div class="doc-md-description">
                 <p>파일의 형식</p>
-<div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>- &quot;HWP&quot;: HWP native format. BASE64 로 인코딩되어 있어야 한다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+<div class="codehilite"><pre><span></span><code>- &quot;HWP&quot;: HWP native format. BASE64 로 인코딩되어 있어야 한다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
 - &quot;HWPML2X&quot;: HWP 형식과 호환. 문서의 모든 정보를 유지
 - &quot;HTML&quot;: 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
 - &quot;UNICODE&quot;: 유니코드 텍스트, 서식정보가 없는 텍스트만 저장
 - &quot;TEXT&quot;: 일반 텍스트, 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
-</code></pre></div></td></tr></table></div>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -38783,7 +38331,7 @@ pyhwpx 내부적으로만 사용됨</p>
     <span class="md-icon" title="마지막 업데이트">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025년 3월 29일 11:59:46">2025년 3월 29일</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025년 4월 8일 16:32:42">2025년 4월 8일</span>
   </span>
 
     
@@ -38989,5 +38537,7 @@ pyhwpx 내부적으로만 사용됨</p>
         <script src="javascripts/search_log.js"></script>
       
     
-  </body>
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
 </html>
