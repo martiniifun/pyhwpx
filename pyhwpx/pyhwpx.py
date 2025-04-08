@@ -385,9 +385,7 @@ def excel_address_to_tuple_zero_based(address: str) -> tuple[int | Any, int | An
 # 아래아한글의 ctrl 래퍼 클래스 정의
 class Ctrl:
     """
-    아래아한글의 모든 개체(표, 그림, 글상자 및 각주/미주 등)를 다루는 클래스.
-    
-    ![Image title](assets/logo.png){ loading=lazy }
+    아래아한글의 모든 개체(표, 그림, 글상자 및 각주/미주 등)를 다루기 위한 클래스.
     """
     def __init__(self, com_obj):
         self._com_obj = com_obj  # 원래 COM 객체
@@ -3721,8 +3719,7 @@ class Hwp:
                 os.remove(temp_file)
             print(f"image saved to {path}")
 
-    def NewNumberModify(self, new_number: int,
-                        num_type: Literal["Page", "Figure", "Footnote", "Table", "Endnote", "Equation"] = "Page"):
+    def NewNumberModify(self, new_number: int, num_type: Literal["Page", "Figure", "Footnote", "Table", "Endnote", "Equation"] = "Page") -> bool:
         """
         새 번호 조판을 수정할 수 있는 메서드.
 
@@ -3776,22 +3773,21 @@ class Hwp:
         1. 기존에 쪽번호가 없는 문서에서는 작동하지 않으므로
            쪽번호가 정의되어 있어야 한다.
            (쪽번호 정의는 PageNumPos 메서드 참조)
-        2. 새 번호를 지정한 페이지 및 이후 모든 페이지가
-           영향을 받는다.
+        2. 새 번호를 지정한 페이지 및 이후 모든 페이지가 영향을 받는다.
         3. NewNumber 실행시점의 캐럿위치 뒤쪽(해당 페이지 내)에
            NewNumber 조판이 있는 경우, 삽입한 조판은 무효가 된다.
            (페이지 맨 뒤쪽의 새 번호만 유효함)
 
-        :param new_number:
-            새 번호
-        :param num_type:
-            타입 지정
-            "Page": 쪽(기본값)
-            "Figure": 그림
-            "Footnote": 각주
-            "Table": 표
-            "Endnote": 미주
-            "Equation": 수식
+        Args:
+            new_number: 새 번호
+            num_type: 타입 지정
+
+                - "Page": 쪽(기본값)
+                - "Figure": 그림
+                - "Footnote": 각주
+                - "Table": 표
+                - "Endnote": 미주
+                - "Equation": 수식
 
         Returns:
             성공시 True, 실패시 False를 리턴
@@ -3802,11 +3798,9 @@ class Hwp:
         pset.NewNumber = new_number
         return self.HAction.Execute("NewNumber", pset.HSet)
 
-    def PageNumPos(self, global_start: int = 1, position: Literal[
-        "TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter",
-                   number_format: Literal[
-                       "Digit", "CircledDigit", "RomanCapital", "RomanSmall", "LatinCapital", "HangulSyllable", "Ideograph", "DecagonCircle", "DecagonCircleHanja"] = "Digit",
-                   side_char=True):
+    def PageNumPos(self, global_start: int = 1, position: Literal["TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter",
+                   number_format: Literal["Digit", "CircledDigit", "RomanCapital", "RomanSmall", "LatinCapital", "HangulSyllable", "Ideograph", "DecagonCircle", "DecagonCircleHanja"] = "Digit",
+                   side_char=True) -> bool:
         """
         문서 전체에 쪽번호를 삽입하는 메서드.
 
@@ -9603,7 +9597,7 @@ class Hwp:
         """
         return self.hwp.ProtectPrivateInfo(PotectingChar=protecting_char, PrivatePatternType=private_pattern_type)
 
-    def ProtectPrivateInfo(self, protecting_char, private_pattern_type):
+    def ProtectPrivateInfo(self, protecting_char:str, private_pattern_type:int) -> bool:
         """
         개인정보를 보호한다.
 
@@ -15523,7 +15517,7 @@ class Hwp:
         else:
             return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
 
-    def SelectText(self, spara: Union[int, list, tuple] = 0, spos=0, epara=0, epos=0, slist=0):
+    def SelectText(self, spara: Union[int, list, tuple] = 0, spos:int=0, epara:int=0, epos:int=0, slist:int=0) -> bool:
         """
         특정 범위의 텍스트를 블록선택한다.
 
@@ -15683,7 +15677,7 @@ class Hwp:
         """
         return self.hwp.SetFieldViewOption(option=option)
 
-    def SetFieldViewOption(self, option):
+    def SetFieldViewOption(self, option:int) -> bool:
         """
         양식모드와 읽기전용모드일 때 현재 열린 문서의 필드의 겉보기 속성(『』표시)을 바꾼다.
 
