@@ -3621,6 +3621,7 @@ class Hwp:
         pset = self.HParameterSet.HStyle
         if type(style) != int:
             style_dict = self.get_style_dict(as_="dict")
+            key = None
             for key, value in style_dict.items():
                 if value.get('name') == style:
                     style = key
@@ -3746,7 +3747,7 @@ class Hwp:
             "Equation": 수식
 
         Returns:
-        성공시 True, 실패시 False를 리턴
+            성공시 True, 실패시 False를 리턴
         """
         current_pos = self.GetPos()
         current_page = self.PageCount
@@ -3788,7 +3789,7 @@ class Hwp:
             "Equation": 수식
 
         Returns:
-        성공시 True, 실패시 False를 리턴
+            성공시 True, 실패시 False를 리턴
         """
         pset = self.HParameterSet.HAutoNum
         self.HAction.GetDefault("NewNumber", pset.HSet)
@@ -3829,7 +3830,7 @@ class Hwp:
             False : 줄표 삽입하지 않음
 
         Returns:
-        성공시 True, 실패시 False를 리턴
+            성공시 True, 실패시 False를 리턴
         """
         pset = self.HParameterSet.HPageNumPos
         self.HAction.GetDefault("PageNumPos", pset.HSet)
@@ -3868,21 +3869,22 @@ class Hwp:
             self.insert_text(rowsep)
             self.SelectCtrlFront()
 
-    def set_cell_margin(self, left: float = 1.8, right: float = 1.8, top: float = 0.5, bottom: float = 0.5,
-                        as_: Literal["mm", "hwpunit"] = "mm") -> bool:
+    def set_cell_margin(self, left: float = 1.8, right: float = 1.8, top: float = 0.5, bottom: float = 0.5, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
         """
-        표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 지정하는 메서드. (표 안에서만 실행가능)
-        단, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 적용되지 않음.
+        표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 지정하는 메서드.
+
+        표 안에서만 실행가능하며, 전체 셀이 아닌 표 자체를 선택한 상태에서는 여백이 적용되지 않음.
         차례대로 왼쪽, 오른쪽, 상단, 하단의 여백을 밀리미터(기본값) 또는 HwpUnit 단위로 지정.
 
-        :param left: 셀의 좌측 안여백
-        :param right: 셀의 우측 안여백
-        :param top: 셀의 상단 안여백
-        :param bottom: 셀의 하단 안여백
-        :param as_: 입력단위. ["mm", "hwpunit"] 중 기본값은 "mm"
+        Args:
+            left: 셀의 좌측 안여백
+            right: 셀의 우측 안여백
+            top: 셀의 상단 안여백
+            bottom: 셀의 하단 안여백
+            as_: 입력단위. ["mm", "hwpunit"] 중 기본값은 "mm"
 
         Returns:
-        성공시 True, 실패시 False를 리턴함
+            성공시 True, 실패시 False를 리턴함
         """
         if not self.is_cell():
             return False
@@ -3903,7 +3905,7 @@ class Hwp:
             pset.ShapeTableCell.MarginBottom = bottom
         return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
-    def get_cell_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> dict|bool:
+    def get_cell_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> None | dict[str, int] | bool | dict[str, float]:
         """
         표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 조회하는 메서드.
 
@@ -3934,21 +3936,21 @@ class Hwp:
                 "bottom": pset.ShapeTableCell.MarginBottom,
             }
 
-    def set_table_inside_margin(self, left: float = 1.8, right: float = 1.8, top: float = 0.5, bottom: float = 0.5,
-                                as_: Literal["mm", "hwpunit"] = "mm") -> bool:
+    def set_table_inside_margin(self, left: float = 1.8, right: float = 1.8, top: float = 0.5, bottom: float = 0.5, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
         """
         표 내부 모든 셀의 안여백을 일괄설정하는 메서드.
 
         표 전체를 선택하지 않고 표 내부에 커서가 있기만 하면 모든 셀에 적용됨.
 
-        :param left: 모든 셀의 좌측여백(mm)
-        :param right: 모든 셀의 우측여백(mm)
-        :param top: 모든 셀의 상단여백(mm)
-        :param bottom: 모든 셀의 하단여백(mm)
-        :param `as_`: 입력단위. "mm", "hwpunit" 중 택일. 기본값은 "mm"
+        Args:
+            left: 모든 셀의 좌측여백(mm)
+            right: 모든 셀의 우측여백(mm)
+            top: 모든 셀의 상단여백(mm)
+            bottom: 모든 셀의 하단여백(mm)
+            as_: 입력단위. "mm", "hwpunit" 중 택일. 기본값은 "mm"
 
         Returns:
-        성공시 True, 실패시 False를 리턴
+            성공시 True, 실패시 False를 리턴
         """
         if not self.is_cell():
             return False
