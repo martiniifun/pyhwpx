@@ -4157,8 +4157,7 @@ class Hwp:
         self.set_pos(*cur_pos)
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
-    def set_table_outside_margin(self, left: float = 1.0, right: float = 1.0, top: float = 1.0, bottom: float = 1.0,
-                                 as_: Literal["mm", "hwpunit"] = "mm") -> bool:
+    def set_table_outside_margin(self, left: float=-1.0, right: float=-1.0, top: float=-1.0, bottom: float=-1.0, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
         """
         표의 바깥여백을 변경하는 메서드.
 
@@ -4177,19 +4176,30 @@ class Hwp:
         if not self.is_cell():
             return False
         cur_pos = self.get_pos()
-        self.SelectCtrlFront()
-        prop = self.CurSelectedCtrl.Properties
+        pset = self.HParameterSet.HShapeObject
+        self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
         if as_ == "mm":
-            left = self.mili_to_hwp_unit(left)
-            right = self.mili_to_hwp_unit(right)
-            top = self.mili_to_hwp_unit(top)
-            bottom = self.mili_to_hwp_unit(bottom)
-        prop.SetItem("OutsideMarginLeft", left)
-        prop.SetItem("OutsideMarginRight", right)
-        prop.SetItem("OutsideMarginTop", top)
-        prop.SetItem("OutsideMarginBottom", bottom)
-        self.CurSelectedCtrl.Properties = prop
-        return self.set_pos(*cur_pos)
+            if left >= 0:
+                pset.OutsideMarginLeft = self.MiliToHwpUnit(left)
+            if right >= 0:
+                pset.OutsideMarginRight = self.MiliToHwpUnit(right)
+            if top >= 0:
+                pset.OutsideMarginTop = self.MiliToHwpUnit(top)
+            if bottom >= 0:
+                pset.OutsideMarginBottom = self.MiliToHwpUnit(bottom)
+        elif as_.lower() == "hwpunit":
+            if left >= 0:
+                pset.OutsideMarginLeft = left
+            if right >= 0:
+                pset.OutsideMarginRight = right
+            if top >= 0:
+                pset.OutsideMarginTop = top
+            if bottom >= 0:
+                pset.OutsideMarginBottom = bottom
+        try:
+            return self.HAction.Execute("TablePropertyDialog", pset.HSet)
+        finally:
+            self.set_pos(*cur_pos)
 
     def set_table_outside_margin_left(self, val, as_: Literal["mm", "hwpunit"] = "mm"):
         cur_pos = self.get_pos()
@@ -5908,32 +5918,32 @@ class Hwp:
         """
         self.hwp.XHwpDocuments.Add(0)  # 0은 새 창, 1은 새 탭
 
-    def hwp_unit_to_mili(self, hwp_unit) -> float:
+    def hwp_unit_to_mili(self, hwp_unit:int) -> float:
         """
         HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
 
         HwpUnit으로 리턴되었거나, 녹화된 코드의 HwpUnit값을 확인할 때 유용하게 사용할 수 있다.
 
         Returns:
-        HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값
+        HwpUnit을 7200으로 나눈 후 25.4를 곱하고 소숫점 셋째자리에서 반올림한 값
         """
         if hwp_unit == 0:
             return 0
         else:
-            return round(hwp_unit / 7200 * 25.4, 4)
+            return round(hwp_unit / 7200 * 25.4, 2)
 
-    def HwpUnitToMili(self, hwp_unit: int) -> float:
+    def HwpUnitToMili(self, hwp_unit:int) -> float:
         """
         HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
         HwpUnit으로 리턴되었거나, 녹화된 코드의 HwpUnit값을 확인할 때 유용하게 사용할 수 있다.
 
         Returns:
-        HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값
+        HwpUnit을 7200으로 나눈 후 25.4를 곱하고 소숫점 셋째 자리에서 반올림한 값
         """
         if hwp_unit == 0:
             return 0
         else:
-            return round(hwp_unit / 7200 * 25.4, 4)
+            return round(hwp_unit / 7200 * 25.4, 2)
 
     def create_table(self, rows, cols, treat_as_char: bool = True, width_type=0, height_type=0, header=True,
                      height=0) -> bool:
@@ -15802,14 +15812,14 @@ class Hwp:
         """
         return self.hwp.SetMessageBoxMode(Mode=mode)
 
-    def set_pos(self, list: int, para: int, pos: int) -> bool:
+    def set_pos(self, List: int, para: int, pos: int) -> bool:
         """
         캐럿을 문서 내 특정 위치로 옮기기
 
         지정된 좌표로 캐럿을 옮겨준다.
 
         Args:
-            list: 캐럿이 위치한 문서 내 list ID
+            List: 캐럿이 위치한 문서 내 list ID
             para: 캐럿이 위치한 문단 ID. 음수거나, 범위를 넘어가면 문서의 시작으로 이동하며, pos는 무시한다.
             pos: 캐럿이 위치한 문단 내 글자 위치. -1을 주면 해당문단의 끝으로 이동한다. 단 para가 범위 밖일 경우 pos는 무시되고 문서의 시작으로 캐럿을 옮긴다.
 
@@ -15822,7 +15832,7 @@ class Hwp:
         else:
             return False
 
-    def SetPos(self, list: int, para: int, pos: int) -> bool:
+    def SetPos(self, List: int, para: int, pos: int) -> bool:
         """
         캐럿을 문서 내 특정 위치로 옮기기
 
@@ -15836,13 +15846,13 @@ class Hwp:
         Returns:
             성공하면 True, 실패하면 False
         """
-        self.hwp.SetPos(List=list, Para=para, pos=pos)
+        self.hwp.SetPos(List=List, Para=para, pos=pos)
         if para == self.get_pos()[1]:
             return True
         else:
             return False
 
-    def set_pos_by_set(self, disp_val):
+    def set_pos_by_set(self, disp_val:Any) -> bool:
         """
         캐럿을 ParameterSet으로 얻어지는 위치로 옮긴다.
 
