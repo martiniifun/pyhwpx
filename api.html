@@ -16400,7 +16400,7 @@ hwp.SetMessageBoxMode(0x10000)을 미리 실행해놓아야 한다.</p>
         <p>HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
 HwpUnit으로 리턴되었거나, 녹화된 코드의 HwpUnit값을 확인할 때 유용하게 사용할 수 있다.</p>
 <p>Returns:
-HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값</p>
+HwpUnit을 7200으로 나눈 후 25.4를 곱하고 소숫점 셋째 자리에서 반올림한 값</p>
 
 
     </div>
@@ -24466,7 +24466,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 
 
 <h4 id="pyhwpx.Hwp.SetPos" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">SetPos</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">para</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">SetPos</span><span class="p">(</span><span class="n">List</span><span class="p">,</span> <span class="n">para</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span></code>
 
 </h4>
 
@@ -24493,7 +24493,6 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>list</code>
             </td>
             <td>
-                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -32537,7 +32536,7 @@ False를 리턴
         <p>HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.</p>
 <p>HwpUnit으로 리턴되었거나, 녹화된 코드의 HwpUnit값을 확인할 때 유용하게 사용할 수 있다.</p>
 <p>Returns:
-HwpUnit을 7200으로 나눈 후 25.4를 곱하고 반올림한 값</p>
+HwpUnit을 7200으로 나눈 후 25.4를 곱하고 소숫점 셋째자리에서 반올림한 값</p>
 
 
     </div>
@@ -36816,7 +36815,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 
 
 <h4 id="pyhwpx.Hwp.set_pos" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">set_pos</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">para</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">set_pos</span><span class="p">(</span><span class="n">List</span><span class="p">,</span> <span class="n">para</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span></code>
 
 </h4>
 
@@ -36840,7 +36839,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>list</code>
+                <code>List</code>
             </td>
             <td>
                   <code><span title="int">int</span></code>
@@ -36947,6 +36946,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
                 <code>disp_val</code>
             </td>
             <td>
+                  <code><span title="typing.Any">Any</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -36972,6 +36972,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -37179,7 +37180,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 
 
 <h4 id="pyhwpx.Hwp.set_table_outside_margin" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">set_table_outside_margin</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">as_</span><span class="o">=</span><span class="s1">&#39;mm&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">set_table_outside_margin</span><span class="p">(</span><span class="n">left</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">right</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">top</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">as_</span><span class="o">=</span><span class="s1">&#39;mm&#39;</span><span class="p">)</span></code>
 
 </h4>
 
@@ -37214,7 +37215,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
               </div>
             </td>
             <td>
-                  <code>1.0</code>
+                  <code>-1.0</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -37230,7 +37231,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
               </div>
             </td>
             <td>
-                  <code>1.0</code>
+                  <code>-1.0</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -37246,7 +37247,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
               </div>
             </td>
             <td>
-                  <code>1.0</code>
+                  <code>-1.0</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -37262,7 +37263,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
               </div>
             </td>
             <td>
-                  <code>1.0</code>
+                  <code>-1.0</code>
             </td>
           </tr>
           <tr class="doc-section-item">
