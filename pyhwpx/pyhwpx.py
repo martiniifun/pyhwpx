@@ -390,6 +390,10 @@ class Ctrl:
     def __repr__(self):
         return f"<CtrlCode: CtrlID={self.CtrlID}, CtrlCH={self.CtrlCh}, UserDesc={self.UserDesc}>"
 
+    def GetCtrlInstID(self) -> Any:
+        return self._com_obj.GetCtrlInstID()
+
+
     def GetAnchorPos(self, type_: int = 0) -> Any:
         """
         해당 컨트롤의 앵커(조판부호)의 위치를 반환한다.
@@ -8710,9 +8714,19 @@ class Hwp:
                                           watermark=watermark, Effect=effect, Width=width, Height=height)
             pic_prop = ctrl.Properties
             if not all([width, height]) and self.is_cell():
-                cell_param = self.hwp.HParameterSet.HShapeObject
-                self.hwp.HAction.GetDefault("TablePropertyDialog", cell_param.HSet)
-                cell_width = cell_param.ShapeTableCell.Width - cell_param.ShapeTableCell.MarginLeft - cell_param.ShapeTableCell.MarginRight
+
+                pset = self.HParameterSet.HShapeObject
+                self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+                if pset.ShapeTableCell.HasMargin == 1:  # 1이면
+                    # 특정 셀 안여백
+                    cell_pset = self.HParameterSet.HShapeObject
+                    self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+                    margin = round(cell_pset.ShapeTableCell.MarginLeft + cell_pset.ShapeTableCell.MarginRight, 2)
+                else:
+                    # 전역 셀 안여백
+                    margin = round(pset.CellMarginLeft + pset.CellMarginRight, 2)
+
+                cell_width = pset.ShapeTableCell.Width - margin
                 dst_height = pic_prop.Item("Height") / pic_prop.Item("Width") * cell_width
                 pic_prop.SetItem("Width", cell_width)
                 pic_prop.SetItem("Height", round(dst_height))
