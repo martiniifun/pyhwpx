@@ -384,6 +384,11 @@ def excel_address_to_tuple_zero_based(address: str) -> tuple[int | Any, int | An
 
 # 아래아한글의 ctrl 래퍼 클래스 정의
 class Ctrl:
+    """
+    아래아한글의 모든 개체(표, 그림, 글상자 및 각주/미주 등)를 다루는 클래스.
+    
+    ![Image title](assets/logo.png){ loading=lazy }
+    """
     def __init__(self, com_obj):
         self._com_obj = com_obj  # 원래 COM 객체
 
@@ -4037,7 +4042,7 @@ class Hwp:
                 "bottom": margin_bottom,
             }
 
-    def get_table_outside_margin_left(self, as_: Literal["mm", "hwpunit"] = "mm"):
+    def get_table_outside_margin_left(self, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
         """
         표의 바깥 왼쪽 여백값을 리턴하는 메서드
 
@@ -4068,7 +4073,7 @@ class Hwp:
         self.set_pos(*cur_pos)
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
-    def get_table_outside_margin_right(self, as_: Literal["mm", "hwpunit"] = "mm"):
+    def get_table_outside_margin_right(self, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
         """
         표의 바깥 오른쪽 여백값을 리턴하는 메서드
 
@@ -4100,7 +4105,7 @@ class Hwp:
         self.set_pos(*cur_pos)
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
-    def get_table_outside_margin_top(self, as_: Literal["mm", "hwpunit"] = "mm"):
+    def get_table_outside_margin_top(self, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
         """
         표의 바깥 상단 여백값을 리턴하는 메서드
 
@@ -4131,7 +4136,7 @@ class Hwp:
         self.set_pos(*cur_pos)
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
-    def get_table_outside_margin_bottom(self, as_: Literal["mm", "hwpunit"] = "mm"):
+    def get_table_outside_margin_bottom(self, as_: Literal["mm", "hwpunit"] = "mm") -> int|float|bool:
         """
         표의 바깥 하단 여백값을 리턴하는 메서드
 
@@ -6499,7 +6504,7 @@ class Hwp:
         현재 편집중인 문서의 내용을 닫고 빈문서 편집 상태로 돌아간다.
 
         Args:
-            편집중인 문서의 내용에 대한 처리 방법, 생략하면 1(hwpDiscard)가 선택된다.
+            option: 편집중인 문서의 내용에 대한 처리 방법, 생략하면 1(hwpDiscard)가 선택된다.
 
                 - 0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
                 - 1: 문서의 내용을 버린다. (hwpDiscard, 기본값)
@@ -6560,7 +6565,7 @@ class Hwp:
     def ConvertPUAHangulToUnicode(self, reverse):
         return self.hwp.ConvertPUAHangulToUnicode(Reverse=reverse)
 
-    def create_action(self, actidstr: str):
+    def create_action(self, actidstr: str) -> Any:
         """
         Action 객체를 생성한다.
 
@@ -7051,7 +7056,7 @@ class Hwp:
     def FindDir(self, find_dir: Literal["Forward", "Backward", "AllDoc"] = "AllDoc"):
         return self.hwp.FindDir(FindDir=find_dir)
 
-    def find_private_info(self, private_type, private_string):
+    def find_private_info(self, private_type:int, private_string:str) -> int:
         """
         개인정보를 찾는다. (비밀번호 설정 등의 이유, 현재 비활성화된 것으로 추정)
 
@@ -7170,7 +7175,7 @@ class Hwp:
         """
         return self.hwp.GetBinDataPath(binid=binid)
 
-    def get_cur_field_name(self, option=0) -> str:
+    def get_cur_field_name(self, option:int=0) -> str:
         """
         현재 캐럿이 위치하는 곳의 필드이름을 구한다.
         이 함수를 통해 현재 필드가 셀필드인지 누름틀필드인지 구할 수 있다.
@@ -7495,7 +7500,7 @@ class Hwp:
         self.scan_font()
         return self.hwp.GetFontList(langid=langid)
 
-    def get_heading_string(self):
+    def get_heading_string(self) -> str:
         """
         현재 커서가 위치한 문단 시작부분의 글머리표/문단번호/개요번호를 추출한다.
 
@@ -7563,7 +7568,7 @@ class Hwp:
     def GetMetatagNameText(self, tag):
         return self.hwp.GetMetatagNameText(tag=tag)
 
-    def get_mouse_pos(self, x_rel_to=1, y_rel_to=1):
+    def get_mouse_pos(self, x_rel_to:int=1, y_rel_to:int=1) -> "Hwp.HParameterSet":
         """
         마우스의 현재 위치를 얻어온다.
 
@@ -7740,7 +7745,7 @@ class Hwp:
         """
         return self.hwp.GetPos()
 
-    def get_pos_by_set(self):
+    def get_pos_by_set(self) -> "Hwp.HParameterSet":
         """
         현재 캐럿의 위치 정보를 ParameterSet으로 얻어온다.
 
@@ -7880,7 +7885,7 @@ class Hwp:
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.GetScriptSource(filename=filename)
 
-    def get_selected_pos(self):
+    def get_selected_pos(self) -> tuple[bool, str, str, int, str, str, int]:
         """
         현재 설정된 블록의 위치정보를 얻어온다.
 
@@ -7926,7 +7931,7 @@ class Hwp:
         """
         return self.hwp.GetSelectedPos()
 
-    def get_selected_pos_by_set(self, sset, eset) -> bool:
+    def get_selected_pos_by_set(self, sset:Any, eset:Any) -> bool:
         """
         현재 설정된 블록의 위치정보를 얻어온다.
 
@@ -8353,7 +8358,7 @@ class Hwp:
     def InitHParameterSet(self):
         return self.hwp.InitHParameterSet()
 
-    def init_scan(self, option=0x07, range=0x77, spara=0, spos=0, epara=-1, epos=-1):
+    def init_scan(self, option:int=0x07, range:int=0x77, spara:int=0, spos:int=0, epara:int=-1, epos:int=-1) -> bool:
         """
         문서의 내용을 검색하기 위해 초기설정을 한다.
 
@@ -8566,10 +8571,10 @@ class Hwp:
             if move_doc_end:
                 self.MoveDocEnd()
 
-    def insert_background_picture(self, path,
+    def insert_background_picture(self, path:str,
                                   border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
-                                  embedded=True, filloption=5, effect=0, watermark=False, brightness=0,
-                                  contrast=0) -> bool:
+                                  embedded:bool=True, filloption:int=5, effect:int=0, watermark:bool=False, brightness:int=0,
+                                  contrast:int=0) -> bool:
         """
         **셀**에 배경이미지를 삽입한다.
 
@@ -8717,7 +8722,7 @@ class Hwp:
             if "temp.jpg" in os.listdir():
                 os.remove(path)
 
-    def insert_ctrl(self, ctrl_id, initparam):
+    def insert_ctrl(self, ctrl_id:str, initparam:Any) -> Ctrl:
         """
         현재 캐럿 위치에 컨트롤을 삽입한다.
 
@@ -8803,8 +8808,7 @@ class Hwp:
         """
         return self.hwp.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
-    def insert_picture(self, path: str, treat_as_char=True, embedded=True, sizeoption=0, reverse=False, watermark=False,
-                       effect=0, width=0, height=0):
+    def insert_picture(self, path: str, treat_as_char:bool=True, embedded:bool=True, sizeoption:int=0, reverse:bool=False, watermark:bool=False, effect:int=0, width:int=0, height:int=0) -> Ctrl:
         """
         현재 캐럿의 위치에 그림을 삽입한다.
 
@@ -9252,7 +9256,7 @@ class Hwp:
         """
         return self.hwp.MovePos(moveID=move_id, Para=para, pos=pos)
 
-    def move_to_field(self, field, idx=0, text=True, start=True, select=False) -> bool:
+    def move_to_field(self, field:str, idx:int=0, text:bool=True, start:bool=True, select:bool=False) -> bool:
         """
         지정한 필드로 캐럿을 이동한다.
 
@@ -9302,7 +9306,7 @@ class Hwp:
     def Numbering(self, numbering):
         return self.hwp.Numbering(Numbering=numbering)
 
-    def open(self, filename: str, format: str = "", arg: str = ""):
+    def open(self, filename: str, format: str = "", arg: str = "") -> bool:
         """
         문서를 연다.
 
@@ -9579,7 +9583,7 @@ class Hwp:
     def PrintType(self, print_method):
         return self.hwp.PrintType(PrintMethod=print_method)
 
-    def protect_private_info(self, protecting_char, private_pattern_type):
+    def protect_private_info(self, protecting_char:str, private_pattern_type:int) -> bool:
         """
         개인정보를 보호한다.
 
@@ -14658,7 +14662,7 @@ class Hwp:
         """
         return self.hwp.HAction.Run("TableColPageUp")
 
-    def TableDeleteCell(self, remain_cell=False) -> bool:
+    def TableDeleteCell(self, remain_cell:bool=False) -> bool:
         """
         셀 삭제
 
@@ -14961,7 +14965,7 @@ class Hwp:
         self.HAction.GetDefault("TableRightCellAppend", pset.HSet)
         return self.HAction.Execute("TableRightCellAppend", pset.HSet)
 
-    def TableSplitCell(self, Rows=2, Cols=0, DistributeHeight=0, Merge=0):
+    def TableSplitCell(self, Rows:int=2, Cols:int=0, DistributeHeight:int=0, Merge:int=0) -> bool:
         """
         셀 나누기.
 
@@ -15880,7 +15884,7 @@ class Hwp:
         """
         return self.hwp.SetPosBySet(dispVal=disp_val)
 
-    def SetPosBySet(self, disp_val):
+    def SetPosBySet(self, disp_val:"Hwp.HParameterSet") -> bool:
         """
         캐럿을 ParameterSet으로 얻어지는 위치로 옮긴다.
 
@@ -15961,8 +15965,7 @@ class Hwp:
         """
         return self.hwp.SetTextFile(data=data, Format=format, option=option)
 
-    def SetTextFile(self, data: str, format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
-                    option="insertfile"):
+    def SetTextFile(self, data: str, format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X", option:str="insertfile") -> int:
         """
         GetTextFile로 저장한 문자열 정보를 문서에 삽입
 
