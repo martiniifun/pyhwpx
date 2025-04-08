@@ -3935,6 +3935,7 @@ class Hwp:
                                 as_: Literal["mm", "hwpunit"] = "mm") -> bool:
         """
         표 내부 모든 셀의 안여백을 일괄설정하는 메서드.
+
         표 전체를 선택하지 않고 표 내부에 커서가 있기만 하면 모든 셀에 적용됨.
 
         :param left: 모든 셀의 좌측여백(mm)
@@ -3958,7 +3959,7 @@ class Hwp:
         pset.CellMarginBottom = bottom
         return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
-    def get_table_inside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> Union[dict, bool]:
+    def get_table_inside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> None | dict[str, Any] | bool | dict[str, float]:
         if not self.is_cell():
             return False
         cur_pos = self.get_pos()
@@ -3984,23 +3985,44 @@ class Hwp:
                 "bottom": margin_bottom,
             }
 
-    def get_table_outside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> Union[dict, bool]:
+    def get_table_outside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> None | dict[str, Any] | bool | dict[str, float]:
+        """
+        표의 바깥 여백을 딕셔너리로 한 번에 리턴하는 메서드
+
+        Args:
+            as_:
+                리턴하는 여백값의 단위
+
+                    - "mm": 밀리미터(기본값)
+                    - "hwpunit": HwpUnit
+
+        Returns:
+            표의 상하좌우 바깥여백값을 담은 딕셔너리. 표 안에서 실행하지 않은 경우에는 False를 리턴한다.
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.get_table_outside_margin()
+            {'left': 4.0, 'right': 3.0, 'top': 2.0, 'bottom': 1.0}
+
+        """
         if not self.is_cell():
             return False
         cur_pos = self.get_pos()
-        self.SelectCtrlFront()
-        prop = self.CurSelectedCtrl.Properties
-        margin_left = prop.Item("OutsideMarginLeft")
-        margin_right = prop.Item("OutsideMarginRight")
-        margin_top = prop.Item("OutsideMarginTop")
-        margin_bottom = prop.Item("OutsideMarginBottom")
+        self.TableCellBlock()
+        pset = self.HParameterSet.HShapeObject
+        self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+        margin_left = pset.OutsideMarginLeft
+        margin_right = pset.OutsideMarginRight
+        margin_top = pset.OutsideMarginTop
+        margin_bottom = pset.OutsideMarginBottom
         self.set_pos(*cur_pos)
         if as_ == "mm":
             return {
-                "left": self.hwp_unit_to_mili(margin_left),
-                "right": self.hwp_unit_to_mili(margin_right),
-                "top": self.hwp_unit_to_mili(margin_top),
-                "bottom": self.hwp_unit_to_mili(margin_bottom),
+                "left": round(self.hwp_unit_to_mili(margin_left), 2),
+                "right": round(self.hwp_unit_to_mili(margin_right), 2),
+                "top": round(self.hwp_unit_to_mili(margin_top), 2),
+                "bottom": round(self.hwp_unit_to_mili(margin_bottom), 2),
             }
         elif as_.lower() == "hwpunit":
             return {
@@ -4011,58 +4033,146 @@ class Hwp:
             }
 
     def get_table_outside_margin_left(self, as_: Literal["mm", "hwpunit"] = "mm"):
+        """
+        표의 바깥 왼쪽 여백값을 리턴하는 메서드
+
+        Args:
+            as_:
+                리턴하는 여백값의 단위
+
+                    - "mm": 밀리미터(기본값)
+                    - "hwpunit": HwpUnit
+
+        Returns:
+            표의 좌측 바깥여백값. 단위에 따라 int|float을 리턴하며, 표 안에서 실행하지 않은 경우에는 False를 리턴한다.
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.get_table_outside_margin_left()
+            4.0
+
+        """
         if not self.is_cell():
             return False
         cur_pos = self.get_pos()
-        self.SelectCtrlFront()
-        prop = self.CurSelectedCtrl.Properties
-        margin = prop.Item("OutsideMarginLeft")
+        self.TableCellBlock()
+        pset = self.HParameterSet.HShapeObject
+        self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+        margin = pset.OutsideMarginLeft
         self.set_pos(*cur_pos)
-        return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
+        return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
     def get_table_outside_margin_right(self, as_: Literal["mm", "hwpunit"] = "mm"):
+        """
+        표의 바깥 오른쪽 여백값을 리턴하는 메서드
+
+        Args:
+            as_:
+                리턴하는 여백값의 단위
+
+                    - "mm": 밀리미터(기본값)
+                    - "hwpunit": HwpUnit
+
+        Returns:
+            표의 우측 바깥여백값. 단위에 따라 int|float을 리턴하며, 표 안에서 실행하지 않은 경우에는 False를 리턴한다.
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.get_table_outside_margin_left()
+            3.0
+
+        """
+
         if not self.is_cell():
             return False
         cur_pos = self.get_pos()
-        self.SelectCtrlFront()
-        prop = self.CurSelectedCtrl.Properties
-        margin = prop.Item("OutsideMarginRight")
+        self.TableCellBlock()
+        pset = self.HParameterSet.HShapeObject
+        self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+        margin = pset.OutsideMarginRight
         self.set_pos(*cur_pos)
-        return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
+        return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
     def get_table_outside_margin_top(self, as_: Literal["mm", "hwpunit"] = "mm"):
+        """
+        표의 바깥 상단 여백값을 리턴하는 메서드
+
+        Args:
+            as_:
+                리턴하는 여백값의 단위
+
+                    - "mm": 밀리미터(기본값)
+                    - "hwpunit": HwpUnit
+
+        Returns:
+            표의 위쪽 바깥여백값. 단위에 따라 int|float을 리턴하며, 표 안에서 실행하지 않은 경우에는 False를 리턴한다.
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.get_table_outside_margin_top()
+            2.0
+
+        """
         if not self.is_cell():
             return False
         cur_pos = self.get_pos()
-        self.SelectCtrlFront()
-        prop = self.CurSelectedCtrl.Properties
-        margin = prop.Item("OutsideMarginTop")
+        self.TableCellBlock()
+        pset = self.HParameterSet.HShapeObject
+        self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+        margin = pset.OutsideMarginTop
         self.set_pos(*cur_pos)
-        return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
+        return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
     def get_table_outside_margin_bottom(self, as_: Literal["mm", "hwpunit"] = "mm"):
+        """
+        표의 바깥 하단 여백값을 리턴하는 메서드
+
+        Args:
+            as_:
+                리턴하는 여백값의 단위
+
+                    - "mm": 밀리미터(기본값)
+                    - "hwpunit": HwpUnit
+
+        Returns:
+            표의 아랫쪽 바깥여백값. 단위에 따라 int|float을 리턴하며, 표 안에서 실행하지 않은 경우에는 False를 리턴한다.
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.get_table_outside_margin_bottom()
+            1.0
+
+        """
         if not self.is_cell():
             return False
         cur_pos = self.get_pos()
-        self.SelectCtrlFront()
-        prop = self.CurSelectedCtrl.Properties
-        margin = prop.Item("OutsideMarginBottom")
+        self.TableCellBlock()
+        pset = self.HParameterSet.HShapeObject
+        self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
+        margin = pset.OutsideMarginBottom
         self.set_pos(*cur_pos)
-        return self.hwp_unit_to_mili(margin) if as_ == "mm" else margin
+        return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
     def set_table_outside_margin(self, left: float = 1.0, right: float = 1.0, top: float = 1.0, bottom: float = 1.0,
                                  as_: Literal["mm", "hwpunit"] = "mm") -> bool:
         """
         표의 바깥여백을 변경하는 메서드.
+
         기본 입력단위는 "mm"이며, "HwpUnit" 단위로 변경 가능.
-        :param left: 표의 좌측 바깥여백
-        :param right: 표의 우측 바깥여백
-        :param top: 표의 상단 바깥여백
-        :param bottom: 표의 하단 바깥여백
-        :param `as_`: 입력단위. ["mm", "hwpunit"] 중 기본값은 "mm"
+
+        Args:
+            left: 표의 좌측 바깥여백
+            right: 표의 우측 바깥여백
+            top: 표의 상단 바깥여백
+            bottom: 표의 하단 바깥여백
+            as_: 입력단위. ["mm", "hwpunit"] 중 기본값은 "mm"
 
         Returns:
-        성공시 True, 실패시 False를 리턴
+            성공시 True, 실패시 False를 리턴
         """
         if not self.is_cell():
             return False
@@ -4373,16 +4483,28 @@ class Hwp:
         else:
             raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
 
-    def set_table_width(self, width: int = 0, as_: Literal["mm", "hwpunit", "hu"] = "mm"):
+    def set_table_width(self, width: int = 0, as_: Literal["mm", "hwpunit", "hu"] = "mm") -> bool:
         """
         표 전체의 너비를 원래 열들의 비율을 유지하면서 조정하는 메서드.
 
         내부적으로 xml 파싱을 사용하는 방식으로 변경.
-        :param width: 너비(단위는 기본 mm이며, hwpunit으로 변경 가능)
-        :param `as_`: 단위("mm" or "hwpunit")
+
+        Args:
+            width: 너비(단위는 기본 mm이며, hwpunit으로 변경 가능)
+            as_: 단위("mm" or "hwpunit")
 
         Returns:
-        성공시 True
+            성공시 True
+
+        Examples:
+            >>> # 모든 표의 너비를 본문여백(용지너비 - 좌측여백 - 우측여백 - 제본여백 - 표 좌우 바깥여백)에 맞추기
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> i = 0
+            >>> while hwp.get_into_nth_table(i):
+            ...     hwp.set_table_width()
+            True
+
         """
         if not width:
             sec_def = self.hwp.HParameterSet.HSecDef
@@ -15794,8 +15916,8 @@ class Hwp:
         Returns:
             정상적으로 암호가 설정되면 true를 반환한다.
             암호설정에 실패하면 false를 반환한다. false를 반환하는 경우는 다음과 같다
-            1. 암호의 길이가 너무 짧거나 너무 길 때 (영문 5~44자, 한글 3~22자)
-            2. 암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임
+            - 암호의 길이가 너무 짧거나 너무 길 때 (영문 5~44자, 한글 3~22자)
+            - 암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임
         """
         return self.hwp.SetPrivateInfoPassword(Password=password)
 
