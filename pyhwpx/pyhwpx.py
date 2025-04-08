@@ -9619,7 +9619,7 @@ class Hwp:
         """
         return self.hwp.ProtectPrivateInfo(PotectingChar=protecting_char, PrivatePatternType=private_pattern_type)
 
-    def put_field_text(self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None):
+    def put_field_text(self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None) -> None:
         """
         지정한 필드의 내용을 채운다.
 
@@ -10141,7 +10141,7 @@ class Hwp:
         SetValueEx(key, "FilePathCheckerModule", 0, REG_SZ, os.path.join(location, "FilePathCheckerModule.dll"))
         CloseKey(key)
 
-    def register_private_info_pattern(self, private_type, private_pattern):
+    def register_private_info_pattern(self, private_type:int, private_pattern:str) -> bool:
         """
         개인정보의 패턴을 등록한다.
 
@@ -15266,7 +15266,7 @@ class Hwp:
         """
         return self.hwp.Save(save_if_dirty=save_if_dirty)
 
-    def save_as(self, path:str, format:str="HWP", arg:str="", split_page:bool=False):
+    def save_as(self, path:str, format:str="HWP", arg:str="", split_page:bool=False) -> bool:
         """
         현재 편집중인 문서를 지정한 이름으로 저장한다.
 
@@ -15835,8 +15835,8 @@ class Hwp:
         Returns:
             성공하면 True, 실패하면 False
         """
-        self.hwp.SetPos(List=list, Para=para, pos=pos)
-        if (list, para) == self.get_pos()[:2]:
+        self.hwp.SetPos(List=List, Para=para, pos=pos)
+        if (List, para) == self.get_pos()[:2]:
             return True
         else:
             return False
@@ -15848,7 +15848,7 @@ class Hwp:
         지정된 위치로 캐럿을 옮겨준다.
 
         Args:
-            list: 캐럿이 위치한 문서 내 list ID
+            List: 캐럿이 위치한 문서 내 list ID
             para: 캐럿이 위치한 문단 ID. 음수거나, 범위를 넘어가면 문서의 시작으로 이동하며, pos는 무시한다.
             pos: 캐럿이 위치한 문단 내 글자 위치. -1을 주면 해당문단의 끝으로 이동한다. 단 para가 범위 밖일 경우 pos는 무시되고 문서의 시작으로 캐럿을 옮긴다.
 
@@ -15856,7 +15856,7 @@ class Hwp:
             성공하면 True, 실패하면 False
         """
         self.hwp.SetPos(List=List, Para=para, pos=pos)
-        if para == self.get_pos()[1]:
+        if (List, para) == self.get_pos()[:2]:
             return True
         else:
             return False
