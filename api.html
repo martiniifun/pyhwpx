@@ -8665,7 +8665,6 @@
 
 
 <h1 id="api">API 문서</h1>
-<p><a class="glightbox" href="assets/logo.png" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="Image title" loading="lazy" src="assets/logo.png" /></a></p>
 
 
 <div class="doc doc-object doc-module">
@@ -8711,8 +8710,7 @@
     <div class="doc doc-contents ">
 
 
-        <p>아래아한글의 모든 개체(표, 그림, 글상자 및 각주/미주 등)를 다루는 클래스.</p>
-<p><a class="glightbox" href="assets/logo.png" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="Image title" loading="lazy" src="assets/logo.png" /></a></p>
+        <p>아래아한글의 모든 개체(표, 그림, 글상자 및 각주/미주 등)를 다루기 위한 클래스.</p>
 
 
 
@@ -19105,6 +19103,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
                 <code>move_id</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -19159,6 +19158,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
                 <code>para</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -19174,6 +19174,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
                 <code>pos</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -19199,6 +19200,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -20086,6 +20088,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
                 <code>field</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -20101,6 +20104,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
                 <code>idx</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -20116,6 +20120,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
                 <code>text</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -20131,6 +20136,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
                 <code>start</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -20146,6 +20152,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
                 <code>select</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -20171,6 +20178,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -20386,21 +20394,65 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
 1. 기존에 쪽번호가 없는 문서에서는 작동하지 않으므로
    쪽번호가 정의되어 있어야 한다.
    (쪽번호 정의는 PageNumPos 메서드 참조)
-2. 새 번호를 지정한 페이지 및 이후 모든 페이지가
-   영향을 받는다.
+2. 새 번호를 지정한 페이지 및 이후 모든 페이지가 영향을 받는다.
 3. NewNumber 실행시점의 캐럿위치 뒤쪽(해당 페이지 내)에
    NewNumber 조판이 있는 경우, 삽입한 조판은 무효가 된다.
    (페이지 맨 뒤쪽의 새 번호만 유효함)</p>
-<p>:param new_number:
-    새 번호
-:param num_type:
-    타입 지정
-    "Page": 쪽(기본값)
-    "Figure": 그림
-    "Footnote": 각주
-    "Table": 표
-    "Endnote": 미주
-    "Equation": 수식</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>new_number</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>새 번호</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_type</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;Page&#39;, &#39;Figure&#39;, &#39;Footnote&#39;, &#39;Table&#39;, &#39;Endnote&#39;, &#39;Equation&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>타입 지정</p>
+<ul>
+<li>"Page": 쪽(기본값)</li>
+<li>"Figure": 그림</li>
+<li>"Footnote": 각주</li>
+<li>"Table": 표</li>
+<li>"Endnote": 미주</li>
+<li>"Equation": 수식</li>
+</ul>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;Page&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -20414,6 +20466,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -20477,6 +20530,7 @@ Todo: 페이지 내에 캐럿 뒤쪽으로 [새번호]조판이 있는 경우 �
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -20945,6 +20999,7 @@ string:  ex) prefix:<em>This</em>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -21679,6 +21734,7 @@ API에서는 하나의 함수로 구현한다.</p>
                 <code>protecting_char</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -21694,6 +21750,7 @@ API에서는 하나의 함수로 구현한다.</p>
                 <code>private_pattern_type</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -21719,6 +21776,7 @@ API에서는 하나의 함수로 구현한다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23840,6 +23898,7 @@ Examples:
                 <code>spos</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23855,6 +23914,7 @@ Examples:
                 <code>epara</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23870,6 +23930,7 @@ Examples:
                 <code>epos</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -23895,6 +23956,7 @@ Examples:
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -38331,7 +38393,7 @@ pyhwpx 내부적으로만 사용됨</p>
     <span class="md-icon" title="마지막 업데이트">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025년 4월 8일 16:32:42">2025년 4월 8일</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025년 4월 8일 22:01:09">2025년 4월 8일</span>
   </span>
 
     
@@ -38537,7 +38599,7 @@ pyhwpx 내부적으로만 사용됨</p>
         <script src="javascripts/search_log.js"></script>
       
     
-  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": true, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
 document$.subscribe(() => { lightbox.reload() });
 </script></body>
 </html>
