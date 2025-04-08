@@ -3763,8 +3763,7 @@ class Hwp:
         pset.NewNumber = new_number
         return self.HAction.Execute("NewNumberModify", pset.HSet)
 
-    def NewNumber(self, new_number: int,
-                  num_type: Literal["Page", "Figure", "Footnote", "Table", "Endnote", "Equation"] = "Page"):
+    def NewNumber(self, new_number: int, num_type: Literal["Page", "Figure", "Footnote", "Table", "Endnote", "Equation"] = "Page") -> bool:
         """
         새 번호를 매길 수 있는 메서드.
 
@@ -9189,7 +9188,7 @@ class Hwp:
         """
         return self.hwp.MovePos(moveID=move_id, Para=para, pos=pos)
 
-    def MovePos(self, move_id=1, para=0, pos=0):
+    def MovePos(self, move_id:int=1, para:int=0, pos:int=0) -> bool:
         """
         캐럿의 위치를 옮긴다.
 
@@ -9269,7 +9268,7 @@ class Hwp:
         else:
             return self.hwp.MoveToField(Field=field, Text=text, start=start, select=select)
 
-    def MoveToField(self, field, idx=0, text=True, start=True, select=False):
+    def MoveToField(self, field:str, idx:int=0, text:bool=True, start:bool=True, select:bool=False) -> bool:
         """
         지정한 필드로 캐럿을 이동한다.
 
