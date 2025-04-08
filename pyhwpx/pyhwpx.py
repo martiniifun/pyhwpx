@@ -15733,8 +15733,9 @@ class Hwp:
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
-            >>> start_pos = hwp.GetPosBySet()  # 현재 위치를 저장하고,
-            >>> hwp.set_pos_by_set(start_pos)  # 특정 작업 후에 저장위치로 재이동
+            >>> start_pos = hwp.GetPosBySet()  # 현재 위치를 체크포인트처럼 저장하고,
+            >>> # 특정 작업(이동 및 입력작업) 후에
+            >>> hwp.set_pos_by_set(start_pos)  # 저장했던 위치로 되돌아가기
         """
         return self.hwp.SetPosBySet(dispVal=disp_val)
 
@@ -15756,7 +15757,7 @@ class Hwp:
         """
         return self.hwp.SetPosBySet(dispVal=disp_val)
 
-    def set_private_info_password(self, password):
+    def set_private_info_password(self, password:str) -> bool:
         """
         개인정보보호를 위한 암호를 등록한다.
 
@@ -15770,14 +15771,14 @@ class Hwp:
             password: 새 암호
 
         Returns:
-            정상적으로 암호가 설정되면 true를 반환한다.
+            정상적으로 암호가 설정되면 True를 반환한다.
             암호설정에 실패하면 false를 반환한다. false를 반환하는 경우는 다음과 같다
-            1. 암호의 길이가 너무 짧거나 너무 길 때 (영문: 5~44자, 한글: 3~22자)
-            2. 암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임
+            - 암호의 길이가 너무 짧거나 너무 길 때 (영문 5~44자, 한글 3~22자)
+            - 암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임
         """
         return self.hwp.SetPrivateInfoPassword(Password=password)
 
-    def SetPrivateInfoPassword(self, password):
+    def SetPrivateInfoPassword(self, password:str) -> bool:
         """
         개인정보보호를 위한 암호를 등록한다.
 
@@ -15793,7 +15794,7 @@ class Hwp:
         Returns:
             정상적으로 암호가 설정되면 true를 반환한다.
             암호설정에 실패하면 false를 반환한다. false를 반환하는 경우는 다음과 같다
-            1. 암호의 길이가 너무 짧거나 너무 길 때 (영문: 5~44자, 한글: 3~22자)
+            1. 암호의 길이가 너무 짧거나 너무 길 때 (영문 5~44자, 한글 3~22자)
             2. 암호가 이미 설정되었음. 또는 암호가 이미 설정된 문서임
         """
         return self.hwp.SetPrivateInfoPassword(Password=password)
