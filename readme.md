@@ -53,4 +53,9 @@ hwp.save_as("./helloworld.hwp")
 hwp.quit()
 ```
 
-📋 [CHANGELOG 보기](https://github.com/martiniifun/pyhwpx/blob/master/CHANGELOG.md)
+[CHANGELOG 보기](https://github.com/martiniifun/pyhwpx/blob/master/CHANGELOG.md)
+
+---
+
+## **📋 API Reference와 User Guide 는 [공식문서](https://martiniifun.github.io/pyhwpx/)에서 확인 가능합니다.**
+
