@@ -7766,7 +7766,7 @@ class Hwp:
         """
         return self.hwp.GetPosBySet()
 
-    def GetPosBySet(self):
+    def GetPosBySet(self) -> "Hwp.HParameterSet":
         """
         현재 캐럿의 위치 정보를 ParameterSet으로 얻어온다.
 
@@ -7901,7 +7901,7 @@ class Hwp:
         """
         return self.hwp.GetSelectedPos()
 
-    def GetSelectedPos(self):
+    def GetSelectedPos(self) -> tuple[bool, str, str, int, str, str, int]:
         """
         현재 설정된 블록의 위치정보를 얻어온다.
 
@@ -7952,7 +7952,7 @@ class Hwp:
         """
         return self.hwp.GetSelectedPosBySet(sset=sset, eset=eset)
 
-    def GetSelectedPosBySet(self, sset, eset):
+    def GetSelectedPosBySet(self, sset:"Hwp.HParameterSet", eset:"Hwp.HParameterSet") -> bool:
         """
         현재 설정된 블록의 위치정보를 얻어온다.
 
@@ -8413,7 +8413,7 @@ class Hwp:
         """
         return self.hwp.InitScan(option=option, Range=range, spara=spara, spos=spos, epara=epara, epos=epos)
 
-    def InitScan(self, option=0x07, range=0x77, spara=0, spos=0, epara=-1, epos=-1):
+    def InitScan(self, option:int=0x07, range:int=0x77, spara:int=0, spos:int=0, epara:int=-1, epos:int=-1) -> bool:
         """
         문서의 내용을 검색하기 위해 초기설정을 한다.
 
@@ -8640,9 +8640,9 @@ class Hwp:
             if "temp.jpg" in os.listdir():
                 os.remove(path)
 
-    def InsertBackgroundPicture(self, path, border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
-                                embedded=True, filloption=5, effect=0, watermark=False, brightness=0,
-                                contrast=0) -> bool:
+    def InsertBackgroundPicture(self, path:str, border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
+                                embedded:bool=True, filloption:int=5, effect:int=0, watermark:bool=False, brightness:int=0,
+                                contrast:int=0) -> bool:
         """
         **셀**에 배경이미지를 삽입한다.
 
@@ -8758,7 +8758,7 @@ class Hwp:
         """
         return self.hwp.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
-    def InsertCtrl(self, ctrl_id, initparam):
+    def InsertCtrl(self, ctrl_id:str, initparam:"Hwp.HParameterSet") -> Ctrl:
         """
         현재 캐럿 위치에 컨트롤을 삽입한다.
 
@@ -8941,7 +8941,7 @@ class Hwp:
         """
         return self.hwp.IsCommandLock(actionID=action_id)
 
-    def IsCommandLock(self, action_id):
+    def IsCommandLock(self, action_id:str) -> bool:
         """
         해당 액션이 잠겨있는지 확인한다.
 
@@ -9031,7 +9031,7 @@ class Hwp:
         """
         return self.hwp.LockCommand(ActID=act_id, isLock=is_lock)
 
-    def LockCommand(self, act_id, is_lock):
+    def LockCommand(self, act_id:str, is_lock:bool) -> None:
         """
         특정 액션이 실행되지 않도록 잠근다.
 
@@ -9103,22 +9103,7 @@ class Hwp:
         """
         return self.hwp.ModifyFieldProperties(Field=field, remove=remove, Add=add)
 
-    def ModifyFieldProperties(self, field, remove, add):
-        """
-        지정한 필드의 속성을 바꾼다. (사용안함)
-
-        양식모드에서 편집가능/불가 여부를 변경하는 메서드지만,
-        현재 양식모드에서 어떤 속성이라도 편집가능하다..
-        혹시 필드명이나 메모, 지시문을 수정하고 싶다면
-        set_cur_field_name 메서드를 사용하자.
-
-        Args:
-            field:
-            remove:
-            add:
-
-        Returns:
-        """
+    def ModifyFieldProperties(self, field, remove, add) -> None:
         return self.hwp.ModifyFieldProperties(Field=field, remove=remove, Add=add)
 
     def modify_metatag_properties(self, tag, remove, add):
