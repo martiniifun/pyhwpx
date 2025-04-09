@@ -1,5 +1,7 @@
 ## 🐍 pyhwpx: Python 기본 아래아한글 자동화 모듈
 
+![introduction](https://github.com/martiniifun/pyhwpx/blob/master/docs/assets/introduce.gif)
+
 **pyhwpx**는 `pywin32` 패키지를 활용하여 아래아한글(HWP) 문서를 자동화할 수 있는 Python 모듈입니다.  
 
 현재 **`Hwp`** 클래스가 포함되어 있으며, **HwpAutomation에서 제공하는 모든 저수준 API 메서드의 사용법, 파라미터 및 예시 코드**를 추가하는 작업이 진행 중입니다.  
@@ -53,4 +55,9 @@ hwp.save_as("./helloworld.hwp")
 hwp.quit()
 ```
 
-📋 [CHANGELOG 보기](https://github.com/martiniifun/pyhwpx/blob/master/CHANGELOG.md)
+[CHANGELOG 보기](https://github.com/martiniifun/pyhwpx/blob/master/CHANGELOG.md)
+
+---
+
+## **📋 API Reference와 User Guide 는 [공식문서](https://martiniifun.github.io/pyhwpx/)에서 확인 가능합니다.**
+
