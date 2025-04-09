@@ -32,3 +32,19 @@ body[dir=rtl] .metadata.page-metadata .contributors-text{
     overflow:hidden;
     width:16px
 }
+
+h2.doc.doc-heading {
+    font-size: 3em !important;
+    font-weight: bold;
+}
+
+h3.doc.doc-heading {
+    font-size: 2.5em !important;
+    font-weight: bold;
+}
+
+h4.doc.doc-heading {
+    font-size: 2em !important;
+    font-weight: bold;
+}
+
