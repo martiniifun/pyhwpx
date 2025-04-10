@@ -3127,23 +3127,26 @@ class Hwp:
         else:
             return ctrl.GetAnchorPos(option)
 
-    def get_linespacing(self,
-                        method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent") -> int | float:
+    def get_linespacing(self, method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent") -> int | float:
         """
         현재 캐럿 위치의 줄간격(%) 리턴.
+
+        ![get_linespacing](assets/get_linespacing.gif){ loading=lazy }
+
         단, 줄간격 기준은 "글자에 따라(%)" 로 설정되어 있어야 하며,
         "글자에 따라"가 아닌 경우에는 method 파라미터를 실제 옵션과 일치시켜야 함.
 
-        :param method:
-            줄간격 단위기준. 일치하지 않아도 값은 출력되지만, 단위를 모르게 됨..
-            Fixed: 고정값(포인트 단위)
-            Percent: 글자에 따라(기본값, %)
-            BetweenLines: 여백만 지정(포인트 단위)
-            AtLeast: 최소(포인트 단위)
+        Args:
+            method:
+                줄간격 단위기준. 일치하지 않아도 값은 출력되지만, 단위를 모르게 됨..
 
+                    - "Fixed": 고정값(포인트 단위)
+                    - "Percent": 글자에 따라(기본값, %)
+                    - "BetweenLines": 여백만 지정(포인트 단위)
+                    - "AtLeast": 최소(포인트 단위)
 
         Returns:
-        현재 캐럿이 위치한 문단의 줄간격(% 또는 Point)
+            현재 캐럿이 위치한 문단의 줄간격(% 또는 Point). method에 따라 값이 바뀌므로 주의.
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -3153,6 +3156,7 @@ class Hwp:
             >>> # 줄간격을 "최소" 기준 17.0point로 설정했다면, 아래처럼 실행해야 함
             >>> hwp.get_linespacing("AtLeast")
             170
+
         """
         act = "ParagraphShape"
         pset = self.hwp.HParameterSet.HParaShape
