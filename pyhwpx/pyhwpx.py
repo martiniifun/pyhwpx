@@ -3167,14 +3167,15 @@ class Hwp:
         """
         현재 캐럿 위치의 문단 또는 선택 블록의 줄간격(%) 설정
 
-        :param value: 줄간격 값("Percent"인 경우에는 %, 그 외에는 point 값으로 적용됨). 기본값은 160(%)
+        Args:
+            value: 줄간격 값("Percent"인 경우에는 %, 그 외에는 point 값으로 적용됨). 기본값은 160(%)
+            method:
+                줄간격 단위기준. method가 일치해야 정상적으로 적용됨.
 
-        :param method:
-            줄간격 단위기준. method가 일치해야 정상적으로 적용됨.
-            Fixed: 고정값(포인트 단위)
-            Percent: 글자에 따라(기본값, %)
-            BetweenLines: 여백만 지정(포인트 단위)
-            AtLeast: 최소(포인트 단위)
+                    - "Fixed": 고정값(포인트 단위)
+                    - "Percent": 글자에 따라(기본값, %)
+                    - "BetweenLines": 여백만 지정(포인트 단위)
+                    - "AtLeast": 최소(포인트 단위)
 
 
         Returns:
@@ -3360,15 +3361,23 @@ class Hwp:
         """
         특정 스타일이 적용된 위치로 이동하는 메서드.
 
-        탐색은 문서아랫방향으로만 수행하며
-        현재위치 이후 해당 스타일이 없거나,
-        스타일이름/인덱스번호가 잘못된 경우
-        False를 리턴
-        참고사항 : API의 Goto는 1부터 시작하므로 메서드 내부에서 인덱스에 1을 더하고 있음
+        탐색은 문서아랫방향으로만 수행하며 현재위치 이후 해당 스타일이 없거나,
+        스타일이름/인덱스번호가 잘못된 경우 False를 리턴
+        참고로, API의 Goto는 1부터 시작하므로 메서드 내부에서 인덱스에 1을 더하고 있음
 
-        :param style: 스타일이름 또는 스타일번호(첫 번째 스타일이 0)
+        Args:
+            style: 스타일이름(str) 또는 스타일번호(첫 번째 스타일이 0)
 
         Returns:
+            성공시 True, 실패시 False
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.goto_style(0)  # 캐럿 뒤의 "바탕글" 스타일로 이동
+            True
+            >>> hwp.goto_style("개요 1")  # 캐럿 뒤의 "개요 1" 스타일로 이동
+            True
         """
         if type(style) == int:
             style_idx = style + 1
