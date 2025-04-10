@@ -3793,32 +3793,25 @@ class Hwp:
         그렇지 않을 경우
         (쪽번호 외에도 그림, 각주, 표, 미주, 수식 등)
         다만, 주의할 점이 세 가지 있다.
-        1. 기존에 쪽번호가 없는 문서에서는 작동하지 않으므로
-           쪽번호가 정의되어 있어야 한다.
-           (쪽번호 정의는 PageNumPos 메서드 참조)
-        2. 새 번호를 지정한 페이지 및 이후 모든 페이지가
-           영향을 받는다.
-        3. NewNumber 실행시점의 캐럿위치 뒤쪽(해당 페이지 내)에
-           NewNumber 조판이 있는 경우, 삽입한 조판은 무효가 된다.
-           (페이지 맨 뒤쪽의 새 번호만 유효함)
-        (Todo: 페이지 내에 캐럿 뒤쪽으로 [새번호]조판이 있는 경우 지워버리기?)
+
+            1. 기존에 쪽번호가 없는 문서에서는 작동하지 않으므로 쪽번호가 정의되어 있어야 한다. (쪽번호 정의는 `PageNumPos` 메서드 참조)
+            2. 새 번호를 지정한 페이지 및 이후 모든 페이지가 영향을 받는다.
+            3. `NewNumber` 실행시점의 캐럿위치 뒤쪽(해당 페이지 내)에 `NewNumber` 조판이 있는 경우, 삽입한 조판은 무효가 된다. (페이지 맨 뒤쪽의 새 번호만 유효함)
 
         Args:
-        new_number: 새 번호
-        num_type:
-            타입 지정
+            new_number: 새 번호
+            num_type:
+                타입 지정
 
-                - "Page": 쪽(기본값)
-                - "Figure": 그림
-                - "Footnote": 각주
-                - "Table": 표
-                - "Endnote": 미주
-                - "Equation": 수식
+                    - "Page": 쪽(기본값)
+                    - "Figure": 그림
+                    - "Footnote": 각주
+                    - "Table": 표
+                    - "Endnote": 미주
+                    - "Equation": 수식
 
         Returns:
             성공시 True, 실패시 False를 리턴
-
-
         """
         current_pos = self.GetPos()
         current_page = self.PageCount
@@ -4752,14 +4745,16 @@ class Hwp:
 
         가급적 hwp.select_ctrl(ctrl)을 실행할 것을 추천.
 
-        :param ctrllist:
-            특정 컨트롤의 인스턴스 아이디(11자리 정수 또는 문자열).
-            인스턴스아이디는 `ctrl.GetCtrlInstID()` 로 구할 수 있으며
-            이는 한/글 2024부터 반영된 개념(2022 이하에서는 제공하지 않음)
-        :param option: int
-            특정 컨트롤(들)을 선택하고 있는 상태에서, 추가선택할 수 있는 옵션.
-            0: 추가선택
-            1: 기존 선택해제 후 컨트롤 선택
+        Args:
+            ctrllist:
+                특정 컨트롤의 인스턴스 아이디(11자리 정수 또는 문자열).
+                인스턴스아이디는 `ctrl.GetCtrlInstID()` 로 구할 수 있으며
+                이는 한/글 2024부터 반영된 개념(2022 이하에서는 제공하지 않음)
+            option:
+                특정 컨트롤(들)을 선택하고 있는 상태에서, 추가선택할 수 있는 옵션.
+
+                    - 0: 추가선택
+                    - 1: 기존 선택해제 후 컨트롤 선택
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()  # 한글2024 이상의 버전
@@ -4771,18 +4766,21 @@ class Hwp:
         else:
             raise NotImplementedError("아래아한글 버전이 2024 미만입니다. hwp.select_ctrl()을 대신 사용하셔야 합니다.")
 
-    def select_ctrl(self, ctrl: Any, anchor_type: Literal[0, 1, 2] = 0, option: int = 1):
+    def select_ctrl(self, ctrl:Ctrl, anchor_type: Literal[0, 1, 2] = 0, option: int = 1):
         """
         인수로 넣은 컨트롤 오브젝트를 선택하는 pyhwpx 전용 메서드.
 
-        :param ctrl:
-            선택하고자 하는 컨트롤
-        :param anchor_type:
+        Args:
+            ctrl: 선택하고자 하는 컨트롤
+        anchor_type:
+
             컨트롤의 위치를 찾아갈 때 List, Para, Pos의 기준위치.
+
             (아주 특수한 경우를 제외하면 기본값을 쓰면 된다.)
-            0: 바로 상위 리스트에서의 좌표(기본값)
-            1: 탑레벨 리스트에서의 좌표
-            2: 루트 리스트에서의 좌표
+
+                - 0: 바로 상위 리스트에서의 좌표(기본값)
+                - 1: 탑레벨 리스트에서의 좌표
+                - 2: 루트 리스트에서의 좌표
 
         Returns:
         """
@@ -6032,10 +6030,11 @@ class Hwp:
     def HwpUnitToMili(self, hwp_unit:int) -> float:
         """
         HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
+
         HwpUnit으로 리턴되었거나, 녹화된 코드의 HwpUnit값을 확인할 때 유용하게 사용할 수 있다.
 
         Returns:
-        HwpUnit을 7200으로 나눈 후 25.4를 곱하고 소숫점 셋째 자리에서 반올림한 값
+            HwpUnit을 7200으로 나눈 후 25.4를 곱하고 소숫점 셋째 자리에서 반올림한 값
         """
         if hwp_unit == 0:
             return 0
@@ -8823,13 +8822,13 @@ class Hwp:
         """
         현재 캐럿 위치에 컨트롤을 삽입한다.
 
-        ctrlid에 지정할 수 있는 컨트롤 ID는 HwpCtrl.CtrlID가 반환하는 ID와 동일하다.
-        자세한 것은  Ctrl 오브젝트 Properties인 CtrlID를 참조.
-        initparam에는 컨트롤의 초기 속성을 지정한다.
-        대부분의 컨트롤은 Ctrl.Properties와 동일한 포맷의 parameter set을 사용하지만,
+        ctrlid에 지정할 수 있는 컨트롤 ID는 `HwpCtrl.CtrlID`가 반환하는 ID와 동일하다.
+        자세한 것은  `Ctrl` 오브젝트 Properties인 `CtrlID`를 참조.
+        `initparam`에는 컨트롤의 초기 속성을 지정한다.
+        대부분의 컨트롤은 `Ctrl.Properties`와 동일한 포맷의 parameter set을 사용하지만,
         컨트롤 생성 시에는 다른 포맷을 사용하는 경우도 있다.
-        예를 들어 표의 경우 Ctrl.Properties에는 "Table" 셋을 사용하지만,
-        생성 시 initparam에 지정하는 값은 "TableCreation" 셋이다.
+        예를 들어 표의 경우 Ctrl.Properties에는 `"Table"` 셋을 사용하지만,
+        생성 시 `initparam`에 지정하는 값은 `"TableCreation"` 셋이다.
 
         Args:
             ctrl_id: 삽입할 컨트롤 ID
@@ -9319,14 +9318,14 @@ class Hwp:
         지정한 필드로 캐럿을 이동한다.
 
         Args:
-            field: 필드이름. GetFieldText()/PutFieldText()와 같은 형식으로 이름 뒤에 ‘{{#}}’로 번호를 지정할 수 있다.
-            idx: 동일명으로 여러 개의 필드가 존재하는 경우, idx번째 필드로 이동하고자 할 때 사용한다. 기본값은 0. idx를 지정하지 않아도, 필드 파라미터 뒤에 ‘{{#}}’를 추가하여 인덱스를 지정할 수 있다. 이 경우 기본적으로 f스트링을 사용하며, f스트링 내부에 탈출문자열 \\가 적용되지 않으므로 중괄호를 다섯 겹 입력해야 한다. 예 : hwp.move_to_field(f"필드명{{{{{i}}}}}")
-            text: 필드가 누름틀일 경우 누름틀 내부의 텍스트로 이동할지(True) 누름틀 코드로 이동할지(False)를 지정한다. 누름틀이 아닌 필드일 경우 무시된다. 생략하면 True가 지정된다.
-            start: 필드의 처음(True)으로 이동할지 끝(False)으로 이동할지 지정한다. select를 True로 지정하면 무시된다. (캐럿이 처음에 위치해 있게 된다.) 생략하면 True가 지정된다.
-            select: 필드 내용을 블록으로 선택할지(True), 캐럿만 이동할지(False) 지정한다. 생략하면 False가 지정된다.
+            field: 필드이름. `hwp.GetFieldText()` / `hwp.PutFieldText()`와 같은 형식으로 이름 뒤에 `'{{#}}'`로 번호를 지정할 수 있다.
+            idx: 동일명으로 여러 개의 필드가 존재하는 경우, idx번째 필드로 이동하고자 할 때 사용한다. 기본값은 `0`. idx를 지정하지 않아도, 필드 파라미터 뒤에 `'{{#}}'`를 추가하여 인덱스를 지정할 수 있다. 이 경우 기본적으로 f스트링을 사용하며, f스트링 내부에 탈출문자열 `\\`가 적용되지 않으므로 중괄호를 다섯 겹 입력해야 한다. 예 : `hwp.move_to_field(f"필드명{{{{{i}}}}}")`
+            text: 필드가 누름틀일 경우 누름틀 내부의 텍스트로 이동할지(`True`) 누름틀 코드로 이동할지(`False`)를 지정한다. 누름틀이 아닌 필드일 경우 무시된다. 생략하면 `True`가 지정된다.
+            start: 필드의 처음(`True`)으로 이동할지 끝(`False`)으로 이동할지 지정한다. `select`를 `True`로 지정하면 무시된다. (캐럿이 처음에 위치해 있게 된다.) 생략하면 `True`가 지정된다.
+            select: 필드 내용을 블록으로 선택할지(`True`), 캐럿만 이동할지(`False`) 지정한다. 생략하면 `False`가 지정된다.
 
         Returns:
-            성공시 True, 실패시 False를 리턴한다.
+            bool: 성공시 `True`, 실패시 `False`를 리턴한다.
         """
         if "{{" not in field:
             return self.hwp.MoveToField(Field=f"{field}{{{{{idx}}}}}", Text=text, start=start, select=select)
@@ -10277,10 +10276,12 @@ class Hwp:
 
             private_pattern:
                 등록할 개인정보 패턴. 예를 들면 이런 형태로 입력한다.
+
 			    (예) 주민등록번호 - "NNNNNN-NNNNNNN"
+
 			    한/글이 이미 정의한 패턴은 정의하면 안 된다.
 			    함수를 여러 번 호출하는 것을 피하기 위해 패턴을 “;”기호로 구분
-			    반속해서 입력할 수 있도록 한다.
+			    반복해서 입력할 수 있도록 한다.
 
         Returns:
             등록이 성공하였으면 True, 실패하였으면 False
