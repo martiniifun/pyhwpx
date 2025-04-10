@@ -4492,7 +4492,7 @@ class Hwp:
                 self.TableRightCell()
             return self.set_pos(*cur_pos)
 
-    def adjust_cellwidth(self, width: int | float | list | tuple, as_: Literal["mm", "ratio"] = "ratio"):
+    def adjust_cellwidth(self, width: int | float | list | tuple, as_: Literal["mm", "ratio"] = "ratio") -> bool:
         """
         칼럼의 너비를 변경할 수 있는 메서드.
 
@@ -4555,7 +4555,7 @@ class Hwp:
                 self.TableRightCell()
             return self.set_pos(*cur_pos)
 
-    def get_table_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
+    def get_table_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm") -> float:
         """
         현재 캐럿이 속한 표의 너비(mm)를 리턴함.
 
@@ -4697,7 +4697,7 @@ class Hwp:
         else:
             return excel_address_to_tuple_zero_based(result)
 
-    def save_all_pictures(self, save_path="./binData") -> bool:
+    def save_all_pictures(self, save_path:str="./binData") -> bool:
         """
         현재 문서에 삽입된 모든 이미지들을
 
