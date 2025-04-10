@@ -7134,9 +7134,9 @@ class Hwp:
         """
         return self.hwp.FieldExist(Field=field)
 
-    def FieldExist(self, field):
+    def FieldExist(self, field:str) -> bool:
         """
-        문서에 해당 이름의 데이터 필드가 존재하는지 검사한다.
+        문서에 해당 이름의 데이터 필드(누름틀, 셀필드)가 존재하는지 검사한다.
 
         Args:
             field: 필드이름
@@ -8557,7 +8557,7 @@ class Hwp:
         """
         현재 캐럿 위치에 문서파일을 삽입한다.
 
-        format, arg에 대해서는 self.hwp.open 참조
+        `format`, `arg` 파라미터에 대한 자세한 설명은 `open` 참조
 
         Args:
             path: 문서파일의 경로
@@ -8593,11 +8593,11 @@ class Hwp:
                 세부옵션. 의미는 format에 지정한 파일형식에 따라 다르다.
                 조합 가능하며, 생략하면 빈 문자열이 지정된다.
 
-                <공통>
+                공통
 
                     - "setcurdir:FALSE;" :로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
 
-                <HWP/HWPX>
+                HWP/HWPX
 
                     - "lock:TRUE;": 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
                     - "notext:FALSE;": 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
@@ -8606,7 +8606,7 @@ class Hwp:
                     - "forceopen:FALSE;": TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
                     - "versionwarning:FALSE;": TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
 
-                <HTML>
+                HTML
 
                     - "code"(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
                     - (코드페이지 종류는 아래와 같다.)
@@ -8621,18 +8621,18 @@ class Hwp:
                     - "textunit:(string, pixel);": Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
                     - "formatunit:(string, pixel);": Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
 
-                <DOCIMG>
+                DOCIMG
 
                     - "asimg:FALSE;": 저장할 때 페이지를 image로 저장
                     - "ashtml:FALSE;": 저장할 때 페이지를 html로 저장
 
-                <TEXT>
+                TEXT
 
                     - "code:(string, codepage);": 문서 변환 시 사용되는 코드 페이지를 지정할 수 있으며
                     - code키가 존재할 경우 필터 사용 시 사용자 다이얼로그를  띄우지 않는다.
 
         Returns:
-        성공하면 True, 실패하면 False
+            성공하면 True, 실패하면 False
         """
         if path.lower()[1] != ":":
             path = os.path.join(os.getcwd(), path)
@@ -11129,7 +11129,7 @@ class Hwp:
         finally:
             self.hwp.SetMessageBoxMode(cur_mode)
 
-    def DeleteBack(self, delete_ctrl=True) -> bool:
+    def DeleteBack(self, delete_ctrl:bool=True) -> bool:
         """
         백스페이스 삭제
 
