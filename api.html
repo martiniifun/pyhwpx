@@ -15400,63 +15400,12 @@ number에 지정한 타입에 따라 3가지의 서로 다른 방식 중에서 �
             </td>
             <td>
               <div class="doc-md-description">
-                <p>캐럿 위치에 대한 ParameterSet</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="HParameterSet
-
-  
-      property
-   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>해당 파라미터셋의 아이템은 아래와 같다.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="HParameterSet
-
-  
-      property
-   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>"List": 캐럿이 위치한 문서 내 list ID(본문이 0)</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="HParameterSet
-
-  
-      property
-   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>"Para": 캐럿이 위치한 문단 ID(0부터 시작)</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="HParameterSet
-
-  
-      property
-   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>"Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)</p>
+                <p>캐럿 위치에 대한 ParameterSet. 해당 파라미터셋의 아이템은 아래와 같다.</p>
+<ul>
+<li>"List": 캐럿이 위치한 문서 내 list ID(본문이 0)</li>
+<li>"Para": 캐럿이 위치한 문단 ID(0부터 시작)</li>
+<li>"Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)</li>
+</ul>
               </div>
             </td>
           </tr>
@@ -29240,8 +29189,38 @@ Examples:
     <div class="doc doc-contents ">
 
         <p>선택한 셀에 색 채우기</p>
-<p>:param face_color:</p>
-<p>Returns:</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>face_color</code>
+            </td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>, <span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(red, green, blue) 형태의 튜플. 각 정수는 0~255까지이며, 만약</p>
+              </div>
+            </td>
+            <td>
+                  <code>(217, 217, 217)</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Returns:</p>
 
 
     </div>
@@ -33338,15 +33317,187 @@ tuple(인쇄기준페이지, 페이지인덱스)</p>
     <div class="doc doc-contents ">
 
         <p>셀에 그라데이션을 적용하는 메서드</p>
-<p>:param color_list:
-:param grad_type:
-:param angle:
-:param xc:
-:param yc:
-:param pos_list:
-:param step_center:
-:param step:</p>
-<p>Returns:</p>
+<p><a class="glightbox" href="assets/gradation_on_cell.gif" data-type="image" data-width="100%" data-height="auto" data-title="gradation_on_cell" data-desc-position="bottom"><img alt="gradation_on_cell" loading:lazy="loading:lazy" src="assets/gradation_on_cell.gif" /></a></p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>color_list</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span>[<span title="tuple">tuple</span>[<span title="int">int</span>], <span title="tuple">tuple</span>[<span title="int">int</span>]] | <span title="list">list</span>[<span title="str">str</span>, <span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>시작RGB 튜플과 종료RGB 튜플의 리스트</p>
+              </div>
+            </td>
+            <td>
+                  <code>[(0, 0, 0), (255, 255, 255)]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>grad_type</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;Linear&#39;, &#39;Radial&#39;, &#39;Conical&#39;, &#39;Square&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>그라데이션 형태(선형, 방사형, 콘형, 사각형)</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;Linear&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>그라데이션 각도</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>xc</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>x 중심점</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>yc</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>y 중심점</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>pos_list</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>변곡점 목록</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>step_center</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>그라데이션 단계의 중심점</p>
+              </div>
+            </td>
+            <td>
+                  <code>50</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>step</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>그라데이션 단계 수</p>
+              </div>
+            </td>
+            <td>
+                  <code>255</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <p>from pyhwpx import Hwp
+hwp = Hwp()</p>
+<p>for i in range(0, 256, 2):
+    hwp.gradation_on_cell(
+        color_list=[(255,i,i), (i,255,i)],
+        grad_type="Square",
+        xc=40, yc=60,
+        pos_list=[20,80],
+        step_center=int(i/255*100),
+        step=i,
+    )</p>
 
 
     </div>
