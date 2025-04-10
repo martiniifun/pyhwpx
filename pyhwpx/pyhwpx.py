@@ -5176,7 +5176,7 @@ class Hwp:
         """
         self.insert_background_picture("", border_type="SelectedCellDelete")
 
-    def gradation_on_cell(self, color_list: list[tuple[int], tuple[int]] | list[str, str] = [(0, 0, 0), (255, 255, 255)],
+    def gradation_on_cell(self, color_list: list[tuple[int, int, int]]|list[str, str] = [(0, 0, 0), (255, 255, 255)],
                           grad_type: Literal["Linear", "Radial", "Conical", "Square"] = "Linear", angle:int=0, xc:int=0, yc:int=0,
                           pos_list: list[int] = None, step_center:int=50, step:int=255) -> bool:
         """
@@ -5198,20 +5198,18 @@ class Hwp:
             성공시 True, 실패시 False를 리턴
 
         Examples:
-            ```
-            from pyhwpx import Hwp
-            hwp = Hwp()
-
-            for i in range(0, 256, 2):
-                hwp.gradation_on_cell(
-                    color_list=[(255,i,i), (i,255,i)],
-                    grad_type="Square",
-                    xc=40, yc=60,
-                    pos_list=[20,80],
-                    step_center=int(i/255*100),
-                    step=i,
-                )
-            ```
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> for i in range(0, 256, 2):
+            ...     hwp.gradation_on_cell(
+            ...         color_list=[(255,i,i), (i,255,i)],
+            ...         grad_type="Square",
+            ...         xc=40, yc=60,
+            ...         pos_list=[20,80],
+            ...         step_center=int(i/255*100),
+            ...         step=i,
+            ...     )
+            ...
         """
         if not self.is_cell():
             raise AssertionError("캐럿이 현재 표 안에 위치하지 않습니다. 표 안에서 다시 실행해주세요.")
@@ -7202,7 +7200,7 @@ class Hwp:
         """
         return self.hwp.FindPrivateInfo(PrivateType=private_type, PrivateString=private_string)
 
-    def FindPrivateInfo(self, private_type, private_string):
+    def FindPrivateInfo(self, private_type:int, private_string:str) -> int:
         """
         개인정보를 찾는다. (비밀번호 설정 등의 이유, 현재 비활성화된 것으로 추정)
 
@@ -7303,7 +7301,7 @@ class Hwp:
         """
         return self.hwp.GetCurFieldName(option=option)
 
-    def GetCurFieldName(self, option=0) -> str:
+    def GetCurFieldName(self, option:int=0) -> str:
         """
         현재 캐럿이 위치하는 곳의 필드이름을 구한다.
         이 함수를 통해 현재 필드가 셀필드인지 누름틀필드인지 구할 수 있다.
@@ -7630,7 +7628,7 @@ class Hwp:
         """
         return self.hwp.GetHeadingString()
 
-    def GetHeadingString(self):
+    def GetHeadingString(self) -> str:
         """
         현재 커서가 위치한 문단의 글머리표/문단번호/개요번호를 추출한다.
 
@@ -8145,7 +8143,7 @@ class Hwp:
         """
         return self.hwp.GetText()
 
-    def GetText(self):
+    def GetText(self) -> tuple[int, str]:
         """
         문서 내에서 텍스트를 얻어온다.
 
@@ -8157,7 +8155,6 @@ class Hwp:
 
         Returns:
             (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\\t'(0x9), 문단 바뀜은 '\\r\\n'(0x0D/0x0A)로 표현되며, 이외의 특수 코드는 포함되지 않는다.
-
             state의 의미는 아래와 같다.
 
                 - 0: 텍스트 정보 없음
