@@ -3361,7 +3361,7 @@ class Hwp:
                     os.remove("temp.xml")
         return False
 
-    def goto_style(self, style: Union[int, str]):
+    def goto_style(self, style: Union[int, str]) -> bool:
         """
         특정 스타일이 적용된 위치로 이동하는 메서드.
 
@@ -7363,13 +7363,14 @@ class Hwp:
 
         문서 중에 동일한 이름의 필드가 여러 개 존재할 때는
         number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 선택할 수 있다.
+
         예를 들어 문서 중 title, body, title, body, footer 순으로
         5개의 필드가 존재할 때, hwpFieldPlain, hwpFieldNumber, HwpFieldCount
         세 가지 형식에 따라 다음과 같은 내용이 돌아온다.
 
-            - hwpFieldPlain: "title\x02body\x02title\x02body\x02footer"
-            - hwpFieldNumber: "title{{0}}\x02body{{0}}\x02title{{1}}\x02body{{1}}\x02footer{{0}}"
-            - hwpFieldCount: "title{{2}}\x02body{{2}}\x02footer{{1}}"
+            - hwpFieldPlain: "title\\x02body\\x02title\\x02body\\x02footer"
+            - hwpFieldNumber: "title{{0}}\\x02body{{0}}\\x02title{{1}}\\x02body{{1}}\\x02footer{{0}}"
+            - hwpFieldCount: "title{{2}}\\x02body{{2}}\\x02footer{{1}}"
 
         Args:
             number:
@@ -7389,7 +7390,7 @@ class Hwp:
         Returns:
             각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
             (가장 마지막 필드에는 0x02가 붙지 않는다.)
-            "필드이름#1\x02필드이름#2\x02...필드이름#n"
+            "필드이름#1\\x02필드이름#2\\x02...필드이름#n"
         """
         return self.hwp.GetFieldList(Number=number, option=option)
 
@@ -7402,11 +7403,11 @@ class Hwp:
                 텍스트를 구할 필드 이름의 리스트.
                 다음과 같이 필드 사이를 문자 코드 0x02로 구분하여
                 한 번에 여러 개의 필드를 지정할 수 있다.
-                "필드이름#1\x02필드이름#2\x02...필드이름#n"
+                "필드이름#1\\x02필드이름#2\\x02...필드이름#n"
                 지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.
                 "필드이름": 이름의 필드 중 첫 번째
                 "필드이름{{n}}": 지정한 이름의 필드 중 n 번째
-                예를 들어 "제목{{1}}\x02본문\x02이름{{0}}" 과 같이 지정하면
+                예를 들어 "제목{{1}}\\x02본문\\x02이름{{0}}" 과 같이 지정하면
                 '제목'이라는 이름의 필드 중 두 번째,
                 '본문'이라는 이름의 필드 중 첫 번째,
                 '이름'이라는 이름의 필드 중 첫 번째를 각각 지정한다.
@@ -7416,10 +7417,10 @@ class Hwp:
 
         Returns:
             텍스트 데이터가 돌아온다.
-            텍스트에서 탭은 '\t'(0x9),
-            문단 바뀜은 CR/LF(0x0D/0x0A == \r\n)로 표현되며,
+            텍스트에서 탭은 '\\t'(0x9),
+            문단 바뀜은 CR/LF(0x0D/0x0A == \\r\\n)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
-            필드 텍스트의 끝은 0x02(\x02)로 표현되며,
+            필드 텍스트의 끝은 0x02(\\x02)로 표현되며,
             그 이후 다음 필드의 텍스트가 연속해서
             지정한 필드 리스트의 개수만큼 위치한다.
             지정한 이름의 필드가 없거나,
@@ -7443,11 +7444,11 @@ class Hwp:
                 텍스트를 구할 필드 이름의 리스트.
                 다음과 같이 필드 사이를 문자 코드 0x02로 구분하여
                 한 번에 여러 개의 필드를 지정할 수 있다.
-                "필드이름#1\x02필드이름#2\x02...필드이름#n"
+                "필드이름#1\\x02필드이름#2\\x02...필드이름#n"
                 지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.
                 "필드이름": 이름의 필드 중 첫 번째
                 "필드이름{{n}}": 지정한 이름의 필드 중 n 번째
-                예를 들어 "제목{{1}}\x02본문\x02이름{{0}}" 과 같이 지정하면
+                예를 들어 "제목{{1}}\\x02본문\\x02이름{{0}}" 과 같이 지정하면
                 '제목'이라는 이름의 필드 중 두 번째,
                 '본문'이라는 이름의 필드 중 첫 번째,
                 '이름'이라는 이름의 필드 중 첫 번째를 각각 지정한다.
@@ -7457,15 +7458,16 @@ class Hwp:
 
         Returns:
             텍스트 데이터가 돌아온다.
-            텍스트에서 탭은 '\t'(0x9),
-            문단 바뀜은 CR/LF(0x0D/0x0A == \r\n)로 표현되며,
+            텍스트에서 탭은 '\\t'(0x9),
+            문단 바뀜은 CR/LF(0x0D/0x0A == \\r\\n)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
-            필드 텍스트의 끝은 0x02(\x02)로 표현되며,
+            필드 텍스트의 끝은 0x02(\\x02)로 표현되며,
             그 이후 다음 필드의 텍스트가 연속해서
             지정한 필드 리스트의 개수만큼 위치한다.
             지정한 이름의 필드가 없거나,
             사용자가 해당 필드에 아무 텍스트도 입력하지 않았으면
             해당 텍스트에는 빈 문자열이 돌아온다.
+
         """
         if isinstance(field, str):
             if idx and "{{" not in field:
@@ -7475,7 +7477,7 @@ class Hwp:
         elif isinstance(field, list | tuple | set):
             return self.hwp.GetFieldText(Field="\x02".join(str(i) for i in field))
 
-    def get_file_info(self, filename: str) -> str:
+    def get_file_info(self, filename: str) -> "Hwp.HParameterSet":
         """
         파일 정보를 알아낸다.
 
@@ -7510,7 +7512,7 @@ class Hwp:
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.GetFileInfo(filename=filename)
 
-    def GetFileInfo(self, filename):
+    def GetFileInfo(self, filename:str) -> "Hwp.HParameterSet":
         """
         파일 정보를 알아낸다.
 
@@ -7684,7 +7686,7 @@ class Hwp:
         """
         return self.hwp.GetMousePos(XRelTo=x_rel_to, YRelTo=y_rel_to)
 
-    def GetMousePos(self, x_rel_to=1, y_rel_to=1):
+    def GetMousePos(self, x_rel_to:int=1, y_rel_to:int=1) -> "Hwp.HParameterSet":
         """
         마우스의 현재 위치를 얻어온다.
 
@@ -8069,7 +8071,7 @@ class Hwp:
         move_pos(201)을 실행하면 된다.
 
         Returns:
-            (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,
+            (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\\t'(0x9), 문단 바뀜은 '\\r\\n'(0x0D/0x0A)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
 
             state의 의미는 아래와 같다.
@@ -8116,7 +8118,7 @@ class Hwp:
         move_pos(201)을 실행하면 된다.
 
         Returns:
-            (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,
+            (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\\t'(0x9), 문단 바뀜은 '\\r\\n'(0x0D/0x0A)로 표현되며,
             이외의 특수 코드는 포함되지 않는다.
 
             state의 의미는 아래와 같다.
@@ -8186,7 +8188,7 @@ class Hwp:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.get_text_file()
-            'ㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\n\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\n'
+            'ㅁㄴㅇㄹ\\r\\nㅁㄴㅇㄹ\\r\\nㅁㄴㅇㄹ\\r\\n\\r\\nㅂㅈㄷㄱ\\r\\nㅂㅈㄷㄱ\\r\\nㅂㅈㄷㄱ\\r\\n'
         """
         return self.hwp.GetTextFile(Format=format, option=option)
 
@@ -8224,7 +8226,7 @@ class Hwp:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.GetTextFile()
-            'ㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\n\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\n'
+            'ㅁㄴㅇㄹ\\r\\nㅁㄴㅇㄹ\\r\\nㅁㄴㅇㄹ\\r\\n\\r\\nㅂㅈㄷㄱ\\r\\nㅂㅈㄷㄱ\\r\\nㅂㅈㄷㄱ\\r\\n'
         """
         return self.hwp.GetTextFile(Format=format, option=option)
 
@@ -9318,7 +9320,7 @@ class Hwp:
 
         Args:
             field: 필드이름. GetFieldText()/PutFieldText()와 같은 형식으로 이름 뒤에 ‘{{#}}’로 번호를 지정할 수 있다.
-            idx: 동일명으로 여러 개의 필드가 존재하는 경우, idx번째 필드로 이동하고자 할 때 사용한다. 기본값은 0. idx를 지정하지 않아도, 필드 파라미터 뒤에 ‘{{#}}’를 추가하여 인덱스를 지정할 수 있다. 이 경우 기본적으로 f스트링을 사용하며, f스트링 내부에 탈출문자열 \가 적용되지 않으므로 중괄호를 다섯 겹 입력해야 한다. 예 : hwp.move_to_field(f"필드명{{{{{i}}}}}")
+            idx: 동일명으로 여러 개의 필드가 존재하는 경우, idx번째 필드로 이동하고자 할 때 사용한다. 기본값은 0. idx를 지정하지 않아도, 필드 파라미터 뒤에 ‘{{#}}’를 추가하여 인덱스를 지정할 수 있다. 이 경우 기본적으로 f스트링을 사용하며, f스트링 내부에 탈출문자열 \\가 적용되지 않으므로 중괄호를 다섯 겹 입력해야 한다. 예 : hwp.move_to_field(f"필드명{{{{{i}}}}}")
             text: 필드가 누름틀일 경우 누름틀 내부의 텍스트로 이동할지(True) 누름틀 코드로 이동할지(False)를 지정한다. 누름틀이 아닌 필드일 경우 무시된다. 생략하면 True가 지정된다.
             start: 필드의 처음(True)으로 이동할지 끝(False)으로 이동할지 지정한다. select를 True로 지정하면 무시된다. (캐럿이 처음에 위치해 있게 된다.) 생략하면 True가 지정된다.
             select: 필드 내용을 블록으로 선택할지(True), 캐럿만 이동할지(False) 지정한다. 생략하면 False가 지정된다.
@@ -9337,7 +9339,7 @@ class Hwp:
 
         Args:
             field: 필드이름. GetFieldText()/PutFieldText()와 같은 형식으로 이름 뒤에 ‘{{#}}’로 번호를 지정할 수 있다.
-            idx: 동일명으로 여러 개의 필드가 존재하는 경우, idx번째 필드로 이동하고자 할 때 사용한다. 기본값은 0. idx를 지정하지 않아도, 필드 파라미터 뒤에 ‘{{#}}’를 추가하여 인덱스를 지정할 수 있다. 이 경우 기본적으로 f스트링을 사용하며, f스트링 내부에 탈출문자열 \가 적용되지 않으므로 중괄호를 다섯 겹 입력해야 한다. 예 : hwp.move_to_field(f"필드명{{{{{i}}}}}")
+            idx: 동일명으로 여러 개의 필드가 존재하는 경우, idx번째 필드로 이동하고자 할 때 사용한다. 기본값은 0. idx를 지정하지 않아도, 필드 파라미터 뒤에 ‘{{#}}’를 추가하여 인덱스를 지정할 수 있다. 이 경우 기본적으로 f스트링을 사용하며, f스트링 내부에 탈출문자열 \\가 적용되지 않으므로 중괄호를 다섯 겹 입력해야 한다. 예 : hwp.move_to_field(f"필드명{{{{{i}}}}}")
             text: 필드가 누름틀일 경우 누름틀 내부의 텍스트로 이동할지(True) 누름틀 코드로 이동할지(False)를 지정한다. 누름틀이 아닌 필드일 경우 무시된다. 생략하면 True가 지정된다.
             start: 필드의 처음(True)으로 이동할지 끝(False)으로 이동할지 지정한다. select를 True로 지정하면 무시된다. (캐럿이 처음에 위치해 있게 된다.) 생략하면 True가 지정된다.
             select: 필드 내용을 블록으로 선택할지(True), 캐럿만 이동할지(False) 지정한다. 생략하면 False가 지정된다.
@@ -9810,7 +9812,7 @@ class Hwp:
 
         Args:
             field: 내용을 채울 필드 이름의 리스트. 한 번에 여러 개의 필드를 지정할 수 있으며, 형식은 GetFieldText와 동일하다. 다만 필드 이름 뒤에 "{{#}}"로 번호를 지정하지 않으면 해당 이름을 가진 모든 필드에 동일한 텍스트를 채워 넣는다. 즉, PutFieldText에서는 ‘필드이름’과 ‘필드이름{{0}}’의 의미가 다르다. **단, field에 dict를 입력하는 경우에는 text 파라미터를 무시하고 dict.keys를 필드명으로, dict.values를 필드값으로 입력한다.**
-            text: 필드에 채워 넣을 문자열의 리스트. 형식은 필드 리스트와 동일하게 필드의 개수만큼 텍스트를 0x02로 구분하여 지정한다.
+            text: 필드에 채워 넣을 문자열의 리스트. 형식은 필드 리스트와 동일하게 필드의 개수만큼 텍스트를 "\\x02"로 구분하여 지정한다.
 
         Returns:
             None
@@ -10338,14 +10340,14 @@ class Hwp:
         """
         지정한 필드의 이름을 바꾼다.
 
-        예를 들어 oldname에 "title{{0}}\x02title{{1}}",
-        newname에 "tt1\x02tt2로 지정하면 첫 번째 title은 tt1로, 두 번째 title은 tt2로 변경된다.
+        예를 들어 oldname에 "title{{0}}\\x02title{{1}}",
+        newname에 "tt1\\x02tt2로 지정하면 첫 번째 title은 tt1로, 두 번째 title은 tt2로 변경된다.
         oldname의 필드 개수와, newname의 필드 개수는 동일해야 한다.
         존재하지 않는 필드에 대해서는 무시한다.
 
         Args:
-            oldname: 이름을 바꿀 필드 이름의 리스트. 형식은 PutFieldText와 동일하게 "\x02"로 구분한다.
-            newname: 새로운 필드 이름의 리스트. oldname과 동일한 개수의 필드 이름을 "\x02"로 구분하여 지정한다.
+            oldname: 이름을 바꿀 필드 이름의 리스트. 형식은 PutFieldText와 동일하게 "\\x02"로 구분한다.
+            newname: 새로운 필드 이름의 리스트. oldname과 동일한 개수의 필드 이름을 "\\x02"로 구분하여 지정한다.
 
         Returns:
             None
