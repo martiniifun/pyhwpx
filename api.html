@@ -20527,6 +20527,14 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
     </table>
 
 
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 쪽번호가 있는 문서에서</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">NewNumber</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># 현재 페이지번호가 5로 바뀜</span>
+</code></pre></div>
+
+
     </div>
 
 </div>
@@ -20555,17 +20563,18 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
 3. NewNumber 실행시점의 캐럿위치 뒤쪽(해당 페이지 내)에
    NewNumber 조판이 있는 경우, 삽입한 조판은 무효가 된다.
    (페이지 맨 뒤쪽의 새 번호만 유효함)
-Todo: 페이지 내에 캐럿 뒤쪽으로 [새번호]조판이 있는 경우 지워버리기</p>
-<p>:param new_number:
-    새 번호
-:param num_type:
-    타입 지정
-    "Page": 쪽(기본값)
-    "Figure": 그림
-    "Footnote": 각주
-    "Table": 표
-    "Endnote": 미주
-    "Equation": 수식</p>
+(Todo: 페이지 내에 캐럿 뒤쪽으로 [새번호]조판이 있는 경우 지워버리기?)</p>
+<p>Args:
+new_number: 새 번호
+num_type:
+    타입 지정</p>
+<div class="codehilite"><pre><span></span><code>    - &quot;Page&quot;: 쪽(기본값)
+    - &quot;Figure&quot;: 그림
+    - &quot;Footnote&quot;: 각주
+    - &quot;Table&quot;: 표
+    - &quot;Endnote&quot;: 미주
+    - &quot;Equation&quot;: 수식
+</code></pre></div>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -30745,17 +30754,69 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
 
     <div class="doc doc-contents ">
 
-        <p>현재 캐럿 위치의 줄간격(%) 리턴.
-단, 줄간격 기준은 "글자에 따라(%)" 로 설정되어 있어야 하며,
+        <p>현재 캐럿 위치의 줄간격(%) 리턴.</p>
+<p><a class="glightbox" href="assets/get_linespacing.gif" data-type="image" data-width="100%" data-height="auto" data-title="get_linespacing" data-desc-position="bottom"><img alt="get_linespacing" loading="lazy" src="assets/get_linespacing.gif" /></a></p>
+<p>단, 줄간격 기준은 "글자에 따라(%)" 로 설정되어 있어야 하며,
 "글자에 따라"가 아닌 경우에는 method 파라미터를 실제 옵션과 일치시켜야 함.</p>
-<p>:param method:
-    줄간격 단위기준. 일치하지 않아도 값은 출력되지만, 단위를 모르게 됨..
-    Fixed: 고정값(포인트 단위)
-    Percent: 글자에 따라(기본값, %)
-    BetweenLines: 여백만 지정(포인트 단위)
-    AtLeast: 최소(포인트 단위)</p>
-<p>Returns:
-현재 캐럿이 위치한 문단의 줄간격(% 또는 Point)</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>method</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;Fixed&#39;, &#39;Percent&#39;, &#39;BetweenLines&#39;, &#39;AtLeast&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>줄간격 단위기준. 일치하지 않아도 값은 출력되지만, 단위를 모르게 됨..</p>
+<div class="codehilite"><pre><span></span><code>- &quot;Fixed&quot;: 고정값(포인트 단위)
+- &quot;Percent&quot;: 글자에 따라(기본값, %)
+- &quot;BetweenLines&quot;: 여백만 지정(포인트 단위)
+- &quot;AtLeast&quot;: 최소(포인트 단위)
+</code></pre></div>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;Percent&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="int">int</span> | <span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 캐럿이 위치한 문단의 줄간격(% 또는 Point). method에 따라 값이 바뀌므로 주의.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
@@ -38526,6 +38587,7 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
