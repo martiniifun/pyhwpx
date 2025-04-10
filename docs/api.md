@@ -5,4 +5,7 @@ comments: true
 
 # API 문서
 
+!!! tip
+    `/` 키를 누르면 바로 검색창이 열립니다.
+
 ::: pyhwpx

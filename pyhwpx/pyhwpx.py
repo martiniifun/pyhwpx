@@ -17,6 +17,7 @@ from io import StringIO
 from time import sleep
 from typing import Literal, Union, Any, Type
 from urllib import request, parse
+import warnings
 from winreg import QueryValueEx
 
 import numpy as np
@@ -64,8 +65,8 @@ win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
 
 # 헬퍼함수
 def com_initialized(func):
-    # 이용준님께서 기여해주셨습니다. (https://github.com/YongJun-Lee-98)
     """
+    이용준님께서 기여해주셨습니다. (https://github.com/YongJun-Lee-98)
     이 데코레이터는 함수 실행 전에 COM 라이브러리를 초기화하고,
     실행 후에 COM 라이브러리를 해제합니다.
 
@@ -89,9 +90,9 @@ def addr_to_tuple(cell_address: str) -> tuple[int, int]:
     """
     엑셀주소를 튜플로 변환하는 헬퍼함수
 
-    엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 (row, col) 튜플로 변환하는 헬퍼함수입니다.
-    예를 들어 addr_to_tuple("C3")을 실행하면 (3, 3)을 리턴하는 식입니다.
-    pyhwpx 일부 메서드의 내부 연산에 사용됩니다.
+    엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 `(row, col)` 튜플로 변환하는 헬퍼함수입니다.
+    예를 들어 `addr_to_tuple("C3")`을 실행하면 `(3, 3)`을 리턴하는 식입니다.
+    `pyhwpx` 일부 메서드의 내부 연산에 사용됩니다.
 
     Args:
         cell_address: 엑셀 방식의 "셀주소" 문자열
@@ -100,6 +101,7 @@ def addr_to_tuple(cell_address: str) -> tuple[int, int]:
         (row, column) 형식의 주소 튜플
 
     Examples:
+        >>> from pyhwpx import addr_to_tuple
         >>> print(addr_to_tuple("C3"))
         (3, 3)
         >>> print(addr_to_tuple("AB10"))
@@ -128,16 +130,16 @@ def addr_to_tuple(cell_address: str) -> tuple[int, int]:
 
 def tuple_to_addr(col: int, row: int) -> str:
     """
-    (컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: "AAA3")을 반환합니다.
+    (컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: `"AAA3"`)을 반환합니다.
 
-    hwp.goto_addr(addr) 메서드 내부에서 활용됩니다. 직접 사용하지 않습니다.
+    `hwp.goto_addr(addr)` 메서드 내부에서 활용됩니다. 직접 사용하지 않습니다.
 
     Args:
         col: 열(칼럼) 번호(1부터 시작)
         row: 행(로우) 번호(1부터 시작)
 
     Returns:
-        엑셀 형식의 주소 문자열(예: "A1", "VVS1004")
+        str: 엑셀 형식의 주소 문자열(예: `"A1"`, `"VVS1004"`)
 
     Examples:
         >>> from pyhwpx import tuple_to_addr
@@ -156,10 +158,6 @@ def tuple_to_addr(col: int, row: int) -> str:
 
 
 def _open_dialog(hwnd, key="M", delay=0.2) -> None:
-    """
-    수식컨트롤 관련 헬퍼함수. 직접 사용하지 말 것.
-
-    """
     win32gui.SetForegroundWindow(hwnd)
     win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
     win32api.keybd_event(ord(key), 0, 0, 0)
@@ -171,7 +169,6 @@ def _open_dialog(hwnd, key="M", delay=0.2) -> None:
 def _get_edit_text(hwnd: int, delay: int = 0.2) -> str:
     """
     수식컨트롤 관련 헬퍼함수. 직접 사용하지 말 것.
-
     """
     sleep(delay)
     length = win32gui.SendMessage(hwnd, win32con.WM_GETTEXTLENGTH) + 1
@@ -267,11 +264,8 @@ def _close_eqedit(save: bool = False, delay: float = 0.1) -> bool:
 
 
 def crop_data_from_selection(data, selection) -> list[str]:
-    """
-    리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출하는 함수.
-    pyhwpx 내부적으로만 사용됨
-
-    """
+    # 리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출하는 함수.
+    # pyhwpx 내부적으로만 사용됨
     if not selection:
         return []
 
@@ -298,7 +292,6 @@ def check_registry_key() -> bool:
 
     Returns:
         등록되어 있는 경우 True, 미등록인 경우 False
-
     """
     from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, KEY_WRITE, SetValueEx, REG_SZ, CloseKey
     winup_path = r"Software\HNC\HwpAutomation\Modules"
@@ -324,15 +317,13 @@ def check_registry_key() -> bool:
 
 def rename_duplicates_in_list(file_list: list[str]) -> list[str]:
     """
-    문서 내 이미지를 파일로 저장할 때,
-    동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 헬퍼함수
+    문서 내 이미지를 파일로 저장할 때, 동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 헬퍼함수
 
     Args:
         file_list: 문서 내 이미지 파일명 목록
 
     Returns:
         중복된 이름이 두 개 이상 있는 경우 뒤에 "(2)", "(3)"을 붙인 새로운 문자열 리스트
-
     """
     counts = {}
 
@@ -395,7 +386,7 @@ class Ctrl:
 
     def GetCtrlInstID(self) -> str:
         """
-        컨트롤의 고유 아이디를 정수형태 문자열로 리턴하는 메서드
+        **[한글2024전용]** 컨트롤의 고유 아이디를 정수형태 문자열로 리턴하는 메서드
 
         한글2024부터 제공하는 기능으로 정확하게 컨트롤을 선택하기 위한 새로운 수단이다.
         기존의 ``FindCtrl()``, ``hwp.SelectCtrlFront()``나
@@ -408,12 +399,12 @@ class Ctrl:
 
         다만 사용시 주의할 점이 하나 있는데,
 
-        Get/SetTextFile이나 save_block_as 등의 메서드 혹은
-        Cut/Paste 사용시에는, 문서상에서 컨트롤이 지워졌다 다시 씌어지는 시점에
-        CtrlInstID가 바뀌게 된다. (다만, 마우스로 드래그할 땐 아이디가 바뀌지 않는다.)
+        `Get`/`SetTextFile`이나 `save_block_as` 등의 메서드 혹은
+        `Cut`/`Paste` 사용시에는, 문서상에서 컨트롤이 지워졌다 다시 씌어지는 시점에
+        `CtrlInstID`가 바뀌게 된다. (다만, 마우스로 드래그해 옮길 땐 아이디가 바뀌지 않는다.)
 
         Returns:
-              10자리 정수 형태의 문자열로 구성된 CtrlInstID를 리턴한다.
+            10자리 정수 형태의 문자열로 구성된 `CtrlInstID`를 리턴한다.
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -431,12 +422,13 @@ class Ctrl:
         """
         return self._com_obj.GetCtrlInstID()
 
-    def GetAnchorPos(self, type_: int = 0) -> Any:
+    def GetAnchorPos(self, type_: int = 0) -> "Hwp.HParameterSet"|None:
         """
         해당 컨트롤의 앵커(조판부호)의 위치를 반환한다.
 
         Args:
-            type_: 기준위치
+            type_:
+                기준위치
 
                 - 0: 바로 상위 리스트에서의 앵커 위치(기본값)
                 - 1: 탑레벨 리스트에서의 앵커 위치
@@ -3227,60 +3219,69 @@ class Hwp:
             self.MoveParaBegin()
             return False
 
-    # Deprecated!
-    # def goto_addr(self, addr: str|int = "A1", col: int=0, select_cell: bool=False):
-    #     """
-    #     셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
-    #     셀 주소는 "C3"처럼 문자열로 입력하거나,
-    #     :param addr: 셀 주소 문자열 또는 행번호(1부터)
-    #     :param col: 셀 주소를 정수로 입력하는 경우 열번호(1부터)
-    #     :param select_cell: 이동 후 셀블록 선택 여부
-    #     Returns:
-    #        이동 성공 여부(성공시 True/실패시 False)
-    #     """
-    #     if not self.is_cell():
-    #         return False  # 표 안에 있지 않으면 False 리턴(종료)
-    #     if type(addr) == int and col:  # "A1" 대신 (1, 1) 처럼 tuple(int, int) 방식일 경우
-    #         addr = tuple_to_addr(addr, col)  # 문자열 "A1" 방식으로 우선 변환
-    #
-    #     refresh = False
-    #
-    #     # 우선 A1 셀로 이동 시도
-    #     self.HAction.Run("TableColBegin")
-    #     self.HAction.Run("TableColPageUp")
-    #
-    #     if addr.upper() == "A1":  # A1 셀이 맞으면!
-    #         if select_cell:
-    #             self.HAction.Run("TableCellBlock")
-    #         return True
-    #
-    #     init = self.get_pos()[0]  # 무조건 A1임.
-    #     try:
-    #         if self.addr_info[0] == init:
-    #             pass
-    #         else:
-    #             refresh = True
-    #             self.addr_info = [init, ["A1"]]
-    #     except AttributeError:
-    #         refresh = True
-    #         self.addr_info = [init, ["A1"]]
-    #
-    #     if refresh:
-    #         i = 1
-    #         while self.set_pos(init + i, 0, 0):
-    #             cur_addr = self.KeyIndicator()[-1][1:].split(")")[0]
-    #             if cur_addr == "A1":
-    #                 break
-    #             self.addr_info[1].append(cur_addr)
-    #             i += 1
-    #     try:
-    #         self.set_pos(init + self.addr_info[1].index(addr.upper()), 0, 0)
-    #         if select_cell:
-    #             self.HAction.Run("TableCellBlock")
-    #         return True
-    #     except ValueError:
-    #         self.set_pos(init, 0, 0)
-    #         return False
+    def goto_addr(self, addr: str|int = "A1", col: int=0, select_cell: bool=False) -> bool:
+        """
+        셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
+
+        !!! warning "Deprecated"
+            이 기능은 더 이상 사용되지 않으며, 다음 마이너 업데이트에서 제거될 예정입니다.
+            대신 작업할 표 안에서 직접 `hwp.fill_addr_field()` 메서드를 실행하여
+            셀주소 셀필드를 채운 후 `hwp.move_to_field()`를 통해 이동하는 방식을 사용해 주시기 바랍니다.
+            사용 후에는 `hwp.unfill_addr_field()` 메서드를 통해 초기화를 해주셔야 합니다.
+
+        셀 주소는 "C3"처럼 문자열로 입력하거나, 행번호, 열번호를 입력할 수 있음. 시작값은 1.
+
+        Args:
+            addr: 셀 주소 문자열 또는 행번호(1부터)
+            col: 셀 주소를 정수로 입력하는 경우 열번호(1부터)
+            select_cell: 이동 후 셀블록 선택 여부
+
+        Returns:
+           이동 성공 여부(성공시 True/실패시 False)
+        """
+        if not self.is_cell():
+            return False  # 표 안에 있지 않으면 False 리턴(종료)
+        if type(addr) == int and col:  # "A1" 대신 (1, 1) 처럼 tuple(int, int) 방식일 경우
+            addr = tuple_to_addr(addr, col)  # 문자열 "A1" 방식으로 우선 변환
+
+        refresh = False
+
+        # 우선 A1 셀로 이동 시도
+        self.HAction.Run("TableColBegin")
+        self.HAction.Run("TableColPageUp")
+
+        if addr.upper() == "A1":  # A1 셀이 맞으면!
+            if select_cell:
+                self.HAction.Run("TableCellBlock")
+            return True
+
+        init = self.get_pos()[0]  # 무조건 A1임.
+        try:
+            if self.addr_info[0] == init:
+                pass
+            else:
+                refresh = True
+                self.addr_info = [init, ["A1"]]
+        except AttributeError:
+            refresh = True
+            self.addr_info = [init, ["A1"]]
+
+        if refresh:
+            i = 1
+            while self.set_pos(init + i, 0, 0):
+                cur_addr = self.KeyIndicator()[-1][1:].split(")")[0]
+                if cur_addr == "A1":
+                    break
+                self.addr_info[1].append(cur_addr)
+                i += 1
+        try:
+            self.set_pos(init + self.addr_info[1].index(addr.upper()), 0, 0)
+            if select_cell:
+                self.HAction.Run("TableCellBlock")
+            return True
+        except ValueError:
+            self.set_pos(init, 0, 0)
+            return False
 
     def get_field_info(self) -> list[dict]:
         """
@@ -4361,16 +4362,17 @@ class Hwp:
         self.set_pos(*cur_pos)
         return row_count
 
-    def get_row_height(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
+    def get_row_height(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm") -> float|int:
         """
         표 안에서 캐럿이 들어있는 행(row)의 높이를 리턴함.
 
-        기본단위는 mm 이지만, HwpUnit이나 Point 등 보다 작은 단위를 사용할 수 있다.
-        (메서드 내부에서는 HwpUnit으로 연산한다.)
-        :param `as_`: 리턴하는 수치의 단위
+        기본단위는 mm 이지만, HwpUnit이나 Point 등 보다 작은 단위를 사용할 수 있다. (메서드 내부에서는 HwpUnit으로 연산한다.)
+
+        Args:
+            as_: 리턴하는 수치의 단위
 
         Returns:
-        캐럿이 속한 행의 높이
+            캐럿이 속한 행의 높이
         """
         pset = self.HParameterSet.HShapeObject
         self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
@@ -4404,14 +4406,17 @@ class Hwp:
         self.set_pos(*cur_pos)
         return col_count
 
-    def get_col_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"):
+    def get_col_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm") -> int|float:
         """
         현재 캐럿이 위치한 셀(칼럼)의 너비를 리턴하는 메서드.
 
         기본 단위는 mm이지만, as_ 파라미터를 사용하여 단위를 hwpunit이나 point, inch 등으로 변경 가능하다.
-        :param `as_`: 리턴값의 단위(mm, HwpUnit, Pt, Inch 등 4종류)
+
+        Args:
+            as_: 리턴값의 단위(mm, HwpUnit, Pt, Inch 등 4종류)
 
         Returns:
+            현재 칼럼의 너비(기본단위는 mm)
         """
         if not self.is_cell():
             raise AssertionError("현재 캐럿이 표 안에 있지 않습니다.")
@@ -4428,9 +4433,9 @@ class Hwp:
         else:
             raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
 
-    def set_col_width(self, width: int | float | list | tuple, as_: Literal["mm", "ratio"] = "ratio"):
+    def set_col_width(self, width: int | float | list | tuple, as_: Literal["mm", "ratio"] = "ratio") -> bool:
         """
-        칼럼의 너비를 변경할 수 있는 메서드.
+        칼럼의 너비를 변경하는 메서드.
 
         정수(int)나 부동소수점수(float) 입력시 현재 칼럼의 너비가 변경되며,
         리스트나 튜플 등 iterable 타입 입력시에는 각 요소들의 비에 따라 칼럼들의 너비가 일괄변경된다.
@@ -4441,11 +4446,13 @@ class Hwp:
         단, 열너비의 비가 아닌 "mm" 단위로 값을 입력하려면 as_="mm"로 파라미터를 수정하면 된다.
         이 때, width에 정수 또는 부동소수점수를 입력하는 경우 as_="ratio"를 사용할 수 없다.
 
-        :param width: 열 너비
-        :param `as_`: 단위
+        Args:
+            width: 열 너비
+            as_: 단위
 
         Returns:
-        성공시 True, 실패시 False를 리턴
+            성공시 True, 실패시 False를 리턴
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -4648,10 +4655,8 @@ class Hwp:
 
     def save_pdf_as_image(self, path: str = "", img_format:str="bmp") -> bool:
         """
-        문서보안이나 복제방지를 위해
+        문서보안이나 복제방지를 위해 모든 페이지를 이미지로 변경 후 PDF로 저장하는 메서드.
 
-        모든 페이지를 이미지로 변경 후
-        PDF로 저장하는 메서드.
         아무 인수가 주어지지 않는 경우
         모든 페이지를 bmp로 저장한 후에
         현재 폴더에 {문서이름}.pdf로 저장한다.
@@ -4662,6 +4667,7 @@ class Hwp:
             img_format: 이미지 변환 포맷
 
         Returns:
+            성공시 True
         """
         if path == "" and self.Path:
             path = self.Path.rsplit(".hwp", maxsplit=1)[0] + ".pdf"
@@ -5151,14 +5157,17 @@ class Hwp:
                 ctrl = ctrl.Prev
         return False  # raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."  #                  f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
 
-    def set_row_height(self, height: int | float, as_: Literal["mm", "hwpunit"] = "mm"):
+    def set_row_height(self, height: int | float, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
         """
         캐럿이 표 안에 있는 경우
 
         캐럿이 위치한 행의 셀 높이를 조절하는 메서드(기본단위는 mm)
-        :param height_mili:
+
+        Args:
+            height: 현재 행의 높이 설정값(기본단위는 mm)
 
         Returns:
+            성공시 True, 실패시 False 리턴
         """
         if not self.is_cell():
             raise AssertionError("캐럿이 표 안에 있지 않습니다. 표 안에서 실행해주세요.")
@@ -5423,15 +5432,15 @@ class Hwp:
 
         return result_dict
 
-    def set_pagedef(self, pset, apply: Literal["cur", "all", "new"] = "cur"):
+    def set_pagedef(self, pset:"Hwp.HParameterSet"|dict, apply: Literal["cur", "all", "new"] = "cur") -> bool:
         """
-        get_pagedef 또는 get_pagedef_as_dict를 통해 얻은 용지정보를
+        get_pagedef 또는 get_pagedef_as_dict를 통해 얻은 용지정보를 현재구역에 적용하는 메서드
 
-        새 문서에 적용하는 메서드이다.
-        :param pset:
-            파라미터셋 또는 dict. 용지정보를 담은 객체
+        Args:
+            pset: 파라미터셋 또는 dict. 용지정보를 담은 객체
 
         Returns:
+            성공시 True, 실패시 False를 리턴
         """
         if isinstance(pset, dict):
             desc_to_code = {"용지폭": 'PaperWidth', "용지길이": 'PaperHeight', "용지방향": 'Landscape', "제본타입": 'GutterType',
@@ -5482,15 +5491,17 @@ class Hwp:
         pset.Attributes = attributes
         return self.hwp.HAction.Execute("FileSaveBlock_S", pset.HSet)
 
-    def goto_printpage(self, page_num: int = 1):
+    def goto_printpage(self, page_num: int = 1) -> bool:
         """
         인쇄페이지 기준으로 해당 페이지로 이동
 
         1페이지의 page_num은 1이다.
-        :param page_num: 이동할 페이지번호
+
+        Args:
+            page_num: 이동할 페이지번호
 
         Returns:
-        성공시 True, 실패시 False를 리턴
+            성공시 True, 실패시 False를 리턴
         """
         pset = self.hwp.HParameterSet.HGotoE
         self.hwp.HAction.GetDefault("Goto", pset.HSet)
@@ -5501,12 +5512,14 @@ class Hwp:
     def goto_page(self, page_index: int | str = 1) -> tuple[int, int]:
         """
         새쪽번호와 관계없이 페이지 순서를 통해
-        특정 페이지를 찾아가는 메서드.
-        1이 1페이지임.
-        :param page_index:
+
+        특정 페이지를 찾아가는 메서드. 1이 1페이지임.
+
+        Args:
+            page_index: 찾아갈 페이지(시작페이지는 1)
 
         Returns:
-        tuple(인쇄기준페이지, 페이지인덱스)
+            tuple(인쇄기준페이지, 페이지인덱스)
         """
         if int(page_index) > self.hwp.PageCount:
             return False
@@ -5526,21 +5539,24 @@ class Hwp:
                 self.MovePageDown()
         return self.current_printpage, self.current_page
 
-    def table_from_data(self, data, transpose=False, header0="", treat_as_char=False, header=True, index=True,
-                        cell_fill: bool | tuple[int, int, int] = False, header_bold=True):
+    def table_from_data(self, data:pd.DataFrame|dict|list|str, transpose:bool=False, header0:str="", treat_as_char:bool=False, header:bool=True, index:bool=True,
+                        cell_fill: bool | tuple[int, int, int] = False, header_bold:bool=True) -> None:
         """
         dict, list 또는 csv나 xls, xlsx 및 json처럼 2차원 스프레드시트로 표현 가능한 데이터에 대해서,
 
         정확히는 pd.DataFrame으로 변환 가능한 데이터에 대해 아래아한글 표로 변환하는 작업을 한다.
         내부적으로 판다스 데이터프레임으로 변환하는 과정을 거친다.
-        :param data: 테이블로 변환할 데이터
-        :param transpose: 행/열 전환
-        :param header0: index=True일 경우 (1,1) 셀에 들어갈 텍스트
-        :param treat_as_char: 글자처럼 취급 여부
-        :param header: 1행을 "제목행"으로 선택할지 여부
-        :param header_bold: 1행의 텍스트에 bold를 적용할지 여부
+
+        Args:
+            data: 테이블로 변환할 데이터
+            transpose: 행/열 전환
+            header0: index=True일 경우 (1,1) 셀에 들어갈 텍스트
+            treat_as_char: 글자처럼 취급 여부
+            header: 1행을 "제목행"으로 선택할지 여부
+            header_bold: 1행의 텍스트에 bold를 적용할지 여부
 
         Returns:
+            None
         """
         if type(data) in [dict, list]:
             df = pd.DataFrame(data)
@@ -5621,19 +5637,18 @@ class Hwp:
         pset.Color = self.rgb_color(r, g, b)
         return self.hwp.HAction.Execute("MarkPenShape", pset.HSet)
 
-    def open_pdf(self, pdf_path, this_window=1):
+    def open_pdf(self, pdf_path:str, this_window:int=1) -> bool:
         """
         pdf를 hwp문서로 변환하여 여는 함수.
 
         (최초 실행시 "다시 표시 안함ㅁ" 체크박스에 체크를 해야 한다.)
 
-        :param pdf_path:
-            pdf파일의 경로
-        :param this_window:
-            현재 창에 열고 싶으면 1, 새 창에 열고 싶으면 0.
-            하지만 아직(2023.12.11.) 작동하지 않음.
+        Args:
+            pdf_path: pdf파일의 경로
+            this_window: 현재 창에 열고 싶으면 1, 새 창에 열고 싶으면 0. 하지만 아직(2023.12.11.) 작동하지 않음.
 
         Returns:
+            성공시 True, 실패시 False 리턴
         """
         if pdf_path.lower()[1] != ":":
             pdf_path = os.path.join(os.getcwd(), pdf_path)
@@ -5669,16 +5684,18 @@ class Hwp:
             if move_doc_end:
                 self.MoveDocEnd()
 
-    def insert_memo(self, text, memo_type: Literal["revision", "memo"] = "memo"):
+    def insert_memo(self, text:str="", memo_type: Literal["revision", "memo"] = "memo") -> None:
         """
         선택한 단어 범위에 메모고침표를 삽입하는 코드.
 
         한/글에서 일반 문자열을 삽입하는 코드와 크게 다르지 않다.
         선택모드가 아닌 경우 캐럿이 위치한 단어에 메모고침표를 삽입한다.
-        :param text: str
+
+        Args:
+            text: 삽입할 메모 내용
 
         Returns:
-        None
+            None
         """
         if memo_type == "revision":
             self.InsertFieldRevisionChagne()  # 이 라인이 메모고침표 삽입하는 코드
@@ -5706,12 +5723,11 @@ class Hwp:
         해당 단어를 선택한 상태가 되며,
         문서 처음에 도달시 False 리턴
 
-        :param src:
-            찾을 단어
+        Args:
+            src: 찾을 단어
 
         Returns:
-        단어를 찾으면 찾아가서 선택한 후 True를 리턴,
-            단어가 더이상 없으면 False를 리턴
+            단어를 찾으면 찾아가서 선택한 후 True를 리턴, 단어가 더이상 없으면 False를 리턴
         """
         self.SetMessageBoxMode(0x2fff1)
         init_pos = str(self.KeyIndicator())
@@ -5737,11 +5753,11 @@ class Hwp:
         해당 단어를 선택한 상태가 되며,
         문서 끝에 도달시 False 리턴.
 
-        :param src:
-            찾을 단어
+        Args:
+            src: 찾을 단어
 
         Returns:
-        단어를 찾으면 찾아가서 선택한 후 True를 리턴,
+            단어를 찾으면 찾아가서 선택한 후 True를 리턴,
             단어가 더이상 없으면 False를 리턴
         """
         self.SetMessageBoxMode(0x2fff1)
@@ -5763,27 +5779,37 @@ class Hwp:
 
     def find(self, src, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex=False, MatchCase=1,
              SeveralWords=1, UseWildCards=1, WholeWordOnly=0, AutoSpell=1, HanjaFromHangul=1, AllWordForms=0,
-             FindStyle="", ReplaceStyle="", FindJaso=0, FindType=1):
+             FindStyle="", ReplaceStyle="", FindJaso=0, FindType=1) -> bool:
         """
         direction 방향으로 특정 단어를 찾아가는 메서드.
 
         해당 단어를 선택한 상태가 되며,
         탐색방향에 src 문자열이 없는 경우 False를 리턴
 
-        :param src:
-            찾을 단어
-        :param direction:
-            탐색방향
-            "Forward": 아래쪽으로
-            "Backward": 위쪽으로
-            "AllDoc": 아래쪽 우선으로 찾고 문서끝 도달시 처음으로 돌아감.
-            "MatchCase": 대소문자 구별
-            "SeveralWords": 여러 단어 찾기
-            "UseWildCards": 아무개 문자
-            "AutoSpell":
+        Args:
+            src: 찾을 단어
+            direction:
+                탐색방향
+
+                    - "Forward": 아래쪽으로(기본값)
+                    - "Backward": 위쪽으로
+                    - "AllDoc": 아래쪽 우선으로 찾고 문서끝 도달시 처음으로 돌아감.
+
+             regex: 정규식 탐색(기본값 False)
+             MatchCase: 대소문자 구분(기본값 1)
+             SeveralWords: 여러 단어 찾기
+             UseWildCards: 아무개 문자(1),
+             WholeWordOnly: 온전한 낱말(0),
+             AutoSpell:
+             HanjaFromHangul: 한글로 한자 찾기(1),
+             AllWordForms:
+             FindStyle: 찾을 글자모양
+             ReplaceStyle: 바꿀 글자모양
+             FindJaso: 자소 단위 찾기(0),
+             FindType:
 
         Returns:
-        단어를 찾으면 찾아가서 선택한 후 True를 리턴,
+            단어를 찾으면 찾아가서 선택한 후 True를 리턴,
             단어가 더이상 없으면 False를 리턴
         """
         self.SetMessageBoxMode(0x2fff1)
@@ -6009,16 +6035,20 @@ class Hwp:
         for i in self.hwp.GetFieldList(1).split("\x02"):
             self.hwp.PutFieldText(i, "")
 
-    def switch_to(self, num) -> None:
+    def switch_to(self, num) -> bool:
         """
-        여러 개의 hwp인스턴스가 열려 있는 경우 해당 인스턴스를 활성화한다.
+        여러 개의 hwp인스턴스가 열려 있는 경우 해당 인덱스의 문서창 인스턴스를 활성화한다.
 
-        :param num:
-            인스턴스 번호
+        Args:
+            num: 인스턴스 번호
         """
-        self.hwp.XHwpDocuments.Item(num).SetActive_XHwpDocument()
+        try:
+            self.hwp.XHwpDocuments.Item(num).SetActive_XHwpDocument()
+            return True
+        except pythoncom.com_error as e:
+            return False
 
-    def add_tab(self) -> None:
+    def add_tab(self) -> "Hwp.XHwpDocuments":
         """
         새 문서를 현재 창의 새 탭에 추가한다.
 
@@ -6028,16 +6058,17 @@ class Hwp:
 
         새 창을 추가하고 싶은 경우는 add_tab 대신 hwp.FileNew()나 hwp.add_doc()을 실행하면 된다.
         """
-        self.hwp.XHwpDocuments.Add(1)  # 0은 새 창, 1은 새 탭
+        return self.hwp.XHwpDocuments.Add(1)  # 0은 새 창, 1은 새 탭
 
-    def add_doc(self) -> None:
+    def add_doc(self) -> "Hwp.XHwpDocuments":
         """
-        새 문서를 추가한다. 원래 창이 백그라운드로 숨겨져 있어도
+        새 문서를 추가한다.
 
-        추가된 문서는 보이는 상태가 기본값이다. 숨기려면 set_visible(False)를 실행해야 한다.
-        새 탭을 추가하고 싶은 경우는 add_doc 대신 add_tab()을 실행하면 된다.
+        원래 창이 백그라운드로 숨겨져 있어도 추가된 문서는 보이는 상태가 기본값이다.
+        숨기려면 `hwp.set_visible(False)`를 실행해야 한다.
+        새 탭을 추가하고 싶은 경우는 `add_doc` 대신 `add_tab`을 실행하면 된다.
         """
-        self.hwp.XHwpDocuments.Add(0)  # 0은 새 창, 1은 새 탭
+        return self.hwp.XHwpDocuments.Add(0)  # 0은 새 창, 1은 새 탭
 
     def hwp_unit_to_mili(self, hwp_unit:int) -> float:
         """
@@ -6046,7 +6077,7 @@ class Hwp:
         HwpUnit으로 리턴되었거나, 녹화된 코드의 HwpUnit값을 확인할 때 유용하게 사용할 수 있다.
 
         Returns:
-        HwpUnit을 7200으로 나눈 후 25.4를 곱하고 소숫점 셋째자리에서 반올림한 값
+            HwpUnit을 7200으로 나눈 후 25.4를 곱하고 소숫점 셋째자리에서 반올림한 값
         """
         if hwp_unit == 0:
             return 0
@@ -6483,15 +6514,17 @@ class Hwp:
             if self.SelectionMode != 19:
                 self.set_pos(*start_pos)
 
-    def table_to_bottom(self, offset=0.):
+    def table_to_bottom(self, offset:float=0.) -> bool:
         """
         표 앞에 캐럿을 둔 상태 또는 캐럿이 표 안에 있는 상태에서 위 함수 실행시
 
         표를 (페이지 기준) 하단으로 위치시킨다.
-        :param offset:
-            페이지 하단 기준 오프셋(mm)
+
+        Args:
+            offset: 페이지 하단 기준 오프셋(mm)
 
         Returns:
+            성공시 True
         """
         self.hwp.FindCtrl()
         pset = self.hwp.HParameterSet.HShapeObject
@@ -6637,13 +6670,14 @@ class Hwp:
         """
         현재 편집중인 문서의 내용을 닫고 빈문서 편집 상태로 돌아간다.
 
-        :param option:
-            편집중인 문서의 내용에 대한 처리 방법, 생략하면 1(hwpDiscard)가 선택된다.
+        Args:
+            option:
+                편집중인 문서의 내용에 대한 처리 방법, 생략하면 1(hwpDiscard)가 선택된다.
 
-                - 0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
-                - 1: 문서의 내용을 버린다. (hwpDiscard, 기본값)
-                - 2: 문서가 변경된 경우 저장한다. (hwpSaveIfDirty)
-                - 3: 무조건 저장한다. (hwpSave)
+                    - 0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
+                    - 1: 문서의 내용을 버린다. (hwpDiscard, 기본값)
+                    - 2: 문서가 변경된 경우 저장한다. (hwpSaveIfDirty)
+                    - 3: 무조건 저장한다. (hwpSave)
 
         Returns:
             None
@@ -6656,11 +6690,17 @@ class Hwp:
         """
         return self.hwp.XHwpDocuments.Active_XHwpDocument.Clear(option=option)
 
-    def close(self, is_dirty: bool = False, interval=0.01):
+    def close(self, is_dirty: bool = False, interval:float=0.01) -> bool:
         """
         문서를 버리고 닫은 후, 새 문서창을 여는 메서드.
 
         굳이 새 문서파일이 필요한 게 아니라면 ``hwp.close()`` 대신 ``hwp.clear()``를 사용할 것.
+
+        Args:
+            is_dirty: True인 경우 변경사항이 있을 때 문서를 닫지 않는다. False일 때는 변경사항을 버리고 문서를 닫음
+
+        Returns:
+            문서창을 닫으면 True, 문서창 닫기에 실패하면 False 리턴
         """
         while True:
             try:
@@ -7962,6 +8002,7 @@ class Hwp:
     def GetScriptSource(self, filename: str) -> str:
         """
         문서에 포함된 매크로(스크립트매크로 제외) 소스코드를 가져온다.
+
         문서포함 매크로는 기본적으로
         ```
         function OnDocument_New() {
@@ -7973,11 +8014,11 @@ class Hwp:
         OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
         코드를 추가하고 실행할 수 있다.
 
-        :param filename:
-            매크로 소스를 가져올 한/글 문서의 전체경로
+        Args:
+            filename: 매크로 소스를 가져올 한/글 문서의 전체경로
 
         Returns:
-        (문서에 포함된) 스크립트의 소스코드
+            (문서에 포함된) 스크립트의 소스코드
 
         Examples:
             >>> from pyhwpx import Hwp
