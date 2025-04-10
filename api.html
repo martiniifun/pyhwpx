@@ -7764,6 +7764,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pyhwpx.Hwp.goto_addr" class="md-nav__link">
+    <span class="md-ellipsis">
+      goto_addr
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyhwpx.Hwp.goto_page" class="md-nav__link">
     <span class="md-ellipsis">
       goto_page
@@ -8579,15 +8588,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pyhwpx.crop_data_from_selection" class="md-nav__link">
-    <span class="md-ellipsis">
-      crop_data_from_selection
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#pyhwpx.excel_address_to_tuple_zero_based" class="md-nav__link">
     <span class="md-ellipsis">
       excel_address_to_tuple_zero_based
@@ -8647,6 +8647,10 @@
 
 
 <h1 id="api">API 문서</h1>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code>/</code> 키를 누르면 바로 검색창이 열립니다.</p>
+</div>
 
 
 <div class="doc doc-object doc-module">
@@ -9128,7 +9132,11 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="typing.Any">Any</span></code>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -9167,7 +9175,7 @@
 
     <div class="doc doc-contents ">
 
-        <p>컨트롤의 고유 아이디를 정수형태 문자열로 리턴하는 메서드</p>
+        <p><strong>[한글2024전용]</strong> 컨트롤의 고유 아이디를 정수형태 문자열로 리턴하는 메서드</p>
 <p>한글2024부터 제공하는 기능으로 정확하게 컨트롤을 선택하기 위한 새로운 수단이다.
 기존의 <code>FindCtrl()</code>, <code>hwp.SelectCtrlFront()</code>나
 <code>hwp.SelectCtrlReverse()</code> 등 인접 컨트롤을 선택하는 방법에는
@@ -9177,9 +9185,9 @@
 하지만 ctrl.GetCtrlInstID()와 hwp.SelectCtrl()을
 같이 사용하면 그럴 걱정이 전혀 없게 된다.</p>
 <p>다만 사용시 주의할 점이 하나 있는데,</p>
-<p>Get/SetTextFile이나 save_block_as 등의 메서드 혹은
-Cut/Paste 사용시에는, 문서상에서 컨트롤이 지워졌다 다시 씌어지는 시점에
-CtrlInstID가 바뀌게 된다. (다만, 마우스로 드래그할 땐 아이디가 바뀌지 않는다.)</p>
+<p><code>Get</code>/<code>SetTextFile</code>이나 <code>save_block_as</code> 등의 메서드 혹은
+<code>Cut</code>/<code>Paste</code> 사용시에는, 문서상에서 컨트롤이 지워졌다 다시 씌어지는 시점에
+<code>CtrlInstID</code>가 바뀌게 된다. (다만, 마우스로 드래그해 옮길 땐 아이디가 바뀌지 않는다.)</p>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -9197,7 +9205,7 @@ CtrlInstID가 바뀌게 된다. (다만, 마우스로 드래그할 땐 아이디
             </td>
             <td>
               <div class="doc-md-description">
-                <p>10자리 정수 형태의 문자열로 구성된 CtrlInstID를 리턴한다.</p>
+                <p>10자리 정수 형태의 문자열로 구성된 <code>CtrlInstID</code>를 리턴한다.</p>
               </div>
             </td>
           </tr>
@@ -11668,13 +11676,42 @@ BreakLine과 마찬가지로 보고서 작성시 자주 사용해야 하는 액�
     <div class="doc doc-contents ">
 
         <p>현재 편집중인 문서의 내용을 닫고 빈문서 편집 상태로 돌아간다.</p>
-<p>:param option:
-    편집중인 문서의 내용에 대한 처리 방법, 생략하면 1(hwpDiscard)가 선택된다.</p>
-<div class="codehilite"><pre><span></span><code>    - 0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
-    - 1: 문서의 내용을 버린다. (hwpDiscard, 기본값)
-    - 2: 문서가 변경된 경우 저장한다. (hwpSaveIfDirty)
-    - 3: 무조건 저장한다. (hwpSave)
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>option</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>편집중인 문서의 내용에 대한 처리 방법, 생략하면 1(hwpDiscard)가 선택된다.</p>
+<div class="codehilite"><pre><span></span><code>- 0: 문서의 내용이 변경되었을 때 사용자에게 저장할지 묻는 대화상자를 띄운다. (hwpAskSave)
+- 1: 문서의 내용을 버린다. (hwpDiscard, 기본값)
+- 2: 문서가 변경된 경우 저장한다. (hwpSaveIfDirty)
+- 3: 무조건 저장한다. (hwpSave)
 </code></pre></div>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -15460,21 +15497,70 @@ number에 지정한 타입에 따라 3가지의 서로 다른 방식 중에서 �
 
     <div class="doc doc-contents ">
 
-        <p>문서에 포함된 매크로(스크립트매크로 제외) 소스코드를 가져온다.
-문서포함 매크로는 기본적으로</p>
-<div class="codehilite"><pre><span></span><code>function OnDocument_New() {
-}
-function OnDocument_Open() {
-}
+        <p>문서에 포함된 매크로(스크립트매크로 제외) 소스코드를 가져온다.</p>
+<p>문서포함 매크로는 기본적으로
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>function OnDocument_New() {
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>}
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>function OnDocument_Open() {
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>}
 </code></pre></div>
-
-<p>형태로 비어있는 상태이며,
+형태로 비어있는 상태이며,
 OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
 코드를 추가하고 실행할 수 있다.</p>
-<p>:param filename:
-    매크로 소스를 가져올 한/글 문서의 전체경로</p>
-<p>Returns:
-(문서에 포함된) 스크립트의 소스코드</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>filename</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>매크로 소스를 가져올 한/글 문서의 전체경로</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(문서에 포함된) 스크립트의 소스코드</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
@@ -29114,9 +29200,10 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 
     <div class="doc doc-contents ">
 
-        <p>새 문서를 추가한다. 원래 창이 백그라운드로 숨겨져 있어도</p>
-<p>추가된 문서는 보이는 상태가 기본값이다. 숨기려면 set_visible(False)를 실행해야 한다.
-새 탭을 추가하고 싶은 경우는 add_doc 대신 add_tab()을 실행하면 된다.</p>
+        <p>새 문서를 추가한다.</p>
+<p>원래 창이 백그라운드로 숨겨져 있어도 추가된 문서는 보이는 상태가 기본값이다.
+숨기려면 <code>hwp.set_visible(False)</code>를 실행해야 한다.
+새 탭을 추가하고 싶은 경우는 <code>add_doc</code> 대신 <code>add_tab</code>을 실행하면 된다.</p>
 
 
     </div>
@@ -29224,6 +29311,7 @@ add_tab() 함수를 사용하면 백그라운드 작업이 보장된다.
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -29441,6 +29529,60 @@ add_tab() 함수를 사용하면 백그라운드 작업이 보장된다.
 
         <p>문서를 버리고 닫은 후, 새 문서창을 여는 메서드.</p>
 <p>굳이 새 문서파일이 필요한 게 아니라면 <code>hwp.close()</code> 대신 <code>hwp.clear()</code>를 사용할 것.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>is_dirty</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>True인 경우 변경사항이 있을 때 문서를 닫지 않는다. False일 때는 변경사항을 버리고 문서를 닫음</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>문서창을 닫으면 True, 문서창 닫기에 실패하면 False 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -30168,19 +30310,102 @@ add_tab() 함수를 사용하면 백그라운드 작업이 보장된다.
         <p>direction 방향으로 특정 단어를 찾아가는 메서드.</p>
 <p>해당 단어를 선택한 상태가 되며,
 탐색방향에 src 문자열이 없는 경우 False를 리턴</p>
-<p>:param src:
-    찾을 단어
-:param direction:
-    탐색방향
-    "Forward": 아래쪽으로
-    "Backward": 위쪽으로
-    "AllDoc": 아래쪽 우선으로 찾고 문서끝 도달시 처음으로 돌아감.
-    "MatchCase": 대소문자 구별
-    "SeveralWords": 여러 단어 찾기
-    "UseWildCards": 아무개 문자
-    "AutoSpell":</p>
-        <p>단어를 찾으면 찾아가서 선택한 후 True를 리턴,
-    단어가 더이상 없으면 False를 리턴</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>src</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>찾을 단어</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>direction</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;Forward&#39;, &#39;Backward&#39;, &#39;AllDoc&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>탐색방향</p>
+<div class="codehilite"><pre><span></span><code>- &quot;Forward&quot;: 아래쪽으로(기본값)
+- &quot;Backward&quot;: 위쪽으로
+- &quot;AllDoc&quot;: 아래쪽 우선으로 찾고 문서끝 도달시 처음으로 돌아감.
+</code></pre></div>
+
+<p>regex: 정규식 탐색(기본값 False)
+MatchCase: 대소문자 구분(기본값 1)
+SeveralWords: 여러 단어 찾기
+UseWildCards: 아무개 문자(1),
+WholeWordOnly: 온전한 낱말(0),
+AutoSpell:
+HanjaFromHangul: 한글로 한자 찾기(1),
+AllWordForms:
+FindStyle: 찾을 글자모양
+ReplaceStyle: 바꿀 글자모양
+FindJaso: 자소 단위 찾기(0),
+FindType:</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;Forward&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>단어를 찾으면 찾아가서 선택한 후 True를 리턴,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>단어가 더이상 없으면 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -30201,10 +30426,58 @@ add_tab() 함수를 사용하면 백그라운드 작업이 보장된다.
         <p>문서 위쪽으로 find 메서드를 수행.</p>
 <p>해당 단어를 선택한 상태가 되며,
 문서 처음에 도달시 False 리턴</p>
-<p>:param src:
-    찾을 단어</p>
-        <p>단어를 찾으면 찾아가서 선택한 후 True를 리턴,
-    단어가 더이상 없으면 False를 리턴</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>src</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>찾을 단어</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>단어를 찾으면 찾아가서 선택한 후 True를 리턴, 단어가 더이상 없으면 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -30225,10 +30498,67 @@ add_tab() 함수를 사용하면 백그라운드 작업이 보장된다.
         <p>문서 아래쪽으로 find를 수행하는 메서드.</p>
 <p>해당 단어를 선택한 상태가 되며,
 문서 끝에 도달시 False 리턴.</p>
-<p>:param src:
-    찾을 단어</p>
-        <p>단어를 찾으면 찾아가서 선택한 후 True를 리턴,
-    단어가 더이상 없으면 False를 리턴</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>src</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>찾을 단어</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>단어를 찾으면 찾아가서 선택한 후 True를 리턴,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>단어가 더이상 없으면 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -30648,9 +30978,61 @@ API 사용시 발생하는 오류로 인해 현재는 한글 폰트만 지원하
     <div class="doc doc-contents ">
 
         <p>현재 캐럿이 위치한 셀(칼럼)의 너비를 리턴하는 메서드.</p>
-<p>기본 단위는 mm이지만, as_ 파라미터를 사용하여 단위를 hwpunit이나 point, inch 등으로 변경 가능하다.
-:param <code>as_</code>: 리턴값의 단위(mm, HwpUnit, Pt, Inch 등 4종류)</p>
-<p>Returns:</p>
+<p>기본 단위는 mm이지만, as_ 파라미터를 사용하여 단위를 hwpunit이나 point, inch 등으로 변경 가능하다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;, &#39;point&#39;, &#39;inch&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>리턴값의 단위(mm, HwpUnit, Pt, Inch 등 4종류)</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="int">int</span> | <span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 칼럼의 너비(기본단위는 mm)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -32202,11 +32584,61 @@ set_pagedef 실행시 내부적으로 HWPUnit으로 자동변환하여 적용한
     <div class="doc doc-contents ">
 
         <p>표 안에서 캐럿이 들어있는 행(row)의 높이를 리턴함.</p>
-<p>기본단위는 mm 이지만, HwpUnit이나 Point 등 보다 작은 단위를 사용할 수 있다.
-(메서드 내부에서는 HwpUnit으로 연산한다.)
-:param <code>as_</code>: 리턴하는 수치의 단위</p>
-<p>Returns:
-캐럿이 속한 행의 높이</p>
+<p>기본단위는 mm 이지만, HwpUnit이나 Point 등 보다 작은 단위를 사용할 수 있다. (메서드 내부에서는 HwpUnit으로 연산한다.)</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;hwpunit&#39;, &#39;point&#39;, &#39;inch&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>리턴하는 수치의 단위</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mm&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span> | <span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>캐럿이 속한 행의 높이</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -32247,12 +32679,11 @@ set_pagedef 실행시 내부적으로 HWPUnit으로 자동변환하여 적용한
 
         <p>문서에 포함된 매크로(스크립트매크로 제외) 소스코드를 가져온다.
 문서포함 매크로는 기본적으로</p>
-<div class="codehilite"><pre><span></span><code>function OnDocument_New() {
-}
-function OnDocument_Open() {
-}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>function OnDocument_New() {
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>}
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>function OnDocument_Open() {
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>}
 </code></pre></div>
-
 <p>형태로 비어있는 상태이며, OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만 코드를 추가하고 실행할 수 있다.</p>
 
 
@@ -33056,6 +33487,7 @@ function OnDocument_Open() {
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="float">float</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33322,6 +33754,118 @@ disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
 <div class="doc doc-object doc-function">
 
 
+<h4 id="pyhwpx.Hwp.goto_addr" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">goto_addr</span><span class="p">(</span><span class="n">addr</span><span class="o">=</span><span class="s1">&#39;A1&#39;</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">select_cell</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.</p>
+<div class="admonition warning">
+<p class="admonition-title">Deprecated</p>
+<p>이 기능은 더 이상 사용되지 않으며, 다음 마이너 업데이트에서 제거될 예정입니다.
+대신 작업할 표 안에서 직접 <code>hwp.fill_addr_field()</code> 메서드를 실행하여
+셀주소 셀필드를 채운 후 <code>hwp.move_to_field()</code>를 통해 이동하는 방식을 사용해 주시기 바랍니다.
+사용 후에는 <code>hwp.unfill_addr_field()</code> 메서드를 통해 초기화를 해주셔야 합니다.</p>
+</div>
+<p>셀 주소는 "C3"처럼 문자열로 입력하거나, 행번호, 열번호를 입력할 수 있음. 시작값은 1.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>addr</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>셀 주소 문자열 또는 행번호(1부터)</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;A1&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>col</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>셀 주소를 정수로 입력하는 경우 열번호(1부터)</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>select_cell</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>이동 후 셀블록 선택 여부</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>이동 성공 여부(성공시 True/실패시 False)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="pyhwpx.Hwp.goto_page" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">goto_page</span><span class="p">(</span><span class="n">page_index</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
 
@@ -33330,12 +33874,62 @@ disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
 
     <div class="doc doc-contents ">
 
-        <p>새쪽번호와 관계없이 페이지 순서를 통해
-특정 페이지를 찾아가는 메서드.
-1이 1페이지임.
-:param page_index:</p>
-<p>Returns:
-tuple(인쇄기준페이지, 페이지인덱스)</p>
+        <p>새쪽번호와 관계없이 페이지 순서를 통해</p>
+<p>특정 페이지를 찾아가는 메서드. 1이 1페이지임.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>page_index</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | <span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>찾아갈 페이지(시작페이지는 1)</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple(인쇄기준페이지, 페이지인덱스)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -33354,10 +33948,61 @@ tuple(인쇄기준페이지, 페이지인덱스)</p>
     <div class="doc doc-contents ">
 
         <p>인쇄페이지 기준으로 해당 페이지로 이동</p>
-<p>1페이지의 page_num은 1이다.
-:param page_num: 이동할 페이지번호</p>
-<p>Returns:
-성공시 True, 실패시 False를 리턴</p>
+<p>1페이지의 page_num은 1이다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>page_num</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>이동할 페이지번호</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -33681,8 +34326,29 @@ tuple(인쇄기준페이지, 페이지인덱스)</p>
 
         <p>HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.</p>
 <p>HwpUnit으로 리턴되었거나, 녹화된 코드의 HwpUnit값을 확인할 때 유용하게 사용할 수 있다.</p>
-<p>Returns:
-HwpUnit을 7200으로 나눈 후 25.4를 곱하고 소숫점 셋째자리에서 반올림한 값</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>HwpUnit을 7200으로 나눈 후 25.4를 곱하고 소숫점 셋째자리에서 반올림한 값</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -34531,7 +35197,7 @@ initparam에는 컨트롤의 초기 속성을 지정한다.
 
 
 <h4 id="pyhwpx.Hwp.insert_memo" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">insert_memo</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">memo_type</span><span class="o">=</span><span class="s1">&#39;memo&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">insert_memo</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">memo_type</span><span class="o">=</span><span class="s1">&#39;memo&#39;</span><span class="p">)</span></code>
 
 </h4>
 
@@ -34540,10 +35206,61 @@ initparam에는 컨트롤의 초기 속성을 지정한다.
 
         <p>선택한 단어 범위에 메모고침표를 삽입하는 코드.</p>
 <p>한/글에서 일반 문자열을 삽입하는 코드와 크게 다르지 않다.
-선택모드가 아닌 경우 캐럿이 위치한 단어에 메모고침표를 삽입한다.
-:param text: str</p>
-<p>Returns:
-None</p>
+선택모드가 아닌 경우 캐럿이 위치한 단어에 메모고침표를 삽입한다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>text</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>삽입할 메모 내용</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>None</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -35877,12 +36594,76 @@ syntax는 다음과 같이 공통된 형식을 사용한다.</p>
 
         <p>pdf를 hwp문서로 변환하여 여는 함수.</p>
 <p>(최초 실행시 "다시 표시 안함ㅁ" 체크박스에 체크를 해야 한다.)</p>
-<p>:param pdf_path:
-    pdf파일의 경로
-:param this_window:
-    현재 창에 열고 싶으면 1, 새 창에 열고 싶으면 0.
-    하지만 아직(2023.12.11.) 작동하지 않음.</p>
-<p>Returns:</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>pdf_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pdf파일의 경로</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>this_window</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 창에 열고 싶으면 1, 새 창에 열고 싶으면 0. 하지만 아직(2023.12.11.) 작동하지 않음.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -37173,6 +37954,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
                 <code>save_path</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -37357,10 +38139,8 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
 
     <div class="doc doc-contents ">
 
-        <p>문서보안이나 복제방지를 위해</p>
-<p>모든 페이지를 이미지로 변경 후
-PDF로 저장하는 메서드.
-아무 인수가 주어지지 않는 경우
+        <p>문서보안이나 복제방지를 위해 모든 페이지를 이미지로 변경 후 PDF로 저장하는 메서드.</p>
+<p>아무 인수가 주어지지 않는 경우
 모든 페이지를 bmp로 저장한 후에
 현재 폴더에 {문서이름}.pdf로 저장한다.
 (만약 저장하지 않은 빈 문서의 경우에는 result.pdf로 저장한다.)</p>
@@ -37411,7 +38191,29 @@ PDF로 저장하는 메서드.
           </tr>
       </tbody>
     </table>
-        <p>Returns:</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -37798,7 +38600,7 @@ PDF로 저장하는 메서드.
 
     <div class="doc doc-contents ">
 
-        <p>칼럼의 너비를 변경할 수 있는 메서드.</p>
+        <p>칼럼의 너비를 변경하는 메서드.</p>
 <p>정수(int)나 부동소수점수(float) 입력시 현재 칼럼의 너비가 변경되며,
 리스트나 튜플 등 iterable 타입 입력시에는 각 요소들의 비에 따라 칼럼들의 너비가 일괄변경된다.
 예를 들어 3행 3열의 표 안에서 set_col_width([1,2,3]) 을 실행하는 경우
@@ -37806,19 +38608,88 @@ PDF로 저장하는 메서드.
 (표 전체의 너비가 148mm라면, 각각 24mm : 48mm : 72mm로 변경된다는 뜻이다.)</p>
 <p>단, 열너비의 비가 아닌 "mm" 단위로 값을 입력하려면 as_="mm"로 파라미터를 수정하면 된다.
 이 때, width에 정수 또는 부동소수점수를 입력하는 경우 as_="ratio"를 사용할 수 없다.</p>
-<p>:param width: 열 너비
-:param <code>as_</code>: 단위</p>
-<p>Returns:
-성공시 True, 실패시 False를 리턴
-Examples:
-    &gt;&gt;&gt; from pyhwpx import Hwp
-    &gt;&gt;&gt; hwp = Hwp()
-    &gt;&gt;&gt; hwp.create_table(3,3)
-    True
-    &gt;&gt;&gt; hwp.get_into_nth_table(0)
-    True
-    &gt;&gt;&gt; hwp.set_col_width([1,2,3])
-    True</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>width</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | <span title="float">float</span> | <span title="list">list</span> | <span title="tuple">tuple</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>열 너비</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>as_</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;mm&#39;, &#39;ratio&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>단위</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;ratio&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">True</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_into_nth_table</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">True</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_col_width</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">True</span>
+</code></pre></div>
 
 
     </div>
@@ -38841,11 +39712,65 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 
     <div class="doc doc-contents ">
 
-        <p>get_pagedef 또는 get_pagedef_as_dict를 통해 얻은 용지정보를</p>
-<p>새 문서에 적용하는 메서드이다.
-:param pset:
-    파라미터셋 또는 dict. 용지정보를 담은 객체</p>
-<p>Returns:</p>
+        <p>get_pagedef 또는 get_pagedef_as_dict를 통해 얻은 용지정보를 현재구역에 적용하는 메서드</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>pset</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a> | <span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>파라미터셋 또는 dict. 용지정보를 담은 객체</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -39161,9 +40086,61 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
     <div class="doc doc-contents ">
 
         <p>캐럿이 표 안에 있는 경우</p>
-<p>캐럿이 위치한 행의 셀 높이를 조절하는 메서드(기본단위는 mm)
-:param height_mili:</p>
-<p>Returns:</p>
+<p>캐럿이 위치한 행의 셀 높이를 조절하는 메서드(기본단위는 mm)</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>height</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | <span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 행의 높이 설정값(기본단위는 mm)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -40044,9 +41021,37 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 
     <div class="doc doc-contents ">
 
-        <p>여러 개의 hwp인스턴스가 열려 있는 경우 해당 인스턴스를 활성화한다.</p>
-<p>:param num:
-    인스턴스 번호</p>
+        <p>여러 개의 hwp인스턴스가 열려 있는 경우 해당 인덱스의 문서창 인스턴스를 활성화한다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>num</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>인스턴스 번호</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -40066,14 +41071,141 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 
         <p>dict, list 또는 csv나 xls, xlsx 및 json처럼 2차원 스프레드시트로 표현 가능한 데이터에 대해서,</p>
 <p>정확히는 pd.DataFrame으로 변환 가능한 데이터에 대해 아래아한글 표로 변환하는 작업을 한다.
-내부적으로 판다스 데이터프레임으로 변환하는 과정을 거친다.
-:param data: 테이블로 변환할 데이터
-:param transpose: 행/열 전환
-:param header0: index=True일 경우 (1,1) 셀에 들어갈 텍스트
-:param treat_as_char: 글자처럼 취급 여부
-:param header: 1행을 "제목행"으로 선택할지 여부
-:param header_bold: 1행의 텍스트에 bold를 적용할지 여부</p>
-<p>Returns:</p>
+내부적으로 판다스 데이터프레임으로 변환하는 과정을 거친다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>data</code>
+            </td>
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span> | <span title="dict">dict</span> | <span title="list">list</span> | <span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>테이블로 변환할 데이터</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>transpose</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>행/열 전환</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>header0</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>index=True일 경우 (1,1) 셀에 들어갈 텍스트</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>treat_as_char</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>글자처럼 취급 여부</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>header</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>1행을 "제목행"으로 선택할지 여부</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>header_bold</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>1행의 텍스트에 bold를 적용할지 여부</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>None</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -40092,10 +41224,61 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
     <div class="doc doc-contents ">
 
         <p>표 앞에 캐럿을 둔 상태 또는 캐럿이 표 안에 있는 상태에서 위 함수 실행시</p>
-<p>표를 (페이지 기준) 하단으로 위치시킨다.
-:param offset:
-    페이지 하단 기준 오프셋(mm)</p>
-<p>Returns:</p>
+<p>표를 (페이지 기준) 하단으로 위치시킨다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>offset</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>페이지 하단 기준 오프셋(mm)</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -40235,9 +41418,9 @@ df로 변환시작할 행을 특정할 때 사용된다.</p>
     <div class="doc doc-contents ">
 
         <p>엑셀주소를 튜플로 변환하는 헬퍼함수</p>
-<p>엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 (row, col) 튜플로 변환하는 헬퍼함수입니다.
-예를 들어 addr_to_tuple("C3")을 실행하면 (3, 3)을 리턴하는 식입니다.
-pyhwpx 일부 메서드의 내부 연산에 사용됩니다.</p>
+<p>엑셀 셀 주소("A1", "B2", "ASD100000" 등)를 <code>(row, col)</code> 튜플로 변환하는 헬퍼함수입니다.
+예를 들어 <code>addr_to_tuple("C3")</code>을 실행하면 <code>(3, 3)</code>을 리턴하는 식입니다.
+<code>pyhwpx</code> 일부 메서드의 내부 연산에 사용됩니다.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -40295,12 +41478,13 @@ pyhwpx 일부 메서드의 내부 연산에 사용됩니다.</p>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">addr_to_tuple</span><span class="p">(</span><span class="s2">&quot;C3&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">(3, 3)</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">addr_to_tuple</span><span class="p">(</span><span class="s2">&quot;AB10&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">(10, 28)</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">addr_to_tuple</span><span class="p">(</span><span class="s2">&quot;AAA100000&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">(100000, 703)</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">addr_to_tuple</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">addr_to_tuple</span><span class="p">(</span><span class="s2">&quot;C3&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="go">(3, 3)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">addr_to_tuple</span><span class="p">(</span><span class="s2">&quot;AB10&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="go">(10, 28)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">addr_to_tuple</span><span class="p">(</span><span class="s2">&quot;AAA100000&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="go">(100000, 703)</span>
 </code></pre></div>
 
 
@@ -40432,30 +41616,12 @@ pyhwpx 일부 메서드의 내부 연산에 사용됩니다.</p>
 
     <div class="doc doc-contents ">
 
-        <p>이 데코레이터는 함수 실행 전에 COM 라이브러리를 초기화하고,
+        <p>이용준님께서 기여해주셨습니다. (https://github.com/YongJun-Lee-98)
+이 데코레이터는 함수 실행 전에 COM 라이브러리를 초기화하고,
 실행 후에 COM 라이브러리를 해제합니다.</p>
 <p>Python의 GC가 COM 객체를 자동으로 제거하더라도,
 CoUninitialize()를 호출하지 않으면
 COM 라이브러리가 해당 스레드에서 완전히 해제되지 않을 수 있기 때문입니다.</p>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pyhwpx.crop_data_from_selection" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">crop_data_from_selection</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">selection</span><span class="p">)</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>리스트 a의 셀 주소를 바탕으로 데이터 범위를 추출하는 함수.
-pyhwpx 내부적으로만 사용됨</p>
 
 
     </div>
@@ -40491,8 +41657,7 @@ pyhwpx 내부적으로만 사용됨</p>
 
     <div class="doc doc-contents ">
 
-        <p>문서 내 이미지를 파일로 저장할 때,
-동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 헬퍼함수</p>
+        <p>문서 내 이미지를 파일로 저장할 때, 동일한 이름의 파일 뒤에 (2), (3).. 붙여주는 헬퍼함수</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -40564,8 +41729,8 @@ pyhwpx 내부적으로만 사용됨</p>
 
     <div class="doc doc-contents ">
 
-        <p>(컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: "AAA3")을 반환합니다.</p>
-<p>hwp.goto_addr(addr) 메서드 내부에서 활용됩니다. 직접 사용하지 않습니다.</p>
+        <p>(컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: <code>"AAA3"</code>)을 반환합니다.</p>
+<p><code>hwp.goto_addr(addr)</code> 메서드 내부에서 활용됩니다. 직접 사용하지 않습니다.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -40619,18 +41784,18 @@ pyhwpx 내부적으로만 사용됨</p>
     <table>
       <thead>
         <tr>
-          <th>Type</th>
+<th>Name</th>          <th>Type</th>
           <th>Description</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td>
+<td><code>str</code></td>            <td>
                   <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>엑셀 형식의 주소 문자열(예: "A1", "VVS1004")</p>
+                <p>엑셀 형식의 주소 문자열(예: <code>"A1"</code>, <code>"VVS1004"</code>)</p>
               </div>
             </td>
           </tr>
@@ -40678,7 +41843,7 @@ pyhwpx 내부적으로만 사용됨</p>
     <span class="md-icon" title="마지막 업데이트">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025년 4월 8일 22:01:09">2025년 4월 8일</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025년 4월 10일 18:44:04">2025년 4월 10일</span>
   </span>
 
     
