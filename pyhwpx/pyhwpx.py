@@ -14511,9 +14511,22 @@ class Hwp:
         """셀 가운데 오른쪽 정렬"""
         return self.hwp.HAction.Run("TableCellAlignRightTop")
 
-    def TableCellBlock(self):
+    def TableCellBlock(self) -> bool:
         """
         셀 블록 상태로 전환
+
+        Returns:
+            성공시 True, 실패시 False를 리턴
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.get_into_nth_table(0)  # 문서 첫 번째 표로 이동
+            >>> hwp.TableCellBlock()  # 셀블록
+            >>> hwp.TableCellBlockExtend()  # 셀블록 확장
+            >>> hwp.TableCellBlockExtend()  # 전체 셀 선택
+            >>> rgb = (50, 150, 250)
+            >>> hwp.cell_fill(rgb)
 
         """
         return self.hwp.HAction.Run("TableCellBlock")
