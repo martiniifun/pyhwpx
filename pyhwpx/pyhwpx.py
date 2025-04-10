@@ -393,7 +393,42 @@ class Ctrl:
     def __repr__(self):
         return f"<CtrlCode: CtrlID={self.CtrlID}, CtrlCH={self.CtrlCh}, UserDesc={self.UserDesc}>"
 
-    def GetCtrlInstID(self) -> Any:
+    def GetCtrlInstID(self) -> str:
+        """
+        컨트롤의 고유 아이디를 정수형태 문자열로 리턴하는 메서드
+
+        한글2024부터 제공하는 기능으로 정확하게 컨트롤을 선택하기 위한 새로운 수단이다.
+        기존의 ``FindCtrl()``, ``hwp.SelectCtrlFront()``나
+        ``hwp.SelectCtrlReverse()`` 등 인접 컨트롤을 선택하는 방법에는
+        문제의 소지가 있었다. 대표적인 예로, 이미지가 들어있는 셀 안에서
+        표 컨트롤을 선택하려고 하면, 어떤 방법을 쓰든 이미지가 선택돼버리기 때문에
+        이미지를 선택하지 않는 여러 꼼수를 생각해내야 했다.
+        하지만 ctrl.GetCtrlInstID()와 hwp.SelectCtrl()을
+        같이 사용하면 그럴 걱정이 전혀 없게 된다.
+
+        다만 사용시 주의할 점이 하나 있는데,
+
+        Get/SetTextFile이나 save_block_as 등의 메서드 혹은
+        Cut/Paste 사용시에는, 문서상에서 컨트롤이 지워졌다 다시 씌어지는 시점에
+        CtrlInstID가 바뀌게 된다. (다만, 마우스로 드래그할 땐 아이디가 바뀌지 않는다.)
+
+        Returns:
+              10자리 정수 형태의 문자열로 구성된 CtrlInstID를 리턴한다.
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.insert_random_picture()
+            >>> hwp.insert_random_picture()
+            >>> hwp.insert_random_picture()
+            >>> for ctrl in hwp.ctrl_list:
+            ...     print(ctrl.GetCtrlInstID())
+            ...
+            1816447703
+            1816447705
+            1816447707
+            >>> hwp.hwp.SelectCtrl("")
+        """
         return self._com_obj.GetCtrlInstID()
 
     def GetAnchorPos(self, type_: int = 0) -> Any:
@@ -4858,74 +4893,82 @@ class Hwp:
         return True
 
     def set_font(self,
-                 Bold="",  # 진하게(True/False)
-                 DiacSymMark="",  # 강조점(0~12)
-                 Emboss="",  # 양각(True/False)
-                 Engrave="",  # 음각(True/False)
-                 FaceName="",  # 서체
+                 Bold:str|bool="",  # 진하게(True/False)
+                 DiacSymMark:str|int="",  # 강조점(0~12)
+                 Emboss:str|bool="",  # 양각(True/False)
+                 Engrave:str|bool="",  # 음각(True/False)
+                 FaceName:str="",  # 서체
                  FontType=1,  # 1(TTF), 2(HTF)
-                 Height="",  # 글자크기(pt, 0.1 ~ 4096)
-                 Italic="",  # 이탤릭(True/False)
-                 Offset="",  # 글자위치-상하오프셋(-100 ~ 100)
-                 OutLineType="",  # 외곽선타입(0~6)
-                 Ratio="",  # 장평(50~200)
-                 ShadeColor="",
+                 Height:str|float="",  # 글자크기(pt, 0.1 ~ 4096)
+                 Italic:str|bool="",  # 이탤릭(True/False)
+                 Offset:str|int="",  # 글자위치-상하오프셋(-100 ~ 100)
+                 OutLineType:str|int="",  # 외곽선타입(0~6)
+                 Ratio:str|int="",  # 장평(50~200)
+                 ShadeColor:str|int="",
                  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-                 ShadowColor="",  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-                 ShadowOffsetX="",  # 그림자 X오프셋(-100 ~ 100)
-                 ShadowOffsetY="",  # 그림자 Y오프셋(-100 ~ 100)
-                 ShadowType="",  # 그림자 유형(0: 없음, 1: 비연속, 2:연속)
-                 Size="",  # 글자크기 축소확대%(10~250)
-                 SmallCaps="",  # 강조점
-                 Spacing="",  # 자간(-50 ~ 50)
-                 StrikeOutColor="",
+                 ShadowColor:str|int="",  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+                 ShadowOffsetX:str|int="",  # 그림자 X오프셋(-100 ~ 100)
+                 ShadowOffsetY:str|int="",  # 그림자 Y오프셋(-100 ~ 100)
+                 ShadowType:str|int="",  # 그림자 유형(0: 없음, 1: 비연속, 2:연속)
+                 Size:str|int="",  # 글자크기 축소확대%(10~250)
+                 SmallCaps:str|bool="",  # 강조점
+                 Spacing:str|int="",  # 자간(-50 ~ 50)
+                 StrikeOutColor:str|int="",
                  # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-                 StrikeOutShape="",  # 취소선 모양(0~12, 0이 일반 취소선)
-                 StrikeOutType="",  # 취소선 유무(True/False)
-                 SubScript="",  # 아래첨자(True/False)
-                 SuperScript="",  # 위첨자(True/False)
-                 TextColor="",  # 글자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
-                 UnderlineColor="",  # 밑줄색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
-                 UnderlineShape="",  # 밑줄형태(0~12)
-                 UnderlineType="",  # 밑줄위치(0:없음, 1:하단, 3:상단)
-                 UseFontSpace="",  # 글꼴에 어울리는 빈칸(True/False)
-                 UseKerning=""  # 커닝 적용(True/False) : 차이가 없다?
-                 ):
+                 StrikeOutShape:str|int="",  # 취소선 모양(0~12, 0이 일반 취소선)
+                 StrikeOutType:str|bool="",  # 취소선 유무(True/False)
+                 SubScript:str|bool="",  # 아래첨자(True/False)
+                 SuperScript:str|bool="",  # 위첨자(True/False)
+                 TextColor:str|int="",  # 글자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+                 UnderlineColor:str|int="",  # 밑줄색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+                 UnderlineShape:str|int="",  # 밑줄형태(0~12)
+                 UnderlineType:str|int="",  # 밑줄위치(0:없음, 1:하단, 3:상단)
+                 UseFontSpace:str|bool="",  # 글꼴에 어울리는 빈칸(True/False)
+                 UseKerning:str|bool=""  # 커닝 적용(True/False) : 차이가 없다?
+                 ) -> bool:
         """
         글자모양을 메서드 형태로 수정할 수 있는 메서드.
 
-        :param Bold:  # 진하게(True/False)
-        :param DiacSymMark:  # 강조점(0~12)
-        :param Emboss:  # 양각(True/False)
-        :param Engrave:  # 음각(True/False)
-        :param FaceName:  # 서체
-        :param FontType:  # 1(TTF),
-        :param Height:  # 글자크기(pt, 0.1 ~ 4096)
-        :param Italic:  # 이탤릭(True/False)
-        :param Offset:  # 글자위치-상하오프셋(-100 ~ 100)
-        :param OutLineType:  # 외곽선타입(0~6)
-        :param Ratio:   # 장평(50~200)
-        :param ShadeColor:  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-        :param ShadowColor:  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-        :param ShadowOffsetX:  # 그림자 X오프셋(-100 ~ 100)
-        :param ShadowOffsetY:  # 그림자 Y오프셋(-100 ~ 100)
-        :param ShadowType:  # 그림자 유형(0: 없음, 1: 비연속, 2:연속)
-        :param Size:  # 글자크기 축소확대%(10~250)
-        :param SmallCaps:  # 강조점
-        :param Spacing:  # 자간(-50 ~ 50)
-        :param StrikeOutColor:  # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-        :param StrikeOutShape:  # 취소선 모양(0~12, 0이 일반 취소선)
-        :param StrikeOutType:  # 취소선 유무(True/False)
-        :param SubScript:  # 아래첨자(True/False)
-        :param SuperScript:  # 위첨자(True/False)
-        :param TextColor:  # 글자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
-        :param UnderlineColor:  # 밑줄색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
-        :param UnderlineShape:  # 밑줄형태(0~12)
-        :param UnderlineType:  # 밑줄위치(0:없음, 1:하단, 3:상단)
-        :param UseFontSpace:  # 글꼴에 어울리는 빈칸(True/False) : 차이가 나는 폰트를 못 찾았다...
-        :param UseKerning: 커닝 적용(True/False) : 차이가 전혀 없다?
+        Args:
+            Bold:  # 진하게(True/False)
+            DiacSymMark:  # 강조점(0~12)
+            Emboss:  # 양각(True/False)
+            Engrave:  # 음각(True/False)
+            FaceName:  # 서체
+            FontType:  # 1(TTF),
+            Height:  # 글자크기(pt, 0.1 ~ 4096)
+            Italic:  # 이탤릭(True/False)
+            Offset:  # 글자위치-상하오프셋(-100 ~ 100)
+            OutLineType:  # 외곽선타입(0~6)
+            Ratio:   # 장평(50~200)
+            ShadeColor:  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+            ShadowColor:  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+            ShadowOffsetX:  # 그림자 X오프셋(-100 ~ 100)
+            ShadowOffsetY:  # 그림자 Y오프셋(-100 ~ 100)
+            ShadowType:  # 그림자 유형(0: 없음, 1: 비연속, 2:연속)
+            Size:  # 글자크기 축소확대%(10~250)
+            SmallCaps:  # 강조점
+            Spacing:  # 자간(-50 ~ 50)
+            StrikeOutColor:  # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+            StrikeOutShape:  # 취소선 모양(0~12, 0이 일반 취소선)
+            StrikeOutType:  # 취소선 유무(True/False)
+            SubScript:  # 아래첨자(True/False)
+            SuperScript:  # 위첨자(True/False)
+            TextColor:  # 글자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+            UnderlineColor:  # 밑줄색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+            UnderlineShape:  # 밑줄형태(0~12)
+            UnderlineType:  # 밑줄위치(0:없음, 1:하단, 3:상단)
+            UseFontSpace:  # 글꼴에 어울리는 빈칸(True/False) : 차이가 나는 폰트를 못 찾았다...
+            UseKerning: 커닝 적용(True/False) : 차이가 전혀 없다?
 
         Returns:
+            성공시 True, 실패시 False를 리턴
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.SelectAll()  # 전체선택
+            >>> hwp.set_font(FaceName="D2Coding", TextColor="Orange")
         """
         d = {'Bold': Bold, 'DiacSymMark': DiacSymMark, 'Emboss': Emboss, 'Engrave': Engrave,
              "FaceNameUser": FaceName, "FaceNameSymbol": FaceName, "FaceNameOther": FaceName,
