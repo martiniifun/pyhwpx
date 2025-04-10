@@ -3796,21 +3796,24 @@ class Hwp:
         3. NewNumber 실행시점의 캐럿위치 뒤쪽(해당 페이지 내)에
            NewNumber 조판이 있는 경우, 삽입한 조판은 무효가 된다.
            (페이지 맨 뒤쪽의 새 번호만 유효함)
-        Todo: 페이지 내에 캐럿 뒤쪽으로 [새번호]조판이 있는 경우 지워버리기
+        (Todo: 페이지 내에 캐럿 뒤쪽으로 [새번호]조판이 있는 경우 지워버리기?)
 
-        :param new_number:
-            새 번호
-        :param num_type:
+        Args:
+        new_number: 새 번호
+        num_type:
             타입 지정
-            "Page": 쪽(기본값)
-            "Figure": 그림
-            "Footnote": 각주
-            "Table": 표
-            "Endnote": 미주
-            "Equation": 수식
+
+                - "Page": 쪽(기본값)
+                - "Figure": 그림
+                - "Footnote": 각주
+                - "Table": 표
+                - "Endnote": 미주
+                - "Equation": 수식
 
         Returns:
             성공시 True, 실패시 False를 리턴
+
+
         """
         current_pos = self.GetPos()
         current_page = self.PageCount
@@ -3851,6 +3854,12 @@ class Hwp:
 
         Returns:
             성공시 True, 실패시 False를 리턴
+
+        Examples:
+            >>> # 쪽번호가 있는 문서에서
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.NewNumber(5)  # 현재 페이지번호가 5로 바뀜
         """
         pset = self.HParameterSet.HAutoNum
         self.HAction.GetDefault("NewNumber", pset.HSet)
