@@ -15777,6 +15777,7 @@ disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
                 <code>format</code>
             </td>
             <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;HWP&#39;, &#39;HWPML2X&#39;, &#39;HTML&#39;, &#39;UNICODE&#39;, &#39;TEXT&#39;]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -15798,6 +15799,7 @@ disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
                 <code>option</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -15823,6 +15825,7 @@ disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -16379,7 +16382,7 @@ hwp.SetMessageBoxMode(0x10000)을 미리 실행해놓아야 한다.</p>
 
     <div class="doc doc-contents ">
 
-        <p>선너비를 정해주는 헬퍼 메서드.</p>
+        <p>선 너비를 정해주는 헬퍼 메서드.</p>
 <p>목록은 아래와 같다.</p>
 
 
@@ -16442,6 +16445,7 @@ hwp.SetMessageBoxMode(0x10000)을 미리 실행해놓아야 한다.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33487,17 +33491,19 @@ tuple(인쇄기준페이지, 페이지인덱스)</p>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <p>from pyhwpx import Hwp
-hwp = Hwp()</p>
-<p>for i in range(0, 256, 2):
-    hwp.gradation_on_cell(
-        color_list=[(255,i,i), (i,255,i)],
-        grad_type="Square",
-        xc=40, yc=60,
-        pos_list=[20,80],
-        step_center=int(i/255*100),
-        step=i,
-    )</p>
+    <div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="n">hwp</span><span class="o">.</span><span class="n">gradation_on_cell</span><span class="p">(</span>
+        <span class="n">color_list</span><span class="o">=</span><span class="p">[(</span><span class="mi">255</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="n">i</span><span class="p">)],</span>
+        <span class="n">grad_type</span><span class="o">=</span><span class="s2">&quot;Square&quot;</span><span class="p">,</span>
+        <span class="n">xc</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">yc</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+        <span class="n">pos_list</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="mi">80</span><span class="p">],</span>
+        <span class="n">step_center</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="mi">255</span><span class="o">*</span><span class="mi">100</span><span class="p">),</span>
+        <span class="n">step</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div>
 
 
     </div>
