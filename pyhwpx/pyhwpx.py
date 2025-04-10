@@ -5716,7 +5716,7 @@ class Hwp:
         else:
             return False
 
-    def find_backward(self, src, regex=False):
+    def find_backward(self, src:str, regex:bool=False) -> bool:
         """
         문서 위쪽으로 find 메서드를 수행.
 
@@ -5746,7 +5746,7 @@ class Hwp:
         finally:
             self.SetMessageBoxMode(0xfffff)
 
-    def find_forward(self, src, regex=False):
+    def find_forward(self, src:str, regex:bool=False) -> bool:
         """
         문서 아래쪽으로 find를 수행하는 메서드.
 
@@ -5757,8 +5757,7 @@ class Hwp:
             src: 찾을 단어
 
         Returns:
-            단어를 찾으면 찾아가서 선택한 후 True를 리턴,
-            단어가 더이상 없으면 False를 리턴
+            단어를 찾으면 찾아가서 선택한 후 True를 리턴, 단어가 더이상 없으면 False를 리턴
         """
         self.SetMessageBoxMode(0x2fff1)
         init_pos = str(self.KeyIndicator())
@@ -5777,7 +5776,7 @@ class Hwp:
         finally:
             self.SetMessageBoxMode(0xfffff)
 
-    def find(self, src, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex=False, MatchCase=1,
+    def find(self, src:str, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex=False, MatchCase=1,
              SeveralWords=1, UseWildCards=1, WholeWordOnly=0, AutoSpell=1, HanjaFromHangul=1, AllWordForms=0,
              FindStyle="", ReplaceStyle="", FindJaso=0, FindType=1) -> bool:
         """
@@ -6035,7 +6034,7 @@ class Hwp:
         for i in self.hwp.GetFieldList(1).split("\x02"):
             self.hwp.PutFieldText(i, "")
 
-    def switch_to(self, num) -> bool:
+    def switch_to(self, num:int) -> bool:
         """
         여러 개의 hwp인스턴스가 열려 있는 경우 해당 인덱스의 문서창 인스턴스를 활성화한다.
 
