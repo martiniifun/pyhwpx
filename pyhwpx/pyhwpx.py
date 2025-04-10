@@ -4739,7 +4739,7 @@ class Hwp:
         shutil.rmtree("./temp")
         return True
 
-    def SelectCtrl(self, ctrllist: str | int, option: Literal[0, 1] = 1):
+    def SelectCtrl(self, ctrllist: str | int, option: Literal[0, 1] = 1) -> bool:
         """
         한글2024 이상의 버전에서 사용 가능한 API 기반의 신규 메서드.
 
@@ -4766,7 +4766,7 @@ class Hwp:
         else:
             raise NotImplementedError("아래아한글 버전이 2024 미만입니다. hwp.select_ctrl()을 대신 사용하셔야 합니다.")
 
-    def select_ctrl(self, ctrl:Ctrl, anchor_type: Literal[0, 1, 2] = 0, option: int = 1):
+    def select_ctrl(self, ctrl:Ctrl, anchor_type: Literal[0, 1, 2] = 0, option: int = 1) -> None:
         """
         인수로 넣은 컨트롤 오브젝트를 선택하는 pyhwpx 전용 메서드.
 
@@ -5058,7 +5058,8 @@ class Hwp:
         """
         선택한 셀에 색 채우기
 
-        :param face_color:
+        Args:
+            face_color: (red, green, blue) 형태의 튜플. 각 정수는 0~255까지이며, 만약
 
         Returns:
         """
@@ -5175,22 +5176,40 @@ class Hwp:
         """
         self.insert_background_picture("", border_type="SelectedCellDelete")
 
-    def gradation_on_cell(self, color_list: list[tuple] | list[str] = [(0, 0, 0), (255, 255, 255)],
-                          grad_type: Literal["Linear", "Radial", "Conical", "Square"] = "Linear", angle=0, xc=0, yc=0,
-                          pos_list: list[int] = None, step_center=50, step=255, ):
+    def gradation_on_cell(self, color_list: list[tuple[int], tuple[int]] | list[str, str] = [(0, 0, 0), (255, 255, 255)],
+                          grad_type: Literal["Linear", "Radial", "Conical", "Square"] = "Linear", angle:int=0, xc:int=0, yc:int=0,
+                          pos_list: list[int] = None, step_center:int=50, step:int=255) -> bool:
         """
         셀에 그라데이션을 적용하는 메서드
 
-        :param color_list:
-        :param grad_type:
-        :param angle:
-        :param xc:
-        :param yc:
-        :param pos_list:
-        :param step_center:
-        :param step:
+        ![gradation_on_cell](assets/gradation_on_cell.gif){ loading:lazy }
+
+        Args:
+            color_list: 시작RGB 튜플과 종료RGB 튜플의 리스트
+            grad_type: 그라데이션 형태(선형, 방사형, 콘형, 사각형)
+            angle: 그라데이션 각도
+            xc:  x 중심점
+            yc:  y 중심점
+            pos_list:  변곡점 목록
+            step_center:  그라데이션 단계의 중심점
+            step:  그라데이션 단계 수
 
         Returns:
+            성공시 True, 실패시 False를 리턴
+
+        Examples:
+            from pyhwpx import Hwp
+            hwp = Hwp()
+
+            for i in range(0, 256, 2):
+                hwp.gradation_on_cell(
+                    color_list=[(255,i,i), (i,255,i)],
+                    grad_type="Square",
+                    xc=40, yc=60,
+                    pos_list=[20,80],
+                    step_center=int(i/255*100),
+                    step=i,
+                )
         """
         if not self.is_cell():
             raise AssertionError("캐럿이 현재 표 안에 위치하지 않습니다. 표 안에서 다시 실행해주세요.")
@@ -7871,11 +7890,11 @@ class Hwp:
         해당 파라미터셋은 set_pos_by_set에 직접 집어넣을 수 있어 간편히 사용할 수 있다.
 
         Returns:
-            캐럿 위치에 대한 ParameterSet
-            해당 파라미터셋의 아이템은 아래와 같다.
-            "List": 캐럿이 위치한 문서 내 list ID(본문이 0)
-            "Para": 캐럿이 위치한 문단 ID(0부터 시작)
-            "Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
+            캐럿 위치에 대한 ParameterSet. 해당 파라미터셋의 아이템은 아래와 같다.
+
+                - "List": 캐럿이 위치한 문서 내 list ID(본문이 0)
+                - "Para": 캐럿이 위치한 문단 ID(0부터 시작)
+                - "Pos": 캐럿이 위치한 문단 내 글자 위치(0부터 시작)
 
         Examples:
             >>> from pyhwpx import Hwp
