@@ -10928,21 +10928,40 @@ BreakLine과 마찬가지로 보고서 작성시 자주 사용해야 하는 액�
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><pre><span></span><code>    <span class="n">줄바꿈</span><span class="p">(</span><span class="n">문단</span> <span class="n">나누기</span><span class="p">)</span><span class="o">.</span> <span class="n">일반적인</span> <span class="n">엔터와</span> <span class="n">동일하다</span><span class="o">.</span>
+        <p>줄바꿈(문단 나누기). 일반적인 엔터와 동일하다.</p>
 
-    <span class="n">Returns</span><span class="p">:</span>
-        <span class="kc">True</span>
 
-    <span class="n">Examples</span><span class="p">:</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>  <span class="c1"># 한/글 창이 열림</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">BreakPara</span><span class="p">()</span>  <span class="c1"># 줄바꿈 삽입!</span>
-        <span class="kc">True</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s2">&quot;</span>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>True</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>  <span class="c1"># 한/글 창이 열림</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">BreakPara</span><span class="p">()</span>  <span class="c1"># 줄바꿈 삽입!</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">True</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># BreakPara와 동일</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">True</span>
 </code></pre></div>
-
-<p>")  # BreakPara와 동일
-            True</p>
 
 
     </div>
@@ -22587,28 +22606,104 @@ clear나 save 등의 메서드를 실행한 후에 Quit을 실행해야 한다.
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><pre><span></span><code>    <span class="n">RGB값을</span> <span class="n">한</span><span class="o">/</span><span class="n">글이</span> <span class="n">인식하는</span> <span class="n">정수</span> <span class="n">형태로</span> <span class="n">변환해주는</span> <span class="n">메서드</span><span class="o">.</span>
+        <p>RGB값을 한/글이 인식하는 정수 형태로 변환해주는 메서드.</p>
+<p>자주 쓰이는 24가지 색깔은 문자열로 입력 가능하다.</p>
 
-    <span class="n">자주</span> <span class="n">쓰이는</span> <span class="mi">24</span><span class="n">가지</span> <span class="n">색깔은</span> <span class="n">문자열로</span> <span class="n">입력</span> <span class="n">가능하다</span><span class="o">.</span>
 
-    <span class="n">Args</span><span class="p">:</span>
-        <span class="n">red_or_colorname</span><span class="p">:</span> <span class="n">R값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span> <span class="n">또는</span> <span class="n">색깔</span> <span class="n">문자열</span>
-        <span class="n">green</span><span class="p">:</span> <span class="n">G값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span>
-        <span class="n">blue</span><span class="p">:</span> <span class="n">B값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>red_or_colorname</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="tuple">tuple</span> | <span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>R값(0~255) 또는 색깔 문자열</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>green</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>G값(0~255)</p>
+              </div>
+            </td>
+            <td>
+                  <code>255</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>blue</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>B값(0~255)</p>
+              </div>
+            </td>
+            <td>
+                  <code>255</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-    <span class="n">Returns</span><span class="p">:</span>
-        <span class="n">아래아한글이</span> <span class="n">인식하는</span> <span class="n">정수</span> <span class="n">형태의</span> <span class="n">RGB값</span><span class="o">.</span>
 
-    <span class="n">Examples</span><span class="p">:</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="n">TextColor</span><span class="o">=</span><span class="n">hwp</span><span class="o">.</span><span class="n">RGBColor</span><span class="p">(</span><span class="s2">&quot;Red&quot;</span><span class="p">))</span>  <span class="c1"># 글자색 빨강</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s2">&quot;빨간 글자색</span>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>아래아한글이 인식하는 정수 형태의 RGB값.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="n">TextColor</span><span class="o">=</span><span class="n">hwp</span><span class="o">.</span><span class="n">RGBColor</span><span class="p">(</span><span class="s2">&quot;Red&quot;</span><span class="p">))</span>  <span class="c1"># 글자색 빨강</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s2">&quot;빨간 글자색</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="n">ShadeColor</span><span class="o">=</span><span class="n">hwp</span><span class="o">.</span><span class="n">RGBColor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># 음영색 초록</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s2">&quot;초록 음영색&quot;</span><span class="p">)</span>
 </code></pre></div>
-
-<p>")
-            &gt;&gt;&gt; hwp.set_font(ShadeColor=hwp.RGBColor(0, 255, 0))  # 음영색 초록
-            &gt;&gt;&gt; hwp.insert_text("초록 음영색")</p>
 
 
     </div>
@@ -35706,28 +35801,132 @@ NewActionID의 값을 원래의 Action으로 설정한 뒤 호출한다. 이를�
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><pre><span></span><code>    <span class="n">RGB값을</span> <span class="n">한</span><span class="o">/</span><span class="n">글이</span> <span class="n">인식하는</span> <span class="n">정수</span> <span class="n">형태로</span> <span class="n">변환해주는</span> <span class="n">메서드</span><span class="o">.</span>
+        <p>RGB값을 한/글이 인식하는 정수 형태로 변환해주는 헬퍼 메서드.</p>
+<p><a class="glightbox" href="assets/rgb_color.gif" data-type="image" data-width="100%" data-height="auto" data-title="rgb_color / RGBColor" data-desc-position="bottom"><img alt="rgb_color / RGBColor" loading="lazy" src="assets/rgb_color.gif" /></a></p>
+<p>주로 글자색이나, 셀 색깔을 적용할 때 사용한다.
+RGB값을 세 개의 정수로 입력하는 것이 기본적인 사용방법이지만,
+자주 사용되는 아래의 24가지 색깔은 문자열로 입력 가능하다.</p>
 
-    <span class="n">자주</span> <span class="n">쓰이는</span> <span class="mi">24</span><span class="n">가지</span> <span class="n">색깔은</span> <span class="n">문자열로</span> <span class="n">입력</span> <span class="n">가능하다</span><span class="o">.</span>
 
-    <span class="n">Args</span><span class="p">:</span>
-        <span class="n">red_or_colorname</span><span class="p">:</span> <span class="n">R값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span> <span class="n">또는</span> <span class="n">색깔</span> <span class="n">문자열</span>
-        <span class="n">green</span><span class="p">:</span> <span class="n">G값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span>
-        <span class="n">blue</span><span class="p">:</span> <span class="n">B값</span><span class="p">(</span><span class="mi">0</span><span class="o">~</span><span class="mi">255</span><span class="p">)</span>
-
-    <span class="n">Returns</span><span class="p">:</span>
-        <span class="n">아래아한글이</span> <span class="n">인식하는</span> <span class="n">정수</span> <span class="n">형태의</span> <span class="n">RGB값</span><span class="o">.</span>
-
-    <span class="n">Examples</span><span class="p">:</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="n">TextColor</span><span class="o">=</span><span class="n">hwp</span><span class="o">.</span><span class="n">RGBColor</span><span class="p">(</span><span class="s2">&quot;Red&quot;</span><span class="p">))</span>  <span class="c1"># 글자색 빨강</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s2">&quot;빨간 글자색</span>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>red_or_colorname</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="tuple">tuple</span> | <span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>R값(0~255)을 입력하거나, 혹은 아래 목록의 색깔 문자열을 직접 입력할 수 있다.</p>
+<div class="codehilite"><pre><span></span><code>- &quot;Red&quot;: (255, 0, 0)
+- &quot;Green&quot;: (0, 255, 0)
+- &quot;Blue&quot;: (0, 0, 255)
+- &quot;Yellow&quot;: (255, 255, 0)
+- &quot;Cyan&quot;: (0, 255, 255)
+- &quot;Magenta&quot;: (255, 0, 255)
+- &quot;Black&quot;: (0, 0, 0)
+- &quot;White&quot;: (255, 255, 255)
+- &quot;Gray&quot;: (128, 128, 128)
+- &quot;Orange&quot;: (255, 165, 0)
+- &quot;DarkBlue&quot;: (0, 0, 139)
+- &quot;Purple&quot;: (128, 0, 128)
+- &quot;Pink&quot;: (255, 192, 203)
+- &quot;Lime&quot;: (0, 255, 0)
+- &quot;SkyBlue&quot;: (135, 206, 235)
+- &quot;Gold&quot;: (255, 215, 0)
+- &quot;Silver&quot;: (192, 192, 192)
+- &quot;Mint&quot;: (189, 252, 201)
+- &quot;Tomato&quot;: (255, 99, 71)
+- &quot;Olive&quot;: (128, 128, 0)
+- &quot;Crimson&quot;: (220, 20, 60)
+- &quot;Navy&quot;: (0, 0, 128)
+- &quot;Teal&quot;: (0, 128, 128)
+- &quot;Chocolate&quot;: (210, 105, 30)
 </code></pre></div>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>green</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>G값(0~255)</p>
+              </div>
+            </td>
+            <td>
+                  <code>255</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>blue</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>B값(0~255)</p>
+              </div>
+            </td>
+            <td>
+                  <code>255</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-<p>")
-            &gt;&gt;&gt; hwp.set_font(ShadeColor=hwp.RGBColor(0, 255, 0))  # 음영색 초록
-            &gt;&gt;&gt; hwp.insert_text("초록 음영색")</p>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>아래아한글이 인식하는 정수 형태의 RGB값.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="n">TextColor</span><span class="o">=</span><span class="n">hwp</span><span class="o">.</span><span class="n">RGBColor</span><span class="p">(</span><span class="s2">&quot;Red&quot;</span><span class="p">))</span>  <span class="c1"># 글자를 빨강으로</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s2">&quot;빨간 글자색</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="n">ShadeColor</span><span class="o">=</span><span class="n">hwp</span><span class="o">.</span><span class="n">RGBColor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># 음영을 녹색으로</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s2">&quot;초록 음영색&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 
     </div>
@@ -36813,6 +37012,7 @@ Examples:
                 <code>FontType</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
