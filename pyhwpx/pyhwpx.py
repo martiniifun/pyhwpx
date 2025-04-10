@@ -8154,7 +8154,7 @@ class Hwp:
         """
         return self.hwp.GetText()
 
-    def get_text_file(self, format="UNICODE", option="saveblock:true"):
+    def get_text_file(self, format:Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"]="UNICODE", option:str="saveblock:true") -> str:
         """
         현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
 
@@ -8272,8 +8272,7 @@ class Hwp:
     def HorzRel(self, horz_rel):
         return self.hwp.HorzRel(HorzRel=horz_rel)
 
-    def hwp_line_type(self, line_type: Literal[
-        "None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot", "LongDash", "Circle", "DoubleSlim", "SlimThick", "ThickSlim", "SlimThickSlim"] = "Solid") -> int:
+    def HwpLineType(self, line_type: Literal["None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot", "LongDash", "Circle", "DoubleSlim", "SlimThick", "ThickSlim", "SlimThickSlim"] = "Solid"):
         """
         한/글에서 표나 개체의 선 타입을 결정하는 헬퍼메서드. 단순히 문자열을 정수로 변환한다.
 
@@ -8296,71 +8295,34 @@ class Hwp:
         """
         return self.hwp.HwpLineType(LineType=line_type)
 
-    def HwpLineType(self, line_type: Literal[
-        "None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot", "LongDash", "Circle", "DoubleSlim", "SlimThick", "ThickSlim", "SlimThickSlim"] = "Solid"):
+    def HwpLineWidth(self, line_width: Literal["0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm"):
         """
-        한/글에서 표나 개체의 선 타입을 결정하는 헬퍼메서드. 단순히 문자열을 정수로 변환한다.
+        선너비를 정해주는 헬퍼 메서드.
+
+        목록은 아래와 같다.
 
         Args:
-            line_type:
-                문자열 파라미터. 종류는 아래와 같다.
+            line_width:
 
-                    - "None": 없음(0)
-                    - "Solid": 실선(1)
-                    - "Dash": 파선(2)
-                    - "Dot": 점선(3)
-                    - "DashDot": 일점쇄선(4)
-                    - "DashDotDot": 이점쇄선(5)
-                    - "LongDash": 긴 파선(6)
-                    - "Circle": 원형 점선(7)
-                    - "DoubleSlim": 이중 실선(8)
-                    - "SlimThick": 얇고 굵은 이중선(9)
-                    - "ThickSlim": 굵고 얇은 이중선(10)
-                    - "SlimThickSlim": 얇고 굵고 얇은 삼중선(11)
-        """
-        return self.hwp.HwpLineType(LineType=line_type)
+                - "0.1mm": 0
+                - "0.12mm": 1
+                - "0.15mm": 2
+                - "0.2mm": 3
+                - "0.25mm": 4
+                - "0.3mm": 5
+                - "0.4mm": 6
+                - "0.5mm": 7
+                - "0.6mm": 8
+                - "0.7mm": 9
+                - "1.0mm": 10
+                - "1.5mm": 11
+                - "2.0mm": 12
+                - "3.0mm": 13
+                - "4.0mm": 14
+                - "5.0mm": 15
 
-    def hwp_line_width(self, line_width: Literal[
-        "0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm"):
-        """
-            "0.1mm"(0)
-            "0.12mm"(1)
-            "0.15mm"(2)
-            "0.2mm"(3)
-            "0.25mm"(4)
-            "0.3mm"(5)
-            "0.4mm"(6)
-            "0.5mm"(7)
-            "0.6mm"(8)
-            "0.7mm"(9)
-            "1.0mm"(10)
-            "1.5mm"(11)
-            "2.0mm"(12)
-            "3.0mm"(13)
-            "4.0mm"(14)
-            "5.0mm"(15)
-            """
-        return self.hwp.HwpLineWidth(LineWidth=line_width)
-
-    def HwpLineWidth(self, line_width: Literal[
-        "0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm"):
-        """
-            "0.1mm"(0)
-            "0.12mm"(1)
-            "0.15mm"(2)
-            "0.2mm"(3)
-            "0.25mm"(4)
-            "0.3mm"(5)
-            "0.4mm"(6)
-            "0.5mm"(7)
-            "0.6mm"(8)
-            "0.7mm"(9)
-            "1.0mm"(10)
-            "1.5mm"(11)
-            "2.0mm"(12)
-            "3.0mm"(13)
-            "4.0mm"(14)
-            "5.0mm"(15)
+        Returns:
+            hwp가 인식하는 선굵기 정수(0~15)
             """
         return self.hwp.HwpLineWidth(LineWidth=line_width)
 
