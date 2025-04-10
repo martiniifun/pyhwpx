@@ -3426,14 +3426,27 @@ class Hwp:
         """
         모양복사 메서드
 
-        :param Type: 글자, 문단, 글자&문단 중에서 택일
-        :param cell_attr: 셀 속성 복사여부
-        :param cell_border: 셀 선 복사여부
-        :param cell_fill: 셀 음영 복사여부
-        :param cell_only: 셀만 복사할지, 내용도 복사할지 여부
+        ![introduce](assets/shape_copy_paste.gif){ loading=lazy }
+
+        Args:
+            Type: 글자("font"), 문단("para"), 글자&문단("both") 중에서 택일
+            cell_attr: 셀 속성 복사여부(True / False)
+            cell_border: 셀 선 복사여부(True / False)
+            cell_fill: 셀 음영 복사여부(True / False)
+            cell_only: 셀만 복사할지, 내용도 복사할지 여부(0 / 1)
 
         Returns:
-        성공시 True, 실패시 False를 리턴
+            성공시 True, 실패시 False를 리턴
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.get_into_nth_table(0)  # 문서 첫 번째 셀로 이동
+            >>> hwp.shape_copy_paste()  # 모양복사 (무엇을 붙여넣을 건지는 "붙여넣기" 시점에 결정함)
+            >>> hwp.TableCellBlockExtendAbs()
+            >>> hwp.TableCellBlockExtend()  # 셀 전체 선택
+            >>> hwp.shape_copy_paste(cell_fill=True)  # 글자&문단모양, 셀음영만 붙여넣기
+
         """
         pset = self.hwp.HParameterSet.HShapeCopyPaste
         pset.type = ["font", "para", "both"].index(Type)
