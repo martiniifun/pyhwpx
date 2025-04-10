@@ -12082,6 +12082,11 @@ pywin32의 win32clipboard 두 가지가 가장 많이 쓰이는데,
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HAction
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HAction)" href="#pyhwpx.Hwp.HAction">HAction</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -12095,21 +12100,20 @@ pywin32의 win32clipboard 두 가지가 가장 많이 쓰이는데,
 
 <p><span class="doc-section-title">Examples:</span></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 현재 커서의 폰트 크기(Height)를 구하는 코드</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">act</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">create_action</span><span class="p">(</span><span class="s2">&quot;CharShape&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">CreateSet</span><span class="p">()</span>  <span class="c1"># equal to &quot;cs = hwp.create_set(act)&quot;</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">act</span><span class="o">.</span><span class="n">GetDefault</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="s2">&quot;Height&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="go">2800</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 현재 선택범위의 폰트 크기를 20pt로 변경하는 코드</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">act</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">create_action</span><span class="p">(</span><span class="s2">&quot;CharShape&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">CreateSet</span><span class="p">()</span>  <span class="c1"># equal to &quot;cs = hwp.create_set(act)&quot;</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">act</span><span class="o">.</span><span class="n">GetDefault</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span><span class="o">.</span><span class="n">SetItem</span><span class="p">(</span><span class="s2">&quot;Height&quot;</span><span class="p">,</span> <span class="n">hwp</span><span class="o">.</span><span class="n">point_to_hwp_unit</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">act</span><span class="o">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="go">True</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 현재 커서의 폰트 크기(Height)를 구하는 코드</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">act</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">create_action</span><span class="p">(</span><span class="s2">&quot;CharShape&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">CreateSet</span><span class="p">()</span>  <span class="c1"># equal to &quot;cs = hwp.create_set(act)&quot;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">act</span><span class="o">.</span><span class="n">GetDefault</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="s2">&quot;Height&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">2800</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 현재 선택범위의 폰트 크기를 20pt로 변경하는 코드</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">act</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">create_action</span><span class="p">(</span><span class="s2">&quot;CharShape&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">CreateSet</span><span class="p">()</span>  <span class="c1"># equal to &quot;cs = hwp.create_set(act)&quot;</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">act</span><span class="o">.</span><span class="n">GetDefault</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span><span class="o">.</span><span class="n">SetItem</span><span class="p">(</span><span class="s2">&quot;Height&quot;</span><span class="p">,</span> <span class="n">hwp</span><span class="o">.</span><span class="n">point_to_hwp_unit</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">act</span><span class="o">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="go">True</span>
 </code></pre></div>
 
 
@@ -12448,6 +12452,11 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -21255,20 +21264,22 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
               <div class="doc-md-description">
                 <p>세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
 arg에 지정할 수 있는 옵션의 의미는 필터가 정의하기에 따라 다르지만,
-syntax는 다음과 같이 공통된 형식을 사용한다.
-"key:value;key:value;..."
-* key는 A-Z, a-z, 0-9, _ 로 구성된다.
-* value는 타입에 따라 다음과 같은 3 종류가 있다.
-boolean: ex) fullsave:true (== fullsave)
-integer: ex) type:20
-string:  ex) prefix:<em>This</em>
-* value는 생략 가능하며, 이때는 콜론도 생략한다.
-* arg에 지정할 수 있는 옵션</p>
-<p>&lt;모든 파일포맷&gt;</p>
+syntax는 다음과 같이 공통된 형식을 사용한다.</p>
+<p><code>"key:value;key:value;..."</code></p>
+<ul>
+<li>key는 A-Z, a-z, 0-9, _ 로 구성된다.</li>
+<li>value는 타입에 따라 다음과 같은 3 종류가 있다.
+boolean: ex) <code>fullsave:true (== fullsave)</code>
+integer: ex) <code>type:20</code>
+string:  ex) <code>prefix:_This_</code></li>
+<li>value는 생략 가능하며, 이때는 콜론도 생략한다.</li>
+<li>arg에 지정할 수 있는 옵션</li>
+</ul>
+<p>모든 파일포맷</p>
 <div class="codehilite"><pre><span></span><code>- setcurdir(boolean, true/false): 로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
 </code></pre></div>
 
-<p><HWP(HWPX)></p>
+<p>HWP(HWPX)</p>
 <div class="codehilite"><pre><span></span><code>- lock (boolean, TRUE): 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
 - notext (boolean, FALSE): 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
 - template (boolean, FALSE): 새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다. 이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
@@ -21277,27 +21288,27 @@ string:  ex) prefix:<em>This</em>
 - versionwarning (boolean, FALSE): TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
 </code></pre></div>
 
-<HTML>
+<p>HTML</p>
+<div class="codehilite"><pre><span></span><code>- code(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
+- textunit(boolean, pixel): Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
+- formatunit(boolean, pixel): Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+</code></pre></div>
 
-    - code(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
-    - textunit(boolean, pixel): Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
-    - formatunit(boolean, pixel): Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+<p>※ [codepage 종류]</p>
+<div class="codehilite"><pre><span></span><code>- ks :  한글 KS 완성형
+- kssm: 한글 조합형
+- sjis : 일본
+- utf8 : UTF8
+- unicode: 유니코드
+- gb : 중국 간체
+- big5 : 중국 번체
+- acp : Active Codepage 현재 시스템의 코드 페이지
+</code></pre></div>
 
-※ [codepage 종류]
-
-    - ks :  한글 KS 완성형
-    - kssm: 한글 조합형
-    - sjis : 일본
-    - utf8 : UTF8
-    - unicode: 유니코드
-    - gb : 중국 간체
-    - big5 : 중국 번체
-    - acp : Active Codepage 현재 시스템의 코드 페이지
-
-<DOCIMG>
-
-    - asimg(boolean, FALSE): 저장할 때 페이지를 image로 저장
-    - ashtml(boolean, FALSE): 저장할 때 페이지를 html로 저장
+<p>DOCIMG</p>
+<div class="codehilite"><pre><span></span><code>- asimg(boolean, FALSE): 저장할 때 페이지를 image로 저장
+- ashtml(boolean, FALSE): 저장할 때 페이지를 html로 저장
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -35592,51 +35603,59 @@ set_cur_field_name 메서드를 사용하자.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
-arg에 지정할 수 있는 옵션의 의미는 필터가 정의하기에 따라 다르지만,
-syntax는 다음과 같이 공통된 형식을 사용한다.
-"key:value;key:value;..."
-* key는 A-Z, a-z, 0-9, _ 로 구성된다.
-* value는 타입에 따라 다음과 같은 3 종류가 있다.
-boolean: ex) fullsave:true (== fullsave)
-integer: ex) type:20
-string:  ex) prefix:<em>This</em>
-* value는 생략 가능하며, 이때는 콜론도 생략한다.
-* arg에 지정할 수 있는 옵션</p>
-<p>&lt;모든 파일포맷&gt;</p>
-<div class="codehilite"><pre><span></span><code>- setcurdir(boolean, true/false): 로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
+                <p>세부 옵션. 의미는 <code>format</code>에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.</p>
+<p><code>arg</code>에 지정할 수 있는 옵션의 의미는 필터가 정의하기에 따라 다르지만,
+syntax는 다음과 같이 공통된 형식을 사용한다.</p>
+<p><code>"key:value;key:value;..."</code></p>
+<ul>
+<li>key는 A-Z, a-z, 0-9, _ 로 구성된다.</li>
+<li>
+<p>value는 타입에 따라 다음과 같은 3 종류가 있다.</p>
+<ul>
+<li>boolean: ex) <code>fullsave:true</code> (== <code>fullsave</code>)</li>
+<li>integer: ex) <code>type:20</code></li>
+<li>string:  ex) <code>prefix:_This_</code></li>
+</ul>
+</li>
+<li>
+<p>value는 생략 가능하며, 이때는 콜론도 생략한다.</p>
+</li>
+<li>arg에 지정할 수 있는 옵션</li>
+</ul>
+<p>모든 파일포맷</p>
+<div class="codehilite"><pre><span></span><code><span class="o">-</span><span class="w"> </span><span class="n n-Quoted">`setcurdir`</span><span class="w"> </span><span class="p">(</span><span class="kt">boolean</span><span class="p">,</span><span class="w"> </span><span class="no">true</span><span class="o">/</span><span class="no">false</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">로드한</span><span class="w"> </span><span class="n">후</span><span class="w"> </span><span class="n">해당</span><span class="w"> </span><span class="n">파일이</span><span class="w"> </span><span class="n">존재하는</span><span class="w"> </span><span class="n">폴더로</span><span class="w"> </span><span class="n">현재</span><span class="w"> </span><span class="n">위치를</span><span class="w"> </span><span class="n">변경한다</span><span class="p">.</span><span class="w"> </span><span class="n">hyperlink</span><span class="w"> </span><span class="n">정보가</span><span class="w"> </span><span class="n">상대적인</span><span class="w"> </span><span class="n">위치로</span><span class="w"> </span><span class="n">되어</span><span class="w"> </span><span class="n">있을</span><span class="w"> </span><span class="n">때</span><span class="w"> </span><span class="n">유용하다</span><span class="p">.</span>
 </code></pre></div>
 
-<p><HWP(HWPX)></p>
-<div class="codehilite"><pre><span></span><code>- lock (boolean, TRUE): 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
-- notext (boolean, FALSE): 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
-- template (boolean, FALSE): 새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다. 이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
-- suspendpassword (boolean, FALSE): TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
-- forceopen (boolean, FALSE): TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
-- versionwarning (boolean, FALSE): TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
+<p>HWP(HWPX)</p>
+<div class="codehilite"><pre><span></span><code><span class="o">-</span><span class="w"> </span><span class="n n-Quoted">`lock`</span><span class="w"> </span><span class="p">(</span><span class="kt">boolean</span><span class="p">,</span><span class="w"> </span><span class="no">TRUE</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">로드한</span><span class="w"> </span><span class="n">후</span><span class="w"> </span><span class="n">해당</span><span class="w"> </span><span class="n">파일을</span><span class="w"> </span><span class="n">계속</span><span class="w"> </span><span class="n">오픈한</span><span class="w"> </span><span class="n">상태로</span><span class="w"> </span><span class="n">lock을</span><span class="w"> </span><span class="n">걸지</span><span class="w"> </span><span class="n">여부</span>
+<span class="o">-</span><span class="w"> </span><span class="n n-Quoted">`notext`</span><span class="w"> </span><span class="p">(</span><span class="kt">boolean</span><span class="p">,</span><span class="w"> </span><span class="no">FALSE</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">텍스트</span><span class="w"> </span><span class="n">내용을</span><span class="w"> </span><span class="n">읽지</span><span class="w"> </span><span class="n">않고</span><span class="w"> </span><span class="n">헤더</span><span class="w"> </span><span class="n">정보만</span><span class="w"> </span><span class="n">읽을지</span><span class="w"> </span><span class="n">여부</span><span class="p">.</span><span class="w"> </span><span class="p">(</span><span class="n">스타일</span><span class="w"> </span><span class="n">로드</span><span class="w"> </span><span class="n">등에</span><span class="w"> </span><span class="n">사용</span><span class="p">)</span>
+<span class="o">-</span><span class="w"> </span><span class="n">template</span><span class="w"> </span><span class="p">(</span><span class="kt">boolean</span><span class="p">,</span><span class="w"> </span><span class="no">FALSE</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">새로운</span><span class="w"> </span><span class="n">문서를</span><span class="w"> </span><span class="n">생성하기</span><span class="w"> </span><span class="n">위해</span><span class="w"> </span><span class="n">템플릿</span><span class="w"> </span><span class="n">파일을</span><span class="w"> </span><span class="n">오픈한다</span><span class="p">.</span><span class="w"> </span><span class="n">이</span><span class="w"> </span><span class="n">옵션이</span><span class="w"> </span><span class="n">주어지면</span><span class="w"> </span><span class="n">lock은</span><span class="w"> </span><span class="n">무조건</span><span class="w"> </span><span class="n">FALSE로</span><span class="w"> </span><span class="n">처리된다</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="n">suspendpassword</span><span class="w"> </span><span class="p">(</span><span class="kt">boolean</span><span class="p">,</span><span class="w"> </span><span class="no">FALSE</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">TRUE로</span><span class="w"> </span><span class="n">지정하면</span><span class="w"> </span><span class="n">암호가</span><span class="w"> </span><span class="n">있는</span><span class="w"> </span><span class="n">파일일</span><span class="w"> </span><span class="n">경우</span><span class="w"> </span><span class="n">암호를</span><span class="w"> </span><span class="n">묻지</span><span class="w"> </span><span class="n">않고</span><span class="w"> </span><span class="n">무조건</span><span class="w"> </span><span class="n">읽기에</span><span class="w"> </span><span class="n">실패한</span><span class="w"> </span><span class="n">것으로</span><span class="w"> </span><span class="n">처리한다</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="n">forceopen</span><span class="w"> </span><span class="p">(</span><span class="kt">boolean</span><span class="p">,</span><span class="w"> </span><span class="no">FALSE</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">TRUE로</span><span class="w"> </span><span class="n">지정하면</span><span class="w"> </span><span class="n">읽기</span><span class="w"> </span><span class="n">전용으로</span><span class="w"> </span><span class="n">읽어야</span><span class="w"> </span><span class="n">하는</span><span class="w"> </span><span class="n">경우</span><span class="w"> </span><span class="n">대화상자를</span><span class="w"> </span><span class="n">띄우지</span><span class="w"> </span><span class="n">않는다</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="n">versionwarning</span><span class="w"> </span><span class="p">(</span><span class="kt">boolean</span><span class="p">,</span><span class="w"> </span><span class="no">FALSE</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">TRUE로</span><span class="w"> </span><span class="n">지정하면</span><span class="w"> </span><span class="n">문서가</span><span class="w"> </span><span class="n">상위버전일</span><span class="w"> </span><span class="n">경우</span><span class="w"> </span><span class="n">메시지</span><span class="w"> </span><span class="n">박스를</span><span class="w"> </span><span class="n">띄우게</span><span class="w"> </span><span class="n">된다</span><span class="p">.</span>
 </code></pre></div>
 
-<HTML>
+<p>HTML</p>
+<div class="codehilite"><pre><span></span><code>- code(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
+- textunit(boolean, pixel): Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
+- formatunit(boolean, pixel): Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+</code></pre></div>
 
-    - code(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
-    - textunit(boolean, pixel): Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
-    - formatunit(boolean, pixel): Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+<p>※ [codepage 종류]</p>
+<div class="codehilite"><pre><span></span><code>- ks :  한글 KS 완성형
+- kssm: 한글 조합형
+- sjis : 일본
+- utf8 : UTF8
+- unicode: 유니코드
+- gb : 중국 간체
+- big5 : 중국 번체
+- acp : Active Codepage 현재 시스템의 코드 페이지
+</code></pre></div>
 
-※ [codepage 종류]
-
-    - ks :  한글 KS 완성형
-    - kssm: 한글 조합형
-    - sjis : 일본
-    - utf8 : UTF8
-    - unicode: 유니코드
-    - gb : 중국 간체
-    - big5 : 중국 번체
-    - acp : Active Codepage 현재 시스템의 코드 페이지
-
-<DOCIMG>
-
-    - asimg(boolean, FALSE): 저장할 때 페이지를 image로 저장
-    - ashtml(boolean, FALSE): 저장할 때 페이지를 html로 저장
+<p>DOCIMG</p>
+<div class="codehilite"><pre><span></span><code>- asimg(boolean, FALSE): 저장할 때 페이지를 image로 저장
+- ashtml(boolean, FALSE): 저장할 때 페이지를 html로 저장
+</code></pre></div>
               </div>
             </td>
             <td>
