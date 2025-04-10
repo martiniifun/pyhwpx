@@ -1,5 +1,11 @@
 # 📦 Changelog
 
+## [0.50.23] - 2025-04-10
+### 📝 Misc
+- get_linespacing, NewNumber 독스트링 수정 
+
+---
+
 ## [0.50.22] - 2025-04-10
 ### 📝 Misc
 - shape_copy_paste, goto_style 등 독스트링 수정 
