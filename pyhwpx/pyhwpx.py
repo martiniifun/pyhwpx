@@ -4505,11 +4505,13 @@ class Hwp:
         단, 열너비의 비가 아닌 "mm" 단위로 값을 입력하려면 as_="mm"로 파라미터를 수정하면 된다.
         이 때, width에 정수 또는 부동소수점수를 입력하는 경우 as_="ratio"를 사용할 수 없다.
 
-        :param width: 열 너비
-        :param `as_`: 단위
+        Args:
+            width: 열 너비
+            as_: 단위
 
         Returns:
-        성공시 True
+            성공시 True
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
@@ -4560,7 +4562,7 @@ class Hwp:
         이 때 수치의 단위는 as_ 파라미터를 통해 변경 가능하며, "mm", "HwpUnit", "Pt", "Inch" 등을 쓸 수 있다.
 
         Returns:
-        표의 너비(mm)
+            표의 너비(mm)
         """
         if not self.is_cell():
             raise IndexError("캐럿이 표 안에 있어야 합니다.")
@@ -4644,7 +4646,7 @@ class Hwp:
         self.ViewProperties = prop
         self.set_pos(*cur_pos)
 
-    def save_pdf_as_image(self, path: str = "", img_format="bmp"):
+    def save_pdf_as_image(self, path: str = "", img_format:str="bmp") -> bool:
         """
         문서보안이나 복제방지를 위해
 
@@ -4655,8 +4657,9 @@ class Hwp:
         현재 폴더에 {문서이름}.pdf로 저장한다.
         (만약 저장하지 않은 빈 문서의 경우에는 result.pdf로 저장한다.)
 
-        :param path: 저장경로 및 파일명
-        :param img_format: 이미지 변환 포맷
+        Args:
+            path: 저장경로 및 파일명
+            img_format: 이미지 변환 포맷
 
         Returns:
         """
@@ -4675,14 +4678,14 @@ class Hwp:
         shutil.rmtree(temp_dir)
         return True
 
-    def get_cell_addr(self, as_: Literal["str", "tuple"] = "str"):
+    def get_cell_addr(self, as_: Literal["str", "tuple"] = "str") -> tuple[int]|bool:
         """
         현재 캐럿이 위치한 셀의 주소를 "A1" 또는 (0, 0)으로 리턴.
 
         캐럿이 표 안에 있지 않은 경우 False를 리턴함
-        :param `as_`:
-            "str"의 경우 엑셀처럼 "A1" 방식으로 리턴,
-            "tuple"인 경우 (0,0) 방식으로 리턴.
+
+        Args:
+            as_: `"str"`의 경우 엑셀처럼 `"A1"` 방식으로 리턴, `"tuple"`인 경우 (0,0) 방식으로 리턴.
 
         Returns:
         """
@@ -4694,7 +4697,7 @@ class Hwp:
         else:
             return excel_address_to_tuple_zero_based(result)
 
-    def save_all_pictures(self, save_path="./binData"):
+    def save_all_pictures(self, save_path="./binData") -> bool:
         """
         현재 문서에 삽입된 모든 이미지들을
 
@@ -4704,10 +4707,11 @@ class Hwp:
         기존에 save_path가 존재하는 경우,
         그 안의 파일들은 삭제되므로 유의해야 함.
 
-        :param save_path:
-            저장할 하위경로 이름
+        Args:
+            save_path: 저장할 하위경로 이름
 
         Returns:
+            bool: 성공시 True
         """
         current_path = self.Path
         if not current_path:
@@ -4755,34 +4759,34 @@ class Hwp:
 
                     - 0: 추가선택
                     - 1: 기존 선택해제 후 컨트롤 선택
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()  # 한글2024 이상의 버전
             >>> # 문서 마지막 컨트롤 선택하기
             >>> hwp.SelectCtrl(hwp.LastCtrl.GetCtrlInstID(), 0)
+
         """
         if int(self.Version[0]) >= 13:  # 한/글2024 이상이면
             return self.hwp.SelectCtrl(ctrllist=ctrllist, option=option)
         else:
             raise NotImplementedError("아래아한글 버전이 2024 미만입니다. hwp.select_ctrl()을 대신 사용하셔야 합니다.")
 
-    def select_ctrl(self, ctrl:Ctrl, anchor_type: Literal[0, 1, 2] = 0, option: int = 1) -> None:
+    def select_ctrl(self, ctrl:Ctrl, anchor_type: Literal[0, 1, 2] = 0, option: int = 1) -> bool:
         """
         인수로 넣은 컨트롤 오브젝트를 선택하는 pyhwpx 전용 메서드.
 
         Args:
             ctrl: 선택하고자 하는 컨트롤
-        anchor_type:
+            anchor_type:
+                컨트롤의 위치를 찾아갈 때 List, Para, Pos의 기준위치. (아주 특수한 경우를 제외하면 기본값을 쓰면 된다.)
 
-            컨트롤의 위치를 찾아갈 때 List, Para, Pos의 기준위치.
-
-            (아주 특수한 경우를 제외하면 기본값을 쓰면 된다.)
-
-                - 0: 바로 상위 리스트에서의 좌표(기본값)
-                - 1: 탑레벨 리스트에서의 좌표
-                - 2: 루트 리스트에서의 좌표
+                    - 0: 바로 상위 리스트에서의 좌표(기본값)
+                    - 1: 탑레벨 리스트에서의 좌표
+                    - 2: 루트 리스트에서의 좌표
 
         Returns:
+            성공시 True
         """
         if int(self.Version[0]) >= 13:  # 한/글2024 이상이면
             self.hwp.SelectCtrl(ctrl.GetCtrlInstID(), option=option)
@@ -4803,24 +4807,27 @@ class Hwp:
                 prop.SetItem("OptionFlag", cur_view_state)
                 self.ViewProperties = prop
 
-    def move_to_ctrl(self, ctrl: Any, option: Literal[0, 1, 2] = 0):
+    def move_to_ctrl(self, ctrl: Any, option: Literal[0, 1, 2] = 0) -> bool:
         """
         메서드에 넣은 ctrl의 조판부호 앞으로 이동하는 메서드.
 
-        :param ctrl:
+        Args:
+            ctrl: 이동하고자 하는 컨트롤
 
         Returns:
+            성공시 True, 실패시 False 리턴
         """
         return self.set_pos_by_set(ctrl.GetAnchorPos(option))
 
-    def set_visible(self, visible):
+    def set_visible(self, visible:bool) -> None:
         """
         현재 조작중인 한/글 인스턴스의 백그라운드 숨김여부를 변경할 수 있다.
 
-        :param visible:
-            visible=False로 설정하면 현재 조작중인 한/글 인스턴스가 백그라운드로 숨겨진다.
+        Args:
+            visible: `visible=False`로 설정하면 현재 조작중인 한/글 인스턴스가 백그라운드로 숨겨진다.
 
         Returns:
+            None
         """
         self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
