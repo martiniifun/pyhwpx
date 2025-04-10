@@ -4930,35 +4930,35 @@ class Hwp:
         글자모양을 메서드 형태로 수정할 수 있는 메서드.
 
         Args:
-            Bold:  # 진하게(True/False)
-            DiacSymMark:  # 강조점(0~12)
-            Emboss:  # 양각(True/False)
-            Engrave:  # 음각(True/False)
-            FaceName:  # 서체
-            FontType:  # 1(TTF),
-            Height:  # 글자크기(pt, 0.1 ~ 4096)
-            Italic:  # 이탤릭(True/False)
-            Offset:  # 글자위치-상하오프셋(-100 ~ 100)
-            OutLineType:  # 외곽선타입(0~6)
-            Ratio:   # 장평(50~200)
-            ShadeColor:  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-            ShadowColor:  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-            ShadowOffsetX:  # 그림자 X오프셋(-100 ~ 100)
-            ShadowOffsetY:  # 그림자 Y오프셋(-100 ~ 100)
-            ShadowType:  # 그림자 유형(0: 없음, 1: 비연속, 2:연속)
-            Size:  # 글자크기 축소확대%(10~250)
-            SmallCaps:  # 강조점
-            Spacing:  # 자간(-50 ~ 50)
-            StrikeOutColor:  # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-            StrikeOutShape:  # 취소선 모양(0~12, 0이 일반 취소선)
-            StrikeOutType:  # 취소선 유무(True/False)
-            SubScript:  # 아래첨자(True/False)
-            SuperScript:  # 위첨자(True/False)
-            TextColor:  # 글자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
-            UnderlineColor:  # 밑줄색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
-            UnderlineShape:  # 밑줄형태(0~12)
-            UnderlineType:  # 밑줄위치(0:없음, 1:하단, 3:상단)
-            UseFontSpace:  # 글꼴에 어울리는 빈칸(True/False) : 차이가 나는 폰트를 못 찾았다...
+            Bold: 진하게(True/False)
+            DiacSymMark: 1행 선택강조점(0~12)
+            Emboss: hwp.TableCellBlockRow()양각(True/False)
+            Engrave: hwp.set_font("D2Coding")음각(True/False)
+            FaceName: 서체
+            FontType: 1(TTF) 고정
+            Height: 글자크기(pt, 0.1 ~ 4096)
+            Italic: 이탤릭(True/False)
+            Offset: 글자위치-상하오프셋(-100 ~ 100)
+            OutLineType: 외곽선타입(0~6)
+            Ratio: 장평(50~200)
+            ShadeColor: 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+            ShadowColor: 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+            ShadowOffsetX: 그림자 X오프셋(-100 ~ 100)
+            ShadowOffsetY: 그림자 Y오프셋(-100 ~ 100)
+            ShadowType: 그림자 유형(0: 없음, 1: 비연속, 2:연속)
+            Size: 글자크기 축소확대%(10~250)
+            SmallCaps: 강조점
+            Spacing: 자간(-50 ~ 50)
+            StrikeOutColor: 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+            StrikeOutShape: 취소선 모양(0~12, 0이 일반 취소선)
+            StrikeOutType: 취소선 유무(True/False)
+            SubScript: 아래첨자(True/False)
+            SuperScript: 위첨자(True/False)
+            TextColor: 글자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+            UnderlineColor: 밑줄색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+            UnderlineShape: 밑줄형태(0~12)
+            UnderlineType: 밑줄위치(0:없음, 1:하단, 3:상단)
+            UseFontSpace: 글꼴에 어울리는 빈칸(True/False) : 차이가 나는 폰트를 못 찾았다...
             UseKerning: 커닝 적용(True/False) : 차이가 전혀 없다?
 
         Returns:
@@ -4969,6 +4969,7 @@ class Hwp:
             >>> hwp = Hwp()
             >>> hwp.SelectAll()  # 전체선택
             >>> hwp.set_font(FaceName="D2Coding", TextColor="Orange")
+
         """
         d = {'Bold': Bold, 'DiacSymMark': DiacSymMark, 'Emboss': Emboss, 'Engrave': Engrave,
              "FaceNameUser": FaceName, "FaceNameSymbol": FaceName, "FaceNameOther": FaceName,
