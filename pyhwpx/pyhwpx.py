@@ -2750,7 +2750,9 @@ class Hwp:
         문서의 첫 번째, 두 번째 컨트롤은 항상 "구역 정의"와 "단 정의"이다. (이 둘은 숨겨져 있음)
         그러므로 `hwp.HeadCtrl` 은 항상 구역정의(secd: section definition)이며,
         `hwp.HeadCtrl.Next` 는 단 정의(cold: column definition)이다.
+
         사용자가 삽입한 첫 번째 컨트롤은 항상 `hwp.HeadCtrl.Next.Next` 이다.
+
         HeadCtrl과 반대로 문서의 가장 마지막 컨트롤은 hwp.LastCtrl이며, 이전 컨트롤로 순회하려면
         `.Next` 대신 `.Prev` 를 사용하면 된다.
         hwp.HeadCtrl의 기본적인 사용법은 아래와 같다.
@@ -2915,16 +2917,17 @@ class Hwp:
         self.hwp.ParaShape = prop
 
     @property
-    def ParentCtrl(self):
+    def ParentCtrl(self) -> Ctrl:
         """
         현재 선택되어 있거나, 캐럿이 들어있는 컨트롤을 포함하는 상위 컨트롤을 리턴한다.
 
         Returns:
+            상위 컨트롤(Ctrl)
         """
         return Ctrl(self.hwp.ParentCtrl)
 
     @property
-    def Path(self):
+    def Path(self) -> str:
         """
         현재 빈 문서가 아닌 경우, 열려 있는 문서의 파일명을 포함한 전체경로를 리턴한다.
 
@@ -3087,15 +3090,16 @@ class Hwp:
             ctrl: 컨트롤 오브젝트. 특정하지 않으면 현재 선택된 컨트롤의 좌표를 리턴
             option:
                 "표안의 표"처럼 컨트롤이 중첩된 경우에 어느 좌표를 리턴할지 결정할 수 있음
-                0: 현재 컨트롤이 포함된 리스트 기준으로 좌표 리턴
-                1: 현재 컨트롤을 포함하는 최상위 컨트롤 기준의 좌표 리턴
+
+                    - 0: 현재 컨트롤이 포함된 리스트 기준으로 좌표 리턴
+                    - 1: 현재 컨트롤을 포함하는 최상위 컨트롤 기준의 좌표 리턴
+
             as_tuple:
-                리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True
+                리턴값을 (List, Para, Pos) 형태의 튜플로 리턴할지 여부. 기본값은 True.
                 `as_tuple=False` 의 경우에는 ListParaPos 파라미터셋 자체를 리턴
 
         Returns:
-            기본적으로 (List, Para, Pos) 형태의 튜플로 리턴하며,
-            as_tuple=False 옵션 추가시에는 해당 ListParaPos 파라미터셋 자체를 리턴한다.
+            기본적으로 (List, Para, Pos) 형태의 튜플로 리턴하며, as_tuple=False 옵션 추가시에는 해당 ListParaPos 파라미터셋 자체를 리턴한다.
 
         Examples:
             >>> from pyhwpx import Hwp
@@ -3284,7 +3288,7 @@ class Hwp:
 
         셀필드는 지시문과 메모가 없으므로 이 메서드에서는 추출하지 않는다.
         만약 셀필드를 포함하여 모든 필드의 이름만 추출하고 싶다면
-        hwp.get_field_list().split("\r\n") 메서드를 쓰면 된다.
+        hwp.get_field_list().split("\\r\\n") 메서드를 쓰면 된다.
 
         Returns:
             [{'name': 'zxcv', 'direction': 'adsf', 'memo': 'qwer'}] 형식의 사전 리스트
@@ -3873,29 +3877,40 @@ class Hwp:
         """
         문서 전체에 쪽번호를 삽입하는 메서드.
 
-        :param global_start:
-            시작번호를 지정할 수 있음(새 번호 아님. 새 번호는 hwp.NewNumber(n)을 사용할 것)
-        :param position:
-            쪽번호 위치를 지정하는 파라미터
-            TopLeft, TopCenter, TopRight
-            BottomLeft, BottomCenter(기본값), BottomRight
-            InsideTop, OutsideTop, InsideBottom, OutsideBottom
-            None(쪽번호숨김과 유사)
-        :param number_format:
-            쪽번호 서식을 지정하는 파라미터
-	        "Digit": (1 2 3),
-	        "CircledDigit": (① ② ③),
-	        "RomanCapital":(I II III),
-	        "RomanSmall": (i ii iii) ,
-	        "LatinCapital": (A B C),
-	        "HangulSyllable":(가 나 다),
-	        "Ideograph": (一 二 三),
-	        "DecagonCircle": (갑 을 병),
-	        "DecagonCircleHanja": (甲 乙 丙),
-        :param side_char:
-            줄표 삽입 여부(bool)
-            True : 줄표 삽입(기본값)
-            False : 줄표 삽입하지 않음
+        Args:
+            global_start: 시작번호를 지정할 수 있음(새 번호 아님. 새 번호는 hwp.NewNumber(n)을 사용할 것)
+            position:
+                쪽번호 위치를 지정하는 파라미터
+
+                    - TopLeft
+                    - TopCenter
+                    - TopRight
+                    - BottomLeft
+                    - BottomCenter(기본값)
+                    - BottomRight
+                    - InsideTop
+                    - OutsideTop
+                    - InsideBottom
+                    - OutsideBottom
+                    - None(쪽번호숨김과 유사)
+
+            number_format:
+                쪽번호 서식을 지정하는 파라미터
+
+                    - "Digit": (1 2 3),
+                    - "CircledDigit": (① ② ③),
+                    - "RomanCapital":(I II III),
+                    - "RomanSmall": (i ii iii) ,
+                    - "LatinCapital": (A B C),
+                    - "HangulSyllable": (가 나 다),
+                    - "Ideograph": (一 二 三),
+                    - "DecagonCircle": (갑 을 병),
+                    - "DecagonCircleHanja": (甲 乙 丙),
+            side_char:
+                줄표 삽입 여부(bool)
+
+                    - True : 줄표 삽입(기본값)
+                    - False : 줄표 삽입하지 않음
 
         Returns:
             성공시 True, 실패시 False를 리턴
@@ -7353,24 +7368,24 @@ class Hwp:
         Returns:
             각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
             (가장 마지막 필드에는 0x02가 붙지 않는다.)
-            "필드이름#1\x02필드이름#2\x02...필드이름#n"
+            "필드이름#1\\x02필드이름#2\\x02...필드이름#n"
         """
         return self.hwp.GetFieldList(Number=number, option=option)
 
-    def GetFieldList(self, number=1, option=0):
+    def GetFieldList(self, number:int=1, option:int=0) -> str:
         """
         문서에 존재하는 필드의 목록을 구한다.
 
         문서 중에 동일한 이름의 필드가 여러 개 존재할 때는
-        number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 선택할 수 있다.
+        number에 지정한 타입에 따라 3가지의 서로 다른 방식 중에서 선택할 수 있다.
 
         예를 들어 문서 중 title, body, title, body, footer 순으로
-        5개의 필드가 존재할 때, hwpFieldPlain, hwpFieldNumber, HwpFieldCount
+        5개의 필드가 존재할 때, 0(hwpFieldPlain), 1(hwpFieldNumber), 2(HwpFieldCount)
         세 가지 형식에 따라 다음과 같은 내용이 돌아온다.
 
-            - hwpFieldPlain: "title\\x02body\\x02title\\x02body\\x02footer"
-            - hwpFieldNumber: "title{{0}}\\x02body{{0}}\\x02title{{1}}\\x02body{{1}}\\x02footer{{0}}"
-            - hwpFieldCount: "title{{2}}\\x02body{{2}}\\x02footer{{1}}"
+            - 0 (hwpFieldPlain): "title\\x02body\\x02title\\x02body\\x02footer"
+            - 1 (hwpFieldNumber): "title{{0}}\\x02body{{0}}\\x02title{{1}}\\x02body{{1}}\\x02footer{{0}}"
+            - 2 (hwpFieldCount): "title{{2}}\\x02body{{2}}\\x02footer{{1}}"
 
         Args:
             number:
@@ -7388,9 +7403,8 @@ class Hwp:
                     - 0x04: 선택된 내용 안에 존재하는 필드 리스트를 구한다.(HwpFieldSelection)
 
         Returns:
-            각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다.
-            (가장 마지막 필드에는 0x02가 붙지 않는다.)
-            "필드이름#1\\x02필드이름#2\\x02...필드이름#n"
+            각 필드 사이를 문자코드 0x02로 구분하여 다음과 같은 형식으로 리턴 한다. (가장 마지막 필드에는 0x02가 붙지 않는다.)
+            ``"필드이름#1\\x02필드이름#2\\x02...필드이름#n"``
         """
         return self.hwp.GetFieldList(Number=number, option=option)
 
