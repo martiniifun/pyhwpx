@@ -5198,6 +5198,7 @@ class Hwp:
             성공시 True, 실패시 False를 리턴
 
         Examples:
+            ```
             from pyhwpx import Hwp
             hwp = Hwp()
 
@@ -5210,6 +5211,7 @@ class Hwp:
                     step_center=int(i/255*100),
                     step=i,
                 )
+            ```
         """
         if not self.is_cell():
             raise AssertionError("캐럿이 현재 표 안에 위치하지 않습니다. 표 안에서 다시 실행해주세요.")
@@ -8228,7 +8230,7 @@ class Hwp:
         """
         return self.hwp.GetTextFile(Format=format, option=option)
 
-    def GetTextFile(self, format="UNICODE", option="saveblock:true"):
+    def GetTextFile(self, format:Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"]="UNICODE", option:str="saveblock:true") -> str:
         """
         현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
 
@@ -8332,9 +8334,9 @@ class Hwp:
         """
         return self.hwp.HwpLineType(LineType=line_type)
 
-    def HwpLineWidth(self, line_width: Literal["0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm"):
+    def HwpLineWidth(self, line_width: Literal["0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm") -> int:
         """
-        선너비를 정해주는 헬퍼 메서드.
+        선 너비를 정해주는 헬퍼 메서드.
 
         목록은 아래와 같다.
 
