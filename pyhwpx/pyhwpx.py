@@ -3288,7 +3288,7 @@ class Hwp:
 
         셀필드는 지시문과 메모가 없으므로 이 메서드에서는 추출하지 않는다.
         만약 셀필드를 포함하여 모든 필드의 이름만 추출하고 싶다면
-        hwp.get_field_list().split("\\r\\n") 메서드를 쓰면 된다.
+        ``hwp.get_field_list().split("\\r\\n")`` 메서드를 쓰면 된다.
 
         Returns:
             [{'name': 'zxcv', 'direction': 'adsf', 'memo': 'qwer'}] 형식의 사전 리스트
@@ -3299,6 +3299,7 @@ class Hwp:
             >>> hwp.get_field_info()
             [{'name': '누름틀1', 'direction': '안내문1', 'memo': '메모1'},
             {'name': '누름틀2', 'direction': '안내문2', 'memo': '메모2'}]
+
         """
         txt = self.GetTextFile("HWPML2X")
         try:
@@ -7307,12 +7308,16 @@ class Hwp:
         """
         현재 캐럿위치의 메타태그 이름을 리턴하는 메서드.
 
+        Returns:
+            str: 현재 위치의 메타태그 이름
+
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> # "#test"라는 메타태그 이름이 부여된 표를 선택한 상태에서
             >>> hwp.get_cur_metatag_name()
             #test
+
         """
         try:
             return self.hwp.GetCurMetatagName()
