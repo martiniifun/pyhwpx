@@ -6704,7 +6704,7 @@ class Hwp:
         """
         return self.hwp.CreateAction(actidstr=actidstr)
 
-    def CreateAction(self, actidstr: str):
+    def CreateAction(self, actidstr: str) -> "Hwp.HAction":
         """
         Action 객체를 생성한다.
 
@@ -6720,7 +6720,6 @@ class Hwp:
 
         Examples:
             >>> from pyhwpx import Hwp
-            >>>
             >>> hwp = Hwp()
             >>> # 현재 커서의 폰트 크기(Height)를 구하는 코드
             >>> act = hwp.create_action("CharShape")
@@ -6908,7 +6907,7 @@ class Hwp:
                     os.remove(path_.replace(ext, format))
             return True
 
-    def CreateSet(self, setidstr: str):
+    def CreateSet(self, setidstr: str) -> "Hwp.HParameterSet":
         """
         ParameterSet을 생성한다.
 
@@ -9395,32 +9394,37 @@ class Hwp:
                     - "SWF": Macromedia Flash 문서(SaveAs만 가능)
 
             arg:
-                세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
-                arg에 지정할 수 있는 옵션의 의미는 필터가 정의하기에 따라 다르지만,
+                세부 옵션. 의미는 `format`에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
+
+                `arg`에 지정할 수 있는 옵션의 의미는 필터가 정의하기에 따라 다르지만,
                 syntax는 다음과 같이 공통된 형식을 사용한다.
-                "key:value;key:value;..."
+
+                `"key:value;key:value;..."`
+
                 * key는 A-Z, a-z, 0-9, _ 로 구성된다.
                 * value는 타입에 따라 다음과 같은 3 종류가 있다.
-                boolean: ex) fullsave:true (== fullsave)
-                integer: ex) type:20
-                string:  ex) prefix:_This_
+
+                    - boolean: ex) `fullsave:true` (== `fullsave`)
+                    - integer: ex) `type:20`
+                    - string:  ex) `prefix:_This_`
+
                 * value는 생략 가능하며, 이때는 콜론도 생략한다.
                 * arg에 지정할 수 있는 옵션
 
-                <모든 파일포맷>
+                모든 파일포맷
 
-                    - setcurdir(boolean, true/false): 로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
+                    - `setcurdir` (boolean, true/false): 로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
 
-                <HWP(HWPX)>
+                HWP(HWPX)
 
-                    - lock (boolean, TRUE): 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
-                    - notext (boolean, FALSE): 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
+                    - `lock` (boolean, TRUE): 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
+                    - `notext` (boolean, FALSE): 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
                     - template (boolean, FALSE): 새로운 문서를 생성하기 위해 템플릿 파일을 오픈한다. 이 옵션이 주어지면 lock은 무조건 FALSE로 처리된다.
                     - suspendpassword (boolean, FALSE): TRUE로 지정하면 암호가 있는 파일일 경우 암호를 묻지 않고 무조건 읽기에 실패한 것으로 처리한다.
                     - forceopen (boolean, FALSE): TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
                     - versionwarning (boolean, FALSE): TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
 
-                <HTML>
+                HTML
 
                     - code(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
                     - textunit(boolean, pixel): Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
@@ -9437,7 +9441,7 @@ class Hwp:
                     - big5 : 중국 번체
                     - acp : Active Codepage 현재 시스템의 코드 페이지
 
-                <DOCIMG>
+                DOCIMG
 
                     - asimg(boolean, FALSE): 저장할 때 페이지를 image로 저장
                     - ashtml(boolean, FALSE): 저장할 때 페이지를 html로 저장
@@ -9494,20 +9498,22 @@ class Hwp:
                 세부 옵션. 의미는 format에 지정한 파일 형식에 따라 다르다. 생략하면 빈 문자열이 지정된다.
                 arg에 지정할 수 있는 옵션의 의미는 필터가 정의하기에 따라 다르지만,
                 syntax는 다음과 같이 공통된 형식을 사용한다.
-                "key:value;key:value;..."
+
+                `"key:value;key:value;..."`
+
                 * key는 A-Z, a-z, 0-9, _ 로 구성된다.
                 * value는 타입에 따라 다음과 같은 3 종류가 있다.
-                boolean: ex) fullsave:true (== fullsave)
-                integer: ex) type:20
-                string:  ex) prefix:_This_
+                boolean: ex) `fullsave:true (== fullsave)`
+                integer: ex) `type:20`
+                string:  ex) `prefix:_This_`
                 * value는 생략 가능하며, 이때는 콜론도 생략한다.
                 * arg에 지정할 수 있는 옵션
 
-                <모든 파일포맷>
+                모든 파일포맷
 
                     - setcurdir(boolean, true/false): 로드한 후 해당 파일이 존재하는 폴더로 현재 위치를 변경한다. hyperlink 정보가 상대적인 위치로 되어 있을 때 유용하다.
 
-                <HWP(HWPX)>
+                HWP(HWPX)
 
                     - lock (boolean, TRUE): 로드한 후 해당 파일을 계속 오픈한 상태로 lock을 걸지 여부
                     - notext (boolean, FALSE): 텍스트 내용을 읽지 않고 헤더 정보만 읽을지 여부. (스타일 로드 등에 사용)
@@ -9516,7 +9522,7 @@ class Hwp:
                     - forceopen (boolean, FALSE): TRUE로 지정하면 읽기 전용으로 읽어야 하는 경우 대화상자를 띄우지 않는다.
                     - versionwarning (boolean, FALSE): TRUE로 지정하면 문서가 상위버전일 경우 메시지 박스를 띄우게 된다.
 
-                <HTML>
+                HTML
 
                     - code(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
                     - textunit(boolean, pixel): Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
@@ -9533,7 +9539,7 @@ class Hwp:
                     - big5 : 중국 번체
                     - acp : Active Codepage 현재 시스템의 코드 페이지
 
-                <DOCIMG>
+                DOCIMG
 
                     - asimg(boolean, FALSE): 저장할 때 페이지를 image로 저장
                     - ashtml(boolean, FALSE): 저장할 때 페이지를 html로 저장
