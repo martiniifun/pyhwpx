@@ -3426,7 +3426,7 @@ class Hwp:
         return self.hwp.HAction.Execute("Goto", pset.HSet)
 
     def shape_copy_paste(self, Type: Literal["font", "para", "both"] = "both", cell_attr: bool = False,
-                         cell_border: bool = False, cell_fill: bool = False, cell_only: int = 0):
+                         cell_border: bool = False, cell_fill: bool = False, cell_only: int = 0) -> bool:
         """
         모양복사 메서드
 
@@ -4933,14 +4933,13 @@ class Hwp:
                  Emboss:str|bool="",  # 양각(True/False)
                  Engrave:str|bool="",  # 음각(True/False)
                  FaceName:str="",  # 서체
-                 FontType=1,  # 1(TTF), 2(HTF)
+                 FontType:int=1,  # 1(TTF), 2(HTF)
                  Height:str|float="",  # 글자크기(pt, 0.1 ~ 4096)
                  Italic:str|bool="",  # 이탤릭(True/False)
                  Offset:str|int="",  # 글자위치-상하오프셋(-100 ~ 100)
                  OutLineType:str|int="",  # 외곽선타입(0~6)
                  Ratio:str|int="",  # 장평(50~200)
-                 ShadeColor:str|int="",
-                 # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+                 ShadeColor:str|int="",  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
                  ShadowColor:str|int="",  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
                  ShadowOffsetX:str|int="",  # 그림자 X오프셋(-100 ~ 100)
                  ShadowOffsetY:str|int="",  # 그림자 Y오프셋(-100 ~ 100)
@@ -9971,12 +9970,43 @@ class Hwp:
 
     def rgb_color(self, red_or_colorname: str | tuple | int, green: int = 255, blue: int = 255) -> int:
         """
-        RGB값을 한/글이 인식하는 정수 형태로 변환해주는 메서드.
+        RGB값을 한/글이 인식하는 정수 형태로 변환해주는 헬퍼 메서드.
 
-        자주 쓰이는 24가지 색깔은 문자열로 입력 가능하다.
+        ![rgb_color / RGBColor](assets/rgb_color.gif){ loading=lazy }
+
+        주로 글자색이나, 셀 색깔을 적용할 때 사용한다.
+        RGB값을 세 개의 정수로 입력하는 것이 기본적인 사용방법이지만,
+        자주 사용되는 아래의 24가지 색깔은 문자열로 입력 가능하다.
 
         Args:
-            red_or_colorname: R값(0~255) 또는 색깔 문자열
+            red_or_colorname:
+                R값(0~255)을 입력하거나, 혹은 아래 목록의 색깔 문자열을 직접 입력할 수 있다.
+
+                    - "Red": (255, 0, 0)
+                    - "Green": (0, 255, 0)
+                    - "Blue": (0, 0, 255)
+                    - "Yellow": (255, 255, 0)
+                    - "Cyan": (0, 255, 255)
+                    - "Magenta": (255, 0, 255)
+                    - "Black": (0, 0, 0)
+                    - "White": (255, 255, 255)
+                    - "Gray": (128, 128, 128)
+                    - "Orange": (255, 165, 0)
+                    - "DarkBlue": (0, 0, 139)
+                    - "Purple": (128, 0, 128)
+                    - "Pink": (255, 192, 203)
+                    - "Lime": (0, 255, 0)
+                    - "SkyBlue": (135, 206, 235)
+                    - "Gold": (255, 215, 0)
+                    - "Silver": (192, 192, 192)
+                    - "Mint": (189, 252, 201)
+                    - "Tomato": (255, 99, 71)
+                    - "Olive": (128, 128, 0)
+                    - "Crimson": (220, 20, 60)
+                    - "Navy": (0, 0, 128)
+                    - "Teal": (0, 128, 128)
+                    - "Chocolate": (210, 105, 30)
+
             green: G값(0~255)
             blue: B값(0~255)
 
@@ -9986,9 +10016,9 @@ class Hwp:
         Examples:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
-            >>> hwp.set_font(TextColor=hwp.RGBColor("Red"))  # 글자색 빨강
-            >>> hwp.insert_text("빨간 글자색\r\n")
-            >>> hwp.set_font(ShadeColor=hwp.RGBColor(0, 255, 0))  # 음영색 초록
+            >>> hwp.set_font(TextColor=hwp.RGBColor("Red"))  # 글자를 빨강으로
+            >>> hwp.insert_text("빨간 글자색\\r\\n")
+            >>> hwp.set_font(ShadeColor=hwp.RGBColor(0, 255, 0))  # 음영을 녹색으로
             >>> hwp.insert_text("초록 음영색")
         """
         color_palette = {"Red": (255, 0, 0), "Green": (0, 255, 0), "Blue": (0, 0, 255), "Yellow": (255, 255, 0),
@@ -10023,7 +10053,7 @@ class Hwp:
             >>> from pyhwpx import Hwp
             >>> hwp = Hwp()
             >>> hwp.set_font(TextColor=hwp.RGBColor("Red"))  # 글자색 빨강
-            >>> hwp.insert_text("빨간 글자색\r\n")
+            >>> hwp.insert_text("빨간 글자색\\r\\n")
             >>> hwp.set_font(ShadeColor=hwp.RGBColor(0, 255, 0))  # 음영색 초록
             >>> hwp.insert_text("초록 음영색")
         """
@@ -10619,7 +10649,7 @@ class Hwp:
             >>> hwp = Hwp()  # 한/글 창이 열림
             >>> hwp.BreakPara()  # 줄바꿈 삽입!
             True
-            >>> hwp.insert_text("\r\n")  # BreakPara와 동일
+            >>> hwp.insert_text("\\r\\n")  # BreakPara와 동일
             True
         """
         return self.hwp.HAction.Run("BreakPara")
