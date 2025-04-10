@@ -3874,7 +3874,7 @@ class Hwp:
 
     def PageNumPos(self, global_start: int = 1, position: Literal["TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter",
                    number_format: Literal["Digit", "CircledDigit", "RomanCapital", "RomanSmall", "LatinCapital", "HangulSyllable", "Ideograph", "DecagonCircle", "DecagonCircleHanja"] = "Digit",
-                   side_char=True) -> bool:
+                   side_char:bool=True) -> bool:
         """
         문서 전체에 쪽번호를 삽입하는 메서드.
 
@@ -8079,7 +8079,7 @@ class Hwp:
         """
         return self.hwp.GetSelectedPosBySet(sset=sset, eset=eset)
 
-    def get_text(self):
+    def get_text(self) -> tuple[int, str]:
         """
         문서 내에서 텍스트를 얻어온다.
 
@@ -8090,8 +8090,7 @@ class Hwp:
         move_pos(201)을 실행하면 된다.
 
         Returns:
-            (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\\t'(0x9), 문단 바뀜은 '\\r\\n'(0x0D/0x0A)로 표현되며,
-            이외의 특수 코드는 포함되지 않는다.
+            (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\\t'(0x9), 문단 바뀜은 '\\r\\n'(0x0D/0x0A)로 표현되며, 이외의 특수 코드는 포함되지 않는다.
 
             state의 의미는 아래와 같다.
 
@@ -8137,8 +8136,7 @@ class Hwp:
         move_pos(201)을 실행하면 된다.
 
         Returns:
-            (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\\t'(0x9), 문단 바뀜은 '\\r\\n'(0x0D/0x0A)로 표현되며,
-            이외의 특수 코드는 포함되지 않는다.
+            (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\\t'(0x9), 문단 바뀜은 '\\r\\n'(0x0D/0x0A)로 표현되며, 이외의 특수 코드는 포함되지 않는다.
 
             state의 의미는 아래와 같다.
 
@@ -8185,6 +8183,7 @@ class Hwp:
         텍스트로 저장된 파일이 메모리에서 3~4번 복사되기 때문에 느리고, 메모리를 낭비함.
 
         팁1: ``hwp.Copy()``, ``hwp.Paste()`` 대신 get_text_file/set_text_file을 사용하기 추천.
+
         팁2: ``format="HTML"``로 추출시 표번호가 유지된다.
 
         Args:
@@ -8223,6 +8222,7 @@ class Hwp:
         텍스트로 저장된 파일이 메모리에서 3~4번 복사되기 때문에 느리고, 메모리를 낭비함.
 
         팁1: ``hwp.Copy()``, ``hwp.Paste()`` 대신 get_text_file/set_text_file을 사용하기 추천.
+
         팁2: ``format="HTML"``로 추출시 표번호가 유지된다.
 
         Args:
