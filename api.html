@@ -14576,13 +14576,13 @@ GetFieldList()의 옵션 중에 hwpFieldSelection(=4)옵션은 사용하지 않�
 
         <p>문서에 존재하는 필드의 목록을 구한다.</p>
 <p>문서 중에 동일한 이름의 필드가 여러 개 존재할 때는
-number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 선택할 수 있다.
-예를 들어 문서 중 title, body, title, body, footer 순으로
+number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 선택할 수 있다.</p>
+<p>예를 들어 문서 중 title, body, title, body, footer 순으로
 5개의 필드가 존재할 때, hwpFieldPlain, hwpFieldNumber, HwpFieldCount
 세 가지 형식에 따라 다음과 같은 내용이 돌아온다.</p>
-<div class="codehilite"><pre><span></span><code><span class="x">- hwpFieldPlain: &quot;titlebodytitlebodyfooter&quot;</span>
-<span class="x">- hwpFieldNumber: &quot;title</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">body</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">title</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">body</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">footer</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&quot;</span>
-<span class="x">- hwpFieldCount: &quot;title</span><span class="cp">{{</span><span class="m">2</span><span class="cp">}}</span><span class="x">body</span><span class="cp">{{</span><span class="m">2</span><span class="cp">}}</span><span class="x">footer</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="x">- hwpFieldPlain: &quot;title\x02body\x02title\x02body\x02footer&quot;</span>
+<span class="x">- hwpFieldNumber: &quot;title</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">\x02body</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">\x02title</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">\x02body</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">\x02footer</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&quot;</span>
+<span class="x">- hwpFieldCount: &quot;title</span><span class="cp">{{</span><span class="m">2</span><span class="cp">}}</span><span class="x">\x02body</span><span class="cp">{{</span><span class="m">2</span><span class="cp">}}</span><span class="x">\x02footer</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">&quot;</span>
 </code></pre></div>
 
 
@@ -14671,7 +14671,7 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
             </td>
             <td>
               <div class="doc-md-description">
-                <p>"필드이름#1필드이름#2...필드이름#n"</p>
+                <p>"필드이름#1\x02필드이름#2\x02...필드이름#n"</p>
               </div>
             </td>
           </tr>
@@ -14694,39 +14694,178 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><pre><span></span><code><span class="x">    지정한 필드에서 문자열을 구한다.</span>
+        <p>지정한 필드에서 문자열을 구한다.</p>
 
-<span class="x">    Args:</span>
-<span class="x">        field:</span>
-<span class="x">            텍스트를 구할 필드 이름의 리스트.</span>
-<span class="x">            다음과 같이 필드 사이를 문자 코드 0x02로 구분하여</span>
-<span class="x">            한 번에 여러 개의 필드를 지정할 수 있다.</span>
-<span class="x">            &quot;필드이름#1필드이름#2...필드이름#n&quot;</span>
-<span class="x">            지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.</span>
-<span class="x">            &quot;필드이름&quot;: 이름의 필드 중 첫 번째</span>
-<span class="x">            &quot;필드이름</span><span class="cp">{{</span><span class="nv">n</span><span class="cp">}}</span><span class="x">&quot;: 지정한 이름의 필드 중 n 번째</span>
-<span class="x">            예를 들어 &quot;제목</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">본문이름</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&quot; 과 같이 지정하면</span>
-<span class="x">            &#39;제목&#39;이라는 이름의 필드 중 두 번째,</span>
-<span class="x">            &#39;본문&#39;이라는 이름의 필드 중 첫 번째,</span>
-<span class="x">            &#39;이름&#39;이라는 이름의 필드 중 첫 번째를 각각 지정한다.</span>
-<span class="x">            즉, &#39;필드이름&#39;과 &#39;필드이름</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&#39;은 동일한 의미로 해석된다.</span>
-<span class="x">        idx:</span>
-<span class="x">            특정 필드가 여러 개이고, 각각의 값이 다를 때, ``field</span><span class="cp">{{</span><span class="nv">n</span><span class="cp">}}</span><span class="x">`` 대신 ``hwp.GetFieldText(field, idx=n)``라고 작성할 수 있다.</span>
 
-<span class="x">    Returns:</span>
-<span class="x">        텍스트 데이터가 돌아온다.</span>
-<span class="x">        텍스트에서 탭은 &#39;  &#39;(0x9),</span>
-<span class="x">        문단 바뀜은 CR/LF(0x0D/0x0A ==</span>
-</code></pre></div>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>field</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="list">list</span> | <span title="tuple">tuple</span> | <span title="set">set</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>텍스트를 구할 필드 이름의 리스트.
+다음과 같이 필드 사이를 문자 코드 0x02로 구분하여
+한 번에 여러 개의 필드를 지정할 수 있다.
+"필드이름#1\x02필드이름#2\x02...필드이름#n"
+지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.
+"필드이름": 이름의 필드 중 첫 번째
+"필드이름{{n}}": 지정한 이름의 필드 중 n 번째
+예를 들어 "제목{{1}}\x02본문\x02이름{{0}}" 과 같이 지정하면
+'제목'이라는 이름의 필드 중 두 번째,
+'본문'이라는 이름의 필드 중 첫 번째,
+'이름'이라는 이름의 필드 중 첫 번째를 각각 지정한다.
+즉, '필드이름'과 '필드이름{{0}}'은 동일한 의미로 해석된다.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>idx</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>특정 필드가 여러 개이고, 각각의 값이 다를 때, <code>field{{n}}</code> 대신 <code>hwp.GetFieldText(field, idx=n)</code>라고 작성할 수 있다.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-<p>)로 표현되며,
-            이외의 특수 코드는 포함되지 않는다.
-            필드 텍스트의 끝은 0x02()로 표현되며,
-            그 이후 다음 필드의 텍스트가 연속해서
-            지정한 필드 리스트의 개수만큼 위치한다.
-            지정한 이름의 필드가 없거나,
-            사용자가 해당 필드에 아무 텍스트도 입력하지 않았으면
-            해당 텍스트에는 빈 문자열이 돌아온다.</p>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>텍스트 데이터가 돌아온다.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>텍스트에서 탭은 '\t'(0x9),</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>문단 바뀜은 CR/LF(0x0D/0x0A == \r\n)로 표현되며,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>이외의 특수 코드는 포함되지 않는다.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>필드 텍스트의 끝은 0x02(\x02)로 표현되며,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>그 이후 다음 필드의 텍스트가 연속해서</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>지정한 필드 리스트의 개수만큼 위치한다.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>지정한 이름의 필드가 없거나,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>사용자가 해당 필드에 아무 텍스트도 입력하지 않았으면</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>해당 텍스트에는 빈 문자열이 돌아온다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -14765,6 +14904,7 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
                 <code>filename</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -14790,6 +14930,11 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -14956,6 +15101,7 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
                 <code>x_rel_to</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -14975,6 +15121,7 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
                 <code>y_rel_to</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -15004,6 +15151,11 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -15013,6 +15165,11 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
           </tr>
           <tr class="doc-section-item">
             <td>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -15560,49 +15717,82 @@ OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><pre><span></span><code>    문서 내에서 텍스트를 얻어온다.
+        <p>문서 내에서 텍스트를 얻어온다.</p>
+<p>줄바꿈 기준으로 텍스트를 얻어오므로 반복실행해야 한다.
+get_text()의 사용이 끝나면 release_scan()을 반드시 호출하여
+관련 정보를 초기화 해주어야 한다.
+get_text()로 추출한 텍스트가 있는 문단으로 캐럿을 이동 시키려면
+move_pos(201)을 실행하면 된다.</p>
 
-    줄바꿈 기준으로 텍스트를 얻어오므로 반복실행해야 한다.
-    get_text()의 사용이 끝나면 release_scan()을 반드시 호출하여
-    관련 정보를 초기화 해주어야 한다.
-    get_text()로 추출한 텍스트가 있는 문단으로 캐럿을 이동 시키려면
-    move_pos(201)을 실행하면 된다.
 
-    Returns:
-        (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 &#39;       &#39;(0x9), 문단 바뀜은 &#39;
-</code></pre></div>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>이외의 특수 코드는 포함되지 않는다.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>state의 의미는 아래와 같다.</p>
+<ul>
+<li>0: 텍스트 정보 없음</li>
+<li>1: 리스트의 끝</li>
+<li>2: 일반 텍스트</li>
+<li>3: 다음 문단</li>
+<li>4: 제어문자 내부로 들어감</li>
+<li>5: 제어문자를 빠져나옴</li>
+<li>101: 초기화 안 됨(init_scan() 실패 또는 init_scan()을 실행하지 않은 경우)</li>
+<li>102: 텍스트 변환 실패</li>
+</ul>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-<p>'(0x0D/0x0A)로 표현되며,
-            이외의 특수 코드는 포함되지 않는다.</p>
-<div class="codehilite"><pre><span></span><code>        <span class="n">state의</span> <span class="n">의미는</span> <span class="n">아래와</span> <span class="n">같다</span><span class="o">.</span>
 
-            <span class="o">-</span> <span class="mi">0</span><span class="p">:</span> <span class="n">텍스트</span> <span class="n">정보</span> <span class="n">없음</span>
-            <span class="o">-</span> <span class="mi">1</span><span class="p">:</span> <span class="n">리스트의</span> <span class="n">끝</span>
-            <span class="o">-</span> <span class="mi">2</span><span class="p">:</span> <span class="n">일반</span> <span class="n">텍스트</span>
-            <span class="o">-</span> <span class="mi">3</span><span class="p">:</span> <span class="n">다음</span> <span class="n">문단</span>
-            <span class="o">-</span> <span class="mi">4</span><span class="p">:</span> <span class="n">제어문자</span> <span class="n">내부로</span> <span class="n">들어감</span>
-            <span class="o">-</span> <span class="mi">5</span><span class="p">:</span> <span class="n">제어문자를</span> <span class="n">빠져나옴</span>
-            <span class="o">-</span> <span class="mi">101</span><span class="p">:</span> <span class="n">초기화</span> <span class="n">안</span> <span class="n">됨</span><span class="p">(</span><span class="n">init_scan</span><span class="p">()</span> <span class="n">실패</span> <span class="n">또는</span> <span class="n">init_scan</span><span class="p">()</span><span class="n">을</span> <span class="n">실행하지</span> <span class="n">않은</span> <span class="n">경우</span><span class="p">)</span>
-            <span class="o">-</span> <span class="mi">102</span><span class="p">:</span> <span class="n">텍스트</span> <span class="n">변환</span> <span class="n">실패</span>
-
-    <span class="n">Examples</span><span class="p">:</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">InitScan</span><span class="p">()</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="o">...</span>     <span class="n">state</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">GetText</span><span class="p">()</span>
-        <span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
-        <span class="o">...</span>     <span class="k">if</span> <span class="n">state</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="o">...</span>         <span class="k">break</span>
-        <span class="o">...</span> <span class="n">hwp</span><span class="o">.</span><span class="n">ReleaseScan</span><span class="p">()</span>
-        <span class="mi">2</span>
-        <span class="mi">2</span>
-        <span class="mi">2</span> <span class="n">ㅁㄴㅇㄹ</span>
-        <span class="mi">3</span>
-        <span class="mi">4</span> <span class="n">ㅂㅈㄷㄱ</span>
-        <span class="mi">2</span> <span class="n">ㅂㅈㄷㄱ</span>
-        <span class="mi">5</span>
-        <span class="mi">1</span>
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">InitScan</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">... </span>    <span class="n">state</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">GetText</span><span class="p">()</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">... </span>    <span class="k">if</span> <span class="n">state</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">... </span>        <span class="k">break</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">... </span><span class="n">hwp</span><span class="o">.</span><span class="n">ReleaseScan</span><span class="p">()</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">2</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="go">2</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="go">2 ㅁㄴㅇㄹ</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="go">3</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="go">4 ㅂㅈㄷㄱ</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="go">2 ㅂㅈㄷㄱ</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="go">5</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="go">1</span>
 </code></pre></div>
 
 
@@ -15621,47 +15811,96 @@ OnDocument_New와 OnDocument_Open 두 개의 함수에 한해서만
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><pre><span></span><code>    현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
+        <p>현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.</p>
+<p>이 함수는 JScript나 VBScript와 같이
+직접적으로 local disk를 접근하기 힘든 언어를 위해 만들어졌으므로
+disk를 접근할 수 있는 언어에서는 사용하지 않기를 권장.
+disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
+이 함수 역시 내부적으로는 save나 SaveBlockAction을 호출하도록 되어있고
+텍스트로 저장된 파일이 메모리에서 3~4번 복사되기 때문에 느리고, 메모리를 낭비함.</p>
+<p>팁1: <code>hwp.Copy()</code>, <code>hwp.Paste()</code> 대신 get_text_file/set_text_file을 사용하기 추천.
+팁2: <code>format="HTML"</code>로 추출시 표번호가 유지된다.</p>
 
-    이 함수는 JScript나 VBScript와 같이
-    직접적으로 local disk를 접근하기 힘든 언어를 위해 만들어졌으므로
-    disk를 접근할 수 있는 언어에서는 사용하지 않기를 권장.
-    disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
-    이 함수 역시 내부적으로는 save나 SaveBlockAction을 호출하도록 되어있고
-    텍스트로 저장된 파일이 메모리에서 3~4번 복사되기 때문에 느리고, 메모리를 낭비함.
 
-    팁1: ``hwp.Copy()``, ``hwp.Paste()`` 대신 get_text_file/set_text_file을 사용하기 추천.
-    팁2: ``format=&quot;HTML&quot;``로 추출시 표번호가 유지된다.
-
-    Args:
-        format:
-            파일의 형식. 기본값은 &quot;UNICODE&quot;. 내부적으로 str.lower() 메서드가 포함되어 있으므로 소문자로 입력해도 된다.
-
-                <span class="k">-</span> &quot;HWP&quot;: HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
-                <span class="k">-</span> &quot;HWPML2X&quot;: HWP 형식과 호환. 문서의 모든 정보를 유지
-                <span class="k">-</span> &quot;HTML&quot;: 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
-                <span class="k">-</span> &quot;UNICODE&quot;: 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
-                <span class="k">-</span> &quot;TEXT&quot;: 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
-
-        option:
-            option 파라미터에 &quot;saveblock&quot;을 지정하면 선택된 블록만 저장한다. 개체 선택 상태에서는 동작하지 않는다.
-
-    Returns:
-        지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
-
-    Examples:
-        &gt;&gt;&gt; from pyhwpx import Hwp
-        &gt;&gt;&gt; hwp = Hwp()
-        &gt;&gt;&gt; hwp.GetTextFile()
-        &#39;ㅁㄴㅇㄹ
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>format</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>파일의 형식. 기본값은 "UNICODE". 내부적으로 str.lower() 메서드가 포함되어 있으므로 소문자로 입력해도 된다.</p>
+<div class="codehilite"><pre><span></span><code>- &quot;HWP&quot;: HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+- &quot;HWPML2X&quot;: HWP 형식과 호환. 문서의 모든 정보를 유지
+- &quot;HTML&quot;: 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
+- &quot;UNICODE&quot;: 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
+- &quot;TEXT&quot;: 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
 </code></pre></div>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;UNICODE&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>option</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>option 파라미터에 "saveblock"을 지정하면 선택된 블록만 저장한다. 개체 선택 상태에서는 동작하지 않는다.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;saveblock:true&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-<p>ㅁㄴㅇㄹ
-ㅁㄴㅇㄹ</p>
-<p>ㅂㅈㄷㄱ
-ㅂㅈㄷㄱ
-ㅂㅈㄷㄱ
-'</p>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">GetTextFile</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">&#39;ㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\n\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\n&#39;</span>
+</code></pre></div>
 
 
     </div>
@@ -22035,7 +22274,7 @@ fieldlist의 필드 개수와, textlist의 텍스트 개수는 동일해야 한�
             </td>
             <td>
               <div class="doc-md-description">
-                <p>필드에 채워 넣을 문자열의 리스트. 형식은 필드 리스트와 동일하게 필드의 개수만큼 텍스트를 0x02로 구분하여 지정한다.</p>
+                <p>필드에 채워 넣을 문자열의 리스트. 형식은 필드 리스트와 동일하게 필드의 개수만큼 텍스트를 "\x02"로 구분하여 지정한다.</p>
               </div>
             </td>
             <td>
@@ -30500,39 +30739,178 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><pre><span></span><code><span class="x">    지정한 필드에서 문자열을 구한다.</span>
+        <p>지정한 필드에서 문자열을 구한다.</p>
 
-<span class="x">    Args:</span>
-<span class="x">        field:</span>
-<span class="x">            텍스트를 구할 필드 이름의 리스트.</span>
-<span class="x">            다음과 같이 필드 사이를 문자 코드 0x02로 구분하여</span>
-<span class="x">            한 번에 여러 개의 필드를 지정할 수 있다.</span>
-<span class="x">            &quot;필드이름#1필드이름#2...필드이름#n&quot;</span>
-<span class="x">            지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.</span>
-<span class="x">            &quot;필드이름&quot;: 이름의 필드 중 첫 번째</span>
-<span class="x">            &quot;필드이름</span><span class="cp">{{</span><span class="nv">n</span><span class="cp">}}</span><span class="x">&quot;: 지정한 이름의 필드 중 n 번째</span>
-<span class="x">            예를 들어 &quot;제목</span><span class="cp">{{</span><span class="m">1</span><span class="cp">}}</span><span class="x">본문이름</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&quot; 과 같이 지정하면</span>
-<span class="x">            &#39;제목&#39;이라는 이름의 필드 중 두 번째,</span>
-<span class="x">            &#39;본문&#39;이라는 이름의 필드 중 첫 번째,</span>
-<span class="x">            &#39;이름&#39;이라는 이름의 필드 중 첫 번째를 각각 지정한다.</span>
-<span class="x">            즉, &#39;필드이름&#39;과 &#39;필드이름</span><span class="cp">{{</span><span class="m">0</span><span class="cp">}}</span><span class="x">&#39;은 동일한 의미로 해석된다.</span>
-<span class="x">        idx:</span>
-<span class="x">            특정 필드가 여러 개이고, 각각의 값이 다를 때, ``field</span><span class="cp">{{</span><span class="nv">n</span><span class="cp">}}</span><span class="x">`` 대신 ``hwp.get_field_text(field, idx=n)``라고 작성할 수 있다.</span>
 
-<span class="x">    Returns:</span>
-<span class="x">        텍스트 데이터가 돌아온다.</span>
-<span class="x">        텍스트에서 탭은 &#39;  &#39;(0x9),</span>
-<span class="x">        문단 바뀜은 CR/LF(0x0D/0x0A ==</span>
-</code></pre></div>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>field</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="list">list</span> | <span title="tuple">tuple</span> | <span title="set">set</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>텍스트를 구할 필드 이름의 리스트.
+다음과 같이 필드 사이를 문자 코드 0x02로 구분하여
+한 번에 여러 개의 필드를 지정할 수 있다.
+"필드이름#1\x02필드이름#2\x02...필드이름#n"
+지정한 필드 이름이 문서 중에 두 개 이상 존재할 때의 표현 방식은 다음과 같다.
+"필드이름": 이름의 필드 중 첫 번째
+"필드이름{{n}}": 지정한 이름의 필드 중 n 번째
+예를 들어 "제목{{1}}\x02본문\x02이름{{0}}" 과 같이 지정하면
+'제목'이라는 이름의 필드 중 두 번째,
+'본문'이라는 이름의 필드 중 첫 번째,
+'이름'이라는 이름의 필드 중 첫 번째를 각각 지정한다.
+즉, '필드이름'과 '필드이름{{0}}'은 동일한 의미로 해석된다.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>idx</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>특정 필드가 여러 개이고, 각각의 값이 다를 때, <code>field{{n}}</code> 대신 <code>hwp.get_field_text(field, idx=n)</code>라고 작성할 수 있다.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-<p>)로 표현되며,
-            이외의 특수 코드는 포함되지 않는다.
-            필드 텍스트의 끝은 0x02()로 표현되며,
-            그 이후 다음 필드의 텍스트가 연속해서
-            지정한 필드 리스트의 개수만큼 위치한다.
-            지정한 이름의 필드가 없거나,
-            사용자가 해당 필드에 아무 텍스트도 입력하지 않았으면
-            해당 텍스트에는 빈 문자열이 돌아온다.</p>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>텍스트 데이터가 돌아온다.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>텍스트에서 탭은 '\t'(0x9),</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>문단 바뀜은 CR/LF(0x0D/0x0A == \r\n)로 표현되며,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>이외의 특수 코드는 포함되지 않는다.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>필드 텍스트의 끝은 0x02(\x02)로 표현되며,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>그 이후 다음 필드의 텍스트가 연속해서</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>지정한 필드 리스트의 개수만큼 위치한다.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>지정한 이름의 필드가 없거나,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>사용자가 해당 필드에 아무 텍스트도 입력하지 않았으면</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>해당 텍스트에는 빈 문자열이 돌아온다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -30597,7 +30975,11 @@ number에 지정한 타입에 따라 3 가지의 서로 다른 방식 중에서 
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="str">str</span></code>
+                  <code><a class="autorefs autorefs-internal" title="HParameterSet
+
+  
+      property
+   (pyhwpx.pyhwpx.Hwp.HParameterSet)" href="#pyhwpx.Hwp.HParameterSet">HParameterSet</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -32313,49 +32695,82 @@ function OnDocument_Open() {
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><pre><span></span><code>    문서 내에서 텍스트를 얻어온다.
+        <p>문서 내에서 텍스트를 얻어온다.</p>
+<p>줄바꿈 기준으로 텍스트를 얻어오므로 반복실행해야 한다.
+get_text()의 사용이 끝나면 release_scan()을 반드시 호출하여
+관련 정보를 초기화 해주어야 한다.
+get_text()로 추출한 텍스트가 있는 문단으로 캐럿을 이동 시키려면
+move_pos(201)을 실행하면 된다.</p>
 
-    줄바꿈 기준으로 텍스트를 얻어오므로 반복실행해야 한다.
-    get_text()의 사용이 끝나면 release_scan()을 반드시 호출하여
-    관련 정보를 초기화 해주어야 한다.
-    get_text()로 추출한 텍스트가 있는 문단으로 캐럿을 이동 시키려면
-    move_pos(201)을 실행하면 된다.
 
-    Returns:
-        (state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 &#39;       &#39;(0x9), 문단 바뀜은 &#39;
-</code></pre></div>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(state: int, text: str) 형태의 튜플을 리턴한다. text는 추출한 텍스트 데이터이다. 텍스트에서 탭은 '\t'(0x9), 문단 바뀜은 '\r\n'(0x0D/0x0A)로 표현되며,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>이외의 특수 코드는 포함되지 않는다.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>state의 의미는 아래와 같다.</p>
+<ul>
+<li>0: 텍스트 정보 없음</li>
+<li>1: 리스트의 끝</li>
+<li>2: 일반 텍스트</li>
+<li>3: 다음 문단</li>
+<li>4: 제어문자 내부로 들어감</li>
+<li>5: 제어문자를 빠져나옴</li>
+<li>101: 초기화 안 됨(init_scan() 실패 또는 init_scan()을 실행하지 않은 경우)</li>
+<li>102: 텍스트 변환 실패</li>
+</ul>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-<p>'(0x0D/0x0A)로 표현되며,
-            이외의 특수 코드는 포함되지 않는다.</p>
-<div class="codehilite"><pre><span></span><code>        <span class="n">state의</span> <span class="n">의미는</span> <span class="n">아래와</span> <span class="n">같다</span><span class="o">.</span>
 
-            <span class="o">-</span> <span class="mi">0</span><span class="p">:</span> <span class="n">텍스트</span> <span class="n">정보</span> <span class="n">없음</span>
-            <span class="o">-</span> <span class="mi">1</span><span class="p">:</span> <span class="n">리스트의</span> <span class="n">끝</span>
-            <span class="o">-</span> <span class="mi">2</span><span class="p">:</span> <span class="n">일반</span> <span class="n">텍스트</span>
-            <span class="o">-</span> <span class="mi">3</span><span class="p">:</span> <span class="n">다음</span> <span class="n">문단</span>
-            <span class="o">-</span> <span class="mi">4</span><span class="p">:</span> <span class="n">제어문자</span> <span class="n">내부로</span> <span class="n">들어감</span>
-            <span class="o">-</span> <span class="mi">5</span><span class="p">:</span> <span class="n">제어문자를</span> <span class="n">빠져나옴</span>
-            <span class="o">-</span> <span class="mi">101</span><span class="p">:</span> <span class="n">초기화</span> <span class="n">안</span> <span class="n">됨</span><span class="p">(</span><span class="n">init_scan</span><span class="p">()</span> <span class="n">실패</span> <span class="n">또는</span> <span class="n">init_scan</span><span class="p">()</span><span class="n">을</span> <span class="n">실행하지</span> <span class="n">않은</span> <span class="n">경우</span><span class="p">)</span>
-            <span class="o">-</span> <span class="mi">102</span><span class="p">:</span> <span class="n">텍스트</span> <span class="n">변환</span> <span class="n">실패</span>
-
-    <span class="n">Examples</span><span class="p">:</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="n">hwp</span><span class="o">.</span><span class="n">init_scan</span><span class="p">()</span>
-        <span class="o">&gt;&gt;&gt;</span> <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="o">...</span>     <span class="n">state</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
-        <span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
-        <span class="o">...</span>     <span class="k">if</span> <span class="n">state</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="o">...</span>         <span class="k">break</span>
-        <span class="o">...</span> <span class="n">hwp</span><span class="o">.</span><span class="n">release_scan</span><span class="p">()</span>
-        <span class="mi">2</span>
-        <span class="mi">2</span>
-        <span class="mi">2</span> <span class="n">ㅁㄴㅇㄹ</span>
-        <span class="mi">3</span>
-        <span class="mi">4</span> <span class="n">ㅂㅈㄷㄱ</span>
-        <span class="mi">2</span> <span class="n">ㅂㅈㄷㄱ</span>
-        <span class="mi">5</span>
-        <span class="mi">1</span>
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">init_scan</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">... </span>    <span class="n">state</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">... </span>    <span class="k">if</span> <span class="n">state</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">... </span>        <span class="k">break</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">... </span><span class="n">hwp</span><span class="o">.</span><span class="n">release_scan</span><span class="p">()</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">2</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="go">2</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="go">2 ㅁㄴㅇㄹ</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="go">3</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="go">4 ㅂㅈㄷㄱ</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="go">2 ㅂㅈㄷㄱ</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="go">5</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="go">1</span>
 </code></pre></div>
 
 
@@ -32374,47 +32789,96 @@ function OnDocument_Open() {
 
     <div class="doc doc-contents ">
 
-        <div class="codehilite"><pre><span></span><code>    현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
+        <p>현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.</p>
+<p>이 함수는 JScript나 VBScript와 같이
+직접적으로 local disk를 접근하기 힘든 언어를 위해 만들어졌으므로
+disk를 접근할 수 있는 언어에서는 사용하지 않기를 권장.
+disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
+이 함수 역시 내부적으로는 save나 SaveBlockAction을 호출하도록 되어있고
+텍스트로 저장된 파일이 메모리에서 3~4번 복사되기 때문에 느리고, 메모리를 낭비함.</p>
+<p>팁1: <code>hwp.Copy()</code>, <code>hwp.Paste()</code> 대신 get_text_file/set_text_file을 사용하기 추천.
+팁2: <code>format="HTML"</code>로 추출시 표번호가 유지된다.</p>
 
-    이 함수는 JScript나 VBScript와 같이
-    직접적으로 local disk를 접근하기 힘든 언어를 위해 만들어졌으므로
-    disk를 접근할 수 있는 언어에서는 사용하지 않기를 권장.
-    disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
-    이 함수 역시 내부적으로는 save나 SaveBlockAction을 호출하도록 되어있고
-    텍스트로 저장된 파일이 메모리에서 3~4번 복사되기 때문에 느리고, 메모리를 낭비함.
 
-    팁1: ``hwp.Copy()``, ``hwp.Paste()`` 대신 get_text_file/set_text_file을 사용하기 추천.
-    팁2: ``format=&quot;HTML&quot;``로 추출시 표번호가 유지된다.
-
-    Args:
-        format:
-            파일의 형식. 기본값은 &quot;UNICODE&quot;. 내부적으로 str.lower() 메서드가 포함되어 있으므로 소문자로 입력해도 된다.
-
-                <span class="k">-</span> &quot;HWP&quot;: HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
-                <span class="k">-</span> &quot;HWPML2X&quot;: HWP 형식과 호환. 문서의 모든 정보를 유지
-                <span class="k">-</span> &quot;HTML&quot;: 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
-                <span class="k">-</span> &quot;UNICODE&quot;: 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
-                <span class="k">-</span> &quot;TEXT&quot;: 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
-
-        option:
-            option 파라미터에 &quot;saveblock&quot;을 지정하면 선택된 블록만 저장한다. 개체 선택 상태에서는 동작하지 않는다.
-
-    Returns:
-        지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.
-
-    Examples:
-        &gt;&gt;&gt; from pyhwpx import Hwp
-        &gt;&gt;&gt; hwp = Hwp()
-        &gt;&gt;&gt; hwp.get_text_file()
-        &#39;ㅁㄴㅇㄹ
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>format</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>파일의 형식. 기본값은 "UNICODE". 내부적으로 str.lower() 메서드가 포함되어 있으므로 소문자로 입력해도 된다.</p>
+<div class="codehilite"><pre><span></span><code>- &quot;HWP&quot;: HWP native format, BASE64로 인코딩되어 있다. 저장된 내용을 다른 곳에서 보여줄 필요가 없다면 이 포맷을 사용하기를 권장합니다.ver:0x0505010B
+- &quot;HWPML2X&quot;: HWP 형식과 호환. 문서의 모든 정보를 유지
+- &quot;HTML&quot;: 인터넷 문서 HTML 형식. 한/글 고유의 서식은 손실된다.
+- &quot;UNICODE&quot;: 유니코드 텍스트, 서식정보가 없는 텍스트만 저장.
+- &quot;TEXT&quot;: 일반 텍스트. 유니코드에만 있는 정보(한자, 고어, 특수문자 등)는 모두 손실된다.
 </code></pre></div>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;UNICODE&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>option</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>option 파라미터에 "saveblock"을 지정하면 선택된 블록만 저장한다. 개체 선택 상태에서는 동작하지 않는다.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;saveblock:true&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-<p>ㅁㄴㅇㄹ
-ㅁㄴㅇㄹ</p>
-<p>ㅂㅈㄷㄱ
-ㅂㅈㄷㄱ
-ㅂㅈㄷㄱ
-'</p>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>지정된 포맷에 맞춰 파일을 문자열로 변환한 값을 반환한다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_text_file</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">&#39;ㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\nㅁㄴㅇㄹ\r\n\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\nㅂㅈㄷㄱ\r\n&#39;</span>
+</code></pre></div>
 
 
     </div>
@@ -32576,6 +33040,7 @@ tuple(인쇄기준페이지, 페이지인덱스)</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -35541,8 +36006,8 @@ clear나 save 등의 메서드를 실행한 후에 quit을 실행해야 한다.
     <div class="doc doc-contents ">
 
         <p>지정한 필드의 이름을 바꾼다.</p>
-<p>예를 들어 oldname에 "title{{0}}title{{1}}",
-newname에 "tt1tt2로 지정하면 첫 번째 title은 tt1로, 두 번째 title은 tt2로 변경된다.
+<p>예를 들어 oldname에 "title{{0}}\x02title{{1}}",
+newname에 "tt1\x02tt2로 지정하면 첫 번째 title은 tt1로, 두 번째 title은 tt2로 변경된다.
 oldname의 필드 개수와, newname의 필드 개수는 동일해야 한다.
 존재하지 않는 필드에 대해서는 무시한다.</p>
 
@@ -35567,7 +36032,7 @@ oldname의 필드 개수와, newname의 필드 개수는 동일해야 한다.
             </td>
             <td>
               <div class="doc-md-description">
-                <p>이름을 바꿀 필드 이름의 리스트. 형식은 PutFieldText와 동일하게 ""로 구분한다.</p>
+                <p>이름을 바꿀 필드 이름의 리스트. 형식은 PutFieldText와 동일하게 "\x02"로 구분한다.</p>
               </div>
             </td>
             <td>
@@ -35583,7 +36048,7 @@ oldname의 필드 개수와, newname의 필드 개수는 동일해야 한다.
             </td>
             <td>
               <div class="doc-md-description">
-                <p>새로운 필드 이름의 리스트. oldname과 동일한 개수의 필드 이름을 ""로 구분하여 지정한다.</p>
+                <p>새로운 필드 이름의 리스트. oldname과 동일한 개수의 필드 이름을 "\x02"로 구분하여 지정한다.</p>
               </div>
             </td>
             <td>
