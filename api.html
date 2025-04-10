@@ -12789,6 +12789,7 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
                 <code>delete_ctrl</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -13471,7 +13472,7 @@ SplitMemoOpen과 동일한 기능으로 보이며,
 
     <div class="doc doc-contents ">
 
-        <p>문서에 해당 이름의 데이터 필드가 존재하는지 검사한다.</p>
+        <p>문서에 해당 이름의 데이터 필드(누름틀, 셀필드)가 존재하는지 검사한다.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -13490,6 +13491,7 @@ SplitMemoOpen과 동일한 기능으로 보이며,
                 <code>field</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -13515,6 +13517,7 @@ SplitMemoOpen과 동일한 기능으로 보이며,
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -33897,7 +33900,7 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
     <div class="doc doc-contents ">
 
         <p>현재 캐럿 위치에 문서파일을 삽입한다.</p>
-<p>format, arg에 대해서는 self.hwp.open 참조</p>
+<p><code>format</code>, <code>arg</code> 파라미터에 대한 자세한 설명은 <code>open</code> 참조</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -33980,11 +33983,11 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
               <div class="doc-md-description">
                 <p>세부옵션. 의미는 format에 지정한 파일형식에 따라 다르다.
 조합 가능하며, 생략하면 빈 문자열이 지정된다.</p>
-<p>&lt;공통&gt;</p>
+<p>공통</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">-</span><span class="w"> </span><span class="s2">&quot;setcurdir:FALSE;&quot;</span><span class="w"> </span><span class="p">:</span><span class="nd">로드한</span><span class="w"> </span><span class="nt">후</span><span class="w"> </span><span class="nt">해당</span><span class="w"> </span><span class="nt">파일이</span><span class="w"> </span><span class="nt">존재하는</span><span class="w"> </span><span class="nt">폴더로</span><span class="w"> </span><span class="nt">현재</span><span class="w"> </span><span class="nt">위치를</span><span class="w"> </span><span class="nt">변경한다</span><span class="o">.</span><span class="w"> </span><span class="nt">hyperlink</span><span class="w"> </span><span class="nt">정보가</span><span class="w"> </span><span class="nt">상대적인</span><span class="w"> </span><span class="nt">위치로</span><span class="w"> </span><span class="nt">되어</span><span class="w"> </span><span class="nt">있을</span><span class="w"> </span><span class="nt">때</span><span class="w"> </span><span class="nt">유용하다</span><span class="o">.</span>
 </code></pre></div>
 
-<p><HWP/HWPX></p>
+<p>HWP/HWPX</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">-</span><span class="w"> </span><span class="s2">&quot;lock:TRUE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">로드한</span><span class="w"> </span><span class="nt">후</span><span class="w"> </span><span class="nt">해당</span><span class="w"> </span><span class="nt">파일을</span><span class="w"> </span><span class="nt">계속</span><span class="w"> </span><span class="nt">오픈한</span><span class="w"> </span><span class="nt">상태로</span><span class="w"> </span><span class="nt">lock을</span><span class="w"> </span><span class="nt">걸지</span><span class="w"> </span><span class="nt">여부</span>
 <span class="nt">-</span><span class="w"> </span><span class="s2">&quot;notext:FALSE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">텍스트</span><span class="w"> </span><span class="nt">내용을</span><span class="w"> </span><span class="nt">읽지</span><span class="w"> </span><span class="nt">않고</span><span class="w"> </span><span class="nt">헤더</span><span class="w"> </span><span class="nt">정보만</span><span class="w"> </span><span class="nt">읽을지</span><span class="w"> </span><span class="nt">여부</span><span class="o">.</span><span class="w"> </span><span class="o">(</span><span class="nt">스타일</span><span class="w"> </span><span class="nt">로드</span><span class="w"> </span><span class="nt">등에</span><span class="w"> </span><span class="nt">사용</span><span class="o">)</span>
 <span class="nt">-</span><span class="w"> </span><span class="s2">&quot;template:FALSE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">새로운</span><span class="w"> </span><span class="nt">문서를</span><span class="w"> </span><span class="nt">생성하기</span><span class="w"> </span><span class="nt">위해</span><span class="w"> </span><span class="nt">템플릿</span><span class="w"> </span><span class="nt">파일을</span><span class="w"> </span><span class="nt">오픈한다</span><span class="o">.</span><span class="w"> </span><span class="nt">이</span><span class="w"> </span><span class="nt">옵션이</span><span class="w"> </span><span class="nt">주어지면</span><span class="w"> </span><span class="nt">lock은</span><span class="w"> </span><span class="nt">무조건</span><span class="w"> </span><span class="nt">FALSE로</span><span class="w"> </span><span class="nt">처리된다</span><span class="o">.</span>
@@ -33993,30 +33996,30 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
 <span class="nt">-</span><span class="w"> </span><span class="s2">&quot;versionwarning:FALSE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">TRUE로</span><span class="w"> </span><span class="nt">지정하면</span><span class="w"> </span><span class="nt">문서가</span><span class="w"> </span><span class="nt">상위버전일</span><span class="w"> </span><span class="nt">경우</span><span class="w"> </span><span class="nt">메시지</span><span class="w"> </span><span class="nt">박스를</span><span class="w"> </span><span class="nt">띄우게</span><span class="w"> </span><span class="nt">된다</span><span class="o">.</span>
 </code></pre></div>
 
-<HTML>
+<p>HTML</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">-</span><span class="w"> </span><span class="s2">&quot;code&quot;</span><span class="o">(</span><span class="nt">string</span><span class="o">,</span><span class="w"> </span><span class="nt">codepage</span><span class="o">):</span><span class="w"> </span><span class="nt">문서변환</span><span class="w"> </span><span class="nt">시</span><span class="w"> </span><span class="nt">사용되는</span><span class="w"> </span><span class="nt">코드</span><span class="w"> </span><span class="nt">페이지를</span><span class="w"> </span><span class="nt">지정할</span><span class="w"> </span><span class="nt">수</span><span class="w"> </span><span class="nt">있으며</span><span class="w"> </span><span class="nt">code키가</span><span class="w"> </span><span class="nt">존재할</span><span class="w"> </span><span class="nt">경우</span><span class="w"> </span><span class="nt">필터사용</span><span class="w"> </span><span class="nt">시</span><span class="w"> </span><span class="nt">사용자</span><span class="w"> </span><span class="nt">다이얼로그를</span><span class="w">  </span><span class="nt">띄우지</span><span class="w"> </span><span class="nt">않는다</span><span class="o">.</span>
+<span class="nt">-</span><span class="w"> </span><span class="o">(</span><span class="nt">코드페이지</span><span class="w"> </span><span class="nt">종류는</span><span class="w"> </span><span class="nt">아래와</span><span class="w"> </span><span class="nt">같다</span><span class="o">.)</span>
+<span class="nt">-</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;utf8&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nt">UTF8</span><span class="o">)</span>
+<span class="nt">-</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;unicode&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">유니코드</span><span class="o">)</span>
+<span class="nt">-</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;ks&quot;</span><span class="o">:</span><span class="w">  </span><span class="nt">한글</span><span class="w"> </span><span class="nt">KS</span><span class="w"> </span><span class="nt">완성형</span><span class="o">)</span>
+<span class="nt">-</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;acp&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nt">Active</span><span class="w"> </span><span class="nt">Codepage</span><span class="w"> </span><span class="nt">현재</span><span class="w"> </span><span class="nt">시스템의</span><span class="w"> </span><span class="nt">코드</span><span class="w"> </span><span class="nt">페이지</span><span class="o">)</span>
+<span class="nt">-</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;kssm&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">한글</span><span class="w"> </span><span class="nt">조합형</span><span class="o">)</span>
+<span class="nt">-</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;sjis&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nt">일본</span><span class="o">)</span>
+<span class="nt">-</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;gb&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nt">중국</span><span class="w"> </span><span class="nt">간체</span><span class="o">)</span>
+<span class="nt">-</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;big5&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nt">중국</span><span class="w"> </span><span class="nt">번체</span><span class="o">)</span>
+<span class="nt">-</span><span class="w"> </span><span class="s2">&quot;textunit:(string, pixel);&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">Export될</span><span class="w"> </span><span class="nt">Text의</span><span class="w"> </span><span class="nt">크기의</span><span class="w"> </span><span class="nt">단위</span><span class="w"> </span><span class="nt">결정</span><span class="p">.</span><span class="nc">pixel</span><span class="o">,</span><span class="w"> </span><span class="nt">point</span><span class="o">,</span><span class="w"> </span><span class="nt">mili</span><span class="w"> </span><span class="nt">지정</span><span class="w"> </span><span class="nt">가능</span><span class="o">.</span>
+<span class="nt">-</span><span class="w"> </span><span class="s2">&quot;formatunit:(string, pixel);&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">Export될</span><span class="w"> </span><span class="nt">문서</span><span class="w"> </span><span class="nt">포맷</span><span class="w"> </span><span class="nt">관련</span><span class="w"> </span><span class="o">(</span><span class="nt">마진</span><span class="o">,</span><span class="w"> </span><span class="nt">Object</span><span class="w"> </span><span class="nt">크기</span><span class="w"> </span><span class="nt">등</span><span class="o">)</span><span class="w"> </span><span class="nt">단위</span><span class="w"> </span><span class="nt">결정</span><span class="o">.</span><span class="w"> </span><span class="nt">pixel</span><span class="o">,</span><span class="w"> </span><span class="nt">point</span><span class="o">,</span><span class="w"> </span><span class="nt">mili</span><span class="w"> </span><span class="nt">지정</span><span class="w"> </span><span class="nt">가능</span>
+</code></pre></div>
 
-    - "code"(string, codepage): 문서변환 시 사용되는 코드 페이지를 지정할 수 있으며 code키가 존재할 경우 필터사용 시 사용자 다이얼로그를  띄우지 않는다.
-    - (코드페이지 종류는 아래와 같다.)
-    - ("utf8" : UTF8)
-    - ("unicode": 유니코드)
-    - ("ks":  한글 KS 완성형)
-    - ("acp" : Active Codepage 현재 시스템의 코드 페이지)
-    - ("kssm": 한글 조합형)
-    - ("sjis" : 일본)
-    - ("gb" : 중국 간체)
-    - ("big5" : 중국 번체)
-    - "textunit:(string, pixel);": Export될 Text의 크기의 단위 결정.pixel, point, mili 지정 가능.
-    - "formatunit:(string, pixel);": Export될 문서 포맷 관련 (마진, Object 크기 등) 단위 결정. pixel, point, mili 지정 가능
+<p>DOCIMG</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">-</span><span class="w"> </span><span class="s2">&quot;asimg:FALSE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">저장할</span><span class="w"> </span><span class="nt">때</span><span class="w"> </span><span class="nt">페이지를</span><span class="w"> </span><span class="nt">image로</span><span class="w"> </span><span class="nt">저장</span>
+<span class="nt">-</span><span class="w"> </span><span class="s2">&quot;ashtml:FALSE;&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">저장할</span><span class="w"> </span><span class="nt">때</span><span class="w"> </span><span class="nt">페이지를</span><span class="w"> </span><span class="nt">html로</span><span class="w"> </span><span class="nt">저장</span>
+</code></pre></div>
 
-<DOCIMG>
-
-    - "asimg:FALSE;": 저장할 때 페이지를 image로 저장
-    - "ashtml:FALSE;": 저장할 때 페이지를 html로 저장
-
-<TEXT>
-
-    - "code:(string, codepage);": 문서 변환 시 사용되는 코드 페이지를 지정할 수 있으며
-    - code키가 존재할 경우 필터 사용 시 사용자 다이얼로그를  띄우지 않는다.
+<p>TEXT</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">-</span><span class="w"> </span><span class="s2">&quot;code:(string, codepage);&quot;</span><span class="o">:</span><span class="w"> </span><span class="nt">문서</span><span class="w"> </span><span class="nt">변환</span><span class="w"> </span><span class="nt">시</span><span class="w"> </span><span class="nt">사용되는</span><span class="w"> </span><span class="nt">코드</span><span class="w"> </span><span class="nt">페이지를</span><span class="w"> </span><span class="nt">지정할</span><span class="w"> </span><span class="nt">수</span><span class="w"> </span><span class="nt">있으며</span>
+<span class="nt">-</span><span class="w"> </span><span class="nt">code키가</span><span class="w"> </span><span class="nt">존재할</span><span class="w"> </span><span class="nt">경우</span><span class="w"> </span><span class="nt">필터</span><span class="w"> </span><span class="nt">사용</span><span class="w"> </span><span class="nt">시</span><span class="w"> </span><span class="nt">사용자</span><span class="w"> </span><span class="nt">다이얼로그를</span><span class="w">  </span><span class="nt">띄우지</span><span class="w"> </span><span class="nt">않는다</span><span class="o">.</span>
+</code></pre></div>
               </div>
             </td>
             <td>
@@ -34025,8 +34028,29 @@ GetText()를 반복호출하면 연속하여 본문의 텍스트를 얻어올 �
           </tr>
       </tbody>
     </table>
-        <p>Returns:
-성공하면 True, 실패하면 False</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공하면 True, 실패하면 False</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
