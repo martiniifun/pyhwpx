@@ -1,4 +1,4 @@
-## 🐍 pyhwpx: Python 기본 아래아한글 자동화 모듈
+## 🐍 pyhwpx: 파이썬-아래아한글 자동화 모듈
 
 ![introduction](https://raw.githubusercontent.com/martiniifun/pyhwpx/master/docs/assets/introduce.gif
 )
