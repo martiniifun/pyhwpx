@@ -422,7 +422,7 @@ class Ctrl:
         """
         return self._com_obj.GetCtrlInstID()
 
-    def GetAnchorPos(self, type_: int = 0) -> "Hwp.HParameterSet"|None:
+    def GetAnchorPos(self, type_: int = 0) -> "Hwp.HParameterSet":
         """
         해당 컨트롤의 앵커(조판부호)의 위치를 반환한다.
 
@@ -5812,9 +5812,7 @@ class Hwp:
             단어가 더이상 없으면 False를 리턴
         """
         self.SetMessageBoxMode(0x2fff1)
-        init_pos = str(self.KeyIndicator())
         pset = self.hwp.HParameterSet.HFindReplace
-        # self.hwp.HAction.GetDefault("RepeatFind", pset.HSet)
         pset.MatchCase = MatchCase
         pset.SeveralWords = SeveralWords
         pset.UseWildCards = UseWildCards
@@ -5842,6 +5840,7 @@ class Hwp:
         중괄호 두 겹({{}})으로 둘러싸인 구문을 누름틀로 변환해준다.
         만약 본문에 "{{name}}"이라는 문구가 있었다면 해당 단어를 삭제하고
         그 위치에 name이라는 누름틀을 생성한다.
+
         지시문(direction)과 메모(memo)도 추가가 가능한데,
         "{{name:direction}}" 또는 "{{name:direction:memo}}" 방식으로
         콜론으로 구분하여 지정할 수 있다.
