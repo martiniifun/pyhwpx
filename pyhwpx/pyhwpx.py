@@ -5794,18 +5794,18 @@ class Hwp:
                     - "Backward": 위쪽으로
                     - "AllDoc": 아래쪽 우선으로 찾고 문서끝 도달시 처음으로 돌아감.
 
-             regex: 정규식 탐색(기본값 False)
-             MatchCase: 대소문자 구분(기본값 1)
-             SeveralWords: 여러 단어 찾기
-             UseWildCards: 아무개 문자(1),
-             WholeWordOnly: 온전한 낱말(0),
-             AutoSpell:
-             HanjaFromHangul: 한글로 한자 찾기(1),
-             AllWordForms:
-             FindStyle: 찾을 글자모양
-             ReplaceStyle: 바꿀 글자모양
-             FindJaso: 자소 단위 찾기(0),
-             FindType:
+            regex: 정규식 탐색(기본값 False)
+            MatchCase: 대소문자 구분(기본값 1)
+            SeveralWords: 여러 단어 찾기
+            UseWildCards: 아무개 문자(1),
+            WholeWordOnly: 온전한 낱말(0),
+            AutoSpell:
+            HanjaFromHangul: 한글로 한자 찾기(1),
+            AllWordForms:
+            FindStyle: 찾을 글자모양
+            ReplaceStyle: 바꿀 글자모양
+            FindJaso: 자소 단위 찾기(0),
+            FindType:
 
         Returns:
             단어를 찾으면 찾아가서 선택한 후 True를 리턴,
