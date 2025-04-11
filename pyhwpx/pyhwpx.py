@@ -5736,7 +5736,7 @@ class Hwp:
         pset.SeveralWords = 1
         pset.UseWildCards = 1
         pset.AutoSpell = 1
-        pset.Direction = self.find_dir("Backward")
+        pset.Direction = self.FindDir("Backward")
         pset.FindString = src
         pset.IgnoreMessage = 0
         pset.HanjaFromHangul = 1
@@ -5766,7 +5766,7 @@ class Hwp:
         pset.SeveralWords = 1
         pset.UseWildCards = 1
         pset.AutoSpell = 1
-        pset.Direction = self.find_dir("Forward")
+        pset.Direction = self.FindDir("Forward")
         pset.FindString = src
         pset.IgnoreMessage = 0
         pset.HanjaFromHangul = 1
@@ -5820,7 +5820,7 @@ class Hwp:
         pset.UseWildCards = UseWildCards
         pset.WholeWordOnly = WholeWordOnly
         pset.AutoSpell = AutoSpell
-        pset.Direction = self.find_dir(direction)
+        pset.Direction = self.FindDir(direction)
         pset.FindString = src
         pset.IgnoreMessage = 0
         pset.HanjaFromHangul = HanjaFromHangul
