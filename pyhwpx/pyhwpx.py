@@ -5432,7 +5432,7 @@ class Hwp:
 
         return result_dict
 
-    def set_pagedef(self, pset:"Hwp.HParameterSet"|dict, apply: Literal["cur", "all", "new"] = "cur") -> bool:
+    def set_pagedef(self, pset:Any, apply: Literal["cur", "all", "new"] = "cur") -> bool:
         """
         get_pagedef 또는 get_pagedef_as_dict를 통해 얻은 용지정보를 현재구역에 적용하는 메서드
 
@@ -5776,9 +5776,9 @@ class Hwp:
         finally:
             self.SetMessageBoxMode(0xfffff)
 
-    def find(self, src:str, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex=False, MatchCase=1,
-             SeveralWords=1, UseWildCards=1, WholeWordOnly=0, AutoSpell=1, HanjaFromHangul=1, AllWordForms=0,
-             FindStyle="", ReplaceStyle="", FindJaso=0, FindType=1) -> bool:
+    def find(self, src:str, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex:bool=False, MatchCase:int=1,
+             SeveralWords:int=1, UseWildCards:int=1, WholeWordOnly:int=0, AutoSpell:int=1, HanjaFromHangul:int=1, AllWordForms:int=0,
+             FindStyle:str="", ReplaceStyle:str="", FindJaso:int=0, FindType:int=1) -> bool:
         """
         direction 방향으로 특정 단어를 찾아가는 메서드.
 
