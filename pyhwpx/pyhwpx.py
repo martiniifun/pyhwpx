@@ -15,9 +15,8 @@ from functools import wraps
 from collections import defaultdict
 from io import StringIO
 from time import sleep
-from typing import Literal, Union, Any, Type
+from typing import Literal, Union, Any
 from urllib import request, parse
-import warnings
 from winreg import QueryValueEx
 
 import numpy as np
@@ -673,7 +672,7 @@ class Hwp:
     #         return json.load(f)
 
     def __repr__(self):
-        return self.get_title()
+        return f"<Hwp: DocumentID={self.XHwpDocuments.Active_XHwpDocument.DocumentID}, Title={self.get_title()}, FullName={self.XHwpDocuments.Active_XHwpDocument.FullName or None}>"
 
     def __init__(self, new: bool = False, visible: bool = True, register_module: bool = True):
         self.hwp = 0
