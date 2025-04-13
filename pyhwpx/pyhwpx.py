@@ -285,9 +285,12 @@ def crop_data_from_selection(data, selection) -> list[str]:
     return result
 
 
-def check_registry_key() -> bool:
+def check_registry_key(key_name:str="FilePathCheckerModule") -> bool:
     """
     아래아한글의 보안모듈 FilePathCheckerModule의 레지스트리에 등록여부 체크
+
+    Args:
+        key_name: 아래아한글 보안모듈 키 이름. 기본값은 "FilePathCheckerModule"
 
     Returns:
         등록되어 있는 경우 True, 미등록인 경우 False
@@ -302,7 +305,7 @@ def check_registry_key() -> bool:
             from winreg import KEY_READ
             key = OpenKey(reg_handle, path, 0, KEY_READ)
             try:
-                value, regtype = QueryValueEx(key, "FilePathCheckerModule")
+                value, regtype = QueryValueEx(key, key_name)
                 if value and os.path.exists(value):
                     CloseKey(key)
                     return True
@@ -10173,11 +10176,12 @@ class Hwp:
         Returns:
             추가모듈등록에 성공하면 True를, 실패하면 False를 반환한다.
         """
-        if not check_registry_key():
+        if not check_registry_key(module_data):
             self.register_regedit()
         return self.hwp.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
-    def register_regedit(self) -> None:
+    @staticmethod
+    def register_regedit(dll_name: str = "FilePathCheckerModule.dll") -> None:
         """
         레지스트리 에디터에 한/글 보안모듈을 자동등록하는 메서드.
 
@@ -10186,6 +10190,9 @@ class Hwp:
         두 번째로는 pyinstaller로 컴파일했다고 가정하고, MEIPASS 하위폴더를 탐색한다.
         이후로, 차례대로 실행파일과 동일한 경로, 사용자 폴더를 탐색한 후에도 보안모듈 dll파일을 찾지 못하면
         아래아한글 깃헙 저장소에서 직접 보안모듈을 다운받아 사용자 폴더에 설치하고, 레지스트리를 수정한다.
+
+        Args:
+            dll_name: 보안모듈 dll 파일명. 관례적으로 FilePathCheckerModule.dll을 쓴다.
 
         Returns:
             None
@@ -10210,8 +10217,8 @@ class Hwp:
                         subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode().split(
                             "\r\n") if i.startswith("Location: ")][0]
             location = os.path.join(location, "pyhwpx")
-        print("default dll :", os.path.join(location, "FilePathCheckerModule.dll"))
-        if not os.path.exists(os.path.join(location, "FilePathCheckerModule.dll")):
+        print("default dll :", os.path.join(location, dll_name))
+        if not os.path.exists(os.path.join(location, dll_name)):
             print("위 폴더에서 보안모듈을 찾을 수 없음..")
             location = ""
             # except subprocess.CalledProcessError as e:
@@ -10222,7 +10229,7 @@ class Hwp:
             #    --add-binary="FilePathCheckerModule.dll:." 옵션을 추가한 경우
             for dirpath, dirnames, filenames in os.walk(pyinstaller_path):
                 for filename in filenames:
-                    if filename.lower() == "FilePathCheckerModule.dll".lower():
+                    if filename.lower() == dll_name.lower():
                         location = dirpath
                         print(location, "에서 보안모듈을 찾았습니다.")
                         break
@@ -10230,13 +10237,12 @@ class Hwp:
 
             # 2. "FilePathCheckerModule.dll" 파일을 실행파일과 같은 경로에 둔 경우
 
-            if "FilePathCheckerModule.dll".lower() in [i.lower() for i in os.listdir(os.getcwd())]:
+            if dll_name.lower() in [i.lower() for i in os.listdir(os.getcwd())]:
                 print("실행파일 경로에서 보안모듈을 찾았습니다.")
                 location = os.getcwd()
                 print("보안모듈 경로 :", location)
             # elif os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
-            elif "FilePathCheckerModule.dll".lower in [i.lower() for i in
-                                                       os.listdir(os.path.join(os.environ["USERPROFILE"]))]:
+            elif dll_name.lower in [i.lower() for i in os.listdir(os.path.join(os.environ["USERPROFILE"]))]:
                 print("사용자 폴더에서 보안모듈을 찾았습니다.")
                 location = os.environ["USERPROFILE"]
                 print("보안모듈 경로 :", location)
@@ -10259,7 +10265,7 @@ class Hwp:
                     os.remove(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
                     if not os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
                         os.rename(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModuleExample.dll"),
-                                  os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll"))
+                                  os.path.join(os.environ["USERPROFILE"], dll_name))
                     location = os.environ["USERPROFILE"]
                     print("사용자폴더", location, "에 보안모듈을 설치하였습니다.")
                 except urllib.error.URLError as e:
@@ -10280,7 +10286,7 @@ class Hwp:
         except FileNotFoundError as e:
             winup_path = r"Software\Hnc\HwpUserAction\Modules"
             key = OpenKey(reg_handle, winup_path, 0, KEY_WRITE)
-        SetValueEx(key, "FilePathCheckerModule", 0, REG_SZ, os.path.join(location, "FilePathCheckerModule.dll"))
+        SetValueEx(key, "FilePathCheckerModule", 0, REG_SZ, os.path.join(location, dll_name))
         CloseKey(key)
 
     def register_private_info_pattern(self, private_type:int, private_pattern:str) -> bool:
