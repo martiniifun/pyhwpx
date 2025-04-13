@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [0.51.0] - 2025-04-13
+### 🚀 Added
+- XHwpDocuments, XHwpDocument 오브젝트를 클래스로 추가 
+
+---
 ## [0.50.40] - 2025-04-13
 ### Added
 - XHwpDocuments, XHwpDocument 클래스 추가 
