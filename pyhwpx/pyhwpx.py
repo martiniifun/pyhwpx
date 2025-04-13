@@ -2677,7 +2677,7 @@ class Hwp:
         try:
             self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
         except Exception as e:
-            print(e)
+            # print(e)
             sleep(0.01)
             self.hwp = win32.gencache.EnsureDispatch("HWPFrame.HwpObject")
             self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
@@ -9997,7 +9997,6 @@ class Hwp:
 
         단, 저장되지 않은 변경사항이 있는 경우 팝업이 뜨므로
         clear나 save 등의 메서드를 실행한 후에 quit을 실행해야 한다.
-        종료시에 hwp.hwp 객체를 삭제한다.
 
         Args:
             save: 변경사항이 있는 경우 저장할지 여부. 기본값은 저장안함(False)
@@ -10005,9 +10004,11 @@ class Hwp:
         Returns:
             None
         """
-        if save: self.save()
+        if self.Path == "":  # 빈 문서인 경우
+            self.clear()
+        elif save: # 빈 문서가 아닌 경우
+            self.save()
         self.hwp.Quit()
-        del self.hwp
 
     def Quit(self, save:bool=False) -> None:
         """
@@ -10015,7 +10016,6 @@ class Hwp:
 
         단, 저장되지 않은 변경사항이 있는 경우 팝업이 뜨므로
         clear나 save 등의 메서드를 실행한 후에 Quit을 실행해야 한다.
-        종료시에 hwp.hwp 객체를 삭제한다.
 
         Args:
             save: 변경사항이 있는 경우 저장할지 여부. 기본값은 저장안함(False)
@@ -10023,9 +10023,11 @@ class Hwp:
         Returns:
             None
         """
-        if save: self.save()
+        if self.Path == "":  # 빈 문서인 경우
+            self.clear()
+        elif save:  # 빈 문서가 아닌 경우
+            self.save()
         self.hwp.Quit()
-        del self.hwp
 
     def rgb_color(self, red_or_colorname: str | tuple | int, green: int = 255, blue: int = 255) -> int:
         """
