@@ -295,7 +295,7 @@ def check_registry_key(key_name:str="FilePathCheckerModule") -> bool:
     Returns:
         등록되어 있는 경우 True, 미등록인 경우 False
     """
-    from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, KEY_WRITE, SetValueEx, REG_SZ, CloseKey
+    from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, CloseKey
     winup_path = r"Software\HNC\HwpAutomation\Modules"
     alt_winup_path = r"Software\Hnc\HwpUserAction\Modules"
     reg_handle = ConnectRegistry(None, HKEY_CURRENT_USER)
@@ -454,12 +454,13 @@ class Ctrl:
     @property
     def CtrlCh(self) -> int:
         """
-        컨트롤 문자
+        선택한 개체(Ctrl)의 타입 확인할 수 있는 컨트롤 문자를 리턴
 
         일반적으로 컨트롤 ID를 사용해 컨트롤의 종류를 판별하지만,
         이보다 더 포괄적인 범주를 나타내는 컨트롤 문자로 판별할 수도 있다.
         예를 들어 각주와 미주는 ID는 다르지만, 컨트롤 문자는 17로 동일하다.
         컨트롤 문자는 1부터 31사이의 값을 사용한다.
+        (그럼에도, CtrlCh는 개인적으로 잘 사용하지 않는다.)
 
         Returns:
             1~31의 정수
@@ -513,7 +514,9 @@ class Ctrl:
         컨트롤 아이디
 
         컨트롤 ID는 컨트롤의 종류를 나타내기 위해 할당된 ID로서, 최대 4개의 문자로 구성된 문자열이다.
-        예를 들어 표는 "tbl", 각주는 "fn"이다. 한/글에서 현재까지 지원되는 모든 컨트롤의 ID는 아래 Returns 참조.
+        예를 들어 표는 "tbl", 각주는 "fn"이다. 이와 비슷하게 CtrlCh는 정수로, UserDesc는 한글 문자열로 리턴한다.
+
+        한/글에서 현재까지 지원되는 모든 컨트롤의 ID는 아래 Returns 참조.
 
         Returns:
             해당 컨트롤의 컨트롤아이디
@@ -6817,30 +6820,6 @@ class Hwp:
 
     # 액션 파라미터용 함수
 
-    def ArcType(self, arc_type):
-        return self.hwp.ArcType(ArcType=arc_type)
-
-    def AutoNumType(self, autonum):
-        return self.hwp.AutoNumType(autonum=autonum)
-
-    def BorderShape(self, border_type):
-        return self.hwp.BorderShape(BorderType=border_type)
-
-    def BreakWordLatin(self, break_latin_word):
-        return self.hwp.BreakWordLatin(BreakLatinWord=break_latin_word)
-
-    def BrushType(self, brush_type):
-        return self.hwp.BrushType(BrushType=brush_type)
-
-    def Canonical(self, canonical):
-        return self.hwp.Canonical(Canonical=canonical)
-
-    def CellApply(self, cell_apply):
-        return self.hwp.CellApply(CellApply=cell_apply)
-
-    def CharShadowType(self, shadow_type):
-        return self.hwp.CharShadowType(ShadowType=shadow_type)
-
     def CheckXObject(self, bstring):
         return self.hwp.CheckXObject(bstring=bstring)
 
@@ -6907,15 +6886,6 @@ class Hwp:
                 return self.hwp.XHwpDocuments.Active_XHwpDocument.Close(isDirty=is_dirty)
             except AttributeError:
                 sleep(interval)
-
-    def ColDefType(self, col_def_type):
-        return self.hwp.ColDefType(ColDefType=col_def_type)
-
-    def ColLayoutType(self, col_layout_type):
-        return self.hwp.ColLayoutType(ColLayoutType=col_layout_type)
-
-    def ConvertPUAHangulToUnicode(self, reverse):
-        return self.hwp.ConvertPUAHangulToUnicode(Reverse=reverse)
 
     def create_action(self, actidstr: str) -> Any:
         """
@@ -7176,15 +7146,6 @@ class Hwp:
         """
         return self.hwp.CreateSet(setidstr=setidstr)
 
-    def CrookedSlash(self, crooked_slash):
-        return self.hwp.CrookedSlash(CrookedSlash=crooked_slash)
-
-    def DSMark(self, diac_sym_mark):
-        return self.hwp.DSMark(DiacSymMark=diac_sym_mark)
-
-    def DbfCodeType(self, dbf_code):
-        return self.hwp.DbfCodeType(DbfCode=dbf_code)
-
     def delete_ctrl(self, ctrl: Ctrl) -> bool:
         """
         문서 내 컨트롤을 삭제한다.
@@ -7250,27 +7211,6 @@ class Hwp:
             return self.hwp.HAction.Run("DeleteSectionMasterPage")
         finally:
             self.set_message_box_mode(cur_messagebox_mode)
-
-    def Delimiter(self, delimiter):
-        return self.hwp.Delimiter(Delimiter=delimiter)
-
-    def DrawAspect(self, draw_aspect):
-        return self.hwp.DrawAspect(DrawAspect=draw_aspect)
-
-    def DrawFillImage(self, fillimage):
-        return self.hwp.DrawFillImage(fillimage=fillimage)
-
-    def DrawShadowType(self, shadow_type):
-        return self.hwp.DrawShadowType(ShadowType=shadow_type)
-
-    def Encrypt(self, encrypt):
-        return self.hwp.Encrypt(Encrypt=encrypt)
-
-    def EndSize(self, end_size):
-        return self.hwp.EndSize(EndSize=end_size)
-
-    def EndStyle(self, end_style):
-        return self.hwp.EndStyle(EndStyle=end_style)
 
     def EquationCreate(self, thread=False):
         """
@@ -7392,20 +7332,37 @@ class Hwp:
         """
         return self.hwp.FieldExist(Field=field)
 
-    def FileTranslate(self, cur_lang, trans_lang):
+    def FileTranslate(self, cur_lang:str="ko", trans_lang:str="en") -> bool:
+        """
+        문서를 번역함(Ctrl-Z 안 됨.) 한 달 10,000자 무료
+
+        Args:
+            cur_lang: 현재 문서 언어(예 - ko)
+            trans_lang: 목표언어(예 - en)
+
+        Returns:
+            성공 후 True 리턴(실패하면 프로그램 종료됨ㅜ)
+
+        Examples:
+
+
+
+        """
         return self.hwp.FileTranslate(curLang=cur_lang, transLang=trans_lang)
 
     def FillAreaType(self, fill_area):
         return self.hwp.FillAreaType(FillArea=fill_area)
 
+    def FindDir(self, find_dir: Literal["Forward", "Backward", "AllDoc"] = "Forward"):
+        return self.hwp.FindDir(FindDir=find_dir)
+
     def find_ctrl(self):
+        """컨트롤 선택하기"""
         return self.hwp.FindCtrl()
 
     def FindCtrl(self):
+        """컨트롤 선택하기"""
         return self.hwp.FindCtrl()
-
-    def FindDir(self, find_dir: Literal["Forward", "Backward", "AllDoc"] = "AllDoc"):
-        return self.hwp.FindDir(FindDir=find_dir)
 
     def find_private_info(self, private_type:int, private_string:str) -> int:
         """
@@ -7484,9 +7441,6 @@ class Hwp:
                 - 0x0400 : 기타
         """
         return self.hwp.FindPrivateInfo(PrivateType=private_type, PrivateString=private_string)
-
-    def FontType(self, font_type):
-        return self.hwp.FontType(FontType=font_type)
 
     def get_bin_data_path(self, binid: int) -> str:
         """
@@ -7913,15 +7867,19 @@ class Hwp:
         return self.hwp.GetMessageBoxMode()
 
     def get_metatag_list(self, number, option):
+        """메타태그리스트 가져오기"""
         return self.hwp.GetMetatagList(Number=number, option=option)
 
     def GetMetatagList(self, number, option):
+        """메타태그리스트 가져오기"""
         return self.hwp.GetMetatagList(Number=number, option=option)
 
     def get_metatag_name_text(self, tag):
+        """메타태그이름 문자열 가져오기"""
         return self.hwp.GetMetatagNameText(tag=tag)
 
     def GetMetatagNameText(self, tag):
+        """메타태그이름 문자열 가져오기"""
         return self.hwp.GetMetatagNameText(tag=tag)
 
     def get_mouse_pos(self, x_rel_to:int=1, y_rel_to:int=1) -> "Hwp.HParameterSet":
@@ -8512,120 +8470,6 @@ class Hwp:
             'ㅁㄴㅇㄹ\\r\\nㅁㄴㅇㄹ\\r\\nㅁㄴㅇㄹ\\r\\n\\r\\nㅂㅈㄷㄱ\\r\\nㅂㅈㄷㄱ\\r\\nㅂㅈㄷㄱ\\r\\n'
         """
         return self.hwp.GetTextFile(Format=format, option=option)
-
-    def GetTranslateLangList(self, cur_lang):
-        return self.hwp.GetTranslateLangList(curLang=cur_lang)
-
-    def GetUserInfo(self, user_info_id):
-        return self.hwp.GetUserInfo(userInfoId=user_info_id)
-
-    def Gradation(self, gradation):
-        return self.hwp.Gradation(Gradation=gradation)
-
-    def GridMethod(self, grid_method):
-        return self.hwp.GridMethod(GridMethod=grid_method)
-
-    def GridViewLine(self, grid_view_line):
-        return self.hwp.GridViewLine(GridViewLine=grid_view_line)
-
-    def GutterMethod(self, gutter_type):
-        return self.hwp.GutterMethod(GutterType=gutter_type)
-
-    def HAlign(self, h_align):
-        return self.hwp.HAlign(HAlign=h_align)
-
-    def Handler(self, handler):
-        return self.hwp.Handler(Handler=handler)
-
-    def Hash(self, hash):
-        return self.hwp.Hash(Hash=hash)
-
-    def HatchStyle(self, hatch_style):
-        return self.hwp.HatchStyle(HatchStyle=hatch_style)
-
-    def HeadType(self, heading_type):
-        return self.hwp.HeadType(HeadingType=heading_type)
-
-    def HeightRel(self, height_rel):
-        return self.hwp.HeightRel(HeightRel=height_rel)
-
-    def Hiding(self, hiding):
-        return self.hwp.Hiding(Hiding=hiding)
-
-    def HorzRel(self, horz_rel):
-        return self.hwp.HorzRel(HorzRel=horz_rel)
-
-    def HwpLineType(self, line_type: Literal["None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot", "LongDash", "Circle", "DoubleSlim", "SlimThick", "ThickSlim", "SlimThickSlim"] = "Solid"):
-        """
-        한/글에서 표나 개체의 선 타입을 결정하는 헬퍼메서드. 단순히 문자열을 정수로 변환한다.
-
-        Args:
-            line_type:
-                문자열 파라미터. 종류는 아래와 같다.
-
-                    - "None": 없음(0)
-                    - "Solid": 실선(1)
-                    - "Dash": 파선(2)
-                    - "Dot": 점선(3)
-                    - "DashDot": 일점쇄선(4)
-                    - "DashDotDot": 이점쇄선(5)
-                    - "LongDash": 긴 파선(6)
-                    - "Circle": 원형 점선(7)
-                    - "DoubleSlim": 이중 실선(8)
-                    - "SlimThick": 얇고 굵은 이중선(9)
-                    - "ThickSlim": 굵고 얇은 이중선(10)
-                    - "SlimThickSlim": 얇고 굵고 얇은 삼중선(11)
-        """
-        return self.hwp.HwpLineType(LineType=line_type)
-
-    def HwpLineWidth(self, line_width: Literal["0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm") -> int:
-        """
-        선 너비를 정해주는 헬퍼 메서드.
-
-        목록은 아래와 같다.
-
-        Args:
-            line_width:
-
-                - "0.1mm": 0
-                - "0.12mm": 1
-                - "0.15mm": 2
-                - "0.2mm": 3
-                - "0.25mm": 4
-                - "0.3mm": 5
-                - "0.4mm": 6
-                - "0.5mm": 7
-                - "0.6mm": 8
-                - "0.7mm": 9
-                - "1.0mm": 10
-                - "1.5mm": 11
-                - "2.0mm": 12
-                - "3.0mm": 13
-                - "4.0mm": 14
-                - "5.0mm": 15
-
-        Returns:
-            hwp가 인식하는 선굵기 정수(0~15)
-            """
-        return self.hwp.HwpLineWidth(LineWidth=line_width)
-
-    def HwpOutlineStyle(self, hwp_outline_style):
-        return self.hwp.HwpOutlineStyle(HwpOutlineStyle=hwp_outline_style)
-
-    def HwpOutlineType(self, hwp_outline_type):
-        return self.hwp.HwpOutlineType(HwpOutlineType=hwp_outline_type)
-
-    def HwpUnderlineShape(self, hwp_underline_shape):
-        return self.hwp.HwpUnderlineShape(HwpUnderlineShape=hwp_underline_shape)
-
-    def HwpUnderlineType(self, hwp_underline_type):
-        return self.hwp.HwpUnderlineType(HwpUnderlineType=hwp_underline_type)
-
-    def HwpZoomType(self, zoom_type):
-        return self.hwp.HwpZoomType(ZoomType=zoom_type)
-
-    def ImageFormat(self, image_format):
-        return self.hwp.ImageFormat(ImageFormat=image_format)
 
     def import_style(self, sty_filepath: str) -> bool:
         """
@@ -9251,7 +9095,14 @@ class Hwp:
         """
         return self.insert_picture(f"https://picsum.photos/{x}/{y}")
 
-    def IsActionEnable(self, action_id):
+    def IsActionEnable(self, action_id:str) -> bool:
+        """
+        액션 실행 가능한지 여부를 bool로 리턴
+
+        액션 관련해서는 기존 버전체크보다 이걸 사용하는 게
+        훨씬 안정적일 것 같기는 하지만(예: CopyPage, PastePage, DeletePage 및 메타태그액션 등)
+        신규 메서드(SelectCtrl 등) 지원여부는 체크해주지 못한다ㅜ
+        """
         return self.hwp.IsActionEnable(actionID=action_id)
 
     def is_command_lock(self, action_id: str) -> bool:
@@ -9330,12 +9181,6 @@ class Hwp:
         """
         return self.hwp.KeyIndicator()
 
-    def LineSpacingMethod(self, line_spacing):
-        return self.hwp.LineSpacingMethod(LineSpacing=line_spacing)
-
-    def LineWrapType(self, line_wrap):
-        return self.hwp.LineWrapType(LineWrap=line_wrap)
-
     def lock_command(self, act_id: str, is_lock: bool) -> None:
         """
         특정 액션이 실행되지 않도록 잠근다.
@@ -9376,19 +9221,6 @@ class Hwp:
         """
         return self.hwp.LockCommand(ActID=act_id, isLock=is_lock)
 
-    def LunarToSolar(self, l_year, l_month, l_day, l_leap, s_year, s_month, s_day):
-        return self.hwp.LunarToSolar(lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap, sYear=s_year,
-                                     sMonth=s_month, sDay=s_day)
-
-    def LunarToSolarBySet(self, l_year, l_month, l_day, l_leap):
-        return self.hwp.LunarToSolarBySet(lYear=l_year, lMonth=l_month, lLeap=l_leap)
-
-    def MacroState(self, macro_state):
-        return self.hwp.MacroState(MacroState=macro_state)
-
-    def MailType(self, mail_type):
-        return self.hwp.MailType(MailType=mail_type)
-
     def MarkPenNext(self):
         """
         다음 형광펜 삽입 위치로 이동한다.
@@ -9402,39 +9234,37 @@ class Hwp:
         return self.hwp.HAction.Run("MarkPenPrev")
 
     def MetatagExist(self, tag):
+        """특정 이름의 메타태그가 존재하는지?"""
         return self.hwp.MetatagExist(tag=tag)
 
-    def mili_to_hwp_unit(self, mili: float) -> int:
-        return self.hwp.MiliToHwpUnit(mili=mili)
-
-    def MiliToHwpUnit(self, mili: float) -> int:
-        return self.hwp.MiliToHwpUnit(mili=mili)
-
     def modify_field_properties(self, field: str, remove: bool, add: bool):
-        """
-        지정한 필드의 속성을 바꾼다. (사용안함)
-
-        양식모드에서 편집가능/불가 여부를 변경하는 메서드지만,
-        현재 양식모드에서 어떤 속성이라도 편집가능하다..
-        혹시 필드명이나 메모, 지시문을 수정하고 싶다면
-        set_cur_field_name 메서드를 사용하자.
-
-        Args:
-            field:
-            remove:
-            add:
-
-        Returns:
-        """
+        # """
+        # 지정한 필드의 속성을 바꾼다. (사용안함)
+        #
+        # 양식모드에서 편집가능/불가 여부를 변경하는 메서드지만,
+        # 현재 양식모드에서 어떤 속성이라도 편집가능하다..
+        # 혹시 필드명이나 메모, 지시문을 수정하고 싶다면
+        # set_cur_field_name 메서드를 사용하자.
+        #
+        # Args:
+        #     field:
+        #     remove:
+        #     add:
+        #
+        # Returns:
+        # """
         return self.hwp.ModifyFieldProperties(Field=field, remove=remove, Add=add)
 
     def ModifyFieldProperties(self, field, remove, add) -> None:
+        """필드 속성 변경"""
         return self.hwp.ModifyFieldProperties(Field=field, remove=remove, Add=add)
 
     def modify_metatag_properties(self, tag, remove, add):
+        """메타태그 속성 변경"""
         return self.hwp.ModifyMetatagProperties(tag=tag, remove=remove, Add=add)
 
     def ModifyMetatagProperties(self, tag, remove, add):
+        """메타태그 속성 변경"""
         return self.hwp.ModifyMetatagProperties(tag=tag, remove=remove, Add=add)
 
     def move_pos(self, move_id: int = 1, para: int = 0, pos: int = 0) -> bool:
@@ -9598,16 +9428,12 @@ class Hwp:
             return self.hwp.MoveToField(Field=field, Text=text, start=start, select=select)
 
     def move_to_metatag(self, tag, text, start, select):
+        """특정 메타태그로 이동"""
         return self.hwp.MoveToMetatag(tag=tag, Text=text, start=start, select=select)
 
     def MoveToMetatag(self, tag, text, start, select):
+        """특정 메타태그로 이동"""
         return self.hwp.MoveToMetatag(tag=tag, Text=text, start=start, select=select)
-
-    def NumberFormat(self, num_format):
-        return self.hwp.NumberFormat(NumFormat=num_format)
-
-    def Numbering(self, numbering):
-        return self.hwp.Numbering(Numbering=numbering)
 
     def open(self, filename: str, format: str = "", arg: str = "") -> bool:
         """
@@ -9808,22 +9634,6 @@ class Hwp:
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.Open(filename=filename, Format=format, arg=arg)
 
-    def PageNumPosition(self, pagenumpos: Literal[
-        "TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter"):
-        return self.hwp.PageNumPosition(pagenumpos=pagenumpos)
-
-    def PageType(self, page_type):
-        return self.hwp.PageType(PageType=page_type)
-
-    def ParaHeadAlign(self, para_head_align):
-        return self.hwp.ParaHeadAlign(ParaHeadAlign=para_head_align)
-
-    def PicEffect(self, pic_effect):
-        return self.hwp.PicEffect(PicEffect=pic_effect)
-
-    def PlacementType(self, restart):
-        return self.hwp.PlacementType(Restart=restart)
-
     def point_to_hwp_unit(self, point: float) -> int:
         """
         글자에 쓰이는 포인트 단위를 HwpUnit으로 변환
@@ -9877,21 +9687,6 @@ class Hwp:
         인치 단위를 HwpUnit으로 변환
         """
         return round(inch * 7200, 0)
-
-    def PresentEffect(self, prsnteffect):
-        return self.hwp.PresentEffect(prsnteffect=prsnteffect)
-
-    def PrintDevice(self, print_device):
-        return self.hwp.PrintDevice(PrintDevice=print_device)
-
-    def PrintPaper(self, print_paper):
-        return self.hwp.PrintPaper(PrintPaper=print_paper)
-
-    def PrintRange(self, print_range):
-        return self.hwp.PrintRange(PrintRange=print_range)
-
-    def PrintType(self, print_method):
-        return self.hwp.PrintType(PrintMethod=print_method)
 
     def protect_private_info(self, protecting_char:str, private_pattern_type:int) -> bool:
         """
@@ -10175,9 +9970,11 @@ class Hwp:
             return self.hwp.PutFieldText(Field=field, Text=text)
 
     def put_metatag_name_text(self, tag, text):
+        """메타태그에 텍스트 삽입"""
         return self.hwp.PutMetatagNameText(tag=tag, Text=text)
 
     def PutMetatagNameText(self, tag, text):
+        """메타태그에 텍스트 삽입"""
         return self.hwp.PutMetatagNameText(tag=tag, Text=text)
 
     def PutParaNumber(self):
@@ -10194,7 +9991,7 @@ class Hwp:
         """
         return self.hwp.HAction.Run("PutOutlineNumber")
 
-    def quit(self) -> None:
+    def quit(self, save:bool=False) -> None:
         """
         한/글을 종료한다.
 
@@ -10202,13 +9999,17 @@ class Hwp:
         clear나 save 등의 메서드를 실행한 후에 quit을 실행해야 한다.
         종료시에 hwp.hwp 객체를 삭제한다.
 
+        Args:
+            save: 변경사항이 있는 경우 저장할지 여부. 기본값은 저장안함(False)
+
         Returns:
             None
         """
+        if save: self.save()
         self.hwp.Quit()
         del self.hwp
 
-    def Quit(self) -> None:
+    def Quit(self, save:bool=False) -> None:
         """
         한/글을 종료한다.
 
@@ -10216,9 +10017,13 @@ class Hwp:
         clear나 save 등의 메서드를 실행한 후에 Quit을 실행해야 한다.
         종료시에 hwp.hwp 객체를 삭제한다.
 
+        Args:
+            save: 변경사항이 있는 경우 저장할지 여부. 기본값은 저장안함(False)
+
         Returns:
             None
         """
+        if save: self.save()
         self.hwp.Quit()
         del self.hwp
 
@@ -10619,9 +10424,11 @@ class Hwp:
         return self.hwp.RenameField(oldname=oldname, newname=newname)
 
     def rename_metatag(self, oldtag, newtag):
+        """메타태그 이름 변경"""
         return self.hwp.RenameMetatag(oldtag=oldtag, newtag=newtag)
 
     def RenameMetatag(self, oldtag, newtag):
+        """메타태그 이름 변경"""
         return self.hwp.RenameMetatag(oldtag=oldtag, newtag=newtag)
 
     def replace_action(self, old_action_id: str, new_action_id: str) -> bool:
@@ -13702,6 +13509,7 @@ class Hwp:
         """
         일반 붙이기(Ctrl-V)
 
+        확장 붙여넣기는 hwp.paste() 사용.
         """
         return self.hwp.HAction.Run("Paste")
 
@@ -13877,7 +13685,7 @@ class Hwp:
 
     def QuickMarkInsert0(self):
         """
-        쉬운 책갈피 - 삽입
+        쉬운 책갈피0 - 삽입
 
         """
         return self.hwp.HAction.Run("QuickMarkInsert0")
@@ -14537,14 +14345,12 @@ class Hwp:
     def ShapeObjSendBack(self):
         """
         개체를 뒤로 보내기
-
         """
         return self.hwp.HAction.Run("ShapeObjSendBack")
 
     def ShapeObjSendToBack(self):
         """
         맨 뒤로
-
         """
         return self.hwp.HAction.Run("ShapeObjSendToBack")
 
@@ -15906,19 +15712,6 @@ class Hwp:
         else:
             return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
 
-    def set_bar_code_image(self, lp_image_path, pgno, index, x, y, width, height):
-        # 작동하지 않는다.
-        if lp_image_path.lower()[1] != ":":
-            lp_image_path = os.path.join(os.getcwd(), lp_image_path)
-        return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index, X=x, Y=y, Width=width,
-                                        Height=height)
-
-    def SetBarCodeImage(self, lp_image_path, pgno, index, x, y, width, height):
-        if lp_image_path.lower()[1] != ":":
-            lp_image_path = os.path.join(os.getcwd(), lp_image_path)
-        return self.hwp.SetBarCodeImage(lpImagePath=lp_image_path, pgno=pgno, index=index, X=x, Y=y, Width=width,
-                                        Height=height)
-
     def set_cur_field_name(self, field: str = "", direction: str = "", memo: str = "", option: int = 0) -> bool:
         """
         표 안에서 현재 캐럿이 위치하는 셀, 또는 블록선택한 셀들의 필드이름을 설정한다.
@@ -16009,18 +15802,6 @@ class Hwp:
             return self.HAction.Execute("TablePropertyDialog", pset.HSet)
         else:
             return self.hwp.SetCurFieldName(Field=field, option=option, Direction=direction, memo=memo)
-
-    def set_cur_metatag_name(self, tag):
-        return self.hwp.SetCurMetatagName(tag=tag)
-
-    def SetCurMetatagName(self, tag):
-        return self.hwp.SetCurMetatagName(tag=tag)
-
-    def set_drm_authority(self, authority):
-        return self.hwp.SetDRMAuthority(authority=authority)
-
-    def SetDRMAuthority(self, authority):
-        return self.hwp.SetDRMAuthority(authority=authority)
 
     def set_field_view_option(self, option:int) -> int:
         """
@@ -16413,6 +16194,292 @@ class Hwp:
         """
         return self.hwp.SetTitleName(Title=title)
 
+    def UnSelectCtrl(self):
+        """선택중인 컨트롤 선택해제"""
+        return self.hwp.UnSelectCtrl()
+
+    def WindowAlignCascade(self):
+        """창 겹치게 배열"""
+        return self.hwp.HAction.Run("WindowAlignCascade")
+
+    def WindowAlignTileHorz(self):
+        """창 가로로 배열"""
+        return self.hwp.HAction.Run("WindowAlignTileHorz")
+
+    def WindowAlignTileVert(self):
+        """창 세로로 배열"""
+        return self.hwp.HAction.Run("WindowAlignTileVert")
+
+    def WindowList(self):
+        """창 목록"""
+        return self.hwp.HAction.Run("WindowList")
+
+    def WindowMinimizeAll(self):
+        """창 모두 아이콘으로 배열"""
+        return self.hwp.HAction.Run("WindowMinimizeAll")
+
+    def WindowNextPane(self):
+        """다음 분할창 활성화"""
+        return self.hwp.HAction.Run("WindowNextPane")
+
+    def WindowNextTab(self):
+        """다음 창 활성화"""
+        return self.hwp.HAction.Run("WindowNextTab")
+
+    def WindowPrevTab(self):
+        """이전 창 활성화"""
+        return self.hwp.HAction.Run("WindowPrevTab")
+
+    #### 파라미터 헬퍼메서드 : 별도의 동작은 하지 않고, 파라미터 변환, 연산 등을 돕는다. ####
+
+    def BorderShape(self, border_type):
+        return self.hwp.BorderShape(BorderType=border_type)
+
+    def ArcType(self, arc_type):
+        return self.hwp.ArcType(ArcType=arc_type)
+
+    def AutoNumType(self, autonum):
+        return self.hwp.AutoNumType(autonum=autonum)
+
+    def BreakWordLatin(self, break_latin_word):
+        return self.hwp.BreakWordLatin(BreakLatinWord=break_latin_word)
+
+    def BrushType(self, brush_type):
+        return self.hwp.BrushType(BrushType=brush_type)
+
+    def Canonical(self, canonical):
+        return self.hwp.Canonical(Canonical=canonical)
+
+    def CellApply(self, cell_apply):
+        return self.hwp.CellApply(CellApply=cell_apply)
+
+    def CharShadowType(self, shadow_type):
+        return self.hwp.CharShadowType(ShadowType=shadow_type)
+
+    def ColDefType(self, col_def_type):
+        return self.hwp.ColDefType(ColDefType=col_def_type)
+
+    def ColLayoutType(self, col_layout_type):
+        return self.hwp.ColLayoutType(ColLayoutType=col_layout_type)
+
+    def ConvertPUAHangulToUnicode(self, reverse):
+        return self.hwp.ConvertPUAHangulToUnicode(Reverse=reverse)
+
+    def CrookedSlash(self, crooked_slash):
+        return self.hwp.CrookedSlash(CrookedSlash=crooked_slash)
+
+    def DSMark(self, diac_sym_mark):
+        return self.hwp.DSMark(DiacSymMark=diac_sym_mark)
+
+    def DbfCodeType(self, dbf_code):
+        return self.hwp.DbfCodeType(DbfCode=dbf_code)
+
+    def Delimiter(self, delimiter):
+        return self.hwp.Delimiter(Delimiter=delimiter)
+
+    def DrawAspect(self, draw_aspect):
+        return self.hwp.DrawAspect(DrawAspect=draw_aspect)
+
+    def DrawFillImage(self, fillimage):
+        return self.hwp.DrawFillImage(fillimage=fillimage)
+
+    def DrawShadowType(self, shadow_type):
+        return self.hwp.DrawShadowType(ShadowType=shadow_type)
+
+    def Encrypt(self, encrypt):
+        return self.hwp.Encrypt(Encrypt=encrypt)
+
+    def EndSize(self, end_size):
+        return self.hwp.EndSize(EndSize=end_size)
+
+    def EndStyle(self, end_style):
+        return self.hwp.EndStyle(EndStyle=end_style)
+
+    def FontType(self, font_type):
+        return self.hwp.FontType(FontType=font_type)
+
+    def GetTranslateLangList(self, cur_lang):
+        return self.hwp.GetTranslateLangList(curLang=cur_lang)
+
+    def GetUserInfo(self, user_info_id):
+        return self.hwp.GetUserInfo(userInfoId=user_info_id)
+
+    def Gradation(self, gradation):
+        return self.hwp.Gradation(Gradation=gradation)
+
+    def GridMethod(self, grid_method):
+        return self.hwp.GridMethod(GridMethod=grid_method)
+
+    def GridViewLine(self, grid_view_line):
+        return self.hwp.GridViewLine(GridViewLine=grid_view_line)
+
+    def GutterMethod(self, gutter_type):
+        return self.hwp.GutterMethod(GutterType=gutter_type)
+
+    def HAlign(self, h_align):
+        return self.hwp.HAlign(HAlign=h_align)
+
+    def Handler(self, handler):
+        return self.hwp.Handler(Handler=handler)
+
+    def Hash(self, hash):
+        return self.hwp.Hash(Hash=hash)
+
+    def HatchStyle(self, hatch_style):
+        return self.hwp.HatchStyle(HatchStyle=hatch_style)
+
+    def HeadType(self, heading_type):
+        return self.hwp.HeadType(HeadingType=heading_type)
+
+    def HeightRel(self, height_rel):
+        return self.hwp.HeightRel(HeightRel=height_rel)
+
+    def Hiding(self, hiding):
+        return self.hwp.Hiding(Hiding=hiding)
+
+    def HorzRel(self, horz_rel):
+        return self.hwp.HorzRel(HorzRel=horz_rel)
+
+    def HwpLineType(self, line_type: Literal["None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot", "LongDash", "Circle", "DoubleSlim", "SlimThick", "ThickSlim", "SlimThickSlim"] = "Solid"):
+        """
+        한/글에서 표나 개체의 선 타입을 결정하는 헬퍼메서드. 단순히 문자열을 정수로 변환한다.
+
+        Args:
+            line_type:
+                문자열 파라미터. 종류는 아래와 같다.
+
+                    - "None": 없음(0)
+                    - "Solid": 실선(1)
+                    - "Dash": 파선(2)
+                    - "Dot": 점선(3)
+                    - "DashDot": 일점쇄선(4)
+                    - "DashDotDot": 이점쇄선(5)
+                    - "LongDash": 긴 파선(6)
+                    - "Circle": 원형 점선(7)
+                    - "DoubleSlim": 이중 실선(8)
+                    - "SlimThick": 얇고 굵은 이중선(9)
+                    - "ThickSlim": 굵고 얇은 이중선(10)
+                    - "SlimThickSlim": 얇고 굵고 얇은 삼중선(11)
+        """
+        return self.hwp.HwpLineType(LineType=line_type)
+
+    def HwpLineWidth(self, line_width: Literal["0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm") -> int:
+        """
+        선 너비를 정해주는 헬퍼 메서드.
+
+        목록은 아래와 같다.
+
+        Args:
+            line_width:
+
+                - "0.1mm": 0
+                - "0.12mm": 1
+                - "0.15mm": 2
+                - "0.2mm": 3
+                - "0.25mm": 4
+                - "0.3mm": 5
+                - "0.4mm": 6
+                - "0.5mm": 7
+                - "0.6mm": 8
+                - "0.7mm": 9
+                - "1.0mm": 10
+                - "1.5mm": 11
+                - "2.0mm": 12
+                - "3.0mm": 13
+                - "4.0mm": 14
+                - "5.0mm": 15
+
+        Returns:
+            hwp가 인식하는 선굵기 정수(0~15)
+            """
+        return self.hwp.HwpLineWidth(LineWidth=line_width)
+
+    def HwpOutlineStyle(self, hwp_outline_style):
+        return self.hwp.HwpOutlineStyle(HwpOutlineStyle=hwp_outline_style)
+
+    def HwpOutlineType(self, hwp_outline_type):
+        return self.hwp.HwpOutlineType(HwpOutlineType=hwp_outline_type)
+
+    def HwpUnderlineShape(self, hwp_underline_shape):
+        return self.hwp.HwpUnderlineShape(HwpUnderlineShape=hwp_underline_shape)
+
+    def HwpUnderlineType(self, hwp_underline_type):
+        return self.hwp.HwpUnderlineType(HwpUnderlineType=hwp_underline_type)
+
+    def HwpZoomType(self, zoom_type):
+        return self.hwp.HwpZoomType(ZoomType=zoom_type)
+
+    def ImageFormat(self, image_format):
+        return self.hwp.ImageFormat(ImageFormat=image_format)
+
+    def LineSpacingMethod(self, line_spacing):
+        return self.hwp.LineSpacingMethod(LineSpacing=line_spacing)
+
+    def LineWrapType(self, line_wrap):
+        return self.hwp.LineWrapType(LineWrap=line_wrap)
+
+    def LunarToSolar(self, l_year, l_month, l_day, l_leap, s_year, s_month, s_day):
+        return self.hwp.LunarToSolar(lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap, sYear=s_year,
+                                     sMonth=s_month, sDay=s_day)
+
+    def LunarToSolarBySet(self, l_year, l_month, l_day, l_leap):
+        return self.hwp.LunarToSolarBySet(lYear=l_year, lMonth=l_month, lLeap=l_leap)
+
+    def MacroState(self, macro_state):
+        return self.hwp.MacroState(MacroState=macro_state)
+
+    def MailType(self, mail_type):
+        return self.hwp.MailType(MailType=mail_type)
+
+    def mili_to_hwp_unit(self, mili: float) -> int:
+        return self.hwp.MiliToHwpUnit(mili=mili)
+
+    def MiliToHwpUnit(self, mili: float) -> int:
+        return self.hwp.MiliToHwpUnit(mili=mili)
+
+    def NumberFormat(self, num_format):
+        return self.hwp.NumberFormat(NumFormat=num_format)
+
+    def Numbering(self, numbering):
+        return self.hwp.Numbering(Numbering=numbering)
+
+    def PageNumPosition(self, pagenumpos: Literal[
+        "TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter"):
+        return self.hwp.PageNumPosition(pagenumpos=pagenumpos)
+
+    def PageType(self, page_type):
+        return self.hwp.PageType(PageType=page_type)
+
+    def ParaHeadAlign(self, para_head_align):
+        return self.hwp.ParaHeadAlign(ParaHeadAlign=para_head_align)
+
+    def PicEffect(self, pic_effect):
+        return self.hwp.PicEffect(PicEffect=pic_effect)
+
+    def PlacementType(self, restart):
+        return self.hwp.PlacementType(Restart=restart)
+
+    def PresentEffect(self, prsnteffect):
+        return self.hwp.PresentEffect(prsnteffect=prsnteffect)
+
+    def PrintDevice(self, print_device):
+        return self.hwp.PrintDevice(PrintDevice=print_device)
+
+    def PrintPaper(self, print_paper):
+        return self.hwp.PrintPaper(PrintPaper=print_paper)
+
+    def PrintRange(self, print_range):
+        return self.hwp.PrintRange(PrintRange=print_range)
+
+    def PrintType(self, print_method):
+        return self.hwp.PrintType(PrintMethod=print_method)
+
+    def SetCurMetatagName(self, tag):
+        return self.hwp.SetCurMetatagName(tag=tag)
+
+    def SetDRMAuthority(self, authority):
+        return self.hwp.SetDRMAuthority(authority=authority)
+
     def SetUserInfo(self, user_info_id, value):
         return self.hwp.SetUserInfo(userInfoId=user_info_id, Value=value)
 
@@ -16471,13 +16538,6 @@ class Hwp:
     def TextWrapType(self, text_wrap):
         return self.hwp.TextWrapType(TextWrap=text_wrap)
 
-    def UnSelectCtrl(self):
-        """
-        선택중인 컨트롤 선택해제
-
-        """
-        return self.hwp.UnSelectCtrl()
-
     def VAlign(self, v_align):
         return self.hwp.VAlign(VAlign=v_align)
 
@@ -16492,35 +16552,3 @@ class Hwp:
 
     def WidthRel(self, width_rel):
         return self.hwp.WidthRel(WidthRel=width_rel)
-
-    def WindowAlignCascade(self):
-        """창 겹치게 배열"""
-        return self.hwp.HAction.Run("WindowAlignCascade")
-
-    def WindowAlignTileHorz(self):
-        """창 가로로 배열"""
-        return self.hwp.HAction.Run("WindowAlignTileHorz")
-
-    def WindowAlignTileVert(self):
-        """창 세로로 배열"""
-        return self.hwp.HAction.Run("WindowAlignTileVert")
-
-    def WindowList(self):
-        """창 목록"""
-        return self.hwp.HAction.Run("WindowList")
-
-    def WindowMinimizeAll(self):
-        """창 모두 아이콘으로 배열"""
-        return self.hwp.HAction.Run("WindowMinimizeAll")
-
-    def WindowNextPane(self):
-        """다음 분할창 활성화"""
-        return self.hwp.HAction.Run("WindowNextPane")
-
-    def WindowNextTab(self):
-        """다음 창 활성화"""
-        return self.hwp.HAction.Run("WindowNextTab")
-
-    def WindowPrevTab(self):
-        """이전 창 활성화"""
-        return self.hwp.HAction.Run("WindowPrevTab")
