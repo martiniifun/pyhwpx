@@ -636,6 +636,36 @@ class Ctrl:
         return self._com_obj.UserDesc
 
 
+class XHwpDocuments:
+    """
+    아래아한글의 문서 오브젝트를 조작하기 위한 XHwpDocuments 래퍼 클래스. (작성중)
+    """
+    def __init__(self, com_obj):
+        self._com_obj = com_obj
+
+    def __repr__(self):
+        return f"<XHwpDocuments com_obj={self._com_obj}>"
+
+    def __getitem__(self, index):
+        count = len(self)
+        if isinstance(index, int):
+            if index < 0:
+                index += count  # 음수 인덱스를 양수로 변환
+            if 0 <= index < count:
+                return self._com_obj.Item(index)
+            else:
+                raise IndexError("Index out of range")
+        else:
+            raise TypeError("Index must be an integer")
+
+    def __iter__(self):
+        for i in range(len(self)):
+            yield self[i]
+
+    def __len__(self):
+        return self._com_obj.Count
+
+
 # 아래아한글 오토메이션 클래스 정의
 class Hwp:
     """
@@ -668,14 +698,8 @@ class Hwp:
         >>> hwp.quit()
     """
 
-    # @staticmethod
-    # def load_fonts():  # pyinstaller 컴파일시 너무 귀찮아진다.
-    #     json_path = os.path.join(os.path.dirname(__file__), "fonts.json")
-    #     with open(json_path, encoding="utf-8") as f:
-    #         return json.load(f)
-
     def __repr__(self):
-        return f"<Hwp: DocumentID={self.XHwpDocuments.Active_XHwpDocument.DocumentID}, Title={self.get_title()}, FullName={self.XHwpDocuments.Active_XHwpDocument.FullName or None}>"
+        return f"<Hwp: DocumentID={self.XHwpDocuments.Active_XHwpDocument.DocumentID}, Title=\"{self.get_title()}\", FullName=\"{self.XHwpDocuments.Active_XHwpDocument.FullName or None}\">"
 
     def __init__(self, new: bool = False, visible: bool = True, register_module: bool = True):
         self.hwp = 0
