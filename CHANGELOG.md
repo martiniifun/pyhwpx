@@ -1,5 +1,11 @@
 # 📦 Changelog
 
+## [0.50.40] - 2025-04-13
+### Added
+- XHwpDocuments, XHwpDocument 클래스 추가 
+
+---
+
 ## [0.50.39] - 2025-04-13
 ### 🐛 Fixed
 - 보안모듈 관련 RegisterModule, check_registry_key 등의 모듈이름 "FilePathCheckerModule"을 하드코딩 대신 파라미터로 옮김. (Ruzzy77님께서 기여해주심) 
