@@ -652,7 +652,7 @@ class XHwpDocuments:
             if index < 0:
                 index += count  # 음수 인덱스를 양수로 변환
             if 0 <= index < count:
-                return self._com_obj.Item(index)
+                return XHwpDocument(self._com_obj.Item(index))
             else:
                 raise IndexError("Index out of range")
         else:
@@ -660,10 +660,186 @@ class XHwpDocuments:
 
     def __iter__(self):
         for i in range(len(self)):
-            yield self[i]
+            yield XHwpDocument(self[i])
 
     def __len__(self):
         return self._com_obj.Count
+
+    @property
+    def Active_XHwpDocument(self):
+        return XHwpDocument(self._com_obj.Active_XHwpDocument)
+
+    @property
+    def Application(self):
+        return self._com_obj.Application
+
+    @property
+    def CLSID(self):
+        return self._com_obj.CLSID
+
+    @property
+    def Count(self):
+        return self._com_obj.Count
+
+    def Add(self, isTab:bool=False) -> "XHwpDocument":
+        """
+        문서 추가
+
+        Args:
+            isTab: 탭으로 열 건지(True), 문서로 열 건지(False, 기본값) 결정
+
+        Returns:
+            문서 오브젝트(XHwpDocument) 리턴
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> hwp.XHwpDocuments.Add(True)
+
+        """
+        return XHwpDocument(self._com_obj.Add(isTab=isTab))
+
+    def Close(self, isDirty=False) -> None:
+        """
+        문서창 닫기
+        """
+        return self._com_obj.Close(isDirty=isDirty)
+
+    def FindItem(self, lDocID:int) -> "XHwpDocument":
+        """
+        해당 DocumentID의 문서 오브젝트가 있는지 탐색
+
+        Args:
+            lDocID: 찾고자 하는 문서오브젝트의 ID
+
+        Returns:
+            int: 해당 아이디의 XHwpDocument 리턴
+            None: 없는 경우 None 리턴
+        """
+        return XHwpDocument(self._com_obj.FindItem(lDocID))
+
+
+class XHwpDocument:
+    def __init__(self, com_obj):
+        self._com_obj = com_obj
+
+    @property
+    def Application(self):
+        return self._com_obj.Application
+
+    @property
+    def CLSID(self):
+        return self._com_obj.CLSID
+
+    def Clear(self, option:bool=False) -> None:
+        return self._com_obj.Clear(option=option)
+
+    def Close(self, isDirty:bool=False) -> None:
+        return self._com_obj.Close(isDirty=isDirty)
+
+    @property
+    def DocumentID(self):
+        return self._com_obj.DocumentID
+
+    @property
+    def EditMode(self):
+        return self._com_obj.EditMode
+
+    @property
+    def Format(self):
+        return self._com_obj.Format
+
+    @property
+    def FullName(self):
+        """
+        문서의 전체경로 문자열. 저장하지 않은 빈 문서인 경우에는 빈 문자열 ''
+        """
+        return self._com_obj.FullName
+
+    @property
+    def Modified(self) -> int:
+        return self._com_obj.Modified
+
+    def Open(self, filename:str, Format:str, arg:str):
+        return self._com_obj.Open(filename=filename, Format=Format, arg=arg)
+
+    @property
+    def Path(self) -> str:
+        return self._com_obj.Path
+
+    def Redo(self, Count:int):
+        return self._com_obj.Redo(Count=Count)
+
+    def Save(self, save_if_dirty:bool):
+        return self._com_obj.Save(save_if_dirty=save_if_dirty)
+
+    def SaveAs(self, Path:str, Format:str, arg:str):
+        return self._com_obj.SaveAs(Path=Path, Format=Format, arg=arg)
+
+    def SendBrowser(self):
+        return self._com_obj.SendBrowser()
+
+    def SetActive_XHwpDocument(self):
+        return self._com_obj.SetActive_XHwpDocument()
+
+    def Undo(self, Count:int):
+        return self._com_obj.Undo(Count=Count)
+
+    @property
+    def XHwpCharacterShape(self):
+        return self._com_obj.XHwpCharacterShape
+
+    @property
+    def XHwpDocumentInfo(self):
+        return self._com_obj.XHwpDocumentInfo
+
+    @property
+    def XHwpFind(self):
+        return self._com_obj.XHwpFind
+
+    @property
+    def XHwpFormCheckButtons(self):
+        return self._com_obj.XHwpFormCheckButtons
+
+    @property
+    def XHwpFormComboBoxs(self):
+        return self._com_obj.XHwpFormComboBoxs
+
+    @property
+    def XHwpFormEdits(self):
+        return self._com_obj.XHwpFormEdits
+
+    @property
+    def XHwpFormPushButtons(self):
+        return self._com_obj.XHwpFormPushButtons
+
+    @property
+    def XHwpFormRadioButtons(self):
+        return self._com_obj.XHwpFormRadioButtons
+
+    @property
+    def XHwpParagraphShape(self):
+        return self._com_obj.XHwpParagraphShape
+
+    @property
+    def XHwpPrint(self):
+        return self._com_obj.XHwpPrint
+
+    @property
+    def XHwpRange(self):
+        return self._com_obj.XHwpRange
+
+    @property
+    def XHwpSelection(self):
+        return self._com_obj.XHwpSelection
+
+    @property
+    def XHwpSendMail(self):
+        return self._com_obj.XHwpSendMail
+
+    @property
+    def XHwpSummaryInfo(self):
+        return self._com_obj.XHwpSummaryInfo
 
 
 # 아래아한글 오토메이션 클래스 정의
