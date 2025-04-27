@@ -11,5 +11,5 @@
 #
 #     sys.modules[__name__].Hwp = _get_Hwp()
 
-from .pyhwpx import *
+from .core import *
 from .version import __version__
