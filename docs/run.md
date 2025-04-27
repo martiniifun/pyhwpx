@@ -8,5 +8,5 @@ comments: true
 !!! tip
     `/` 키를 누르면 바로 검색창이 열립니다.
 
-## Ctrl
-::: pyhwpx.core.Ctrl
+## Run Methods
+::: pyhwpx.run_methods.RunMethods
