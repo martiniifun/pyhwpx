@@ -134,7 +134,7 @@ def addr_to_tuple(cell_address: str) -> tuple[int, int]:
 
 def tuple_to_addr(row: int, col: int) -> str:
     """
-    (컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: `"AAA3"`)을 반환합니다.
+    (행번호, 칼럼번호)를 인자로 받아 엑셀 셀 주소 문자열(예: `"AAA3"`)을 반환합니다.
 
     `hwp.goto_addr(addr)` 메서드 내부에서 활용됩니다. 직접 사용하지 않습니다.
 
