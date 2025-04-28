@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://martiniifun.github.io/pyhwpx/api.html">
+        <link rel="canonical" href="https://martiniifun.github.io/pyhwpx/core.html">
       
       
         <link rel="prev" href="index.html">
@@ -264,7 +264,7 @@
   
   
     <li class="md-tabs__item md-tabs__item--active">
-      <a href="api.html" class="md-tabs__link">
+      <a href="core.html" class="md-tabs__link">
         
   
     
@@ -463,7 +463,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="api.html" class="md-nav__link md-nav__link--active">
+      <a href="core.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -17822,6 +17822,37 @@ df로 변환시작할 행을 특정할 때 사용된다.</p>
     <div class="doc doc-contents ">
 
 
+        <p>한글과컴퓨터 문서(HWP)의 COM 객체를 래핑한 클래스입니다.</p>
+<p>이 클래스는 HwpDocument COM 객체와 상호작용하기 위한 속성과 메서드를 제공합니다.
+문서 속성, 데이터 조작 기능, 상태 제어 등 다양한 기능을 제공하며,
+한글과컴퓨터의 문서 관리 시스템을 파이썬스럽게 다룰 수 있도록 설계되었습니다.</p>
+
+
+<details class="속성" open>
+  <summary>속성</summary>
+  <p>Application: 문서와 연결된 어플리케이션 객체
+CLSID: 문서의 클래스 ID 
+DocumentID: 문서의 고유 식별자
+EditMode: 현재 문서의 편집 모드
+Format: 문서의 형식
+FullName: 문서의 전체 경로를 문자열로 반환. 저장되지 않은 문서는 빈 문자열 반환
+Modified: 문서의 수정 여부를 나타냄
+Path: 문서가 저장된 폴더 경로
+XHwpCharacterShape: 문서의 글자모양 설정에 접근
+XHwpDocumentInfo: 문서의 상세 정보에 접근
+XHwpFind: 텍스트 찾기 기능에 접근
+XHwpFormCheckButtons: 체크박스 양식 요소에 접근
+XHwpFormComboBoxs: 콤보박스 양식 요소에 접근 
+XHwpFormEdits: 편집 양식 요소에 접근
+XHwpFormPushButtons: 버튼 양식 요소에 접근
+XHwpFormRadioButtons: 라디오버튼 양식 요소에 접근
+XHwpParagraphShape: 문단 모양 설정에 접근
+XHwpPrint: 문서 인쇄 제어에 접근
+XHwpRange: 문서 내 범위 설정에 접근
+XHwpSelection: 현재 선택된 텍스트나 개체에 접근
+XHwpSendMail: 메일 보내기 기능에 접근
+XHwpSummaryInfo: 문서 요약 정보에 접근</p>
+</details>
 
 
 
@@ -17885,7 +17916,106 @@ df로 변환시작할 행을 특정할 때 사용된다.</p>
     <div class="doc doc-contents ">
 
 
-        <p>아래아한글의 문서 오브젝트를 조작하기 위한 XHwpDocuments 래퍼 클래스. (작성중)</p>
+        <p>한글과컴퓨터 문서(HWP) COM 객체의 컬렉션을 표현하는 클래스입니다.</p>
+<p>이 클래스는 COM 객체로 표현된 문서 컬렉션과 상호작용하기 위한 속성과 메서드를 제공합니다.
+문서 컬렉션에 대한 반복, 인덱싱, 길이 조회 등의 컬렉션 유사 동작을 지원하며,
+문서를 추가하고, 닫고, 특정 문서 오브젝트를 검색하는 메서드를 포함합니다.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="pyhwpx.core.XHwpDocuments.Active_XHwpDocument">Active_XHwpDocument</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="pyhwpx.core.XHwpDocument" href="XHwpDocument.html#pyhwpx.core.XHwpDocument">XHwpDocument</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>컬렉션의 활성 문서</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyhwpx.core.XHwpDocuments.Application">Application</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>COM 객체와 연결된 애플리케이션을 반환</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyhwpx.core.XHwpDocuments.CLSID">CLSID</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>COM 객체의 CLSID</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyhwpx.core.XHwpDocuments.Count">Count</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>컬렉션 내 문서 개수</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="Add(isTab=False) (pyhwpx.core.XHwpDocuments.Add)" href="XHwpDocuments.html#pyhwpx.core.XHwpDocuments.Add">Add</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>bool = False) -&gt; XHwpDocument:
+컬렉션에 새 문서를 추가합니다.  </p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="Close(isDirty=False) (pyhwpx.core.XHwpDocuments.Close)" href="XHwpDocuments.html#pyhwpx.core.XHwpDocuments.Close">Close</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>bool = False) -&gt; None:
+활성 문서 창을 닫습니다.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="FindItem(lDocID) (pyhwpx.core.XHwpDocuments.FindItem)" href="XHwpDocuments.html#pyhwpx.core.XHwpDocuments.FindItem">FindItem</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>int) -&gt; XHwpDocument:
+주어진 문서 ID에 해당하는 문서 객체를 찾아 반환합니다.</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
 
 
 
@@ -18562,7 +18692,7 @@ COM 라이브러리가 해당 스레드에서 완전히 해제되지 않을 수 
     <span class="md-icon" title="마지막 업데이트">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025년 4월 27일 15:13:28">2025년 4월 27일</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025년 4월 27일 15:33:34">2025년 4월 27일</span>
   </span>
 
     
