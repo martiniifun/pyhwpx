@@ -1,5 +1,11 @@
 # 📦 Changelog
 
+## [1.0.1] - 2025-04-28
+### patch
+- hwp.goto_addr() 실행시 표 안에 각주/미주 등의 컨트롤이 있는 경우 무한루프 처리
+- todo: 표 안의 표를 무시하는 방법...ㅜ 
+
+---
 ## [1.0.0] - 2025-04-27
 ### 💥 Breaking
 - 1.0.0으로 업데이트(core, param_helpers, run_methods로 분리)
