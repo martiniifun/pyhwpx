@@ -132,7 +132,7 @@ def addr_to_tuple(cell_address: str) -> tuple[int, int]:
     return row, col
 
 
-def tuple_to_addr(col: int, row: int) -> str:
+def tuple_to_addr(row: int, col: int) -> str:
     """
     (컬럼번호, 행번호)를 인자로 받아 엑셀 셀 주소 문자열(예: `"AAA3"`)을 반환합니다.
 
@@ -3526,6 +3526,20 @@ class Hwp(ParamHelpers, RunMethods):
             while self.set_pos(t_init + i, 0, 0):
                 cur_addr = self.KeyIndicator()[-1][1:].split(")")[0]
                 if cur_addr == "A1":
+                    temp_pos = self.get_pos()
+                    self.CloseEx()
+                    if self.is_cell():
+                        self.set_pos(*temp_pos)
+                        self.TableCellBlockExtendAbs()
+                        self.TableCellBlockExtend()
+                        subt_len = len(self.get_selected_range())
+                        i += subt_len
+                        for _ in range(subt_len): self.addr_info[1].append("")
+                        self.CloseEx()
+                        self.TableRightCell()
+                        continue
+                    else:
+                        self.set_pos(*temp_pos)
                     break
                 if not self.is_cell():
                     self.addr_info[1].append("")
