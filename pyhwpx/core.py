@@ -646,7 +646,25 @@ class Ctrl:
 
 class XHwpDocuments:
     """
-    아래아한글의 문서 오브젝트를 조작하기 위한 XHwpDocuments 래퍼 클래스. (작성중)
+    한글과컴퓨터 문서(HWP) COM 객체의 컬렉션을 표현하는 클래스입니다.
+
+    이 클래스는 COM 객체로 표현된 문서 컬렉션과 상호작용하기 위한 속성과 메서드를 제공합니다.
+    문서 컬렉션에 대한 반복, 인덱싱, 길이 조회 등의 컬렉션 유사 동작을 지원하며,
+    문서를 추가하고, 닫고, 특정 문서 오브젝트를 검색하는 메서드를 포함합니다.
+
+    Attributes:
+        Active_XHwpDocument (XHwpDocument): 컬렉션의 활성 문서
+        Application: COM 객체와 연결된 애플리케이션을 반환
+        CLSID: COM 객체의 CLSID
+        Count (int): 컬렉션 내 문서 개수
+
+    Methods:
+        Add(isTab: bool = False) -> XHwpDocument:
+            컬렉션에 새 문서를 추가합니다.  
+        Close(isDirty: bool = False) -> None:
+            활성 문서 창을 닫습니다.
+        FindItem(lDocID: int) -> XHwpDocument:
+            주어진 문서 ID에 해당하는 문서 객체를 찾아 반환합니다.
     """
     def __init__(self, com_obj):
         self._com_obj = com_obj
@@ -728,6 +746,37 @@ class XHwpDocuments:
 
 
 class XHwpDocument:
+    """
+    한글과컴퓨터 문서(HWP)의 COM 객체를 래핑한 클래스입니다.
+
+    이 클래스는 HwpDocument COM 객체와 상호작용하기 위한 속성과 메서드를 제공합니다.
+    문서 속성, 데이터 조작 기능, 상태 제어 등 다양한 기능을 제공하며,
+    한글과컴퓨터의 문서 관리 시스템을 파이썬스럽게 다룰 수 있도록 설계되었습니다.
+
+    속성:
+        Application: 문서와 연결된 어플리케이션 객체
+        CLSID: 문서의 클래스 ID 
+        DocumentID: 문서의 고유 식별자
+        EditMode: 현재 문서의 편집 모드
+        Format: 문서의 형식
+        FullName: 문서의 전체 경로를 문자열로 반환. 저장되지 않은 문서는 빈 문자열 반환
+        Modified: 문서의 수정 여부를 나타냄
+        Path: 문서가 저장된 폴더 경로
+        XHwpCharacterShape: 문서의 글자모양 설정에 접근
+        XHwpDocumentInfo: 문서의 상세 정보에 접근
+        XHwpFind: 텍스트 찾기 기능에 접근
+        XHwpFormCheckButtons: 체크박스 양식 요소에 접근
+        XHwpFormComboBoxs: 콤보박스 양식 요소에 접근 
+        XHwpFormEdits: 편집 양식 요소에 접근
+        XHwpFormPushButtons: 버튼 양식 요소에 접근
+        XHwpFormRadioButtons: 라디오버튼 양식 요소에 접근
+        XHwpParagraphShape: 문단 모양 설정에 접근
+        XHwpPrint: 문서 인쇄 제어에 접근
+        XHwpRange: 문서 내 범위 설정에 접근
+        XHwpSelection: 현재 선택된 텍스트나 개체에 접근
+        XHwpSendMail: 메일 보내기 기능에 접근
+        XHwpSummaryInfo: 문서 요약 정보에 접근
+    """
     def __repr__(self):
         return f"<Doc: DocumentID={self.DocumentID}, FullName=\"{self.FullName or None}\", Modified=\"{True if self.Modified else False}\">"
 
@@ -3447,6 +3496,8 @@ class Hwp(ParamHelpers, RunMethods):
         """
         if not self.is_cell():
             return False  # 표 안에 있지 않으면 False 리턴(종료)
+        cur_pos = self.get_pos()
+
         if type(addr) == int and col:  # "A1" 대신 (1, 1) 처럼 tuple[int, int] 방식일 경우
             addr = tuple_to_addr(addr, col)  # 문자열 "A1" 방식으로 우선 변환
 
@@ -3455,17 +3506,17 @@ class Hwp(ParamHelpers, RunMethods):
         # 우선 맨 끝 셀로 이동
         self.HAction.Run("TableColEnd")
         self.HAction.Run("TableColPageDown")
-        t_end = self.get_pos()[0]  # 마지막 셀의 구역번호(List)
+        t_end = self.get_pos()[0]  # 마지막 셀의 구역번호(List) 저장
         self.HAction.Run("TableColBegin")
         self.HAction.Run("TableColPageUp")
-        t_init = self.get_pos()[0]  # 시작 셀의 구역번호(List)
+        t_init = self.get_pos()[0]  # 시작 셀의 구역번호(List) 저장
 
         try:
             if self.addr_info[0] == t_end:
                 pass
             else:
                 refresh = True
-                self.addr_info = [t_end, ["A1"]]
+                self.addr_info = [t_end, ["A1"]]  # 로컬변수가 아닌 인스턴스변수로 저장(재실행 때 활용하기 위함)
         except AttributeError:
             refresh = True
             self.addr_info = [t_end, ["A1"]]
@@ -3476,6 +3527,12 @@ class Hwp(ParamHelpers, RunMethods):
                 cur_addr = self.KeyIndicator()[-1][1:].split(")")[0]
                 if cur_addr == "A1":
                     break
+                if not self.is_cell():
+                    self.addr_info[1].append("")
+                    i += 1
+                    continue
+                if self.get_pos()[0] == 0:
+                    break
                 self.addr_info[1].append(cur_addr)
                 i += 1
         try:
@@ -3484,7 +3541,7 @@ class Hwp(ParamHelpers, RunMethods):
                 self.HAction.Run("TableCellBlock")
             return True
         except ValueError:
-            self.set_pos(init, 0, 0)
+            self.set_pos(*cur_pos)
             return False
 
     def get_field_info(self) -> list[dict]:
