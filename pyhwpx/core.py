@@ -27,14 +27,14 @@ import pandas as pd
 import pyperclip as cb
 from PIL import Image
 
-if sys.platform == 'win32':
+if sys.platform == "win32":
     import pythoncom
     import win32api
     import win32con
     import win32gui
 
     # CircularImport 오류 출력안함
-    devnull = open(os.devnull, 'w')
+    devnull = open(os.devnull, "w")
     old_stdout = sys.stdout
     old_stderr = sys.stderr
     sys.stdout = devnull
@@ -50,7 +50,7 @@ if sys.platform == 'win32':
 # for pyinstaller
 _ = files("pyhwpx").joinpath("FilePathCheckerModule.dll")
 
-if getattr(sys, 'frozen', False):
+if getattr(sys, "frozen", False):
     pyinstaller_path = sys._MEIPASS
 else:
     pyinstaller_path = os.path.dirname(os.path.abspath(__file__))
@@ -62,7 +62,7 @@ except FileNotFoundError as e:
     pass
 
 # Type Library 파일 재생성
-win32.gencache.EnsureModule('{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}', 0, 1, 0)
+win32.gencache.EnsureModule("{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}", 0, 1, 0)
 
 
 __all__ = ["Hwp", "com_initialized"]
@@ -89,6 +89,7 @@ def com_initialized(func):
 
     return wrapper
 
+
 def log_error(method):
     @wraps(method)
     def wrapper(*args, **kwargs):
@@ -97,6 +98,7 @@ def log_error(method):
         except Exception as e:
             print(f"오류 발생: {e} \n 다음 함수를 확인하세요 : [{method.__name__}]")
             raise  # 예외를 다시 전파 (없애고 싶으면 여기만 수정하면 됨)
+
     return wrapper
 
 
@@ -134,7 +136,7 @@ def addr_to_tuple(cell_address: str) -> tuple[int, int]:
     # 문자 부분 -> 열 번호(col)로 변환
     col = 0
     for ch in col_letters:
-        col = col * 26 + (ord(ch) - ord('A') + 1)
+        col = col * 26 + (ord(ch) - ord("A") + 1)
 
     # 숫자 부분 -> 행 번호(row)로 변환
     row = int(row_str)
@@ -164,7 +166,7 @@ def tuple_to_addr(row: int, col: int) -> str:
     # 컬럼번호(col)를 "A"~"Z", "AA"~"ZZ", ... 형태로 변환
     while col > 0:
         col, remainder = divmod(col - 1, 26)
-        letters.append(chr(remainder + ord('A')))
+        letters.append(chr(remainder + ord("A")))
     letters.reverse()  # 스택처럼 뒤집어 넣었으므로 최종 결과는 reverse() 후 합침
     col_str = "".join(letters)
 
@@ -188,7 +190,7 @@ def _get_edit_text(hwnd: int, delay: int = 0.2) -> str:
     length = win32gui.SendMessage(hwnd, win32con.WM_GETTEXTLENGTH) + 1
     buffer = win32gui.PyMakeBuffer(length * 2)
     win32gui.SendMessage(hwnd, win32con.WM_GETTEXT, length, buffer)
-    text = buffer[:length * 2].tobytes().decode('utf-16')[:-1]
+    text = buffer[: length * 2].tobytes().decode("utf-16")[:-1]
     return text
 
 
@@ -295,12 +297,12 @@ def crop_data_from_selection(data, selection) -> list[str]:
     # 범위 추출
     result = []
     for row in range(min_row, max_row + 1):
-        result.append(data[row][min_col:max_col + 1])
+        result.append(data[row][min_col : max_col + 1])
 
     return result
 
 
-def check_registry_key(key_name:str="FilePathCheckerModule") -> bool:
+def check_registry_key(key_name: str = "FilePathCheckerModule") -> bool:
     """
     아래아한글의 보안모듈 FilePathCheckerModule의 레지스트리에 등록여부 체크
 
@@ -311,6 +313,7 @@ def check_registry_key(key_name:str="FilePathCheckerModule") -> bool:
         등록되어 있는 경우 True, 미등록인 경우 False
     """
     from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, CloseKey
+
     winup_path = r"Software\HNC\HwpAutomation\Modules"
     alt_winup_path = r"Software\Hnc\HwpUserAction\Modules"
     reg_handle = ConnectRegistry(None, HKEY_CURRENT_USER)
@@ -318,6 +321,7 @@ def check_registry_key(key_name:str="FilePathCheckerModule") -> bool:
     for path in [winup_path, alt_winup_path]:
         try:
             from winreg import KEY_READ
+
             key = OpenKey(reg_handle, path, 0, KEY_READ)
             try:
                 value, regtype = QueryValueEx(key, key_name)
@@ -382,7 +386,7 @@ def excel_address_to_tuple_zero_based(address: str) -> tuple[int | Any, int | An
     row = 0
     for char in address:
         if char.isalpha():
-            column = column * 26 + (ord(char.upper()) - ord('A'))
+            column = column * 26 + (ord(char.upper()) - ord("A"))
         elif char.isdigit():
             row = row * 10 + int(char)
         else:
@@ -395,6 +399,7 @@ class Ctrl:
     """
     아래아한글의 모든 개체(표, 그림, 글상자 및 각주/미주 등)를 다루기 위한 클래스.
     """
+
     def __init__(self, com_obj):
         self._com_obj = com_obj  # 원래 COM 객체
 
@@ -670,12 +675,13 @@ class XHwpDocuments:
 
     Methods:
         Add(isTab: bool = False) -> XHwpDocument:
-            컬렉션에 새 문서를 추가합니다.  
+            컬렉션에 새 문서를 추가합니다.
         Close(isDirty: bool = False) -> None:
             활성 문서 창을 닫습니다.
         FindItem(lDocID: int) -> XHwpDocument:
             주어진 문서 ID에 해당하는 문서 객체를 찾아 반환합니다.
     """
+
     def __init__(self, com_obj):
         self._com_obj = com_obj
 
@@ -717,7 +723,7 @@ class XHwpDocuments:
     def Count(self):
         return self._com_obj.Count
 
-    def Add(self, isTab:bool=False) -> "XHwpDocument":
+    def Add(self, isTab: bool = False) -> "XHwpDocument":
         """
         문서 추가
 
@@ -741,7 +747,7 @@ class XHwpDocuments:
         """
         return self._com_obj.Close(isDirty=isDirty)
 
-    def FindItem(self, lDocID:int) -> "XHwpDocument":
+    def FindItem(self, lDocID: int) -> "XHwpDocument":
         """
         해당 DocumentID의 문서 오브젝트가 있는지 탐색
 
@@ -765,7 +771,7 @@ class XHwpDocument:
 
     속성:
         Application: 문서와 연결된 어플리케이션 객체
-        CLSID: 문서의 클래스 ID 
+        CLSID: 문서의 클래스 ID
         DocumentID: 문서의 고유 식별자
         EditMode: 현재 문서의 편집 모드
         Format: 문서의 형식
@@ -776,7 +782,7 @@ class XHwpDocument:
         XHwpDocumentInfo: 문서의 상세 정보에 접근
         XHwpFind: 텍스트 찾기 기능에 접근
         XHwpFormCheckButtons: 체크박스 양식 요소에 접근
-        XHwpFormComboBoxs: 콤보박스 양식 요소에 접근 
+        XHwpFormComboBoxs: 콤보박스 양식 요소에 접근
         XHwpFormEdits: 편집 양식 요소에 접근
         XHwpFormPushButtons: 버튼 양식 요소에 접근
         XHwpFormRadioButtons: 라디오버튼 양식 요소에 접근
@@ -787,8 +793,9 @@ class XHwpDocument:
         XHwpSendMail: 메일 보내기 기능에 접근
         XHwpSummaryInfo: 문서 요약 정보에 접근
     """
+
     def __repr__(self):
-        return f"<Doc: DocumentID={self.DocumentID}, FullName=\"{self.FullName or None}\", Modified=\"{True if self.Modified else False}\">"
+        return f'<Doc: DocumentID={self.DocumentID}, FullName="{self.FullName or None}", Modified="{True if self.Modified else False}">'
 
     def __init__(self, com_obj):
         self._com_obj = com_obj
@@ -801,10 +808,10 @@ class XHwpDocument:
     def CLSID(self):
         return self._com_obj.CLSID
 
-    def Clear(self, option:bool=False) -> None:
+    def Clear(self, option: bool = False) -> None:
         return self._com_obj.Clear(option=option)
 
-    def Close(self, isDirty:bool=False) -> None:
+    def Close(self, isDirty: bool = False) -> None:
         return self._com_obj.Close(isDirty=isDirty)
 
     @property
@@ -830,20 +837,20 @@ class XHwpDocument:
     def Modified(self) -> int:
         return self._com_obj.Modified
 
-    def Open(self, filename:str, Format:str, arg:str):
+    def Open(self, filename: str, Format: str, arg: str):
         return self._com_obj.Open(filename=filename, Format=Format, arg=arg)
 
     @property
     def Path(self) -> str:
         return self._com_obj.Path
 
-    def Redo(self, Count:int):
+    def Redo(self, Count: int):
         return self._com_obj.Redo(Count=Count)
 
-    def Save(self, save_if_dirty:bool):
+    def Save(self, save_if_dirty: bool):
         return self._com_obj.Save(save_if_dirty=save_if_dirty)
 
-    def SaveAs(self, Path:str, Format:str, arg:str):
+    def SaveAs(self, Path: str, Format: str, arg: str):
         return self._com_obj.SaveAs(Path=Path, Format=Format, arg=arg)
 
     def SendBrowser(self):
@@ -852,7 +859,7 @@ class XHwpDocument:
     def SetActive_XHwpDocument(self):
         return self._com_obj.SetActive_XHwpDocument()
 
-    def Undo(self, Count:int):
+    def Undo(self, Count: int):
         return self._com_obj.Undo(Count=Count)
 
     @property
@@ -945,9 +952,15 @@ class Hwp(ParamHelpers, RunMethods):
     """
 
     def __repr__(self):
-        return f"<Hwp: DocumentID={self.XHwpDocuments.Active_XHwpDocument.DocumentID}, Title=\"{self.get_title()}\", FullName=\"{self.XHwpDocuments.Active_XHwpDocument.FullName or None}\">"
+        return f'<Hwp: DocumentID={self.XHwpDocuments.Active_XHwpDocument.DocumentID}, Title="{self.get_title()}", FullName="{self.XHwpDocuments.Active_XHwpDocument.FullName or None}">'
 
-    def __init__(self, new: bool = False, visible: bool = True, register_module: bool = True, quit = False):
+    def __init__(
+        self,
+        new: bool = False,
+        visible: bool = True,
+        register_module: bool = True,
+        quit=False,
+    ):
         self.hwp = 0
         self.quit = quit
         self.htf_fonts = {
@@ -965,7 +978,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "고딕": {
                 "FaceNameHangul": "고딕",
@@ -981,7 +994,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "샘물": {
                 "FaceNameHangul": "샘물",
@@ -997,7 +1010,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "필기": {
                 "FaceNameHangul": "필기",
@@ -1013,7 +1026,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명조": {
                 "FaceNameHangul": "한양신명조",
@@ -1029,7 +1042,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "견명조": {
                 "FaceNameHangul": "한양견명조",
@@ -1045,7 +1058,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명조 약자": {
                 "FaceNameHangul": "한양신명조",
@@ -1061,7 +1074,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명조 간자": {
                 "FaceNameHangul": "한양신명조",
@@ -1077,7 +1090,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "중고딕": {
                 "FaceNameHangul": "한양중고딕",
@@ -1093,7 +1106,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "중고딕 약자": {
                 "FaceNameHangul": "한양중고딕",
@@ -1109,7 +1122,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "중고딕 간자": {
                 "FaceNameHangul": "한양중고딕",
@@ -1125,7 +1138,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "견고딕": {
                 "FaceNameHangul": "한양견고딕",
@@ -1141,7 +1154,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "그래픽": {
                 "FaceNameHangul": "한양그래픽",
@@ -1157,7 +1170,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "궁서": {
                 "FaceNameHangul": "한양궁서",
@@ -1173,7 +1186,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "해서 약자": {
                 "FaceNameHangul": "한양궁서",
@@ -1189,7 +1202,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "해서 간자": {
                 "FaceNameHangul": "한양궁서",
@@ -1205,7 +1218,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "가는공한": {
                 "FaceNameHangul": "가는공한",
@@ -1221,7 +1234,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "중간공한": {
                 "FaceNameHangul": "중간공한",
@@ -1237,7 +1250,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "굵은공한": {
                 "FaceNameHangul": "굵은공한",
@@ -1253,7 +1266,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "가는한": {
                 "FaceNameHangul": "가는한",
@@ -1269,7 +1282,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "중간한": {
                 "FaceNameHangul": "중간한",
@@ -1285,7 +1298,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "굵은한": {
                 "FaceNameHangul": "굵은한",
@@ -1301,7 +1314,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "펜흘림": {
                 "FaceNameHangul": "펜흘림",
@@ -1317,7 +1330,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "복숭아": {
                 "FaceNameHangul": "복숭아",
@@ -1333,7 +1346,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "옥수수": {
                 "FaceNameHangul": "옥수수",
@@ -1349,7 +1362,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "오이": {
                 "FaceNameHangul": "오이",
@@ -1365,7 +1378,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "가지": {
                 "FaceNameHangul": "가지",
@@ -1381,7 +1394,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "강낭콩": {
                 "FaceNameHangul": "강낭콩",
@@ -1397,7 +1410,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "딸기": {
                 "FaceNameHangul": "딸기",
@@ -1413,7 +1426,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "타이프": {
                 "FaceNameHangul": "타이프",
@@ -1429,7 +1442,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "헤드라인": {
                 "FaceNameHangul": "태 헤드라인T",
@@ -1445,7 +1458,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "가는헤드라인": {
                 "FaceNameHangul": "태 가는 헤드라인T",
@@ -1461,7 +1474,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "헤드라인D": {
                 "FaceNameHangul": "태 헤드라인D",
@@ -1477,7 +1490,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "가는헤드라인D": {
                 "FaceNameHangul": "태 가는 헤드라인D",
@@ -1493,7 +1506,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "태 나무": {
                 "FaceNameHangul": "태 나무",
@@ -1509,7 +1522,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "양재 다운명조M": {
                 "FaceNameHangul": "양재 다운명조M",
@@ -1525,7 +1538,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "양재 본목각M": {
                 "FaceNameHangul": "양재 본목각M",
@@ -1541,7 +1554,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "양재 소슬": {
                 "FaceNameHangul": "양재 소슬",
@@ -1557,7 +1570,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "양재 튼튼B": {
                 "FaceNameHangul": "양재 튼튼B",
@@ -1573,7 +1586,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "양재 참숯B": {
                 "FaceNameHangul": "양재 참숯B",
@@ -1589,7 +1602,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "양재 둘기": {
                 "FaceNameHangul": "양재 둘기",
@@ -1605,7 +1618,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "양재 매화": {
                 "FaceNameHangul": "양재 매화",
@@ -1621,7 +1634,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "양재 샤넬": {
                 "FaceNameHangul": "양재 샤넬",
@@ -1637,7 +1650,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "양재 와당": {
                 "FaceNameHangul": "양재 와당",
@@ -1653,7 +1666,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "양재 이니셜": {
                 "FaceNameHangul": "양재 이니셜",
@@ -1669,7 +1682,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "휴먼명조": {
                 "FaceNameHangul": "휴먼명조",
@@ -1685,7 +1698,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "휴먼고딕": {
                 "FaceNameHangul": "휴먼고딕",
@@ -1701,7 +1714,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "가는안상수체": {
                 "FaceNameHangul": "가는안상수체",
@@ -1717,7 +1730,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "중간안상수체": {
                 "FaceNameHangul": "중간안상수체",
@@ -1733,7 +1746,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "굵은안상수체": {
                 "FaceNameHangul": "굵은안상수체",
@@ -1749,7 +1762,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "휴먼가는샘체": {
                 "FaceNameHangul": "휴먼가는샘체",
@@ -1765,7 +1778,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "휴먼중간샘체": {
                 "FaceNameHangul": "휴먼중간샘체",
@@ -1781,7 +1794,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "휴먼굵은샘체": {
                 "FaceNameHangul": "휴먼굵은샘체",
@@ -1797,7 +1810,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "휴먼가는팸체": {
                 "FaceNameHangul": "휴먼가는팸체",
@@ -1813,7 +1826,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "휴먼중간팸체": {
                 "FaceNameHangul": "휴먼중간팸체",
@@ -1829,7 +1842,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "휴먼굵은팸체": {
                 "FaceNameHangul": "휴먼굵은팸체",
@@ -1845,7 +1858,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "휴먼옛체": {
                 "FaceNameHangul": "휴먼옛체",
@@ -1861,7 +1874,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 세명조": {
                 "FaceNameHangul": "신명 세명조",
@@ -1877,7 +1890,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 신명조": {
                 "FaceNameHangul": "신명 신명조",
@@ -1893,7 +1906,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 신신명조": {
                 "FaceNameHangul": "신명 신신명조",
@@ -1909,7 +1922,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 중명조": {
                 "FaceNameHangul": "신명 중명조",
@@ -1925,7 +1938,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 태명조": {
                 "FaceNameHangul": "신명 태명조",
@@ -1941,7 +1954,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 견명조": {
                 "FaceNameHangul": "신명 견명조",
@@ -1957,7 +1970,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 신문명조": {
                 "FaceNameHangul": "신명 신문명조",
@@ -1973,7 +1986,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 순명조": {
                 "FaceNameHangul": "신명 순명조",
@@ -1989,7 +2002,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 세고딕": {
                 "FaceNameHangul": "신명 세고딕",
@@ -2005,7 +2018,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 중고딕": {
                 "FaceNameHangul": "신명 중고딕",
@@ -2021,7 +2034,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 태고딕": {
                 "FaceNameHangul": "신명 태고딕",
@@ -2037,7 +2050,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 견고딕": {
                 "FaceNameHangul": "신명 견고딕",
@@ -2053,7 +2066,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 세나루": {
                 "FaceNameHangul": "신명 세나루",
@@ -2069,7 +2082,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 디나루": {
                 "FaceNameHangul": "신명 디나루",
@@ -2085,7 +2098,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 신그래픽": {
                 "FaceNameHangul": "신명 신그래픽",
@@ -2101,7 +2114,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 태그래픽": {
                 "FaceNameHangul": "신명 태그래픽",
@@ -2117,7 +2130,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "신명 궁서": {
                 "FaceNameHangul": "신명 궁서",
@@ -2133,7 +2146,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#세명조": {
                 "FaceNameHangul": "#세명조",
@@ -2149,7 +2162,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신명조": {
                 "FaceNameHangul": "#신명조",
@@ -2165,7 +2178,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#중명조": {
                 "FaceNameHangul": "#중명조",
@@ -2181,7 +2194,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신중명조": {
                 "FaceNameHangul": "#신중명조",
@@ -2197,7 +2210,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#화명조A": {
                 "FaceNameHangul": "#화명조A",
@@ -2213,7 +2226,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#화명조B": {
                 "FaceNameHangul": "#화명조B",
@@ -2229,7 +2242,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#태명조": {
                 "FaceNameHangul": "#태명조",
@@ -2245,7 +2258,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신태명조": {
                 "FaceNameHangul": "#신태명조",
@@ -2261,7 +2274,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#태신명조": {
                 "FaceNameHangul": "#태신명조",
@@ -2277,7 +2290,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#견명조": {
                 "FaceNameHangul": "#견명조",
@@ -2293,7 +2306,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신문명조": {
                 "FaceNameHangul": "#신문명조",
@@ -2309,7 +2322,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신문태명": {
                 "FaceNameHangul": "#신문태명",
@@ -2325,7 +2338,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신문견명": {
                 "FaceNameHangul": "#신문견명",
@@ -2341,7 +2354,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#세고딕": {
                 "FaceNameHangul": "#세고딕",
@@ -2357,7 +2370,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신세고딕": {
                 "FaceNameHangul": "#신세고딕",
@@ -2373,7 +2386,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#중고딕": {
                 "FaceNameHangul": "#중고딕",
@@ -2389,7 +2402,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#태고딕": {
                 "FaceNameHangul": "#태고딕",
@@ -2405,7 +2418,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#견고딕": {
                 "FaceNameHangul": "#견고딕",
@@ -2421,7 +2434,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신문고딕": {
                 "FaceNameHangul": "#신문고딕",
@@ -2437,7 +2450,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신문태고": {
                 "FaceNameHangul": "#신문태고",
@@ -2453,7 +2466,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신문견고": {
                 "FaceNameHangul": "#신문견고",
@@ -2469,7 +2482,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#세나루": {
                 "FaceNameHangul": "#세나루",
@@ -2485,7 +2498,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신세나루": {
                 "FaceNameHangul": "#신세나루",
@@ -2501,7 +2514,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#디나루": {
                 "FaceNameHangul": "#디나루",
@@ -2517,7 +2530,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신디나루": {
                 "FaceNameHangul": "#신디나루",
@@ -2533,7 +2546,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#그래픽": {
                 "FaceNameHangul": "#그래픽",
@@ -2549,7 +2562,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#신그래픽": {
                 "FaceNameHangul": "#신그래픽",
@@ -2565,7 +2578,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#태그래픽": {
                 "FaceNameHangul": "#태그래픽",
@@ -2581,7 +2594,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#궁서": {
                 "FaceNameHangul": "#궁서",
@@ -2597,7 +2610,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#공작": {
                 "FaceNameHangul": "#공작",
@@ -2613,7 +2626,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#수암A": {
                 "FaceNameHangul": "#수암A",
@@ -2629,7 +2642,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#수암B": {
                 "FaceNameHangul": "#수암B",
@@ -2645,7 +2658,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "#빅": {
                 "FaceNameHangul": "#빅",
@@ -2661,7 +2674,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "시스템": {
                 "FaceNameHangul": "시스템",
@@ -2677,7 +2690,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "시스템 약자": {
                 "FaceNameHangul": "시스템",
@@ -2693,7 +2706,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "시스템 간자": {
                 "FaceNameHangul": "시스템",
@@ -2709,7 +2722,7 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
+                "FontTypeUser": 2,
             },
             "HY둥근고딕": {
                 "FaceNameHangul": "HY둥근고딕",
@@ -2725,8 +2738,8 @@ class Hwp(ParamHelpers, RunMethods):
                 "FontTypeLatin": 2,
                 "FontTypeOther": 2,
                 "FontTypeSymbol": 2,
-                "FontTypeUser": 2
-            }
+                "FontTypeUser": 2,
+            },
         }
         context = pythoncom.CreateBindCtx(0)
         pythoncom.CoInitialize()  # 이걸 꼭 실행해야 하는가? 왜 Pycharm이나 주피터에서는 괜찮고, vscode에서는 CoInitialize 오류가 나는지?
@@ -2736,10 +2749,11 @@ class Hwp(ParamHelpers, RunMethods):
         if not new:
             for moniker in monikers:
                 name = moniker.GetDisplayName(context, moniker)
-                if name.startswith('!HwpObject.'):
+                if name.startswith("!HwpObject."):
                     obj = running_coms.GetObject(moniker)
                     self.hwp = win32.gencache.EnsureDispatch(
-                        obj.QueryInterface(pythoncom.IID_IDispatch))
+                        obj.QueryInterface(pythoncom.IID_IDispatch)
+                    )
         if not self.hwp:
             self.hwp = win32.gencache.EnsureDispatch("HWPFrame.HwpObject")
         try:
@@ -2754,7 +2768,9 @@ class Hwp(ParamHelpers, RunMethods):
             try:
                 self.register_module()
             except Exception as e:
-                print(e, "RegisterModule 액션을 실행할 수 없음. 개발자에게 문의해주세요.")
+                print(
+                    e, "RegisterModule 액션을 실행할 수 없음. 개발자에게 문의해주세요."
+                )
 
     def __del__(self):
         if quit:
@@ -2763,7 +2779,7 @@ class Hwp(ParamHelpers, RunMethods):
             except:
                 pass
         pythoncom.CoUninitialize()
-    
+
     @property
     def Application(self) -> "Hwp.Application":
         """
@@ -3328,7 +3344,9 @@ class Hwp(ParamHelpers, RunMethods):
         Returns:
             현재 쪽번호
         """
-        return self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPage + 1
+        return (
+            self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPage + 1
+        )
 
     @property
     def current_printpage(self) -> int:
@@ -3341,7 +3359,9 @@ class Hwp(ParamHelpers, RunMethods):
 
         Returns:
         """
-        return self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPrintPage
+        return (
+            self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPrintPage
+        )
 
     @property
     def current_font(self):
@@ -3349,13 +3369,17 @@ class Hwp(ParamHelpers, RunMethods):
         if charshape["FontTypeHangul"] == 1:
             return charshape["FaceNameHangul"]
         elif charshape["FontTypeHangul"] == 2:
-            sub_dict = {key: value for key, value in charshape.items() if key.startswith('F')}
+            sub_dict = {
+                key: value for key, value in charshape.items() if key.startswith("F")
+            }
             for key, value in self.htf_fonts.items():
                 if value == sub_dict:
                     return key
 
     # 커스텀 메서드
-    def get_ctrl_pos(self, ctrl: Any = None, option: Literal[0, 1] = 0, as_tuple: bool = True) -> tuple[int, int, int]:
+    def get_ctrl_pos(
+        self, ctrl: Any = None, option: Literal[0, 1] = 0, as_tuple: bool = True
+    ) -> tuple[int, int, int]:
         """
         특정 컨트롤의 앵커(빨간 조판부호) 좌표를 리턴하는 메서드. 한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함
 
@@ -3404,7 +3428,9 @@ class Hwp(ParamHelpers, RunMethods):
         else:
             return ctrl.GetAnchorPos(option)
 
-    def get_linespacing(self, method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent") -> int | float:
+    def get_linespacing(
+        self, method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent"
+    ) -> int | float:
         """
         현재 캐럿 위치의 줄간격(%) 리턴.
 
@@ -3441,10 +3467,15 @@ class Hwp(ParamHelpers, RunMethods):
         if pset.LineSpacingType == self.hwp.LineSpacingMethod(method):
             return pset.LineSpacing
         else:  # 어찌됐든 포인트 단위로 리턴
-            return self.HwpUnitToPoint(pset.LineSpacing / 2)  # 이상하게 1/2 곱해야 맞다.
+            return self.HwpUnitToPoint(
+                pset.LineSpacing / 2
+            )  # 이상하게 1/2 곱해야 맞다.
 
-    def set_linespacing(self, value: int | float = 160,
-                        method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent") -> bool:
+    def set_linespacing(
+        self,
+        value: int | float = 160,
+        method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent",
+    ) -> bool:
         """
         현재 캐럿 위치의 문단 또는 선택 블록의 줄간격(%) 설정
 
@@ -3500,7 +3531,9 @@ class Hwp(ParamHelpers, RunMethods):
             self.MoveParaBegin()
             return False
 
-    def goto_addr(self, addr: str | int = "A1", col: int = 0, select_cell: bool = False) -> bool:
+    def goto_addr(
+        self, addr: str | int = "A1", col: int = 0, select_cell: bool = False
+    ) -> bool:
         """
         셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
         셀 주소는 "C3"처럼 문자열로 입력하거나, 행번호, 열번호를 입력할 수 있음. 시작값은 1.
@@ -3517,7 +3550,9 @@ class Hwp(ParamHelpers, RunMethods):
             return False  # 표 안에 있지 않으면 False 리턴(종료)
         cur_pos = self.get_pos()
 
-        if type(addr) == int and col:  # "A1" 대신 (1, 1) 처럼 tuple[int, int] 방식일 경우
+        if (
+            type(addr) == int and col
+        ):  # "A1" 대신 (1, 1) 처럼 tuple[int, int] 방식일 경우
             addr = tuple_to_addr(addr, col)  # 문자열 "A1" 방식으로 우선 변환
 
         refresh = False
@@ -3535,7 +3570,10 @@ class Hwp(ParamHelpers, RunMethods):
                 pass
             else:
                 refresh = True
-                self.addr_info = [t_end, ["A1"]]  # 로컬변수가 아닌 인스턴스변수로 저장(재실행 때 활용하기 위함)
+                self.addr_info = [
+                    t_end,
+                    ["A1"],
+                ]  # 로컬변수가 아닌 인스턴스변수로 저장(재실행 때 활용하기 위함)
         except AttributeError:
             refresh = True
             self.addr_info = [t_end, ["A1"]]
@@ -3553,7 +3591,8 @@ class Hwp(ParamHelpers, RunMethods):
                         self.TableCellBlockExtend()
                         subt_len = len(self.get_selected_range())
                         i += subt_len
-                        for _ in range(subt_len): self.addr_info[1].append("")
+                        for _ in range(subt_len):
+                            self.addr_info[1].append("")
                         self.CloseEx()
                         self.TableRightCell()
                         continue
@@ -3602,9 +3641,13 @@ class Hwp(ParamHelpers, RunMethods):
             results = []
             for field in root.findall(".//FIELDBEGIN"):
                 name_value = field.attrib.get("Name")
-                command = re.split(r"(Clickhere:set:\d+:Direction:wstring:\d+:)|( HelpState:wstring:\d+:)",
-                                   field.attrib.get("Command")[:-2])
-                results.append({"name": name_value, "direction": command[3], "memo": command[-1]})
+                command = re.split(
+                    r"(Clickhere:set:\d+:Direction:wstring:\d+:)|( HelpState:wstring:\d+:)",
+                    field.attrib.get("Command")[:-2],
+                )
+                results.append(
+                    {"name": name_value, "direction": command[3], "memo": command[-1]}
+                )
             return results
         except ET.ParseError as e:
             print("XML 파싱 오류:", e)
@@ -3613,7 +3656,7 @@ class Hwp(ParamHelpers, RunMethods):
             print("파일을 찾을 수 없습니다.")
             return False
 
-    def get_image_info(self, ctrl: Any = None) -> dict[str:str, str:list[int, int]]:
+    def get_image_info(self, ctrl: Any = None) -> dict[str:str, str : list[int, int]]:
         """
         이미지 컨트롤의 원본 그림의 이름과
         원본 그림의 크기 정보를 추출하는 메서드
@@ -3647,16 +3690,18 @@ class Hwp(ParamHelpers, RunMethods):
         self.save_as("temp.xml", "HWPML2X")
         self.clear()
         self.FileClose()
-        tree = ET.parse('temp.xml')
+        tree = ET.parse("temp.xml")
         root = tree.getroot()
 
-        for shapeobject in root.findall('.//SHAPEOBJECT'):
-            shapecmt = shapeobject.find('SHAPECOMMENT')
+        for shapeobject in root.findall(".//SHAPEOBJECT"):
+            shapecmt = shapeobject.find("SHAPECOMMENT")
             if shapecmt is not None and shapecmt.text:
                 info = shapecmt.text.split("\n")[1:]
                 try:
-                    return {"name": info[0].split(": ")[1],
-                            "size": [int(i) for i in info[1][14:-5].split("pixel, 세로 ")]}
+                    return {
+                        "name": info[0].split(": ")[1],
+                        "size": [int(i) for i in info[1][14:-5].split("pixel, 세로 ")],
+                    }
                 finally:
                     os.remove("temp.xml")
         return False
@@ -3688,7 +3733,9 @@ class Hwp(ParamHelpers, RunMethods):
         elif type(style) == str:
             style_dict = self.get_style_dict(as_="dict")
             if style in [style_dict[i]["name"] for i in style_dict]:
-                style_idx = [i for i in style_dict if style_dict[i]["name"] == style][0] + 1
+                style_idx = [i for i in style_dict if style_dict[i]["name"] == style][
+                    0
+                ] + 1
             else:
                 return False
         pset = self.hwp.HParameterSet.HGotoE
@@ -3725,8 +3772,14 @@ class Hwp(ParamHelpers, RunMethods):
         pset.SetSelectionIndex = 5  # 조판부호
         return self.hwp.HAction.Execute("Goto", pset.HSet)
 
-    def shape_copy_paste(self, Type: Literal["font", "para", "both"] = "both", cell_attr: bool = False,
-                         cell_border: bool = False, cell_fill: bool = False, cell_only: int = 0) -> bool:
+    def shape_copy_paste(
+        self,
+        Type: Literal["font", "para", "both"] = "both",
+        cell_attr: bool = False,
+        cell_border: bool = False,
+        cell_fill: bool = False,
+        cell_only: int = 0,
+    ) -> bool:
         """
         모양복사 메서드
 
@@ -3797,7 +3850,9 @@ class Hwp(ParamHelpers, RunMethods):
 
         sleep(delay)
         child_hwnds = []
-        win32gui.EnumChildWindows(hwnd2, lambda hwnd, param: param.append(hwnd), child_hwnds)
+        win32gui.EnumChildWindows(
+            hwnd2, lambda hwnd, param: param.append(hwnd), child_hwnds
+        )
         for chwnd in child_hwnds:
             class_name = win32gui.GetClassName(chwnd)
             if class_name == "Edit":
@@ -3821,7 +3876,9 @@ class Hwp(ParamHelpers, RunMethods):
         if os.path.exists(os.path.abspath(mml_path)):
             mml_path = os.path.abspath(mml_path)
         else:
-            raise AssertionError("mathml 파일을 찾을 수 없습니다. 경로를 다시 확인해주세요.")
+            raise AssertionError(
+                "mathml 파일을 찾을 수 없습니다. 경로를 다시 확인해주세요."
+            )
 
         self.Cancel()
         self.EquationCreate(thread=True)
@@ -3841,7 +3898,9 @@ class Hwp(ParamHelpers, RunMethods):
 
         sleep(delay)
         child_hwnds = []
-        win32gui.EnumChildWindows(hwnd2, lambda hwnd, param: param.append(hwnd), child_hwnds)
+        win32gui.EnumChildWindows(
+            hwnd2, lambda hwnd, param: param.append(hwnd), child_hwnds
+        )
         for chwnd in child_hwnds:
             class_name = win32gui.GetClassName(chwnd)
             if class_name == "Edit":
@@ -3860,13 +3919,11 @@ class Hwp(ParamHelpers, RunMethods):
 
     def maximize_window(self) -> int:
         """현재 창 최대화"""
-        win32gui.ShowWindow(
-            self.XHwpWindows.Active_XHwpWindow.WindowHandle, 3)
+        win32gui.ShowWindow(self.XHwpWindows.Active_XHwpWindow.WindowHandle, 3)
 
     def minimize_window(self) -> int:
         """현재 창 최소화"""
-        win32gui.ShowWindow(
-            self.XHwpWindows.Active_XHwpWindow.WindowHandle, 6)
+        win32gui.ShowWindow(self.XHwpWindows.Active_XHwpWindow.WindowHandle, 6)
 
     def delete_style_by_name(self, src: int | str, dst: int | str) -> bool:
         """
@@ -3890,12 +3947,14 @@ class Hwp(ParamHelpers, RunMethods):
         if type(dst) == int:
             pset.Alternation = dst
         elif dst in [style_dict[i]["name"] for i in style_dict]:
-            pset.Alternation = [i for i in style_dict if style_dict[i]["name"] == dst][0]
+            pset.Alternation = [i for i in style_dict if style_dict[i]["name"] == dst][
+                0
+            ]
         else:
             raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
         return self.HAction.Execute("StyleDelete", pset.HSet)
 
-    def get_style_dict(self, as_: Literal["list", "dict"] = "list") -> list|dict:
+    def get_style_dict(self, as_: Literal["list", "dict"] = "list") -> list | dict:
         """
         스타일 목록을 사전 데이터로 리턴하는 메서드.
 
@@ -3915,24 +3974,26 @@ class Hwp(ParamHelpers, RunMethods):
         if as_ == "list":
             styles = [
                 {
-                    'index': int(style.get("Id")),
-                    'type': style.get('Type'),
-                    'name': style.get('Name'),
-                    'engName': style.get('EngName')
+                    "index": int(style.get("Id")),
+                    "type": style.get("Type"),
+                    "name": style.get("Name"),
+                    "engName": style.get("EngName"),
                 }
-                for style in root.findall('.//STYLE')
+                for style in root.findall(".//STYLE")
             ]
         elif as_ == "dict":
             styles = {
-                int(style.get('Id')): {
-                    'type': style.get('Type'),
-                    'name': style.get('Name'),
-                    'engName': style.get('EngName')
+                int(style.get("Id")): {
+                    "type": style.get("Type"),
+                    "name": style.get("Name"),
+                    "engName": style.get("EngName"),
                 }
-                for style in root.findall('.//STYLE')
+                for style in root.findall(".//STYLE")
             }
         else:
-            raise TypeError("as_ 파라미터는 'list'또는 'dict' 중 하나로 설정해주세요. 기본값은 'list'입니다.")
+            raise TypeError(
+                "as_ 파라미터는 'list'또는 'dict' 중 하나로 설정해주세요. 기본값은 'list'입니다."
+            )
         os.remove("temp.xml")
         return styles
 
@@ -3948,7 +4009,7 @@ class Hwp(ParamHelpers, RunMethods):
         self.HAction.GetDefault("Style", pset.HSet)
         return style_dict[pset.Apply]
 
-    def set_style(self, style:int|str) -> bool:
+    def set_style(self, style: int | str) -> bool:
         """
         현재 캐럿이 위치한 문단의 스타일을 변경한다.
 
@@ -3965,7 +4026,7 @@ class Hwp(ParamHelpers, RunMethods):
             style_dict = self.get_style_dict(as_="dict")
             key = None
             for key, value in style_dict.items():
-                if value.get('name') == style:
+                if value.get("name") == style:
                     style = key
                     break
                 else:
@@ -4014,7 +4075,12 @@ class Hwp(ParamHelpers, RunMethods):
         while self.TableRightCell():
             self.set_cur_field_name("")
 
-    def resize_image(self, width: int = None, height: int = None, unit: Literal["mm", "hwpunit"] = "mm"):
+    def resize_image(
+        self,
+        width: int = None,
+        height: int = None,
+        unit: Literal["mm", "hwpunit"] = "mm",
+    ):
         """
         이미지 또는 그리기 개체의 크기를 조절하는 메서드.
 
@@ -4023,9 +4089,13 @@ class Hwp(ParamHelpers, RunMethods):
         self.FindCtrl()
         prop = self.CurSelectedCtrl.Properties
         if width:
-            prop.SetItem("Width", width if unit == "hwpunit" else self.MiliToHwpUnit(width))
+            prop.SetItem(
+                "Width", width if unit == "hwpunit" else self.MiliToHwpUnit(width)
+            )
         if height:
-            prop.SetItem("Height", height if unit == "hwpunit" else self.MiliToHwpUnit(height))
+            prop.SetItem(
+                "Height", height if unit == "hwpunit" else self.MiliToHwpUnit(height)
+            )
         if width or height:
             self.CurSelectedCtrl.Properties = prop
             return True
@@ -4052,13 +4122,21 @@ class Hwp(ParamHelpers, RunMethods):
             if not os.path.exists(path):
                 file_list = os.listdir(os.path.dirname(path))
                 path_list = [os.path.join(os.path.dirname(path), i) for i in file_list]
-                temp_file = \
-                    sorted([i for i in path_list if i.startswith(os.path.splitext(path))], key=os.path.getmtime)[-1]
+                temp_file = sorted(
+                    [i for i in path_list if i.startswith(os.path.splitext(path))],
+                    key=os.path.getmtime,
+                )[-1]
                 Image.open(temp_file).save(path)
                 os.remove(temp_file)
             print(f"image saved to {path}")
 
-    def new_number_modify(self, new_number: int, num_type: Literal["Page", "Figure", "Footnote", "Table", "Endnote", "Equation"] = "Page") -> bool:
+    def new_number_modify(
+        self,
+        new_number: int,
+        num_type: Literal[
+            "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
+        ] = "Page",
+    ) -> bool:
         """
         새 번호 조판을 수정할 수 있는 메서드.
 
@@ -4098,8 +4176,13 @@ class Hwp(ParamHelpers, RunMethods):
         pset.NewNumber = new_number
         return self.HAction.Execute("NewNumberModify", pset.HSet)
 
-
-    def NewNumberModify(self, new_number: int, num_type: Literal["Page", "Figure", "Footnote", "Table", "Endnote", "Equation"] = "Page") -> bool:
+    def NewNumberModify(
+        self,
+        new_number: int,
+        num_type: Literal[
+            "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
+        ] = "Page",
+    ) -> bool:
         current_pos = self.GetPos()
         current_page = self.PageCount
         ctrl_name = self.FindCtrl()
@@ -4112,7 +4195,13 @@ class Hwp(ParamHelpers, RunMethods):
         pset.NewNumber = new_number
         return self.HAction.Execute("NewNumberModify", pset.HSet)
 
-    def new_number(self, new_number: int, num_type: Literal["Page", "Figure", "Footnote", "Table", "Endnote", "Equation"] = "Page") -> bool:
+    def new_number(
+        self,
+        new_number: int,
+        num_type: Literal[
+            "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
+        ] = "Page",
+    ) -> bool:
         """
         새 번호를 매길 수 있는 메서드.
 
@@ -4152,16 +4241,48 @@ class Hwp(ParamHelpers, RunMethods):
         pset.NewNumber = new_number
         return self.HAction.Execute("NewNumber", pset.HSet)
 
-    def NewNumber(self, new_number: int, num_type: Literal["Page", "Figure", "Footnote", "Table", "Endnote", "Equation"] = "Page") -> bool:
+    def NewNumber(
+        self,
+        new_number: int,
+        num_type: Literal[
+            "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
+        ] = "Page",
+    ) -> bool:
         pset = self.HParameterSet.HAutoNum
         self.HAction.GetDefault("NewNumber", pset.HSet)
         pset.NumType = self.AutoNumType(num_type)
         pset.NewNumber = new_number
         return self.HAction.Execute("NewNumber", pset.HSet)
 
-    def page_num_pos(self, global_start: int = 1, position: Literal["TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter",
-                   number_format: Literal["Digit", "CircledDigit", "RomanCapital", "RomanSmall", "LatinCapital", "HangulSyllable", "Ideograph", "DecagonCircle", "DecagonCircleHanja"] = "Digit",
-                   side_char:bool=True) -> bool:
+    def page_num_pos(
+        self,
+        global_start: int = 1,
+        position: Literal[
+            "TopLeft",
+            "TopCenter",
+            "TopRight",
+            "BottomLeft",
+            "BottomCenter",
+            "BottomRight",
+            "InsideTop",
+            "OutsideTop",
+            "InsideBottom",
+            "OutsideBottom",
+            "None",
+        ] = "BottomCenter",
+        number_format: Literal[
+            "Digit",
+            "CircledDigit",
+            "RomanCapital",
+            "RomanSmall",
+            "LatinCapital",
+            "HangulSyllable",
+            "Ideograph",
+            "DecagonCircle",
+            "DecagonCircleHanja",
+        ] = "Digit",
+        side_char: bool = True,
+    ) -> bool:
         """
         문서 전체에 쪽번호를 삽입하는 메서드.
 
@@ -4214,9 +4335,35 @@ class Hwp(ParamHelpers, RunMethods):
             pset.SideChar = 0
         return self.HAction.Execute("PageNumPos", pset.HSet)
 
-    def PageNumPos(self, global_start: int = 1, position: Literal["TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter",
-                   number_format: Literal["Digit", "CircledDigit", "RomanCapital", "RomanSmall", "LatinCapital", "HangulSyllable", "Ideograph", "DecagonCircle", "DecagonCircleHanja"] = "Digit",
-                   side_char:bool=True) -> bool:
+    def PageNumPos(
+        self,
+        global_start: int = 1,
+        position: Literal[
+            "TopLeft",
+            "TopCenter",
+            "TopRight",
+            "BottomLeft",
+            "BottomCenter",
+            "BottomRight",
+            "InsideTop",
+            "OutsideTop",
+            "InsideBottom",
+            "OutsideBottom",
+            "None",
+        ] = "BottomCenter",
+        number_format: Literal[
+            "Digit",
+            "CircledDigit",
+            "RomanCapital",
+            "RomanSmall",
+            "LatinCapital",
+            "HangulSyllable",
+            "Ideograph",
+            "DecagonCircle",
+            "DecagonCircleHanja",
+        ] = "Digit",
+        side_char: bool = True,
+    ) -> bool:
         pset = self.HParameterSet.HPageNumPos
         self.HAction.GetDefault("PageNumPos", pset.HSet)
         pset.DrawPos = self.PageNumPosition(position)
@@ -4254,7 +4401,14 @@ class Hwp(ParamHelpers, RunMethods):
             self.insert_text(rowsep)
             self.SelectCtrlFront()
 
-    def set_cell_margin(self, left: float = 1.8, right: float = 1.8, top: float = 0.5, bottom: float = 0.5, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
+    def set_cell_margin(
+        self,
+        left: float = 1.8,
+        right: float = 1.8,
+        top: float = 0.5,
+        bottom: float = 0.5,
+        as_: Literal["mm", "hwpunit"] = "mm",
+    ) -> bool:
         """
         표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 지정하는 메서드.
 
@@ -4290,7 +4444,9 @@ class Hwp(ParamHelpers, RunMethods):
             pset.ShapeTableCell.MarginBottom = bottom
         return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
-    def get_cell_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> None | dict[str, int] | bool | dict[str, float]:
+    def get_cell_margin(
+        self, as_: Literal["mm", "hwpunit"] = "mm"
+    ) -> None | dict[str, int] | bool | dict[str, float]:
         """
         표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 조회하는 메서드.
 
@@ -4321,7 +4477,14 @@ class Hwp(ParamHelpers, RunMethods):
                 "bottom": pset.ShapeTableCell.MarginBottom,
             }
 
-    def set_table_inside_margin(self, left: float = 1.8, right: float = 1.8, top: float = 0.5, bottom: float = 0.5, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
+    def set_table_inside_margin(
+        self,
+        left: float = 1.8,
+        right: float = 1.8,
+        top: float = 0.5,
+        bottom: float = 0.5,
+        as_: Literal["mm", "hwpunit"] = "mm",
+    ) -> bool:
         """
         표 내부 모든 셀의 안여백을 일괄설정하는 메서드.
 
@@ -4340,7 +4503,9 @@ class Hwp(ParamHelpers, RunMethods):
         if not self.is_cell():
             return False
         if as_.lower() == "mm":
-            left, right, top, bottom = [self.hwp.MiliToHwpUnit(i) for i in [left, right, top, bottom]]
+            left, right, top, bottom = [
+                self.hwp.MiliToHwpUnit(i) for i in [left, right, top, bottom]
+            ]
         pset = self.hwp.HParameterSet.HShapeObject
         self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
         pset.CellMarginLeft = left
@@ -4349,7 +4514,9 @@ class Hwp(ParamHelpers, RunMethods):
         pset.CellMarginBottom = bottom
         return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
-    def get_table_inside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> None | dict[str, int] | bool | dict[str, float]:
+    def get_table_inside_margin(
+        self, as_: Literal["mm", "hwpunit"] = "mm"
+    ) -> None | dict[str, int] | bool | dict[str, float]:
         if not self.is_cell():
             return False
         cur_pos = self.get_pos()
@@ -4375,7 +4542,9 @@ class Hwp(ParamHelpers, RunMethods):
                 "bottom": margin_bottom,
             }
 
-    def get_table_outside_margin(self, as_: Literal["mm", "hwpunit"] = "mm") -> None | dict[str, int] | bool | dict[str, float]:
+    def get_table_outside_margin(
+        self, as_: Literal["mm", "hwpunit"] = "mm"
+    ) -> None | dict[str, int] | bool | dict[str, float]:
         """
         표의 바깥 여백을 딕셔너리로 한 번에 리턴하는 메서드
 
@@ -4422,7 +4591,9 @@ class Hwp(ParamHelpers, RunMethods):
                 "bottom": margin_bottom,
             }
 
-    def get_table_outside_margin_left(self, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
+    def get_table_outside_margin_left(
+        self, as_: Literal["mm", "hwpunit"] = "mm"
+    ) -> bool:
         """
         표의 바깥 왼쪽 여백값을 리턴하는 메서드
 
@@ -4453,7 +4624,9 @@ class Hwp(ParamHelpers, RunMethods):
         self.set_pos(*cur_pos)
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
-    def get_table_outside_margin_right(self, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
+    def get_table_outside_margin_right(
+        self, as_: Literal["mm", "hwpunit"] = "mm"
+    ) -> bool:
         """
         표의 바깥 오른쪽 여백값을 리턴하는 메서드
 
@@ -4485,7 +4658,9 @@ class Hwp(ParamHelpers, RunMethods):
         self.set_pos(*cur_pos)
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
-    def get_table_outside_margin_top(self, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
+    def get_table_outside_margin_top(
+        self, as_: Literal["mm", "hwpunit"] = "mm"
+    ) -> bool:
         """
         표의 바깥 상단 여백값을 리턴하는 메서드
 
@@ -4516,7 +4691,9 @@ class Hwp(ParamHelpers, RunMethods):
         self.set_pos(*cur_pos)
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
-    def get_table_outside_margin_bottom(self, as_: Literal["mm", "hwpunit"] = "mm") -> int|float|bool:
+    def get_table_outside_margin_bottom(
+        self, as_: Literal["mm", "hwpunit"] = "mm"
+    ) -> int | float | bool:
         """
         표의 바깥 하단 여백값을 리턴하는 메서드
 
@@ -4547,7 +4724,14 @@ class Hwp(ParamHelpers, RunMethods):
         self.set_pos(*cur_pos)
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
-    def set_table_outside_margin(self, left: float=-1.0, right: float=-1.0, top: float=-1.0, bottom: float=-1.0, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
+    def set_table_outside_margin(
+        self,
+        left: float = -1.0,
+        right: float = -1.0,
+        top: float = -1.0,
+        bottom: float = -1.0,
+        as_: Literal["mm", "hwpunit"] = "mm",
+    ) -> bool:
         """
         표의 바깥여백을 변경하는 메서드.
 
@@ -4621,7 +4805,9 @@ class Hwp(ParamHelpers, RunMethods):
         self.CurSelectedCtrl.Properties = prop
         return self.set_pos(*cur_pos)
 
-    def set_table_outside_margin_bottom(self, val, as_: Literal["mm", "hwpunit"] = "mm"):
+    def set_table_outside_margin_bottom(
+        self, val, as_: Literal["mm", "hwpunit"] = "mm"
+    ):
         cur_pos = self.get_pos()
         self.SelectCtrlFront()
         prop = self.CurSelectedCtrl.Properties
@@ -4647,7 +4833,9 @@ class Hwp(ParamHelpers, RunMethods):
         elif as_.lower() == "inch":
             return self.HwpUnitToInch(self.CellShape.Item("Height"))
         else:
-            raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
+            raise KeyError(
+                "mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다."
+            )
 
     def get_row_num(self):
         """
@@ -4664,12 +4852,14 @@ class Hwp(ParamHelpers, RunMethods):
         self.SelectCtrlFront()
         t = self.GetTextFile("HWPML2X", "saveblock")
         root = ET.fromstring(t)
-        table = root.find('.//TABLE')
-        row_count = int(table.get('RowCount'))
+        table = root.find(".//TABLE")
+        row_count = int(table.get("RowCount"))
         self.set_pos(*cur_pos)
         return row_count
 
-    def get_row_height(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm") -> float|int:
+    def get_row_height(
+        self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"
+    ) -> float | int:
         """
         표 안에서 캐럿이 들어있는 행(row)의 높이를 리턴함.
 
@@ -4692,7 +4882,9 @@ class Hwp(ParamHelpers, RunMethods):
         elif as_.lower() == "inch":
             return self.HwpUnitToInch(pset.ShapeTableCell.Height)
         else:
-            raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
+            raise KeyError(
+                "mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다."
+            )
 
     def get_col_num(self):
         """
@@ -4708,12 +4900,14 @@ class Hwp(ParamHelpers, RunMethods):
         self.SelectCtrlFront()
         t = self.GetTextFile("HWPML2X", "saveblock")
         root = ET.fromstring(t)
-        table = root.find('.//TABLE')
-        col_count = int(table.get('ColCount'))
+        table = root.find(".//TABLE")
+        col_count = int(table.get("ColCount"))
         self.set_pos(*cur_pos)
         return col_count
 
-    def get_col_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm") -> int|float:
+    def get_col_width(
+        self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"
+    ) -> int | float:
         """
         현재 캐럿이 위치한 셀(칼럼)의 너비를 리턴하는 메서드.
 
@@ -4738,9 +4932,13 @@ class Hwp(ParamHelpers, RunMethods):
         elif as_.lower() == "inch":
             return self.HwpUnitToInch(pset.ShapeTableCell.Width)
         else:
-            raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
+            raise KeyError(
+                "mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다."
+            )
 
-    def set_col_width(self, width: int | float | list | tuple, as_: Literal["mm", "ratio"] = "ratio") -> bool:
+    def set_col_width(
+        self, width: int | float | list | tuple, as_: Literal["mm", "ratio"] = "ratio"
+    ) -> bool:
         """
         칼럼의 너비를 변경하는 메서드.
 
@@ -4773,7 +4971,9 @@ class Hwp(ParamHelpers, RunMethods):
         cur_pos = self.get_pos()
         if type(width) in (int, float):
             if as_ == "ratio":
-                raise TypeError('width에 int나 float 입력시 as_ 파라미터는 "mm"로 설정해주세요.')
+                raise TypeError(
+                    'width에 int나 float 입력시 as_ 파라미터는 "mm"로 설정해주세요.'
+                )
             self.TableColPageUp()
             self.TableCellBlock()
             self.TableCellBlockExtend()
@@ -4806,7 +5006,9 @@ class Hwp(ParamHelpers, RunMethods):
                 self.TableRightCell()
             return self.set_pos(*cur_pos)
 
-    def adjust_cellwidth(self, width: int | float | list | tuple, as_: Literal["mm", "ratio"] = "ratio") -> bool:
+    def adjust_cellwidth(
+        self, width: int | float | list | tuple, as_: Literal["mm", "ratio"] = "ratio"
+    ) -> bool:
         """
         칼럼의 너비를 변경할 수 있는 메서드.
 
@@ -4836,7 +5038,9 @@ class Hwp(ParamHelpers, RunMethods):
         cur_pos = self.get_pos()
         if type(width) in (int, float):
             if as_ == "ratio":
-                raise TypeError('width에 int나 float 입력시 as_ 파라미터는 "mm"로 설정해주세요.')
+                raise TypeError(
+                    'width에 int나 float 입력시 as_ 파라미터는 "mm"로 설정해주세요.'
+                )
             self.TableColPageUp()
             self.TableCellBlock()
             self.TableCellBlockExtend()
@@ -4869,7 +5073,9 @@ class Hwp(ParamHelpers, RunMethods):
                 self.TableRightCell()
             return self.set_pos(*cur_pos)
 
-    def get_table_width(self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm") -> float:
+    def get_table_width(
+        self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"
+    ) -> float:
         """
         현재 캐럿이 속한 표의 너비(mm)를 리턴함.
 
@@ -4889,9 +5095,13 @@ class Hwp(ParamHelpers, RunMethods):
         elif as_.lower() == "inch":
             return self.HwpUnitToInch(self.CellShape.Item("Width"))
         else:
-            raise KeyError("mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다.")
+            raise KeyError(
+                "mm, hwpunit, hu, point, pt, inch 중 하나를 입력하셔야 합니다."
+            )
 
-    def set_table_width(self, width: int = 0, as_: Literal["mm", "hwpunit", "hu"] = "mm") -> bool:
+    def set_table_width(
+        self, width: int = 0, as_: Literal["mm", "hwpunit", "hu"] = "mm"
+    ) -> bool:
         """
         표 전체의 너비를 원래 열들의 비율을 유지하면서 조정하는 메서드.
 
@@ -4919,14 +5129,22 @@ class Hwp(ParamHelpers, RunMethods):
             self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
             if sec_def.PageDef.Landscape == 0:
                 width = (
-                        sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen
-                        - self.get_table_outside_margin_left(as_="hwpunit") - self.get_table_outside_margin_right(
-                    as_="hwpunit"))
+                    sec_def.PageDef.PaperWidth
+                    - sec_def.PageDef.LeftMargin
+                    - sec_def.PageDef.RightMargin
+                    - sec_def.PageDef.GutterLen
+                    - self.get_table_outside_margin_left(as_="hwpunit")
+                    - self.get_table_outside_margin_right(as_="hwpunit")
+                )
             elif sec_def.PageDef.Landscape == 1:
                 width = (
-                        sec_def.PageDef.PaperHeight - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen
-                        - self.get_table_outside_margin_left(as_="hwpunit") - self.get_table_outside_margin_right(
-                    as_="hwpunit"))
+                    sec_def.PageDef.PaperHeight
+                    - sec_def.PageDef.LeftMargin
+                    - sec_def.PageDef.RightMargin
+                    - sec_def.PageDef.GutterLen
+                    - self.get_table_outside_margin_left(as_="hwpunit")
+                    - self.get_table_outside_margin_right(as_="hwpunit")
+                )
         elif as_ == "mm":
             width = self.mili_to_hwp_unit(width)
         ratio = width / self.get_table_width(as_="hwpunit")
@@ -4938,14 +5156,14 @@ class Hwp(ParamHelpers, RunMethods):
                 break
         t = self.GetTextFile("HWPML2X", "saveblock")
         root = ET.fromstring(t)
-        table = root.find('.//TABLE')
+        table = root.find(".//TABLE")
 
         if table is not None:
-            for cell in table.findall('.//CELL'):
-                width = cell.get('Width')
+            for cell in table.findall(".//CELL"):
+                width = cell.get("Width")
                 if width:
-                    cell.set('Width', str(int(width) * ratio))
-        t = ET.tostring(root, encoding='UTF-16').decode('utf-16')
+                    cell.set("Width", str(int(width) * ratio))
+        t = ET.tostring(root, encoding="UTF-16").decode("utf-16")
         cur_view_state = self.ViewProperties.Item("OptionFlag")
         if cur_view_state not in (2, 6):
             prop = self.ViewProperties
@@ -4960,7 +5178,7 @@ class Hwp(ParamHelpers, RunMethods):
         self.ViewProperties = prop
         self.set_pos(*cur_pos)
 
-    def save_pdf_as_image(self, path: str = "", img_format:str="bmp") -> bool:
+    def save_pdf_as_image(self, path: str = "", img_format: str = "bmp") -> bool:
         """
         문서보안이나 복제방지를 위해 모든 페이지를 이미지로 변경 후 PDF로 저장하는 메서드.
 
@@ -4991,7 +5209,7 @@ class Hwp(ParamHelpers, RunMethods):
         shutil.rmtree(temp_dir)
         return True
 
-    def get_cell_addr(self, as_: Literal["str", "tuple"] = "str") -> tuple[int]|bool:
+    def get_cell_addr(self, as_: Literal["str", "tuple"] = "str") -> tuple[int] | bool:
         """
         현재 캐럿이 위치한 셀의 주소를 "A1" 또는 (0, 0)으로 리턴.
 
@@ -5010,7 +5228,7 @@ class Hwp(ParamHelpers, RunMethods):
         else:
             return excel_address_to_tuple_zero_based(result)
 
-    def save_all_pictures(self, save_path:str="./binData") -> bool:
+    def save_all_pictures(self, save_path: str = "./binData") -> bool:
         """
         현재 문서에 삽입된 모든 이미지들을
 
@@ -5032,7 +5250,7 @@ class Hwp(ParamHelpers, RunMethods):
         self.save_as("temp.zip", format="HWPX")
         self.open(current_path)
 
-        with zipfile.ZipFile("./temp.zip", 'r') as zf:
+        with zipfile.ZipFile("./temp.zip", "r") as zf:
             zf.extractall(path="./temp")
         os.remove("./temp.zip")
         try:
@@ -5042,7 +5260,7 @@ class Hwp(ParamHelpers, RunMethods):
             os.rename("./temp/binData", save_path)
         with open("./temp/Contents/section0.xml", encoding="utf-8") as f:
             content = f.read()
-        bin_list = re.findall(r'원본 그림의 이름: (.*?\..+?)\n', content)
+        bin_list = re.findall(r"원본 그림의 이름: (.*?\..+?)\n", content)
         bin_list = rename_duplicates_in_list(bin_list)
         os.chdir(save_path)
         file_list = os.listdir()
@@ -5083,9 +5301,13 @@ class Hwp(ParamHelpers, RunMethods):
         if int(self.Version[0]) >= 13:  # 한/글2024 이상이면
             return self.hwp.SelectCtrl(ctrllist=ctrllist, option=option)
         else:
-            raise NotImplementedError("아래아한글 버전이 2024 미만입니다. hwp.select_ctrl()을 대신 사용하셔야 합니다.")
+            raise NotImplementedError(
+                "아래아한글 버전이 2024 미만입니다. hwp.select_ctrl()을 대신 사용하셔야 합니다."
+            )
 
-    def select_ctrl(self, ctrl:Ctrl, anchor_type: Literal[0, 1, 2] = 0, option: int = 1) -> bool:
+    def select_ctrl(
+        self, ctrl: Ctrl, anchor_type: Literal[0, 1, 2] = 0, option: int = 1
+    ) -> bool:
         """
         인수로 넣은 컨트롤 오브젝트를 선택하는 pyhwpx 전용 메서드.
 
@@ -5132,7 +5354,7 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.set_pos_by_set(ctrl.GetAnchorPos(option))
 
-    def set_visible(self, visible:bool) -> None:
+    def set_visible(self, visible: bool) -> None:
         """
         현재 조작중인 한/글 인스턴스의 백그라운드 숨김여부를 변경할 수 있다.
 
@@ -5144,7 +5366,14 @@ class Hwp(ParamHelpers, RunMethods):
         """
         self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
-    def auto_spacing(self, init_spacing=0, init_ratio=100, max_spacing=40, min_spacing=40, verbose=True):
+    def auto_spacing(
+        self,
+        init_spacing=0,
+        init_ratio=100,
+        max_spacing=40,
+        min_spacing=40,
+        verbose=True,
+    ):
         """
         자동 자간조정 메서드(beta)
 
@@ -5261,39 +5490,48 @@ class Hwp(ParamHelpers, RunMethods):
             print(f"자간 최소값 : {spacings.min()}({dd[spacings.min()]})")
         return True
 
-    def set_font(self,
-                 Bold:str|bool="",  # 진하게(True/False)
-                 DiacSymMark:str|int="",  # 강조점(0~12)
-                 Emboss:str|bool="",  # 양각(True/False)
-                 Engrave:str|bool="",  # 음각(True/False)
-                 FaceName:str="",  # 서체
-                 FontType:int=1,  # 1(TTF), 2(HTF)
-                 Height:str|float="",  # 글자크기(pt, 0.1 ~ 4096)
-                 Italic:str|bool="",  # 이탤릭(True/False)
-                 Offset:str|int="",  # 글자위치-상하오프셋(-100 ~ 100)
-                 OutLineType:str|int="",  # 외곽선타입(0~6)
-                 Ratio:str|int="",  # 장평(50~200)
-                 ShadeColor:str|int="",  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-                 ShadowColor:str|int="",  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-                 ShadowOffsetX:str|int="",  # 그림자 X오프셋(-100 ~ 100)
-                 ShadowOffsetY:str|int="",  # 그림자 Y오프셋(-100 ~ 100)
-                 ShadowType:str|int="",  # 그림자 유형(0: 없음, 1: 비연속, 2:연속)
-                 Size:str|int="",  # 글자크기 축소확대%(10~250)
-                 SmallCaps:str|bool="",  # 강조점
-                 Spacing:str|int="",  # 자간(-50 ~ 50)
-                 StrikeOutColor:str|int="",
-                 # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-                 StrikeOutShape:str|int="",  # 취소선 모양(0~12, 0이 일반 취소선)
-                 StrikeOutType:str|bool="",  # 취소선 유무(True/False)
-                 SubScript:str|bool="",  # 아래첨자(True/False)
-                 SuperScript:str|bool="",  # 위첨자(True/False)
-                 TextColor:str|int="",  # 글자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
-                 UnderlineColor:str|int="",  # 밑줄색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
-                 UnderlineShape:str|int="",  # 밑줄형태(0~12)
-                 UnderlineType:str|int="",  # 밑줄위치(0:없음, 1:하단, 3:상단)
-                 UseFontSpace:str|bool="",  # 글꼴에 어울리는 빈칸(True/False)
-                 UseKerning:str|bool=""  # 커닝 적용(True/False) : 차이가 없다?
-                 ) -> bool:
+    def set_font(
+        self,
+        Bold: str | bool = "",  # 진하게(True/False)
+        DiacSymMark: str | int = "",  # 강조점(0~12)
+        Emboss: str | bool = "",  # 양각(True/False)
+        Engrave: str | bool = "",  # 음각(True/False)
+        FaceName: str = "",  # 서체
+        FontType: int = 1,  # 1(TTF), 2(HTF)
+        Height: str | float = "",  # 글자크기(pt, 0.1 ~ 4096)
+        Italic: str | bool = "",  # 이탤릭(True/False)
+        Offset: str | int = "",  # 글자위치-상하오프셋(-100 ~ 100)
+        OutLineType: str | int = "",  # 외곽선타입(0~6)
+        Ratio: str | int = "",  # 장평(50~200)
+        ShadeColor: (
+            str | int
+        ) = "",  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+        ShadowColor: (
+            str | int
+        ) = "",  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+        ShadowOffsetX: str | int = "",  # 그림자 X오프셋(-100 ~ 100)
+        ShadowOffsetY: str | int = "",  # 그림자 Y오프셋(-100 ~ 100)
+        ShadowType: str | int = "",  # 그림자 유형(0: 없음, 1: 비연속, 2:연속)
+        Size: str | int = "",  # 글자크기 축소확대%(10~250)
+        SmallCaps: str | bool = "",  # 강조점
+        Spacing: str | int = "",  # 자간(-50 ~ 50)
+        StrikeOutColor: str | int = "",
+        # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+        StrikeOutShape: str | int = "",  # 취소선 모양(0~12, 0이 일반 취소선)
+        StrikeOutType: str | bool = "",  # 취소선 유무(True/False)
+        SubScript: str | bool = "",  # 아래첨자(True/False)
+        SuperScript: str | bool = "",  # 위첨자(True/False)
+        TextColor: (
+            str | int
+        ) = "",  # 글자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+        UnderlineColor: (
+            str | int
+        ) = "",  # 밑줄색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+        UnderlineShape: str | int = "",  # 밑줄형태(0~12)
+        UnderlineType: str | int = "",  # 밑줄위치(0:없음, 1:하단, 3:상단)
+        UseFontSpace: str | bool = "",  # 글꼴에 어울리는 빈칸(True/False)
+        UseKerning: str | bool = "",  # 커닝 적용(True/False) : 차이가 없다?
+    ) -> bool:
         """
         글자모양을 메서드 형태로 수정할 수 있는 메서드.
 
@@ -5339,30 +5577,90 @@ class Hwp(ParamHelpers, RunMethods):
             >>> hwp.set_font(FaceName="D2Coding", TextColor="Orange")
 
         """
-        d = {'Bold': Bold, 'DiacSymMark': DiacSymMark, 'Emboss': Emboss, 'Engrave': Engrave,
-             "FaceNameUser": FaceName, "FaceNameSymbol": FaceName, "FaceNameOther": FaceName,
-             "FaceNameJapanese": FaceName, "FaceNameHanja": FaceName, "FaceNameLatin": FaceName,
-             "FaceNameHangul": FaceName,
-             "FontTypeUser": 1, "FontTypeSymbol": 1, "FontTypeOther": 1, "FontTypeJapanese": 1, "FontTypeHanja": 1,
-             "FontTypeLatin": 1, "FontTypeHangul": 1,
-             'Height': Height * 100, 'Italic': Italic, 'OffsetHangul': Offset, 'OffsetHanja': Offset,
-             'OffsetJapanese': Offset, 'OffsetLatin': Offset, 'OffsetOther': Offset,
-             'OffsetSymbol': Offset, 'OffsetUser': Offset,
-             'OutLineType': OutLineType, 'RatioHangul': Ratio, 'RatioHanja': Ratio, 'RatioJapanese': Ratio,
-             'RatioLatin': Ratio, 'RatioOther': Ratio, 'RatioSymbol': Ratio, 'RatioUser': Ratio,
-             'ShadeColor': self.rgb_color(ShadeColor) if type(ShadeColor) == str and ShadeColor else ShadeColor,
-             'ShadowColor': self.rgb_color(ShadowColor) if type(ShadowColor) == str and ShadowColor else ShadowColor,
-             'ShadowOffsetX': ShadowOffsetX, 'ShadowOffsetY': ShadowOffsetY, 'ShadowType': ShadowType,
-             'SizeHangul': Size, 'SizeHanja': Size, 'SizeJapanese': Size, 'SizeLatin': Size, 'SizeOther': Size,
-             'SizeSymbol': Size, 'SizeUser': Size, 'SmallCaps': SmallCaps, 'SpacingHangul': Spacing,
-             'SpacingHanja': Spacing, 'SpacingJapanese': Spacing, 'SpacingLatin': Spacing, 'SpacingOther': Spacing,
-             'SpacingSymbol': Spacing, 'SpacingUser': Spacing, 'StrikeOutColor': StrikeOutColor,
-             'StrikeOutShape': StrikeOutShape, 'StrikeOutType': StrikeOutType, 'SubScript': SubScript,
-             'SuperScript': SuperScript,
-             'TextColor': self.rgb_color(TextColor) if type(TextColor) == str and TextColor else TextColor,
-             'UnderlineColor': self.rgb_color(UnderlineColor) if type(
-                 UnderlineColor) == str and UnderlineColor else UnderlineColor, 'UnderlineShape': UnderlineShape,
-             'UnderlineType': UnderlineType, 'UseFontSpace': UseFontSpace, 'UseKerning': UseKerning}
+        d = {
+            "Bold": Bold,
+            "DiacSymMark": DiacSymMark,
+            "Emboss": Emboss,
+            "Engrave": Engrave,
+            "FaceNameUser": FaceName,
+            "FaceNameSymbol": FaceName,
+            "FaceNameOther": FaceName,
+            "FaceNameJapanese": FaceName,
+            "FaceNameHanja": FaceName,
+            "FaceNameLatin": FaceName,
+            "FaceNameHangul": FaceName,
+            "FontTypeUser": 1,
+            "FontTypeSymbol": 1,
+            "FontTypeOther": 1,
+            "FontTypeJapanese": 1,
+            "FontTypeHanja": 1,
+            "FontTypeLatin": 1,
+            "FontTypeHangul": 1,
+            "Height": Height * 100,
+            "Italic": Italic,
+            "OffsetHangul": Offset,
+            "OffsetHanja": Offset,
+            "OffsetJapanese": Offset,
+            "OffsetLatin": Offset,
+            "OffsetOther": Offset,
+            "OffsetSymbol": Offset,
+            "OffsetUser": Offset,
+            "OutLineType": OutLineType,
+            "RatioHangul": Ratio,
+            "RatioHanja": Ratio,
+            "RatioJapanese": Ratio,
+            "RatioLatin": Ratio,
+            "RatioOther": Ratio,
+            "RatioSymbol": Ratio,
+            "RatioUser": Ratio,
+            "ShadeColor": (
+                self.rgb_color(ShadeColor)
+                if type(ShadeColor) == str and ShadeColor
+                else ShadeColor
+            ),
+            "ShadowColor": (
+                self.rgb_color(ShadowColor)
+                if type(ShadowColor) == str and ShadowColor
+                else ShadowColor
+            ),
+            "ShadowOffsetX": ShadowOffsetX,
+            "ShadowOffsetY": ShadowOffsetY,
+            "ShadowType": ShadowType,
+            "SizeHangul": Size,
+            "SizeHanja": Size,
+            "SizeJapanese": Size,
+            "SizeLatin": Size,
+            "SizeOther": Size,
+            "SizeSymbol": Size,
+            "SizeUser": Size,
+            "SmallCaps": SmallCaps,
+            "SpacingHangul": Spacing,
+            "SpacingHanja": Spacing,
+            "SpacingJapanese": Spacing,
+            "SpacingLatin": Spacing,
+            "SpacingOther": Spacing,
+            "SpacingSymbol": Spacing,
+            "SpacingUser": Spacing,
+            "StrikeOutColor": StrikeOutColor,
+            "StrikeOutShape": StrikeOutShape,
+            "StrikeOutType": StrikeOutType,
+            "SubScript": SubScript,
+            "SuperScript": SuperScript,
+            "TextColor": (
+                self.rgb_color(TextColor)
+                if type(TextColor) == str and TextColor
+                else TextColor
+            ),
+            "UnderlineColor": (
+                self.rgb_color(UnderlineColor)
+                if type(UnderlineColor) == str and UnderlineColor
+                else UnderlineColor
+            ),
+            "UnderlineShape": UnderlineShape,
+            "UnderlineType": UnderlineType,
+            "UseFontSpace": UseFontSpace,
+            "UseKerning": UseKerning,
+        }
 
         if FaceName in self.htf_fonts.keys():
             d |= self.htf_fonts[FaceName]
@@ -5464,7 +5762,9 @@ class Hwp(ParamHelpers, RunMethods):
                 ctrl = ctrl.Prev
         return False  # raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."  #                  f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
 
-    def set_row_height(self, height: int | float, as_: Literal["mm", "hwpunit"] = "mm") -> bool:
+    def set_row_height(
+        self, height: int | float, as_: Literal["mm", "hwpunit"] = "mm"
+    ) -> bool:
         """
         캐럿이 표 안에 있는 경우
 
@@ -5477,7 +5777,9 @@ class Hwp(ParamHelpers, RunMethods):
             성공시 True, 실패시 False 리턴
         """
         if not self.is_cell():
-            raise AssertionError("캐럿이 표 안에 있지 않습니다. 표 안에서 실행해주세요.")
+            raise AssertionError(
+                "캐럿이 표 안에 있지 않습니다. 표 안에서 실행해주세요."
+            )
         pset = self.hwp.HParameterSet.HShapeObject
         self.hwp.HAction.GetDefault("TablePropertyDialog", pset.HSet)
         pset.HSet.SetItem("ShapeType", 3)
@@ -5499,9 +5801,20 @@ class Hwp(ParamHelpers, RunMethods):
         """
         self.insert_background_picture("", border_type="SelectedCellDelete")
 
-    def gradation_on_cell(self, color_list: list[tuple[int, int, int]]|list[str, str] = [(0, 0, 0), (255, 255, 255)],
-                          grad_type: Literal["Linear", "Radial", "Conical", "Square"] = "Linear", angle:int=0, xc:int=0, yc:int=0,
-                          pos_list: list[int] = None, step_center:int=50, step:int=255) -> bool:
+    def gradation_on_cell(
+        self,
+        color_list: list[tuple[int, int, int]] | list[str, str] = [
+            (0, 0, 0),
+            (255, 255, 255),
+        ],
+        grad_type: Literal["Linear", "Radial", "Conical", "Square"] = "Linear",
+        angle: int = 0,
+        xc: int = 0,
+        yc: int = 0,
+        pos_list: list[int] = None,
+        step_center: int = 50,
+        step: int = 255,
+    ) -> bool:
         """
         셀에 그라데이션을 적용하는 메서드
 
@@ -5535,7 +5848,9 @@ class Hwp(ParamHelpers, RunMethods):
             ...
         """
         if not self.is_cell():
-            raise AssertionError("캐럿이 현재 표 안에 위치하지 않습니다. 표 안에서 다시 실행해주세요.")
+            raise AssertionError(
+                "캐럿이 현재 표 안에 위치하지 않습니다. 표 안에서 다시 실행해주세요."
+            )
         pset = self.hwp.HParameterSet.HCellBorderFill
         self.hwp.HAction.GetDefault("CellFill", pset.HSet)
         if not pset.FillAttr.type:
@@ -5551,19 +5866,27 @@ class Hwp(ParamHelpers, RunMethods):
             pset.FillAttr.GradationIndexPos.SetItem(1, 255)
             pset.FillAttr.GradationStepCenter = 50
             pset.FillAttr.CreateItemArray("GradationColor", 2)
-            pset.FillAttr.GradationColor.SetItem(0, self.rgb_color(255, 255, 255))  # 시작색 ~ 끝색
-            pset.FillAttr.GradationColor.SetItem(1, self.rgb_color(255, 255, 255))  # 시작색 ~ 끝색
+            pset.FillAttr.GradationColor.SetItem(
+                0, self.rgb_color(255, 255, 255)
+            )  # 시작색 ~ 끝색
+            pset.FillAttr.GradationColor.SetItem(
+                1, self.rgb_color(255, 255, 255)
+            )  # 시작색 ~ 끝색
             pset.FillAttr.GradationBrush = 1
             self.hwp.HAction.Execute("CellFill", pset.HSet)
         color_num = len(color_list)
         if color_num == 1:
             step = 1
         pset.FillAttr.type = self.hwp.BrushType("NullBrush|GradBrush")
-        pset.FillAttr.GradationType = self.hwp.Gradation(grad_type)  # 0은 검정. Linear:1, Radial:2, Conical:3, Square:4
+        pset.FillAttr.GradationType = self.hwp.Gradation(
+            grad_type
+        )  # 0은 검정. Linear:1, Radial:2, Conical:3, Square:4
         pset.FillAttr.GradationCenterX = xc  # 가로중심
         pset.FillAttr.GradationCenterY = yc  # 세로중심
         pset.FillAttr.GradationAngle = angle  # 기울임
-        pset.FillAttr.GradationStep = step  # 번짐정도(영역개수) 2~255 (0은 투명, 1은 시작색)
+        pset.FillAttr.GradationStep = (
+            step  # 번짐정도(영역개수) 2~255 (0은 투명, 1은 시작색)
+        )
         pset.FillAttr.GradationColorNum = color_num  # ?
         pset.FillAttr.CreateItemArray("GradationIndexPos", color_num)
 
@@ -5579,9 +5902,13 @@ class Hwp(ParamHelpers, RunMethods):
         pset.FillAttr.CreateItemArray("GradationColor", color_num)
         for i in range(color_num):
             if type(color_list[i]) == str:
-                pset.FillAttr.GradationColor.SetItem(i, self.rgb_color(color_list[i]))  # 시작색 ~ 끝색
+                pset.FillAttr.GradationColor.SetItem(
+                    i, self.rgb_color(color_list[i])
+                )  # 시작색 ~ 끝색
             elif check_tuple_of_ints(color_list[i]):
-                pset.FillAttr.GradationColor.SetItem(i, self.rgb_color(*color_list[i]))  # 시작색 ~ 끝색
+                pset.FillAttr.GradationColor.SetItem(
+                    i, self.rgb_color(*color_list[i])
+                )  # 시작색 ~ 끝색
         pset.FillAttr.GradationBrush = 1
         return self.hwp.HAction.Execute("CellFill", pset.HSet)
 
@@ -5607,8 +5934,8 @@ class Hwp(ParamHelpers, RunMethods):
         # ]:
         cur_face = self.CharShape.Item("FaceNameHangul")
         while self.CharShapeNextFaceName():
-            result_list.append(self.CharShape.Item('FaceNameHangul'))
-            if cur_face == self.CharShape.Item('FaceNameHangul'):
+            result_list.append(self.CharShape.Item("FaceNameHangul"))
+            if cur_face == self.CharShape.Item("FaceNameHangul"):
                 break
         return list(set(result_list))
 
@@ -5652,7 +5979,7 @@ class Hwp(ParamHelpers, RunMethods):
         # 임시 디렉토리 생성
         with tempfile.TemporaryDirectory() as temp_dir:
             # ZIP 파일을 임시 디렉토리에 추출
-            with zipfile.ZipFile(temp_filename, 'r') as zf:
+            with zipfile.ZipFile(temp_filename, "r") as zf:
                 zf.extractall(path=temp_dir)
 
             # section0.xml 파일 경로
@@ -5714,11 +6041,19 @@ class Hwp(ParamHelpers, RunMethods):
             FooterLen: 꼬리말
             BottomMargin: 아래쪽
         """
-        code_to_desc = {'PaperWidth': "용지폭", 'PaperHeight': "용지길이", 'Landscape': "용지방향",  # 0: 가로, 1:세로
-                        'GutterType': "제본타입",  # 0: 한쪽, 1:맞쪽, 2:위쪽
-                        'TopMargin': "위쪽", 'HeaderLen': "머리말", 'LeftMargin': "왼쪽", 'GutterLen': "제본여백",
-                        'RightMargin': "오른쪽",
-                        'FooterLen': "꼬리말", 'BottomMargin': "아래쪽", }
+        code_to_desc = {
+            "PaperWidth": "용지폭",
+            "PaperHeight": "용지길이",
+            "Landscape": "용지방향",  # 0: 가로, 1:세로
+            "GutterType": "제본타입",  # 0: 한쪽, 1:맞쪽, 2:위쪽
+            "TopMargin": "위쪽",
+            "HeaderLen": "머리말",
+            "LeftMargin": "왼쪽",
+            "GutterLen": "제본여백",
+            "RightMargin": "오른쪽",
+            "FooterLen": "꼬리말",
+            "BottomMargin": "아래쪽",
+        }
 
         pset = self.hwp.HParameterSet.HSecDef
         self.hwp.HAction.GetDefault("PageSetup", pset.HSet)
@@ -5733,13 +6068,19 @@ class Hwp(ParamHelpers, RunMethods):
                     result_dict[key] = eval(f"pset.PageDef.{key}")
             else:
                 if as_ == "kor":
-                    result_dict[code_to_desc[key]] = self.hwp_unit_to_mili(eval(f"pset.PageDef.{key}"))
+                    result_dict[code_to_desc[key]] = self.hwp_unit_to_mili(
+                        eval(f"pset.PageDef.{key}")
+                    )
                 else:
-                    result_dict[key] = self.hwp_unit_to_mili(eval(f"pset.PageDef.{key}"))
+                    result_dict[key] = self.hwp_unit_to_mili(
+                        eval(f"pset.PageDef.{key}")
+                    )
 
         return result_dict
 
-    def set_pagedef(self, pset:Any, apply: Literal["cur", "all", "new"] = "cur") -> bool:
+    def set_pagedef(
+        self, pset: Any, apply: Literal["cur", "all", "new"] = "cur"
+    ) -> bool:
         """
         get_pagedef 또는 get_pagedef_as_dict를 통해 얻은 용지정보를 현재구역에 적용하는 메서드
 
@@ -5750,10 +6091,19 @@ class Hwp(ParamHelpers, RunMethods):
             성공시 True, 실패시 False를 리턴
         """
         if isinstance(pset, dict):
-            desc_to_code = {"용지폭": 'PaperWidth', "용지길이": 'PaperHeight', "용지방향": 'Landscape', "제본타입": 'GutterType',
-                            "위쪽": 'TopMargin', "머리말": 'HeaderLen', "왼쪽": 'LeftMargin', "제본여백": 'GutterLen',
-                            "오른쪽": 'RightMargin',
-                            "꼬리말": 'FooterLen', "아래쪽": 'BottomMargin', }
+            desc_to_code = {
+                "용지폭": "PaperWidth",
+                "용지길이": "PaperHeight",
+                "용지방향": "Landscape",
+                "제본타입": "GutterType",
+                "위쪽": "TopMargin",
+                "머리말": "HeaderLen",
+                "왼쪽": "LeftMargin",
+                "제본여백": "GutterLen",
+                "오른쪽": "RightMargin",
+                "꼬리말": "FooterLen",
+                "아래쪽": "BottomMargin",
+            }
 
             new_pset = self.hwp.HParameterSet.HSecDef
             for key in pset.keys():
@@ -5761,12 +6111,16 @@ class Hwp(ParamHelpers, RunMethods):
                     if key in ["용지방향", "제본여백"]:
                         exec(f"new_pset.PageDef.{desc_to_code[key]} = {pset[key]}")
                     else:
-                        exec(f"new_pset.PageDef.{desc_to_code[key]} = {self.mili_to_hwp_unit(pset[key])}")
+                        exec(
+                            f"new_pset.PageDef.{desc_to_code[key]} = {self.mili_to_hwp_unit(pset[key])}"
+                        )
                 elif key in desc_to_code.values():  # 영문인 경우
                     if key in ["Landscape", "GutterLen"]:
                         exec(f"new_pset.PageDef.{key} = {pset[key]}")
                     else:
-                        exec(f"new_pset.PageDef.{key} = {self.mili_to_hwp_unit(pset[key])}")
+                        exec(
+                            f"new_pset.PageDef.{key} = {self.mili_to_hwp_unit(pset[key])}"
+                        )
 
             # 적용범위
             if apply == "cur":
@@ -5846,8 +6200,17 @@ class Hwp(ParamHelpers, RunMethods):
                 self.MovePageDown()
         return self.current_printpage, self.current_page
 
-    def table_from_data(self, data:pd.DataFrame|dict|list|str, transpose:bool=False, header0:str="", treat_as_char:bool=False, header:bool=True, index:bool=True,
-                        cell_fill: bool | tuple[int, int, int] = False, header_bold:bool=True) -> None:
+    def table_from_data(
+        self,
+        data: pd.DataFrame | dict | list | str,
+        transpose: bool = False,
+        header0: str = "",
+        treat_as_char: bool = False,
+        header: bool = True,
+        index: bool = True,
+        cell_fill: bool | tuple[int, int, int] = False,
+        header_bold: bool = True,
+    ) -> None:
         """
         dict, list 또는 csv나 xls, xlsx 및 json처럼 2차원 스프레드시트로 표현 가능한 데이터에 대해서,
 
@@ -5878,11 +6241,21 @@ class Hwp(ParamHelpers, RunMethods):
             df = df.T
         if index:
             idx_list = list(df.index)
-            self.create_table(rows=len(df) + 1, cols=len(df.columns) + 1, treat_as_char=treat_as_char, header=header)
+            self.create_table(
+                rows=len(df) + 1,
+                cols=len(df.columns) + 1,
+                treat_as_char=treat_as_char,
+                header=header,
+            )
             self.insert_text(header0)
             self.TableRightCellAppend()
         else:
-            self.create_table(rows=len(df) + 1, cols=len(df.columns), treat_as_char=treat_as_char, header=header)
+            self.create_table(
+                rows=len(df) + 1,
+                cols=len(df.columns),
+                treat_as_char=treat_as_char,
+                header=header,
+            )
         for i in df.columns:
             self.insert_text(i)
             self.TableRightCellAppend()
@@ -5944,7 +6317,7 @@ class Hwp(ParamHelpers, RunMethods):
         pset.Color = self.rgb_color(r, g, b)
         return self.hwp.HAction.Execute("MarkPenShape", pset.HSet)
 
-    def open_pdf(self, pdf_path:str, this_window:int=1) -> bool:
+    def open_pdf(self, pdf_path: str, this_window: int = 1) -> bool:
         """
         pdf를 hwp문서로 변환하여 여는 함수.
 
@@ -5974,8 +6347,15 @@ class Hwp(ParamHelpers, RunMethods):
         msgbox.DoModal()  # 메시지박스 보이기
         return msgbox.Result
 
-    def insert_file(self, filename, keep_section=1, keep_charshape=1, keep_parashape=1, keep_style=1,
-                    move_doc_end=False):
+    def insert_file(
+        self,
+        filename,
+        keep_section=1,
+        keep_charshape=1,
+        keep_parashape=1,
+        keep_style=1,
+        move_doc_end=False,
+    ):
         if filename.lower()[1] != ":":
             filename = os.path.join(os.getcwd(), filename)
         pset = self.hwp.HParameterSet.HInsertFile
@@ -5991,7 +6371,9 @@ class Hwp(ParamHelpers, RunMethods):
             if move_doc_end:
                 self.MoveDocEnd()
 
-    def insert_memo(self, text:str="", memo_type: Literal["revision", "memo"] = "memo") -> None:
+    def insert_memo(
+        self, text: str = "", memo_type: Literal["revision", "memo"] = "memo"
+    ) -> None:
         """
         선택한 단어 범위에 메모고침표를 삽입하는 코드.
 
@@ -6023,7 +6405,7 @@ class Hwp(ParamHelpers, RunMethods):
         else:
             return False
 
-    def find_backward(self, src:str, regex:bool=False) -> bool:
+    def find_backward(self, src: str, regex: bool = False) -> bool:
         """
         문서 위쪽으로 find 메서드를 수행.
 
@@ -6036,7 +6418,7 @@ class Hwp(ParamHelpers, RunMethods):
         Returns:
             단어를 찾으면 찾아가서 선택한 후 True를 리턴, 단어가 더이상 없으면 False를 리턴
         """
-        self.SetMessageBoxMode(0x2fff1)
+        self.SetMessageBoxMode(0x2FFF1)
         init_pos = str(self.KeyIndicator())
         pset = self.hwp.HParameterSet.HFindReplace
         pset.MatchCase = 1
@@ -6051,9 +6433,9 @@ class Hwp(ParamHelpers, RunMethods):
         try:
             return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
         finally:
-            self.SetMessageBoxMode(0xfffff)
+            self.SetMessageBoxMode(0xFFFFF)
 
-    def find_forward(self, src:str, regex:bool=False) -> bool:
+    def find_forward(self, src: str, regex: bool = False) -> bool:
         """
         문서 아래쪽으로 find를 수행하는 메서드.
 
@@ -6066,7 +6448,7 @@ class Hwp(ParamHelpers, RunMethods):
         Returns:
             단어를 찾으면 찾아가서 선택한 후 True를 리턴, 단어가 더이상 없으면 False를 리턴
         """
-        self.SetMessageBoxMode(0x2fff1)
+        self.SetMessageBoxMode(0x2FFF1)
         init_pos = str(self.KeyIndicator())
         pset = self.hwp.HParameterSet.HFindReplace
         pset.MatchCase = 1
@@ -6081,11 +6463,25 @@ class Hwp(ParamHelpers, RunMethods):
         try:
             return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
         finally:
-            self.SetMessageBoxMode(0xfffff)
+            self.SetMessageBoxMode(0xFFFFF)
 
-    def find(self, src:str, direction: Literal["Forward", "Backward", "AllDoc"] = "Forward", regex:bool=False, MatchCase:int=1,
-             SeveralWords:int=1, UseWildCards:int=1, WholeWordOnly:int=0, AutoSpell:int=1, HanjaFromHangul:int=1, AllWordForms:int=0,
-             FindStyle:str="", ReplaceStyle:str="", FindJaso:int=0, FindType:int=1) -> bool:
+    def find(
+        self,
+        src: str,
+        direction: Literal["Forward", "Backward", "AllDoc"] = "Forward",
+        regex: bool = False,
+        MatchCase: int = 1,
+        SeveralWords: int = 1,
+        UseWildCards: int = 1,
+        WholeWordOnly: int = 0,
+        AutoSpell: int = 1,
+        HanjaFromHangul: int = 1,
+        AllWordForms: int = 0,
+        FindStyle: str = "",
+        ReplaceStyle: str = "",
+        FindJaso: int = 0,
+        FindType: int = 1,
+    ) -> bool:
         """
         direction 방향으로 특정 단어를 찾아가는 메서드.
 
@@ -6118,7 +6514,7 @@ class Hwp(ParamHelpers, RunMethods):
             단어를 찾으면 찾아가서 선택한 후 True를 리턴,
             단어가 더이상 없으면 False를 리턴
         """
-        self.SetMessageBoxMode(0x2fff1)
+        self.SetMessageBoxMode(0x2FFF1)
         pset = self.hwp.HParameterSet.HFindReplace
         pset.MatchCase = MatchCase
         pset.SeveralWords = SeveralWords
@@ -6138,7 +6534,7 @@ class Hwp(ParamHelpers, RunMethods):
         try:
             return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
         finally:
-            self.SetMessageBoxMode(0xfffff)
+            self.SetMessageBoxMode(0xFFFFF)
 
     def set_field_by_bracket(self):
         """
@@ -6196,14 +6592,33 @@ class Hwp(ParamHelpers, RunMethods):
                     raise Exception("필드를 닫는 중괄호가 없습니다.")
             self.hwp.HAction.Run("Delete")
             if self.is_cell():
-                self.set_cur_field_name(field_name, option=1, direction=direction, memo=memo)
+                self.set_cur_field_name(
+                    field_name, option=1, direction=direction, memo=memo
+                )
             else:
                 pass
 
-    def find_replace(self, src, dst, regex=False, direction: Literal["Backward", "Forward", "AllDoc"] = "Forward",
-                     MatchCase=1, AllWordForms=0, SeveralWords=1, UseWildCards=1, WholeWordOnly=0, AutoSpell=1,
-                     IgnoreFindString=0, IgnoreReplaceString=0, ReplaceMode=1, HanjaFromHangul=1,
-                     FindJaso=0, FindStyle="", ReplaceStyle="", FindType=1):
+    def find_replace(
+        self,
+        src,
+        dst,
+        regex=False,
+        direction: Literal["Backward", "Forward", "AllDoc"] = "Forward",
+        MatchCase=1,
+        AllWordForms=0,
+        SeveralWords=1,
+        UseWildCards=1,
+        WholeWordOnly=0,
+        AutoSpell=1,
+        IgnoreFindString=0,
+        IgnoreReplaceString=0,
+        ReplaceMode=1,
+        HanjaFromHangul=1,
+        FindJaso=0,
+        FindStyle="",
+        ReplaceStyle="",
+        FindType=1,
+    ):
         """
         아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,
 
@@ -6211,22 +6626,34 @@ class Hwp(ParamHelpers, RunMethods):
         문단별로 잘라서 문서 전체를 순회하며
         파이썬의 re.sub 함수를 실행한다.
         """
-        self.SetMessageBoxMode(0x2fff1)
+        self.SetMessageBoxMode(0x2FFF1)
         if regex:
             whole_text = self.get_text_file()
             src_list = [i.group() for i in re.finditer(src, whole_text)]
             dst_list = [re.sub(src, dst, i) for i in src_list]
             for i, j in zip(src_list, dst_list):
                 try:
-                    return self.find_replace(i, j, direction=direction, MatchCase=MatchCase, AllWordForms=AllWordForms,
-                                             SeveralWords=SeveralWords, UseWildCards=UseWildCards,
-                                             WholeWordOnly=WholeWordOnly, AutoSpell=AutoSpell,
-                                             IgnoreFindString=IgnoreFindString, IgnoreReplaceString=IgnoreReplaceString,
-                                             ReplaceMode=ReplaceMode, HanjaFromHangul=HanjaFromHangul,
-                                             FindJaso=FindJaso,
-                                             FindStyle=FindStyle, ReplaceStyle=ReplaceStyle, FindType=FindType)
+                    return self.find_replace(
+                        i,
+                        j,
+                        direction=direction,
+                        MatchCase=MatchCase,
+                        AllWordForms=AllWordForms,
+                        SeveralWords=SeveralWords,
+                        UseWildCards=UseWildCards,
+                        WholeWordOnly=WholeWordOnly,
+                        AutoSpell=AutoSpell,
+                        IgnoreFindString=IgnoreFindString,
+                        IgnoreReplaceString=IgnoreReplaceString,
+                        ReplaceMode=ReplaceMode,
+                        HanjaFromHangul=HanjaFromHangul,
+                        FindJaso=FindJaso,
+                        FindStyle=FindStyle,
+                        ReplaceStyle=ReplaceStyle,
+                        FindType=FindType,
+                    )
                 finally:
-                    self.SetMessageBoxMode(0xfffff)
+                    self.SetMessageBoxMode(0xFFFFF)
 
         else:
             pset = self.hwp.HParameterSet.HFindReplace
@@ -6253,11 +6680,28 @@ class Hwp(ParamHelpers, RunMethods):
             try:
                 return self.hwp.HAction.Execute("ExecReplace", pset.HSet)
             finally:
-                self.SetMessageBoxMode(0xfffff)
+                self.SetMessageBoxMode(0xFFFFF)
 
-    def find_replace_all(self, src, dst, regex=False, MatchCase=1, AllWordForms=0, SeveralWords=1, UseWildCards=1,
-                         WholeWordOnly=0, AutoSpell=1, IgnoreFindString=0, IgnoreReplaceString=0, ReplaceMode=1,
-                         HanjaFromHangul=1, FindJaso=0, FindStyle="", ReplaceStyle="", FindType=1):
+    def find_replace_all(
+        self,
+        src,
+        dst,
+        regex=False,
+        MatchCase=1,
+        AllWordForms=0,
+        SeveralWords=1,
+        UseWildCards=1,
+        WholeWordOnly=0,
+        AutoSpell=1,
+        IgnoreFindString=0,
+        IgnoreReplaceString=0,
+        ReplaceMode=1,
+        HanjaFromHangul=1,
+        FindJaso=0,
+        FindStyle="",
+        ReplaceStyle="",
+        FindType=1,
+    ):
         """
         아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,
 
@@ -6265,17 +6709,30 @@ class Hwp(ParamHelpers, RunMethods):
         문단별로 잘라서 문서 전체를 순회하며
         파이썬의 re.sub 함수를 실행한다.
         """
-        self.SetMessageBoxMode(0x2fff1)
+        self.SetMessageBoxMode(0x2FFF1)
         if regex:
             whole_text = self.get_text_file()
             src_list = [i.group() for i in re.finditer(src, whole_text)]
             dst_list = [re.sub(src, dst, i) for i in src_list]
             for i, j in zip(src_list, dst_list):
-                self.find_replace_all(i, j, MatchCase=MatchCase, AllWordForms=AllWordForms, SeveralWords=SeveralWords,
-                                      UseWildCards=UseWildCards, WholeWordOnly=WholeWordOnly, AutoSpell=AutoSpell,
-                                      IgnoreFindString=IgnoreFindString, IgnoreReplaceString=IgnoreReplaceString,
-                                      ReplaceMode=ReplaceMode, HanjaFromHangul=HanjaFromHangul, FindJaso=FindJaso,
-                                      FindStyle=FindStyle, ReplaceStyle=ReplaceStyle, FindType=FindType)
+                self.find_replace_all(
+                    i,
+                    j,
+                    MatchCase=MatchCase,
+                    AllWordForms=AllWordForms,
+                    SeveralWords=SeveralWords,
+                    UseWildCards=UseWildCards,
+                    WholeWordOnly=WholeWordOnly,
+                    AutoSpell=AutoSpell,
+                    IgnoreFindString=IgnoreFindString,
+                    IgnoreReplaceString=IgnoreReplaceString,
+                    ReplaceMode=ReplaceMode,
+                    HanjaFromHangul=HanjaFromHangul,
+                    FindJaso=FindJaso,
+                    FindStyle=FindStyle,
+                    ReplaceStyle=ReplaceStyle,
+                    FindType=FindType,
+                )
         else:
             pset = self.hwp.HParameterSet.HFindReplace
             # self.hwp.HAction.GetDefault("AllReplace", pset.HSet)
@@ -6306,7 +6763,7 @@ class Hwp(ParamHelpers, RunMethods):
             try:
                 return self.hwp.HAction.Execute("AllReplace", pset.HSet)
             finally:
-                self.SetMessageBoxMode(0xfffff)
+                self.SetMessageBoxMode(0xFFFFF)
 
     def clipboard_to_pyfunc(self):
         """
@@ -6320,17 +6777,34 @@ class Hwp(ParamHelpers, RunMethods):
         text = text.split("{\r\n", maxsplit=1)[1][:-5]
         if "with" in text:
             pset_name = text.split("with (")[1].split(")")[0]
-            inner_param = text.split("{\r\n")[1].split("\r\n}")[0].replace("        ", f"    {pset_name}")
-            result = f"def script_macro():\r\n    pset = {pset_name}\r\n    " + text.replace("    ", "").split("with")[
-                0].replace(pset_name, "pset").replace("\r\n", "\r\n    ") + inner_param.replace(pset_name,
-                                                                                                "pset.").replace("    ",
-                                                                                                                 "").replace(
-                "}\r\n", "").replace("..", ".").replace("\r\n", "\r\n    ")
+            inner_param = (
+                text.split("{\r\n")[1]
+                .split("\r\n}")[0]
+                .replace("        ", f"    {pset_name}")
+            )
+            result = (
+                f"def script_macro():\r\n    pset = {pset_name}\r\n    "
+                + text.replace("    ", "")
+                .split("with")[0]
+                .replace(pset_name, "pset")
+                .replace("\r\n", "\r\n    ")
+                + inner_param.replace(pset_name, "pset.")
+                .replace("    ", "")
+                .replace("}\r\n", "")
+                .replace("..", ".")
+                .replace("\r\n", "\r\n    ")
+            )
         else:
             pset_name = text.split(", ")[1].split(".HSet")[0]
-            result = f"def script_macro():\r\n    pset = {pset_name}\r\n    " + text.replace("    ", "").replace(
-                pset_name, "pset").replace("\r\n", "\r\n    ")
-        result = result.replace("HAction.", "hwp.HAction.").replace("HParameterSet.", "hwp.HParameterSet.")
+            result = (
+                f"def script_macro():\r\n    pset = {pset_name}\r\n    "
+                + text.replace("    ", "")
+                .replace(pset_name, "pset")
+                .replace("\r\n", "\r\n    ")
+            )
+        result = result.replace("HAction.", "hwp.HAction.").replace(
+            "HParameterSet.", "hwp.HParameterSet."
+        )
         result = re.sub(r"= (?!hwp\.)(\D)", r"= hwp.\g<1>", result)
         result = result.replace('hwp."', '"')
         print(result)
@@ -6344,7 +6818,7 @@ class Hwp(ParamHelpers, RunMethods):
     def doc_list(self) -> list[XHwpDocument]:
         return self.XHwpDocuments
 
-    def switch_to(self, num:int) -> XHwpDocument|None:
+    def switch_to(self, num: int) -> XHwpDocument | None:
         """
         여러 개의 hwp인스턴스가 열려 있는 경우 해당 인덱스의 문서창 인스턴스를 활성화한다.
 
@@ -6393,7 +6867,16 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return XHwpDocument(self.hwp.XHwpDocuments.Add(0))  # 0은 새 창, 1은 새 탭
 
-    def create_table(self, rows:int=1, cols:int=1, treat_as_char: bool = True, width_type:int=0, height_type:int=0, header:bool=True, height:int=0) -> bool:
+    def create_table(
+        self,
+        rows: int = 1,
+        cols: int = 1,
+        treat_as_char: bool = True,
+        width_type: int = 0,
+        height_type: int = 0,
+        header: bool = True,
+        height: int = 0,
+    ) -> bool:
         """
         표를 생성하는 메서드.
 
@@ -6433,23 +6916,42 @@ class Hwp(ParamHelpers, RunMethods):
         sec_def = self.hwp.HParameterSet.HSecDef
         self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
         total_width = (
-                    sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen - self.mili_to_hwp_unit(
-                2))
+            sec_def.PageDef.PaperWidth
+            - sec_def.PageDef.LeftMargin
+            - sec_def.PageDef.RightMargin
+            - sec_def.PageDef.GutterLen
+            - self.mili_to_hwp_unit(2)
+        )
 
         pset.WidthValue = total_width  # 표 너비(근데 영향이 없는 듯)
         if height and height_type == 1:  # 표높이가 정의되어 있으면
             # 페이지 최대 높이 계산
             total_height = (
-                    sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen - sec_def.PageDef.FooterLen - self.mili_to_hwp_unit(
-                2))
-            pset.HeightValue = min(self.hwp.MiliToHwpUnit(height), total_height)  # 표 높이
+                sec_def.PageDef.PaperHeight
+                - sec_def.PageDef.TopMargin
+                - sec_def.PageDef.BottomMargin
+                - sec_def.PageDef.HeaderLen
+                - sec_def.PageDef.FooterLen
+                - self.mili_to_hwp_unit(2)
+            )
+            pset.HeightValue = min(
+                self.hwp.MiliToHwpUnit(height), total_height
+            )  # 표 높이
             pset.CreateItemArray("RowHeight", rows)  # 행 m개 생성
-            each_row_height = min((self.mili_to_hwp_unit(height) - self.mili_to_hwp_unit((0.5 + 0.5) * rows)) // rows,
-                                  (total_height - self.mili_to_hwp_unit((0.5 + 0.5) * rows)) // rows)
+            each_row_height = min(
+                (
+                    self.mili_to_hwp_unit(height)
+                    - self.mili_to_hwp_unit((0.5 + 0.5) * rows)
+                )
+                // rows,
+                (total_height - self.mili_to_hwp_unit((0.5 + 0.5) * rows)) // rows,
+            )
             for i in range(rows):
                 pset.RowHeight.SetItem(i, each_row_height)  # 1열
-            pset.TableProperties.Height = min(self.MiliToHwpUnit(height),
-                                              total_height - self.mili_to_hwp_unit((0.5 + 0.5) * rows))
+            pset.TableProperties.Height = min(
+                self.MiliToHwpUnit(height),
+                total_height - self.mili_to_hwp_unit((0.5 + 0.5) * rows),
+            )
 
         pset.CreateItemArray("ColWidth", cols)  # 열 n개 생성
         each_col_width = round((total_width - self.mili_to_hwp_unit(3.6 * cols)) / cols)
@@ -6457,7 +6959,9 @@ class Hwp(ParamHelpers, RunMethods):
             pset.ColWidth.SetItem(i, each_col_width)  # 1열
         if self.Version[0] == "8":
             pset.TableProperties.TreatAsChar = treat_as_char  # 글자처럼 취급
-        pset.TableProperties.Width = total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
+        pset.TableProperties.Width = (
+            total_width  # self.hwp.MiliToHwpUnit(148)  # 표 너비
+        )
         try:
             return self.hwp.HAction.Execute("TableCreate", pset.HSet)  # 위 코드 실행
         finally:
@@ -6488,7 +6992,7 @@ class Hwp(ParamHelpers, RunMethods):
             else:
                 self.Select()
                 self.Select()
-        if not self.hwp.InitScan(Range=0xff):
+        if not self.hwp.InitScan(Range=0xFF):
             return ""
         if as_ == "list":
             result = []
@@ -6504,7 +7008,9 @@ class Hwp(ParamHelpers, RunMethods):
         self.hwp.ReleaseScan()
         return result if type(result) == str else result[:-1]
 
-    def table_to_csv(self, n="", filename="result.csv", encoding="utf-8", startrow=0) -> None:
+    def table_to_csv(
+        self, n="", filename="result.csv", encoding="utf-8", startrow=0
+    ) -> None:
         """
         한/글 문서의 idx번째 표를 현재 폴더에 filename으로 csv포맷으로 저장한다.
 
@@ -6565,8 +7071,10 @@ class Hwp(ParamHelpers, RunMethods):
             try:
                 self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
             except AttributeError:
-                raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
-                                 f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
+                raise IndexError(
+                    f"해당 인덱스의 표가 존재하지 않습니다."
+                    f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다."
+                )
             self.hwp.FindCtrl()
             self.ShapeObjTableSelCell()
         data = [self.get_selected_text()]
@@ -6592,7 +7100,9 @@ class Hwp(ParamHelpers, RunMethods):
         print(os.path.join(os.getcwd(), filename))
         return None
 
-    def table_to_df_q(self, n:str="", startrow:int=0, columns:list=[]) -> pd.DataFrame:
+    def table_to_df_q(
+        self, n: str = "", startrow: int = 0, columns: list = []
+    ) -> pd.DataFrame:
         """
         (2024. 3. 14. for문 추출 구조에서, 한 번에 추출하는 방식으로 변경->속도개선)
 
@@ -6657,8 +7167,10 @@ class Hwp(ParamHelpers, RunMethods):
             try:
                 self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
             except AttributeError:
-                raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
-                                 f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
+                raise IndexError(
+                    f"해당 인덱스의 표가 존재하지 않습니다."
+                    f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다."
+                )
             self.hwp.FindCtrl()
             self.ShapeObjTableSelCell()
 
@@ -6672,7 +7184,9 @@ class Hwp(ParamHelpers, RunMethods):
         # rows = int(re.sub(r"[A-Z]+", "", self.get_cell_addr()))
         rows = int(re.sub(r"[A-Z]+", "", self.get_cell_addr())) - startrow
 
-        arr = np.array(self.get_selected_text(as_="list"), dtype=object).reshape(rows, -1)
+        arr = np.array(self.get_selected_text(as_="list"), dtype=object).reshape(
+            rows, -1
+        )
         # if startrow:
         #     arr = arr[startrow:]
         if columns:
@@ -6684,7 +7198,9 @@ class Hwp(ParamHelpers, RunMethods):
         self.hwp.SetPos(*start_pos)
         return df
 
-    def table_to_df(self, n="", cols=0, selected_range=None, start_pos=None) -> pd.DataFrame:
+    def table_to_df(
+        self, n="", cols=0, selected_range=None, start_pos=None
+    ) -> pd.DataFrame:
         """
         (2025. 3. 3. RowSpan이랑 ColSpan을 이용해서, 중복되는 값은 그냥 모든 셀에 넣어버림
 
@@ -6745,8 +7261,10 @@ class Hwp(ParamHelpers, RunMethods):
                 try:
                     self.hwp.SetPosBySet(ctrl.GetAnchorPos(0))
                 except AttributeError:
-                    raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."
-                                     f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
+                    raise IndexError(
+                        f"해당 인덱스의 표가 존재하지 않습니다."
+                        f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다."
+                    )
                 self.hwp.FindCtrl()
         else:
             selected_range = self.get_selected_range()
@@ -6754,22 +7272,22 @@ class Hwp(ParamHelpers, RunMethods):
         root = ET.fromstring(xml_data)
 
         # TABLE 태그에 RowCount, ColCount가 있으면 사용하고, 없으면 ROW, CELL 수로 결정
-        table_el = root.find('.//TABLE')
+        table_el = root.find(".//TABLE")
         if table_el is not None:
             row_count = int(table_el.attrib.get("RowCount", "0"))
             col_count = int(table_el.attrib.get("ColCount", "0"))
         else:
-            rows = root.findall('.//ROW')
+            rows = root.findall(".//ROW")
             row_count = len(rows)
-            col_count = max(len(row.findall('.//CELL')) for row in rows)
+            col_count = max(len(row.findall(".//CELL")) for row in rows)
 
         # 결과를 저장할 2차원 리스트 초기화 (빈 문자열로 채움)
         result = [["" for _ in range(col_count)] for _ in range(row_count)]
 
         row_index = 0
-        for row in root.findall('.//ROW'):
+        for row in root.findall(".//ROW"):
             col_index = 0
-            for cell in row.findall('.//CELL'):
+            for cell in row.findall(".//CELL"):
                 # 이미 값이 채워진 셀이 있으면 건너뛰고 다음 빈 칸 찾기
                 while col_index < col_count and result[row_index][col_index] != "":
                     col_index += 1
@@ -6777,9 +7295,9 @@ class Hwp(ParamHelpers, RunMethods):
                     break
 
                 # CELL 내 텍스트 추출 (CHAR 태그의 텍스트 연결)
-                cell_text = ''
-                for text in cell.findall('.//TEXT'):
-                    for char in text.findall('.//CHAR'):
+                cell_text = ""
+                for text in cell.findall(".//TEXT"):
+                    for char in text.findall(".//CHAR"):
                         if char.text:
                             cell_text += char.text
                     cell_text += "\r\n"
@@ -6806,7 +7324,7 @@ class Hwp(ParamHelpers, RunMethods):
         # DataFrame 생성: cols가 int면 해당 인덱스 행을 header로 사용
         if type(cols) == int:
             columns = result[cols]
-            data = result[cols + 1:]
+            data = result[cols + 1 :]
             df = pd.DataFrame(data, columns=columns)
         elif type(cols) in (list, tuple):
             df = pd.DataFrame(result, columns=cols)
@@ -6817,7 +7335,7 @@ class Hwp(ParamHelpers, RunMethods):
             if self.SelectionMode != 19:
                 self.set_pos(*start_pos)
 
-    def table_to_bottom(self, offset:float=0.) -> bool:
+    def table_to_bottom(self, offset: float = 0.0) -> bool:
         """
         표 앞에 캐럿을 둔 상태 또는 캐럿이 표 안에 있는 상태에서 위 함수 실행시
 
@@ -6859,7 +7377,7 @@ class Hwp(ParamHelpers, RunMethods):
         param.Text = text
         return self.hwp.HAction.Execute("InsertText", param.HSet)
 
-    def insert_lorem(self, para_num:int=1) -> bool:
+    def insert_lorem(self, para_num: int = 1) -> bool:
         """
         Lorem Ipsum을 캐럿 위치에 작성한다.
 
@@ -6875,23 +7393,30 @@ class Hwp(ParamHelpers, RunMethods):
             >>> hwp.insert_lorem(3)
             True
         """
-        api_url = f'https://api.api-ninjas.com/v1/loremipsum?paragraphs={para_num}'
+        api_url = f"https://api.api-ninjas.com/v1/loremipsum?paragraphs={para_num}"
 
-        headers = {'X-Api-Key': "hzzbbAAy7mQjKyXSW5quRw==PbJStWB0ymMpGRH1"}
+        headers = {"X-Api-Key": "hzzbbAAy7mQjKyXSW5quRw==PbJStWB0ymMpGRH1"}
 
         req = request.Request(api_url, headers=headers)
 
         try:
             with request.urlopen(req) as response:
-                response_text = json.loads(response.read().decode('utf-8'))["text"].replace("\n", "\r\n")
+                response_text = json.loads(response.read().decode("utf-8"))[
+                    "text"
+                ].replace("\n", "\r\n")
         except urllib.error.HTTPError as e:
             print("Error:", e.code, e.reason)
         except urllib.error.URLError as e:
             print("Error:", e.reason)
         return self.insert_text(response_text)
 
-    def move_all_caption(self, location: Literal["Top", "Bottom", "Left", "Right"] = "Bottom",
-                         align: Literal["Left", "Center", "Right", "Distribute", "Division", "Justify"] = "Justify"):
+    def move_all_caption(
+        self,
+        location: Literal["Top", "Bottom", "Left", "Right"] = "Bottom",
+        align: Literal[
+            "Left", "Center", "Right", "Distribute", "Division", "Justify"
+        ] = "Justify",
+    ):
         """
         한/글 문서 내 모든 표, 그림의 주석 위치를 일괄 변경하는 메서드.
 
@@ -6968,7 +7493,7 @@ class Hwp(ParamHelpers, RunMethods):
     def Clear(self, option: int = 1) -> None:
         return self.clear(option)
 
-    def close(self, is_dirty: bool = False, interval:float=0.01) -> bool:
+    def close(self, is_dirty: bool = False, interval: float = 0.01) -> bool:
         """
         문서를 버리고 닫은 후, 새 문서창을 여는 메서드.
 
@@ -6982,7 +7507,9 @@ class Hwp(ParamHelpers, RunMethods):
         """
         while True:
             try:
-                return self.hwp.XHwpDocuments.Active_XHwpDocument.Close(isDirty=is_dirty)
+                return self.hwp.XHwpDocuments.Active_XHwpDocument.Close(
+                    isDirty=is_dirty
+                )
             except AttributeError:
                 sleep(interval)
 
@@ -7059,8 +7586,14 @@ class Hwp(ParamHelpers, RunMethods):
     def CreateMode(self, creation_mode):
         return self.create_mode(creation_mode)
 
-    def create_page_image(self, path: str, pgno: int = -1, resolution: int = 300, depth: int = 24,
-                          format: str = "bmp") -> bool:
+    def create_page_image(
+        self,
+        path: str,
+        pgno: int = -1,
+        resolution: int = 300,
+        depth: int = 24,
+        format: str = "bmp",
+    ) -> bool:
         """
         ``pgno``로 지정한 페이지를 ``path`` 라는 파일명으로 저장한다.
         이 때 페이지번호는 1부터 시작하며,(1-index)
@@ -7093,7 +7626,9 @@ class Hwp(ParamHelpers, RunMethods):
             True
         """
         if pgno < -1 or pgno > self.PageCount:
-            raise IndexError(f"pgno는 -1부터 {self.PageCount}까지 입력 가능합니다. (-1:전체 저장, 0:현재페이지 저장)")
+            raise IndexError(
+                f"pgno는 -1부터 {self.PageCount}까지 입력 가능합니다. (-1:전체 저장, 0:현재페이지 저장)"
+            )
         if path.lower()[1] != ":":
             path = os.path.abspath(path)
         if not os.path.exists(os.path.dirname(path)):
@@ -7103,8 +7638,13 @@ class Hwp(ParamHelpers, RunMethods):
             if pgno == 0:
                 pgno = self.current_page
             try:
-                return self.hwp.CreatePageImage(Path=path, pgno=pgno - 1, resolution=resolution, depth=depth,
-                                                Format=format)
+                return self.hwp.CreatePageImage(
+                    Path=path,
+                    pgno=pgno - 1,
+                    resolution=resolution,
+                    depth=depth,
+                    Format=format,
+                )
             finally:
                 if not ext.lower() in ("gif", "bmp"):
                     with Image.open(path.replace(ext, format)) as img:
@@ -7112,15 +7652,31 @@ class Hwp(ParamHelpers, RunMethods):
                     os.remove(path.replace(ext, format))
         elif pgno == -1:
             for i in range(1, self.PageCount + 1):
-                path_ = os.path.join(os.path.dirname(path), os.path.basename(path).replace(f".{ext}", f"{i:03}.{ext}"))
-                self.hwp.CreatePageImage(Path=path_, pgno=i - 1, resolution=resolution, depth=depth, Format=format)
+                path_ = os.path.join(
+                    os.path.dirname(path),
+                    os.path.basename(path).replace(f".{ext}", f"{i:03}.{ext}"),
+                )
+                self.hwp.CreatePageImage(
+                    Path=path_,
+                    pgno=i - 1,
+                    resolution=resolution,
+                    depth=depth,
+                    Format=format,
+                )
                 if not ext.lower() in ("gif", "bmp"):
                     with Image.open(path_.replace(ext, format)) as img:
                         img.save(path_.replace(format, ext))
                     os.remove(path_.replace(ext, format))
             return True
 
-    def CreatePageImage(self, path: str, pgno: int = -1, resolution: int = 300, depth: int = 24, format: str = "bmp") -> bool:
+    def CreatePageImage(
+        self,
+        path: str,
+        pgno: int = -1,
+        resolution: int = 300,
+        depth: int = 24,
+        format: str = "bmp",
+    ) -> bool:
         return self.create_page_image(path, pgno, resolution, depth, format)
 
     def create_set(self, setidstr: str) -> "Hwp.HParameterSet":
@@ -7244,10 +7800,10 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.FieldExist(Field=field)
 
-    def FieldExist(self, field:str) -> bool:
+    def FieldExist(self, field: str) -> bool:
         return self.field_exist(field)
 
-    def file_translate(self, cur_lang:str="ko", trans_lang:str="en") -> bool:
+    def file_translate(self, cur_lang: str = "ko", trans_lang: str = "en") -> bool:
         """
         문서를 번역함(Ctrl-Z 안 됨.) 한 달 10,000자 무료
 
@@ -7260,7 +7816,7 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.FileTranslate(curLang=cur_lang, transLang=trans_lang)
 
-    def FileTranslate(self, cur_lang:str="ko", trans_lang:str="en") -> bool:
+    def FileTranslate(self, cur_lang: str = "ko", trans_lang: str = "en") -> bool:
         return self.file_translate(cur_lang, trans_lang)
 
     def find_ctrl(self):
@@ -7270,7 +7826,7 @@ class Hwp(ParamHelpers, RunMethods):
     def FindCtrl(self):
         return self.find_ctrl()
 
-    def find_private_info(self, private_type:int, private_string:str) -> int:
+    def find_private_info(self, private_type: int, private_string: str) -> int:
         """
         개인정보를 찾는다. (비밀번호 설정 등의 이유, 현재 비활성화된 것으로 추정)
 
@@ -7307,9 +7863,11 @@ class Hwp(ParamHelpers, RunMethods):
                 - 0x0200 : 사용자 정의
                 - 0x0400 : 기타
         """
-        return self.hwp.FindPrivateInfo(PrivateType=private_type, PrivateString=private_string)
+        return self.hwp.FindPrivateInfo(
+            PrivateType=private_type, PrivateString=private_string
+        )
 
-    def FindPrivateInfo(self, private_type:int, private_string:str) -> int:
+    def FindPrivateInfo(self, private_type: int, private_string: str) -> int:
         return self.find_private_info(private_type, private_string)
 
     def get_bin_data_path(self, binid: int) -> str:
@@ -7334,7 +7892,7 @@ class Hwp(ParamHelpers, RunMethods):
     def GetBinDataPath(self, binid: int) -> str:
         return self.get_bin_data_path(binid)
 
-    def get_cur_field_name(self, option:int=0) -> str:
+    def get_cur_field_name(self, option: int = 0) -> str:
         """
         현재 캐럿이 위치하는 곳의 필드이름을 구한다.
         이 함수를 통해 현재 필드가 셀필드인지 누름틀필드인지 구할 수 있다.
@@ -7355,7 +7913,7 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.GetCurFieldName(option=option)
 
-    def GetCurFieldName(self, option:int=0) -> str:
+    def GetCurFieldName(self, option: int = 0) -> str:
         return self.get_cur_field_name(option)
 
     def get_cur_metatag_name(self) -> str:
@@ -7417,7 +7975,7 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.GetFieldList(Number=number, option=option)
 
-    def GetFieldList(self, number:int=1, option:int=0) -> str:
+    def GetFieldList(self, number: int = 1, option: int = 0) -> str:
         return self.get_field_list(number, option)
 
     def get_field_text(self, field: str | list | tuple | set, idx: int = 0) -> str:
@@ -7499,7 +8057,7 @@ class Hwp(ParamHelpers, RunMethods):
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.GetFileInfo(filename=filename)
 
-    def GetFileInfo(self, filename:str) -> "Hwp.HParameterSet":
+    def GetFileInfo(self, filename: str) -> "Hwp.HParameterSet":
         return self.get_file_info(filename)
 
     def get_font_list(self, langid: str = "") -> list[str]:
@@ -7513,7 +8071,10 @@ class Hwp(ParamHelpers, RunMethods):
             ['D2Coding,R', 'Pretendard Variable Thin,R', '나눔명조,R', '함초롬바탕,R']
         """
         self.scan_font()
-        return [i.rsplit(",", maxsplit=1)[0] for i in self.hwp.GetFontList(langid=langid).split("\x02")]
+        return [
+            i.rsplit(",", maxsplit=1)[0]
+            for i in self.hwp.GetFontList(langid=langid).split("\x02")
+        ]
 
     def GetFontList(self, langid: str = "") -> list:
         return self.get_font_list(langid)
@@ -7565,7 +8126,9 @@ class Hwp(ParamHelpers, RunMethods):
     def GetMetatagNameText(self, tag):
         return self.get_metatag_name_text(tag)
 
-    def get_mouse_pos(self, x_rel_to:int=1, y_rel_to:int=1) -> "Hwp.HParameterSet":
+    def get_mouse_pos(
+        self, x_rel_to: int = 1, y_rel_to: int = 1
+    ) -> "Hwp.HParameterSet":
         """
         마우스의 현재 위치를 얻어온다.
 
@@ -7610,10 +8173,10 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.GetMousePos(XRelTo=x_rel_to, YRelTo=y_rel_to)
 
-    def GetMousePos(self, x_rel_to:int=1, y_rel_to:int=1) -> "Hwp.HParameterSet":
+    def GetMousePos(self, x_rel_to: int = 1, y_rel_to: int = 1) -> "Hwp.HParameterSet":
         return self.get_mouse_pos(x_rel_to, y_rel_to)
 
-    def get_page_text(self, pgno: int = 0, option: hex = 0xffffffff) -> str:
+    def get_page_text(self, pgno: int = 0, option: hex = 0xFFFFFFFF) -> str:
         """
         페이지 단위의 텍스트 추출
         일반 텍스트(글자처럼 취급 도형 포함)를 우선적으로 추출하고,
@@ -7638,7 +8201,7 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.GetPageText(pgno=pgno, option=option)
 
-    def GetPageText(self, pgno: int = 0, option: hex = 0xffffffff) -> str:
+    def GetPageText(self, pgno: int = 0, option: hex = 0xFFFFFFFF) -> str:
         return self.get_page_text(pgno, option)
 
     def get_pos(self) -> tuple[int]:
@@ -7764,7 +8327,7 @@ class Hwp(ParamHelpers, RunMethods):
     def GetSelectedPos(self) -> tuple[bool, str, str, int, str, str, int]:
         return self.get_selected_pos()
 
-    def get_selected_pos_by_set(self, sset:Any, eset:Any) -> bool:
+    def get_selected_pos_by_set(self, sset: Any, eset: Any) -> bool:
         """
         현재 설정된 블록의 위치정보를 얻어온다.
 
@@ -7792,7 +8355,9 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.GetSelectedPosBySet(sset=sset, eset=eset)
 
-    def GetSelectedPosBySet(self, sset:"Hwp.HParameterSet", eset:"Hwp.HParameterSet") -> bool:
+    def GetSelectedPosBySet(
+        self, sset: "Hwp.HParameterSet", eset: "Hwp.HParameterSet"
+    ) -> bool:
         return self.get_selected_pos_by_set(sset, eset)
 
     def get_text(self) -> tuple[int, str]:
@@ -7844,7 +8409,11 @@ class Hwp(ParamHelpers, RunMethods):
     def GetText(self) -> tuple[int, str]:
         return self.get_text()
 
-    def get_text_file(self, format:Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"]="UNICODE", option:str="saveblock:true") -> str:
+    def get_text_file(
+        self,
+        format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "UNICODE",
+        option: str = "saveblock:true",
+    ) -> str:
         """
         현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
 
@@ -7883,7 +8452,11 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.GetTextFile(Format=format, option=option)
 
-    def GetTextFile(self, format:Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"]="UNICODE", option:str="saveblock:true") -> str:
+    def GetTextFile(
+        self,
+        format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "UNICODE",
+        option: str = "saveblock:true",
+    ) -> str:
         return self.get_text_file(format, option)
 
     def import_style(self, sty_filepath: str) -> bool:
@@ -7918,7 +8491,15 @@ class Hwp(ParamHelpers, RunMethods):
     def InitHParameterSet(self):
         return self.init_hparameterset()
 
-    def init_scan(self, option:int=0x07, range:int=0x77, spara:int=0, spos:int=0, epara:int=-1, epos:int=-1) -> bool:
+    def init_scan(
+        self,
+        option: int = 0x07,
+        range: int = 0x77,
+        spara: int = 0,
+        spos: int = 0,
+        epara: int = -1,
+        epos: int = -1,
+    ) -> bool:
         """
         문서의 내용을 검색하기 위해 초기설정을 한다.
 
@@ -7978,12 +8559,24 @@ class Hwp(ParamHelpers, RunMethods):
             >>> print(text)
             Hello, world!
         """
-        return self.hwp.InitScan(option=option, Range=range, spara=spara, spos=spos, epara=epara, epos=epos)
+        return self.hwp.InitScan(
+            option=option, Range=range, spara=spara, spos=spos, epara=epara, epos=epos
+        )
 
-    def InitScan(self, option:int=0x07, range:int=0x77, spara:int=0, spos:int=0, epara:int=-1, epos:int=-1) -> bool:
+    def InitScan(
+        self,
+        option: int = 0x07,
+        range: int = 0x77,
+        spara: int = 0,
+        spos: int = 0,
+        epara: int = -1,
+        epos: int = -1,
+    ) -> bool:
         return self.init_scan(option, range, spara, spos, epara, epos)
 
-    def insert(self, path: str, format: str = "", arg: str = "", move_doc_end: bool = False) -> bool:
+    def insert(
+        self, path: str, format: str = "", arg: str = "", move_doc_end: bool = False
+    ) -> bool:
         """
         현재 캐럿 위치에 문서파일을 삽입한다.
 
@@ -8072,13 +8665,22 @@ class Hwp(ParamHelpers, RunMethods):
             if move_doc_end:
                 self.MoveDocEnd()
 
-    def Insert(self, path: str, format: str = "", arg: str = "", move_doc_end: bool = False) -> bool:
+    def Insert(
+        self, path: str, format: str = "", arg: str = "", move_doc_end: bool = False
+    ) -> bool:
         return self.insert(path, format, arg, move_doc_end)
 
-    def insert_background_picture(self, path:str,
-                                  border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
-                                  embedded:bool=True, filloption:int=5, effect:int=0, watermark:bool=False, brightness:int=0,
-                                  contrast:int=0) -> bool:
+    def insert_background_picture(
+        self,
+        path: str,
+        border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
+        embedded: bool = True,
+        filloption: int = 5,
+        effect: int = 0,
+        watermark: bool = False,
+        brightness: int = 0,
+        contrast: int = 0,
+    ) -> bool:
         """
         **셀**에 배경이미지를 삽입한다.
 
@@ -8144,19 +8746,43 @@ class Hwp(ParamHelpers, RunMethods):
             path = os.path.join(os.getcwd(), path)
 
         try:
-            return self.hwp.InsertBackgroundPicture(Path=path, BorderType=border_type, Embedded=embedded,
-                                                    filloption=filloption, Effect=effect, watermark=watermark,
-                                                    Brightness=brightness, Contrast=contrast)
+            return self.hwp.InsertBackgroundPicture(
+                Path=path,
+                BorderType=border_type,
+                Embedded=embedded,
+                filloption=filloption,
+                Effect=effect,
+                watermark=watermark,
+                Brightness=brightness,
+                Contrast=contrast,
+            )
         finally:
             if "temp.jpg" in os.listdir():
                 os.remove(path)
 
-    def InsertBackgroundPicture(self, path:str, border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
-                                embedded:bool=True, filloption:int=5, effect:int=0, watermark:bool=False, brightness:int=0,
-                                contrast:int=0) -> bool:
-        return self.insert_background_picture(path, border_type, embedded, filloption, effect, watermark, brightness, contrast)
+    def InsertBackgroundPicture(
+        self,
+        path: str,
+        border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
+        embedded: bool = True,
+        filloption: int = 5,
+        effect: int = 0,
+        watermark: bool = False,
+        brightness: int = 0,
+        contrast: int = 0,
+    ) -> bool:
+        return self.insert_background_picture(
+            path,
+            border_type,
+            embedded,
+            filloption,
+            effect,
+            watermark,
+            brightness,
+            contrast,
+        )
 
-    def insert_ctrl(self, ctrl_id:str, initparam:Any) -> Ctrl:
+    def insert_ctrl(self, ctrl_id: str, initparam: Any) -> Ctrl:
         """
         현재 캐럿 위치에 컨트롤을 삽입한다.
 
@@ -8199,10 +8825,21 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.InsertCtrl(CtrlID=ctrl_id, initparam=initparam)
 
-    def InsertCtrl(self, ctrl_id:str, initparam:"Hwp.HParameterSet") -> Ctrl:
+    def InsertCtrl(self, ctrl_id: str, initparam: "Hwp.HParameterSet") -> Ctrl:
         return self.insert_ctrl(ctrl_id, initparam)
 
-    def insert_picture(self, path: str, treat_as_char:bool=True, embedded:bool=True, sizeoption:int=0, reverse:bool=False, watermark:bool=False, effect:int=0, width:int=0, height:int=0) -> Ctrl:
+    def insert_picture(
+        self,
+        path: str,
+        treat_as_char: bool = True,
+        embedded: bool = True,
+        sizeoption: int = 0,
+        reverse: bool = False,
+        watermark: bool = False,
+        effect: int = 0,
+        width: int = 0,
+        height: int = 0,
+    ) -> Ctrl:
         """
         현재 캐럿의 위치에 그림을 삽입한다.
 
@@ -8249,8 +8886,10 @@ class Hwp(ParamHelpers, RunMethods):
             >>> ctrl.Properties = pset  # 설정한 값 적용(간단!)
         """
         if sizeoption == 1 and not all([width, height]) and not self.is_cell():
-            raise ValueError("sizeoption이 1일 때에는 width와 height를 지정해주셔야 합니다.\n"
-                             "단, 셀 안에 있는 경우에는 셀 너비에 맞게 이미지 크기를 자동으로 조절합니다.")
+            raise ValueError(
+                "sizeoption이 1일 때에는 width와 height를 지정해주셔야 합니다.\n"
+                "단, 셀 안에 있는 경우에는 셀 너비에 맞게 이미지 크기를 자동으로 조절합니다."
+            )
 
         if path.startswith("http"):
             temp_path = tempfile.TemporaryFile().name
@@ -8261,8 +8900,16 @@ class Hwp(ParamHelpers, RunMethods):
             path = os.path.join(os.getcwd(), path)
 
         try:
-            ctrl = self.hwp.InsertPicture(Path=path, Embedded=embedded, sizeoption=sizeoption, Reverse=reverse,
-                                          watermark=watermark, Effect=effect, Width=width, Height=height)
+            ctrl = self.hwp.InsertPicture(
+                Path=path,
+                Embedded=embedded,
+                sizeoption=sizeoption,
+                Reverse=reverse,
+                watermark=watermark,
+                Effect=effect,
+                Width=width,
+                Height=height,
+            )
             pic_prop = ctrl.Properties
             if not all([width, height]) and self.is_cell():
 
@@ -8272,22 +8919,37 @@ class Hwp(ParamHelpers, RunMethods):
                     # 특정 셀 안여백
                     cell_pset = self.HParameterSet.HShapeObject
                     self.HAction.GetDefault("TablePropertyDialog", pset.HSet)
-                    margin = round(cell_pset.ShapeTableCell.MarginLeft + cell_pset.ShapeTableCell.MarginRight, 2)
+                    margin = round(
+                        cell_pset.ShapeTableCell.MarginLeft
+                        + cell_pset.ShapeTableCell.MarginRight,
+                        2,
+                    )
                 else:
                     # 전역 셀 안여백
                     margin = round(pset.CellMarginLeft + pset.CellMarginRight, 2)
 
                 cell_width = pset.ShapeTableCell.Width - margin
-                dst_height = pic_prop.Item("Height") / pic_prop.Item("Width") * cell_width
+                dst_height = (
+                    pic_prop.Item("Height") / pic_prop.Item("Width") * cell_width
+                )
                 pic_prop.SetItem("Width", cell_width)
                 pic_prop.SetItem("Height", round(dst_height))
             else:
                 sec_def = self.HParameterSet.HSecDef
                 self.HAction.GetDefault("PageSetup", sec_def.HSet)
                 page_width = (
-                        sec_def.PageDef.PaperWidth - sec_def.PageDef.LeftMargin - sec_def.PageDef.RightMargin - sec_def.PageDef.GutterLen)
+                    sec_def.PageDef.PaperWidth
+                    - sec_def.PageDef.LeftMargin
+                    - sec_def.PageDef.RightMargin
+                    - sec_def.PageDef.GutterLen
+                )
                 page_height = (
-                        sec_def.PageDef.PaperHeight - sec_def.PageDef.TopMargin - sec_def.PageDef.BottomMargin - sec_def.PageDef.HeaderLen - sec_def.PageDef.FooterLen)
+                    sec_def.PageDef.PaperHeight
+                    - sec_def.PageDef.TopMargin
+                    - sec_def.PageDef.BottomMargin
+                    - sec_def.PageDef.HeaderLen
+                    - sec_def.PageDef.FooterLen
+                )
                 pic_width = pic_prop.Item("Width")
                 pic_height = pic_prop.Item("Height")
                 if pic_width > page_width or pic_height > page_height:
@@ -8306,10 +8968,29 @@ class Hwp(ParamHelpers, RunMethods):
             if os.path.basename(path).startswith("tmp"):
                 os.remove(path)
 
-    def InsertPicture(self, path: str, treat_as_char: bool = True, embedded: bool = True, sizeoption: int = 0,
-                       reverse: bool = False, watermark: bool = False, effect: int = 0, width: int = 0,
-                       height: int = 0) -> Ctrl:
-        return self.insert_picture(path, treat_as_char, embedded, sizeoption, reverse, watermark, effect, width, height)
+    def InsertPicture(
+        self,
+        path: str,
+        treat_as_char: bool = True,
+        embedded: bool = True,
+        sizeoption: int = 0,
+        reverse: bool = False,
+        watermark: bool = False,
+        effect: int = 0,
+        width: int = 0,
+        height: int = 0,
+    ) -> Ctrl:
+        return self.insert_picture(
+            path,
+            treat_as_char,
+            embedded,
+            sizeoption,
+            reverse,
+            watermark,
+            effect,
+            width,
+            height,
+        )
 
     def insert_random_picture(self, x: int = 200, y: int = 200) -> Ctrl:
         """
@@ -8332,7 +9013,7 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.insert_picture(f"https://picsum.photos/{x}/{y}")
 
-    def is_action_enable(self, action_id:str) -> bool:
+    def is_action_enable(self, action_id: str) -> bool:
         """
         액션 실행 가능한지 여부를 bool로 리턴
 
@@ -8342,7 +9023,7 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.IsActionEnable(actionID=action_id)
 
-    def IsActionEnable(self, action_id:str) -> bool:
+    def IsActionEnable(self, action_id: str) -> bool:
         return self.is_action_enable(action_id)
 
     def is_command_lock(self, action_id: str) -> bool:
@@ -8357,7 +9038,7 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.IsCommandLock(actionID=action_id)
 
-    def IsCommandLock(self, action_id:str) -> bool:
+    def IsCommandLock(self, action_id: str) -> bool:
         return self.is_command_lock(action_id)
 
     def key_indicator(self) -> tuple:
@@ -8409,7 +9090,7 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.LockCommand(ActID=act_id, isLock=is_lock)
 
-    def LockCommand(self, act_id:str, is_lock:bool) -> None:
+    def LockCommand(self, act_id: str, is_lock: bool) -> None:
         return self.lock_command(act_id, is_lock)
 
     def modify_field_properties(self, field: str, remove: bool, add: bool):
@@ -8485,10 +9166,17 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.MovePos(moveID=move_id, Para=para, pos=pos)
 
-    def MovePos(self, move_id:int=1, para:int=0, pos:int=0) -> bool:
+    def MovePos(self, move_id: int = 1, para: int = 0, pos: int = 0) -> bool:
         return self.move_pos(move_id, para, pos)
 
-    def move_to_field(self, field:str, idx:int=0, text:bool=True, start:bool=True, select:bool=False) -> bool:
+    def move_to_field(
+        self,
+        field: str,
+        idx: int = 0,
+        text: bool = True,
+        start: bool = True,
+        select: bool = False,
+    ) -> bool:
         """
         지정한 필드로 캐럿을 이동한다.
 
@@ -8503,11 +9191,22 @@ class Hwp(ParamHelpers, RunMethods):
             성공시 True, 실패시 False를 리턴한다.
         """
         if "{{" not in field:
-            return self.hwp.MoveToField(Field=f"{field}{{{{{idx}}}}}", Text=text, start=start, select=select)
+            return self.hwp.MoveToField(
+                Field=f"{field}{{{{{idx}}}}}", Text=text, start=start, select=select
+            )
         else:
-            return self.hwp.MoveToField(Field=field, Text=text, start=start, select=select)
+            return self.hwp.MoveToField(
+                Field=field, Text=text, start=start, select=select
+            )
 
-    def MoveToField(self, field:str, idx:int=0, text:bool=True, start:bool=True, select:bool=False) -> bool:
+    def MoveToField(
+        self,
+        field: str,
+        idx: int = 0,
+        text: bool = True,
+        start: bool = True,
+        select: bool = False,
+    ) -> bool:
         return self.move_to_field(field, idx, text, start, select)
 
     def move_to_metatag(self, tag, text, start, select):
@@ -8608,13 +9307,19 @@ class Hwp(ParamHelpers, RunMethods):
         if filename and filename.startswith("http"):
             try:
                 # url 문자열 중 hwp 파일명이 포함되어 있는지 체크해서 해당 파일명을 사용.
-                hwp_name = [parse.unquote_plus(i) for i in re.split("[/?=&]", filename) if ".hwp" in i][0]
+                hwp_name = [
+                    parse.unquote_plus(i)
+                    for i in re.split("[/?=&]", filename)
+                    if ".hwp" in i
+                ][0]
             except IndexError as e:
                 # url 문자열 안에 hwp 파일명이 포함되어 있지 않은 경우에는 임시파일명 지정(temp.hwp)
                 hwp_name = "temp.hwp"
             request.urlretrieve(filename, os.path.join(os.getcwd(), hwp_name))
             filename = os.path.join(os.getcwd(), hwp_name)
-        elif filename.lower()[1] != ":" and os.path.exists(os.path.join(os.getcwd(), filename)):
+        elif filename.lower()[1] != ":" and os.path.exists(
+            os.path.join(os.getcwd(), filename)
+        ):
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.Open(filename=filename, Format=format, arg=arg)
 
@@ -8660,10 +9365,12 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return round(inch * 7200, 0)
 
-    def InchToHwpUnit(self, inch:float) -> int:
+    def InchToHwpUnit(self, inch: float) -> int:
         return self.inch_to_hwp_unit(inch)
 
-    def protect_private_info(self, protecting_char:str, private_pattern_type:int) -> bool:
+    def protect_private_info(
+        self, protecting_char: str, private_pattern_type: int
+    ) -> bool:
         """
         개인정보를 보호한다.
 
@@ -8676,17 +9383,23 @@ class Hwp(ParamHelpers, RunMethods):
 
         Returns:
             개인정보를 보호문자로 치환한 경우에 true를 반환한다.
-	        개인정보를 보호하지 못할 경우 false를 반환한다.
-	        문자열이 선택되지 않은 상태이거나, 개체가 선택된 상태에서는 실패한다.
-	        또한, 보호유형이 잘못된 설정된 경우에도 실패한다.
-	        마지막으로 보호암호가 설정되지 않은 경우에도 실패하게 된다.
+                개인정보를 보호하지 못할 경우 false를 반환한다.
+                문자열이 선택되지 않은 상태이거나, 개체가 선택된 상태에서는 실패한다.
+                또한, 보호유형이 잘못된 설정된 경우에도 실패한다.
+                마지막으로 보호암호가 설정되지 않은 경우에도 실패하게 된다.
         """
-        return self.hwp.ProtectPrivateInfo(PotectingChar=protecting_char, PrivatePatternType=private_pattern_type)
+        return self.hwp.ProtectPrivateInfo(
+            PotectingChar=protecting_char, PrivatePatternType=private_pattern_type
+        )
 
-    def ProtectPrivateInfo(self, protecting_char:str, private_pattern_type:int) -> bool:
+    def ProtectPrivateInfo(
+        self, protecting_char: str, private_pattern_type: int
+    ) -> bool:
         return self.protect_private_info(protecting_char, private_pattern_type)
 
-    def put_field_text(self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None) -> None:
+    def put_field_text(
+        self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None
+    ) -> None:
         """
         지정한 필드의 내용을 채운다.
 
@@ -8710,7 +9423,9 @@ class Hwp(ParamHelpers, RunMethods):
             >>> # zxcv 필드에 "Hello world!" 텍스트 삽입
             >>> hwp.put_field_text("zxcv", "Hello world!")
         """
-        if isinstance(field, str) and (field.endswith(".xlsx") or field.endswith(".xls")):
+        if isinstance(field, str) and (
+            field.endswith(".xlsx") or field.endswith(".xls")
+        ):
             field = pd.read_excel(field)
 
         if isinstance(field, dict):  # dict 자료형의 경우에는 text를 생략하고
@@ -8720,7 +9435,9 @@ class Hwp(ParamHelpers, RunMethods):
             if isinstance(idx, int):
                 for f_i, f in enumerate(field):
                     field_str += f"{f}{{{{{idx}}}}}\x02"
-                    text_str += f"{text[f_i][idx]}\x02"  # for t_i, t in enumerate(text[f_i]):
+                    text_str += (
+                        f"{text[f_i][idx]}\x02"  # for t_i, t in enumerate(text[f_i]):
+                    )
             else:
                 if isinstance(text[0], (list, tuple)):
                     for f_i, f in enumerate(field):
@@ -8744,7 +9461,11 @@ class Hwp(ParamHelpers, RunMethods):
                 field_str = "\x02".join([str(i) for i in field.index])  # \x02로 병합
                 self.hwp.PutFieldText(Field=field_str, Text=text_str)
                 return
-            elif type(text) in [list, tuple, pd.Series]:  # 필드 텍스트를 리스트나 배열로 넣은 경우에도
+            elif type(text) in [
+                list,
+                tuple,
+                pd.Series,
+            ]:  # 필드 텍스트를 리스트나 배열로 넣은 경우에도
                 text = "\x02".join([str(i) for i in text])  # \x02로 병합
             else:
                 raise IOError("text parameter required.")
@@ -8752,14 +9473,25 @@ class Hwp(ParamHelpers, RunMethods):
         if type(field) in [list, tuple]:
 
             # field와 text가 [[field0:str, list[text:str]], [field1:str, list[text:str]]] 타입인 경우
-            if not text and isinstance(field[0][0], (str, int, float)) and not isinstance(field[0][1],
-                                                                                          (str, int)) and len(
-                field[0][1]) >= 1:
+            if (
+                not text
+                and isinstance(field[0][0], (str, int, float))
+                and not isinstance(field[0][1], (str, int))
+                and len(field[0][1]) >= 1
+            ):
                 text_str = ""
                 field_str = "\x02".join(
-                    [str(field[i][0]) + f"{{{{{j}}}}}" for j in range(len(field[0][1])) for i in range(len(field))])
+                    [
+                        str(field[i][0]) + f"{{{{{j}}}}}"
+                        for j in range(len(field[0][1]))
+                        for i in range(len(field))
+                    ]
+                )
                 for i in range(len(field[0][1])):
-                    text_str += "\x02".join([str(field[j][1][i]) for j in range(len(field))]) + "\x02"
+                    text_str += (
+                        "\x02".join([str(field[j][1][i]) for j in range(len(field))])
+                        + "\x02"
+                    )
                 return self.hwp.PutFieldText(Field=field_str, Text=text_str)
 
             elif type(field) in (list, tuple, set) and type(text) in (list, tuple, set):
@@ -8778,10 +9510,14 @@ class Hwp(ParamHelpers, RunMethods):
                 field = field.T
             text_str = ""
             if isinstance(idx, int):
-                field_str = "\x02".join([str(i) + f"{{{{{idx}}}}}" for i in field])  # \x02로 병합
+                field_str = "\x02".join(
+                    [str(i) + f"{{{{{idx}}}}}" for i in field]
+                )  # \x02로 병합
                 text_str += "\x02".join([str(t) for t in field.iloc[idx]]) + "\x02"
             else:
-                field_str = "\x02".join([str(i) + f"{{{{{j}}}}}" for j in range(len(field)) for i in field])  # \x02로 병합
+                field_str = "\x02".join(
+                    [str(i) + f"{{{{{j}}}}}" for j in range(len(field)) for i in field]
+                )  # \x02로 병합
                 for i in range(len(field)):
                     text_str += "\x02".join([str(t) for t in field.iloc[i]]) + "\x02"
             return self.hwp.PutFieldText(Field=field_str, Text=text_str)
@@ -8791,32 +9527,43 @@ class Hwp(ParamHelpers, RunMethods):
                 text = text.T
             text_str = ""
             if isinstance(idx, int):
-                field_str = "\x02".join([i + f"{{{{{idx}}}}}" for i in field.split("\x02")])  # \x02로 병합
+                field_str = "\x02".join(
+                    [i + f"{{{{{idx}}}}}" for i in field.split("\x02")]
+                )  # \x02로 병합
                 text_str += "\x02".join([str(t) for t in text[idx]]) + "\x02"
             else:
-                field_str = "\x02".join([str(i) + f"{{{{{j}}}}}" for i in field.split("\x02") for j in
-                                         range(len(text.columns))])  # \x02로 병합
+                field_str = "\x02".join(
+                    [
+                        str(i) + f"{{{{{j}}}}}"
+                        for i in field.split("\x02")
+                        for j in range(len(text.columns))
+                    ]
+                )  # \x02로 병합
                 for i in range(len(text)):
                     text_str += "\x02".join([str(t) for t in text.iloc[i]]) + "\x02"
             return self.hwp.PutFieldText(Field=field_str, Text=text_str)
 
         if isinstance(idx, int):
-            return self.hwp.PutFieldText(Field=field.replace("\x02", f"{{{{{idx}}}}}\x02") + f"{{{{{idx}}}}}",
-                                         Text=text)
+            return self.hwp.PutFieldText(
+                Field=field.replace("\x02", f"{{{{{idx}}}}}\x02") + f"{{{{{idx}}}}}",
+                Text=text,
+            )
         else:
             return self.hwp.PutFieldText(Field=field, Text=text)
 
-    def PutFieldText(self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None) -> None:
+    def PutFieldText(
+        self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None
+    ) -> None:
         return self.put_field_text(field, text, idx)
 
-    def put_metatag_name_text(self, tag:str, text:str):
+    def put_metatag_name_text(self, tag: str, text: str):
         """메타태그에 텍스트 삽입"""
         return self.hwp.PutMetatagNameText(tag=tag, Text=text)
 
-    def PutMetatagNameText(self, tag:str, text:str):
+    def PutMetatagNameText(self, tag: str, text: str):
         return self.put_metatag_name_text(tag, text)
 
-    def quit(self, save:bool=False) -> None:
+    def quit(self, save: bool = False) -> None:
         """
         한/글을 종료한다.
 
@@ -8831,14 +9578,16 @@ class Hwp(ParamHelpers, RunMethods):
         """
         if self.Path == "":  # 빈 문서인 경우
             self.clear()
-        elif save: # 빈 문서가 아닌 경우
+        elif save:  # 빈 문서가 아닌 경우
             self.save()
         self.hwp.Quit()
 
-    def Quit(self, save:bool=False) -> None:
+    def Quit(self, save: bool = False) -> None:
         return self.quit(save)
 
-    def rgb_color(self, red_or_colorname: str | tuple | int, green: int = 255, blue: int = 255) -> int:
+    def rgb_color(
+        self, red_or_colorname: str | tuple | int, green: int = 255, blue: int = 255
+    ) -> int:
         """
         RGB값을 한/글이 인식하는 정수 형태로 변환해주는 헬퍼 메서드.
 
@@ -8891,25 +9640,46 @@ class Hwp(ParamHelpers, RunMethods):
             >>> hwp.set_font(ShadeColor=hwp.RGBColor(0, 255, 0))  # 음영을 녹색으로
             >>> hwp.insert_text("초록 음영색")
         """
-        color_palette = {"Red": (255, 0, 0), "Green": (0, 255, 0), "Blue": (0, 0, 255), "Yellow": (255, 255, 0),
-                         "Cyan": (0, 255, 255), "Magenta": (255, 0, 255), "Black": (0, 0, 0), "White": (255, 255, 255),
-                         "Gray": (128, 128, 128), "Orange": (255, 165, 0), "DarkBlue": (0, 0, 139),
-                         "Purple": (128, 0, 128),
-                         "Pink": (255, 192, 203), "Lime": (0, 255, 0), "SkyBlue": (135, 206, 235),
-                         "Gold": (255, 215, 0),
-                         "Silver": (192, 192, 192), "Mint": (189, 252, 201), "Tomato": (255, 99, 71),
-                         "Olive": (128, 128, 0),
-                         "Crimson": (220, 20, 60), "Navy": (0, 0, 128), "Teal": (0, 128, 128),
-                         "Chocolate": (210, 105, 30), }
+        color_palette = {
+            "Red": (255, 0, 0),
+            "Green": (0, 255, 0),
+            "Blue": (0, 0, 255),
+            "Yellow": (255, 255, 0),
+            "Cyan": (0, 255, 255),
+            "Magenta": (255, 0, 255),
+            "Black": (0, 0, 0),
+            "White": (255, 255, 255),
+            "Gray": (128, 128, 128),
+            "Orange": (255, 165, 0),
+            "DarkBlue": (0, 0, 139),
+            "Purple": (128, 0, 128),
+            "Pink": (255, 192, 203),
+            "Lime": (0, 255, 0),
+            "SkyBlue": (135, 206, 235),
+            "Gold": (255, 215, 0),
+            "Silver": (192, 192, 192),
+            "Mint": (189, 252, 201),
+            "Tomato": (255, 99, 71),
+            "Olive": (128, 128, 0),
+            "Crimson": (220, 20, 60),
+            "Navy": (0, 0, 128),
+            "Teal": (0, 128, 128),
+            "Chocolate": (210, 105, 30),
+        }
         if red_or_colorname in color_palette:
             return self.hwp.RGBColor(*color_palette[red_or_colorname])
         return self.hwp.RGBColor(red=red_or_colorname, green=green, blue=blue)
 
-    def RGBColor(self, red_or_colorname: str | tuple | int, green: int = 255, blue: int = 255) -> int:
+    def RGBColor(
+        self, red_or_colorname: str | tuple | int, green: int = 255, blue: int = 255
+    ) -> int:
         return self.rgb_color(red_or_colorname, green, blue)
 
-    def register_module(self, module_type: str = "FilePathCheckDLL",
-                        module_data: str = "FilePathCheckerModule") -> bool:
+    def register_module(
+        self,
+        module_type: str = "FilePathCheckDLL",
+        module_data: str = "FilePathCheckerModule",
+    ) -> bool:
         """
         (인스턴스 생성시 자동으로 실행된다.)
 
@@ -8940,7 +9710,11 @@ class Hwp(ParamHelpers, RunMethods):
             self.register_regedit()
         return self.hwp.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
-    def RegisterModule(self, module_type: str = "FilePathCheckDLL", module_data: str = "FilePathCheckerModule") -> bool:
+    def RegisterModule(
+        self,
+        module_type: str = "FilePathCheckDLL",
+        module_data: str = "FilePathCheckerModule",
+    ) -> bool:
         return self.register_module(module_type, module_data)
 
     @staticmethod
@@ -8966,19 +9740,39 @@ class Hwp(ParamHelpers, RunMethods):
         """
         import os
         import subprocess
-        from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, KEY_WRITE, SetValueEx, REG_SZ, CloseKey
+        from winreg import (
+            ConnectRegistry,
+            HKEY_CURRENT_USER,
+            OpenKey,
+            KEY_WRITE,
+            SetValueEx,
+            REG_SZ,
+            CloseKey,
+        )
 
         try:
             # pyhwpx가 설치된 파이썬 환경 또는 pyinstaller로 컴파일한 환경에서 pyhwpx 경로 찾기
             # 살펴본 결과, FilePathCheckerModule.dll 파일은 pyinstaller 컴파일시 자동포함되지는 않는 것으로 확인..
-            location = [i.split(": ")[1] for i in
-                        subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode(
-                            encoding="cp949").split("\r\n") if i.startswith("Location: ")][0]
+            location = [
+                i.split(": ")[1]
+                for i in subprocess.check_output(
+                    ["pip", "show", "pyhwpx"], stderr=subprocess.DEVNULL
+                )
+                .decode(encoding="cp949")
+                .split("\r\n")
+                if i.startswith("Location: ")
+            ][0]
             location = os.path.join(location, "pyhwpx")
         except UnicodeDecodeError:
-            location = [i.split(": ")[1] for i in
-                        subprocess.check_output(['pip', 'show', 'pyhwpx'], stderr=subprocess.DEVNULL).decode().split(
-                            "\r\n") if i.startswith("Location: ")][0]
+            location = [
+                i.split(": ")[1]
+                for i in subprocess.check_output(
+                    ["pip", "show", "pyhwpx"], stderr=subprocess.DEVNULL
+                )
+                .decode()
+                .split("\r\n")
+                if i.startswith("Location: ")
+            ][0]
             location = os.path.join(location, "pyhwpx")
         print("default dll :", os.path.join(location, dll_name))
         if not os.path.exists(os.path.join(location, dll_name)):
@@ -9005,7 +9799,9 @@ class Hwp(ParamHelpers, RunMethods):
                 location = os.getcwd()
                 print("보안모듈 경로 :", location)
             # elif os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
-            elif dll_name.lower in [i.lower() for i in os.listdir(os.path.join(os.environ["USERPROFILE"]))]:
+            elif dll_name.lower in [
+                i.lower() for i in os.listdir(os.path.join(os.environ["USERPROFILE"]))
+            ]:
                 print("사용자 폴더에서 보안모듈을 찾았습니다.")
                 location = os.environ["USERPROFILE"]
                 print("보안모듈 경로 :", location)
@@ -9016,27 +9812,51 @@ class Hwp(ParamHelpers, RunMethods):
                 # pyhwpx가 설치되어 있지 않은 PC에서는,
                 # 공식사이트에서 다운을 받게 하자.
                 from zipfile import ZipFile
-                print("https://github.com/hancom-io에서 보안모듈 다운로드를 시도합니다.")
+
+                print(
+                    "https://github.com/hancom-io에서 보안모듈 다운로드를 시도합니다."
+                )
                 try:
                     f = request.urlretrieve(
                         "https://github.com/hancom-io/devcenter-archive/raw/main/hwp-automation/%EB%B3%B4%EC%95%88%EB%AA%A8%EB%93%88(Automation).zip",
-                        filename=os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
+                        filename=os.path.join(
+                            os.environ["USERPROFILE"], "FilePathCheckerModule.zip"
+                        ),
+                    )
                     with ZipFile(f[0]) as zf:
                         zf.extract(
                             "FilePathCheckerModuleExample.dll",
-                            os.path.join(os.environ["USERPROFILE"]))
-                    os.remove(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.zip"))
-                    if not os.path.exists(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModule.dll")):
-                        os.rename(os.path.join(os.environ["USERPROFILE"], "FilePathCheckerModuleExample.dll"),
-                                  os.path.join(os.environ["USERPROFILE"], dll_name))
+                            os.path.join(os.environ["USERPROFILE"]),
+                        )
+                    os.remove(
+                        os.path.join(
+                            os.environ["USERPROFILE"], "FilePathCheckerModule.zip"
+                        )
+                    )
+                    if not os.path.exists(
+                        os.path.join(
+                            os.environ["USERPROFILE"], "FilePathCheckerModule.dll"
+                        )
+                    ):
+                        os.rename(
+                            os.path.join(
+                                os.environ["USERPROFILE"],
+                                "FilePathCheckerModuleExample.dll",
+                            ),
+                            os.path.join(os.environ["USERPROFILE"], dll_name),
+                        )
                     location = os.environ["USERPROFILE"]
                     print("사용자폴더", location, "에 보안모듈을 설치하였습니다.")
                 except urllib.error.URLError as e:
                     # URLError를 처리합니다.
-                    print(f"내부망에서는 보안모듈을 다운로드할 수 없습니다. 보안모듈을 직접 다운받아 설치하여 주시기 바랍니다.: \n{e.reason}")
+                    print(
+                        f"내부망에서는 보안모듈을 다운로드할 수 없습니다. 보안모듈을 직접 다운받아 설치하여 주시기 바랍니다.: \n{e.reason}"
+                    )
                 except Exception as e:
                     # 기타 예외를 처리합니다.
-                    print(f"예기치 못한 오류가 발생했습니다. 아래 오류를 개발자에게 문의해주시기 바랍니다: \n{str(e)}")
+                    print(
+                        f"예기치 못한 오류가 발생했습니다. 아래 오류를 개발자에게 문의해주시기 바랍니다: \n{str(e)}"
+                    )
         winup_path = r"Software\HNC\HwpAutomation\Modules"
 
         # HKEY_LOCAL_MACHINE와 연결 생성 후 핸들 얻음
@@ -9049,10 +9869,14 @@ class Hwp(ParamHelpers, RunMethods):
         except FileNotFoundError as e:
             winup_path = r"Software\Hnc\HwpUserAction\Modules"
             key = OpenKey(reg_handle, winup_path, 0, KEY_WRITE)
-        SetValueEx(key, "FilePathCheckerModule", 0, REG_SZ, os.path.join(location, dll_name))
+        SetValueEx(
+            key, "FilePathCheckerModule", 0, REG_SZ, os.path.join(location, dll_name)
+        )
         CloseKey(key)
 
-    def register_private_info_pattern(self, private_type:int, private_pattern:str) -> bool:
+    def register_private_info_pattern(
+        self, private_type: int, private_pattern: str
+    ) -> bool:
         """
         개인정보의 패턴을 등록한다.
 
@@ -9089,9 +9913,13 @@ class Hwp(ParamHelpers, RunMethods):
             >>>
             >>> hwp.register_private_info_pattern(0x01, "NNNN-NNNN;NN-NN-NNNN-NNNN")  # 전화번호패턴
         """
-        return self.hwp.RegisterPrivateInfoPattern(PrivateType=private_type, PrivatePattern=private_pattern)
+        return self.hwp.RegisterPrivateInfoPattern(
+            PrivateType=private_type, PrivatePattern=private_pattern
+        )
 
-    def RegisterPrivateInfoPattern(self, private_type: int, private_pattern: int) -> bool:
+    def RegisterPrivateInfoPattern(
+        self, private_type: int, private_pattern: int
+    ) -> bool:
         return self.register_private_info_pattern(private_type, private_pattern)
 
     def release_action(self, action: str):
@@ -9175,17 +10003,30 @@ class Hwp(ParamHelpers, RunMethods):
             >>> hwp.replace_action("Cut", "Cut")
         """
 
-        return self.hwp.ReplaceAction(OldActionID=old_action_id, NewActionID=new_action_id)
+        return self.hwp.ReplaceAction(
+            OldActionID=old_action_id, NewActionID=new_action_id
+        )
 
     def ReplaceAction(self, old_action_id: str, new_action_id: str) -> bool:
         return self.replace_action(old_action_id, new_action_id)
 
-    def replace_font(self, langid, des_font_name, des_font_type, new_font_name, new_font_type):
-        return self.hwp.ReplaceFont(langid=langid, desFontName=des_font_name, desFontType=des_font_type,
-                                    newFontName=new_font_name, newFontType=new_font_type)
+    def replace_font(
+        self, langid, des_font_name, des_font_type, new_font_name, new_font_type
+    ):
+        return self.hwp.ReplaceFont(
+            langid=langid,
+            desFontName=des_font_name,
+            desFontType=des_font_type,
+            newFontName=new_font_name,
+            newFontType=new_font_type,
+        )
 
-    def ReplaceFont(self, langid, des_font_name, des_font_type, new_font_name, new_font_type):
-        return self.replace_font(langid, des_font_name, des_font_type, new_font_name, new_font_type)
+    def ReplaceFont(
+        self, langid, des_font_name, des_font_type, new_font_name, new_font_type
+    ):
+        return self.replace_font(
+            langid, des_font_name, des_font_type, new_font_name, new_font_type
+        )
 
     def revision(self, revision):
         return self.hwp.Revision(Revision=revision)
@@ -9209,7 +10050,14 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.HAction.Run(act_id)
 
-    def compose_chars(self, Chars: str | int = "", CharSize: int = -3, CheckCompose: int = 0, CircleType: int = 0, **kwargs) -> bool:
+    def compose_chars(
+        self,
+        Chars: str | int = "",
+        CharSize: int = -3,
+        CheckCompose: int = 0,
+        CircleType: int = 0,
+        **kwargs,
+    ) -> bool:
         """
         글자 겹치기 메서드(원문자 만들기)
 
@@ -9235,7 +10083,14 @@ class Hwp(ParamHelpers, RunMethods):
                 setattr(pset.CharShapes.CircleCharShape, key, kwargs[key])
         return self.HAction.Execute("ComposeChars", pset.HSet)
 
-    def ComposeChars(self, Chars: str | int = "", CharSize: int = -3, CheckCompose: int = 0, CircleType: int = 0, **kwargs) -> bool:
+    def ComposeChars(
+        self,
+        Chars: str | int = "",
+        CharSize: int = -3,
+        CheckCompose: int = 0,
+        CircleType: int = 0,
+        **kwargs,
+    ) -> bool:
         return self.compose_chars(Chars, CharSize, CheckCompose, CircleType, **kwargs)
 
     def paste(self, option: Literal[0, 1, 2, 3, 4, 5, 6] = 4):
@@ -9261,7 +10116,9 @@ class Hwp(ParamHelpers, RunMethods):
         pset.option = option
         self.hwp.HAction.Execute("Paste", pset.HSet)
 
-    def run_script_macro(self, function_name:str, u_macro_type:int=0, u_script_type:int=0) -> bool:
+    def run_script_macro(
+        self, function_name: str, u_macro_type: int = 0, u_script_type: int = 0
+    ) -> bool:
         """
         한/글 문서 내에 존재하는 매크로를 실행한다.
 
@@ -9293,12 +10150,18 @@ class Hwp(ParamHelpers, RunMethods):
             >>> hwp.run_script_macro("OnScriptMacro_중국어1성")
             True
         """
-        return self.hwp.RunScriptMacro(FunctionName=function_name, uMacroType=u_macro_type, uScriptType=u_script_type)
+        return self.hwp.RunScriptMacro(
+            FunctionName=function_name,
+            uMacroType=u_macro_type,
+            uScriptType=u_script_type,
+        )
 
-    def RunScriptMacro(self, function_name:str, u_macro_type:int=0, u_script_type:int=0) -> bool:
+    def RunScriptMacro(
+        self, function_name: str, u_macro_type: int = 0, u_script_type: int = 0
+    ) -> bool:
         return self.run_script_macro(function_name, u_macro_type, u_script_type)
 
-    def save(self, save_if_dirty:bool=True) -> bool:
+    def save(self, save_if_dirty: bool = True) -> bool:
         """
         현재 편집중인 문서를 저장한다.
 
@@ -9315,10 +10178,12 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.Save(save_if_dirty=save_if_dirty)
 
-    def Save(self, save_if_dirty:bool=True) -> bool:
+    def Save(self, save_if_dirty: bool = True) -> bool:
         return self.save(save_if_dirty)
 
-    def save_as(self, path:str, format:str="HWP", arg:str="", split_page:bool=False) -> bool:
+    def save_as(
+        self, path: str, format: str = "HWP", arg: str = "", split_page: bool = False
+    ) -> bool:
         """
         현재 편집중인 문서를 지정한 이름으로 저장한다.
 
@@ -9366,33 +10231,40 @@ class Hwp(ParamHelpers, RunMethods):
             PUL = ctypes.POINTER(ctypes.c_ulong)
 
             class KeyBdInput(ctypes.Structure):
-                _fields_ = [("wVk", ctypes.c_ushort),
-                            ("wScan", ctypes.c_ushort),
-                            ("dwFlags", ctypes.c_ulong),
-                            ("time", ctypes.c_ulong),
-                            ("dwExtraInfo", PUL)]
+                _fields_ = [
+                    ("wVk", ctypes.c_ushort),
+                    ("wScan", ctypes.c_ushort),
+                    ("dwFlags", ctypes.c_ulong),
+                    ("time", ctypes.c_ulong),
+                    ("dwExtraInfo", PUL),
+                ]
 
             class HardwareInput(ctypes.Structure):
-                _fields_ = [("uMsg", ctypes.c_ulong),
-                            ("wParamL", ctypes.c_short),
-                            ("wParamH", ctypes.c_ushort)]
+                _fields_ = [
+                    ("uMsg", ctypes.c_ulong),
+                    ("wParamL", ctypes.c_short),
+                    ("wParamH", ctypes.c_ushort),
+                ]
 
             class MouseInput(ctypes.Structure):
-                _fields_ = [("dx", ctypes.c_long),
-                            ("dy", ctypes.c_long),
-                            ("mouseData", ctypes.c_ulong),
-                            ("dwFlags", ctypes.c_ulong),
-                            ("time", ctypes.c_ulong),
-                            ("dwExtraInfo", PUL)]
+                _fields_ = [
+                    ("dx", ctypes.c_long),
+                    ("dy", ctypes.c_long),
+                    ("mouseData", ctypes.c_ulong),
+                    ("dwFlags", ctypes.c_ulong),
+                    ("time", ctypes.c_ulong),
+                    ("dwExtraInfo", PUL),
+                ]
 
             class Input_I(ctypes.Union):
-                _fields_ = [("ki", KeyBdInput),
-                            ("mi", MouseInput),
-                            ("hi", HardwareInput)]
+                _fields_ = [
+                    ("ki", KeyBdInput),
+                    ("mi", MouseInput),
+                    ("hi", HardwareInput),
+                ]
 
             class Input(ctypes.Structure):
-                _fields_ = [("type", ctypes.c_ulong),
-                            ("ii", Input_I)]
+                _fields_ = [("type", ctypes.c_ulong), ("ii", Input_I)]
 
             # 키를 누르는 함수
             def press_key(hexKeyCode):
@@ -9503,7 +10375,7 @@ class Hwp(ParamHelpers, RunMethods):
         else:
             return self.hwp.SaveAs(Path=path, Format=format, arg=arg)
 
-    def SaveAs(self, path:str, format:str="HWP", arg:str="") -> bool:
+    def SaveAs(self, path: str, format: str = "HWP", arg: str = "") -> bool:
         return self.save_as(path, format, arg)
 
     def scan_font(self):
@@ -9512,7 +10384,7 @@ class Hwp(ParamHelpers, RunMethods):
     def ScanFont(self):
         return self.scan_font()
 
-    def select_text_by_get_pos(self, s_getpos:tuple, e_getpos:tuple) -> bool:
+    def select_text_by_get_pos(self, s_getpos: tuple, e_getpos: tuple) -> bool:
         """
         hwp.get_pos()로 얻은 두 튜플 사이의 텍스트를 선택하는 메서드.
 
@@ -9534,9 +10406,18 @@ class Hwp(ParamHelpers, RunMethods):
             True
         """
         self.set_pos(s_getpos[0], 0, 0)
-        return self.hwp.SelectText(spara=s_getpos[1], spos=s_getpos[2], epara=e_getpos[1], epos=e_getpos[2])
+        return self.hwp.SelectText(
+            spara=s_getpos[1], spos=s_getpos[2], epara=e_getpos[1], epos=e_getpos[2]
+        )
 
-    def select_text(self, spara:Union[int, list, tuple]=0, spos:int=0, epara:int=0, epos:int=0, slist:int=0) -> bool:
+    def select_text(
+        self,
+        spara: Union[int, list, tuple] = 0,
+        spos: int = 0,
+        epara: int = 0,
+        epos: int = 0,
+        slist: int = 0,
+    ) -> bool:
         """
         특정 범위의 텍스트를 블록선택한다.
 
@@ -9560,10 +10441,19 @@ class Hwp(ParamHelpers, RunMethods):
         else:
             return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
 
-    def SelectText(self, spara: Union[int, list, tuple] = 0, spos:int=0, epara:int=0, epos:int=0, slist:int=0) -> bool:
+    def SelectText(
+        self,
+        spara: Union[int, list, tuple] = 0,
+        spos: int = 0,
+        epara: int = 0,
+        epos: int = 0,
+        slist: int = 0,
+    ) -> bool:
         return self.select_text(spara, spos, epara, epos, slist)
 
-    def set_cur_field_name(self, field: str = "", direction: str = "", memo: str = "", option: int = 0) -> bool:
+    def set_cur_field_name(
+        self, field: str = "", direction: str = "", memo: str = "", option: int = 0
+    ) -> bool:
         """
         표 안에서 현재 캐럿이 위치하는 셀, 또는 블록선택한 셀들의 필드이름을 설정한다.
 
@@ -9607,12 +10497,16 @@ class Hwp(ParamHelpers, RunMethods):
             pset.ShapeTableCell.CellCtrlData.name = field
             return self.HAction.Execute("TablePropertyDialog", pset.HSet)
         else:
-            return self.hwp.SetCurFieldName(Field=field, option=option, Direction=direction, memo=memo)
+            return self.hwp.SetCurFieldName(
+                Field=field, option=option, Direction=direction, memo=memo
+            )
 
-    def SetCurFieldName(self, field: str = "", direction: str = "", memo: str = "", option: int = 0) -> bool:
+    def SetCurFieldName(
+        self, field: str = "", direction: str = "", memo: str = "", option: int = 0
+    ) -> bool:
         return self.set_cur_field_name(field, direction, memo, option)
 
-    def set_field_view_option(self, option:int) -> int:
+    def set_field_view_option(self, option: int) -> int:
         # """
         # 양식모드와 읽기전용모드일 때 현재 열린 문서의 필드의 겉보기 속성(『』표시)을 바꾼다.
         #
@@ -9632,10 +10526,10 @@ class Hwp(ParamHelpers, RunMethods):
         # """
         return self.hwp.SetFieldViewOption(option=option)
 
-    def SetFieldViewOption(self, option:int) -> bool:
+    def SetFieldViewOption(self, option: int) -> bool:
         return self.set_field_view_option(option)
 
-    def set_message_box_mode(self, mode:int) -> int:
+    def set_message_box_mode(self, mode: int) -> int:
         """
         메시지박스 버튼 자동클릭
 
@@ -9696,7 +10590,7 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.SetMessageBoxMode(Mode=mode)
 
-    def SetMessageBoxMode(self, mode:int) -> int:
+    def SetMessageBoxMode(self, mode: int) -> int:
         return self.set_field_view_option(mode)
 
     def set_pos(self, List: int, para: int, pos: int) -> bool:
@@ -9722,7 +10616,7 @@ class Hwp(ParamHelpers, RunMethods):
     def SetPos(self, List: int, para: int, pos: int) -> bool:
         return self.set_pos(List, para, pos)
 
-    def set_pos_by_set(self, disp_val:Any) -> bool:
+    def set_pos_by_set(self, disp_val: Any) -> bool:
         """
         캐럿을 ParameterSet으로 얻어지는 위치로 옮긴다.
 
@@ -9741,10 +10635,10 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.SetPosBySet(dispVal=disp_val)
 
-    def SetPosBySet(self, disp_val:"Hwp.HParameterSet") -> bool:
+    def SetPosBySet(self, disp_val: "Hwp.HParameterSet") -> bool:
         return self.set_pos_by_set(disp_val)
 
-    def set_private_info_password(self, password:str) -> bool:
+    def set_private_info_password(self, password: str) -> bool:
         # """
         # 개인정보보호를 위한 암호를 등록한다.
         #
@@ -9765,10 +10659,15 @@ class Hwp(ParamHelpers, RunMethods):
         # """
         return self.hwp.SetPrivateInfoPassword(Password=password)
 
-    def SetPrivateInfoPassword(self, password:str) -> bool:
+    def SetPrivateInfoPassword(self, password: str) -> bool:
         return self.set_private_info_password(password)
 
-    def set_text_file(self, data: str, format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X", option:str="insertfile") -> int:
+    def set_text_file(
+        self,
+        data: str,
+        format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
+        option: str = "insertfile",
+    ) -> int:
         """
         GetTextFile로 저장한 문자열 정보를 문서에 삽입
 
@@ -9789,7 +10688,12 @@ class Hwp(ParamHelpers, RunMethods):
         """
         return self.hwp.SetTextFile(data=data, Format=format, option=option)
 
-    def SetTextFile(self, data: str, format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X", option:str="insertfile") -> int:
+    def SetTextFile(
+        self,
+        data: str,
+        format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
+        option: str = "insertfile",
+    ) -> int:
         return self.set_text_file(data, format, option)
 
     def get_title(self) -> str:
@@ -9808,7 +10712,9 @@ class Hwp(ParamHelpers, RunMethods):
             >>> print(hwp.get_title())
             빈 문서 1 - 한글
         """
-        return win32gui.GetWindowText(self.hwp.XHwpWindows.Active_XHwpWindow.WindowHandle)
+        return win32gui.GetWindowText(
+            self.hwp.XHwpWindows.Active_XHwpWindow.WindowHandle
+        )
 
     def set_title(self, title: str = "") -> bool:
         """
