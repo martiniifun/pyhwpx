@@ -89,6 +89,16 @@ def com_initialized(func):
 
     return wrapper
 
+def log_error(method):
+    @wraps(method)
+    def wrapper(*args, **kwargs):
+        try:
+            return method(*args, **kwargs)
+        except Exception as e:
+            print(f"오류 발생: {e} \n 다음 함수를 확인하세요 : [{method.__name__}]")
+            raise  # 예외를 다시 전파 (없애고 싶으면 여기만 수정하면 됨)
+    return wrapper
+
 
 def addr_to_tuple(cell_address: str) -> tuple[int, int]:
     """
