@@ -959,7 +959,7 @@ class Hwp(ParamHelpers, RunMethods):
         new: bool = False,
         visible: bool = True,
         register_module: bool = True,
-        quit=False,
+        quit: bool = False,
     ):
         self.hwp = 0
         self.quit = quit
