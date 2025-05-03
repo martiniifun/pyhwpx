@@ -937,8 +937,9 @@ class Hwp(ParamHelpers, RunMethods):
     def __repr__(self):
         return f"<Hwp: DocumentID={self.XHwpDocuments.Active_XHwpDocument.DocumentID}, Title=\"{self.get_title()}\", FullName=\"{self.XHwpDocuments.Active_XHwpDocument.FullName or None}\">"
 
-    def __init__(self, new: bool = False, visible: bool = True, register_module: bool = True):
+    def __init__(self, new: bool = False, visible: bool = True, register_module: bool = True, quit = False):
         self.hwp = 0
+        self.quit = quit
         self.htf_fonts = {
             "명조": {
                 "FaceNameHangul": "명조",
@@ -2745,6 +2746,14 @@ class Hwp(ParamHelpers, RunMethods):
             except Exception as e:
                 print(e, "RegisterModule 액션을 실행할 수 없음. 개발자에게 문의해주세요.")
 
+    def __del__(self):
+        if quit:
+            try:
+                self.quit(save=False)
+            except:
+                pass
+        pythoncom.CoUninitialize()
+    
     @property
     def Application(self) -> "Hwp.Application":
         """

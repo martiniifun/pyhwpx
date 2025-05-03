@@ -19,3 +19,7 @@ __pycache__/
 mkdocs.yml
 .cache
 /docs/javascripts/search_log.js
+
+.python-version
+pyproject.toml
+uv.lock
