@@ -963,7 +963,7 @@ class Hwp(ParamHelpers, RunMethods):
         quit: bool = False,
     ):
         self.hwp = 0
-        self.del_on_quit = quit
+        self.htf_fonts = fonts
         context = pythoncom.CreateBindCtx(0)
         pythoncom.CoInitialize()  # 이걸 꼭 실행해야 하는가? 왜 Pycharm이나 주피터에서는 괜찮고, vscode에서는 CoInitialize 오류가 나는지?
         running_coms = pythoncom.GetRunningObjectTable()
@@ -996,7 +996,7 @@ class Hwp(ParamHelpers, RunMethods):
                 )
 
     def __del__(self):
-        if self.del_on_quit:
+        if quit:
             try:
                 self.quit(save=False)
             except:
