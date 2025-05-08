@@ -996,7 +996,7 @@ class Hwp(ParamHelpers, RunMethods):
                 )
 
     def __del__(self):
-        if del_on_quit:
+        if self.del_on_quit:
             try:
                 self.quit(save=False)
             except:
