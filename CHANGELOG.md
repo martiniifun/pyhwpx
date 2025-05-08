@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.0.4] - 2025-05-08
+### default
+- del_on_quit -> self.del_on_quit 
+
+---
 ## [1.0.3] - 2025-05-08
 ### default
 - 폰트 사전을 별도 파일(fonts.py)로 분리
