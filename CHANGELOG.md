@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.0.5] - 2025-05-08
+### default
+- fonts -> htf_fonts 
+
+---
 ## [1.0.4] - 2025-05-08
 ### default
 - del_on_quit -> self.del_on_quit 
