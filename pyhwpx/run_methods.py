@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 class _InnerMethods(Protocol):
     hwp: Any
-    
+
     def get_cell_addr(self, str) -> tuple[int]:
         pass
 
@@ -17,8 +17,8 @@ class _InnerMethods(Protocol):
 
     def get_message_box_mode(self) -> int:
         pass
-    
-    def set_message_box_mode(self, mode:int) -> int:
+
+    def set_message_box_mode(self, mode: int) -> int:
         pass
 
     @property
@@ -30,6 +30,7 @@ class RunMethods(_InnerMethods):
     """
     Run 메서드 모음
     """
+
     def ASendBrowserText(self) -> bool:
         """
         웹브라우저로 보내기
@@ -1612,7 +1613,7 @@ class RunMethods(_InnerMethods):
 
         """
         return self.hwp.HAction.Run("ManualChangeHangul")
-    
+
     def MarkPenColor(self) -> bool:
         """형광펜 색"""
         return self.hwp.HAction.Run("MarkPenColor")
@@ -1632,7 +1633,7 @@ class RunMethods(_InnerMethods):
     def MetatagExist(self, tag):
         """특정 이름의 메타태그가 존재하는지?"""
         return self.hwp.MetatagExist(tag=tag)
-    
+
     def MarkTitle(self) -> bool:
         """
         제목 차례 표시([도구-차례/찾아보기-제목 차례 표시]메뉴에 대응).
@@ -1845,8 +1846,6 @@ class RunMethods(_InnerMethods):
         finally:
             self.set_message_box_mode(cur_messagebox_mode)
 
-
-
     def UnSelectCtrl(self):
         """선택중인 컨트롤 선택해제"""
         return self.hwp.UnSelectCtrl()
@@ -1930,7 +1929,7 @@ class RunMethods(_InnerMethods):
         finally:
             self.hwp.SetMessageBoxMode(cur_mode)
 
-    def DeleteBack(self, delete_ctrl:bool=True) -> bool:
+    def DeleteBack(self, delete_ctrl: bool = True) -> bool:
         """
         백스페이스 삭제
 
@@ -3480,7 +3479,7 @@ class RunMethods(_InnerMethods):
 
     def ScrMacroPlay3(self):
         """
-       3#번 매크로 실행(Alt+Shift+#)
+        3#번 매크로 실행(Alt+Shift+#)
 
         """
         return self.hwp.HAction.Run("ScrMacroPlay3")
@@ -4381,7 +4380,7 @@ class RunMethods(_InnerMethods):
         """
         return self.hwp.HAction.Run("TableColPageUp")
 
-    def TableDeleteCell(self, remain_cell:bool=False) -> bool:
+    def TableDeleteCell(self, remain_cell: bool = False) -> bool:
         """
         셀 삭제
 
@@ -4537,7 +4536,7 @@ class RunMethods(_InnerMethods):
         else:
             self.set_message_box_mode(0x1)
             sleep(0.1)
-            self.set_message_box_mode(0xf)
+            self.set_message_box_mode(0xF)
             return result
 
     def TableResizeCellDown(self):
@@ -4678,7 +4677,9 @@ class RunMethods(_InnerMethods):
         """
         return self.hwp.HAction.Run("TableRightCellAppend")
 
-    def TableSplitCell(self, Rows:int=2, Cols:int=0, DistributeHeight:int=0, Merge:int=0) -> bool:
+    def TableSplitCell(
+        self, Rows: int = 2, Cols: int = 0, DistributeHeight: int = 0, Merge: int = 0
+    ) -> bool:
         """
         셀 나누기.
 

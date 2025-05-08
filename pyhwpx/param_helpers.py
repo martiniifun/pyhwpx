@@ -5,6 +5,7 @@ class ParamHelpers:
     """
     파라미터 헬퍼메서드 : 별도의 동작은 하지 않고, 파라미터 변환, 연산 등을 돕는다.
     """
+
     hwp: Any
 
     def BorderShape(self, border_type):
@@ -121,8 +122,23 @@ class ParamHelpers:
     def HorzRel(self, horz_rel):
         return self.hwp.HorzRel(HorzRel=horz_rel)
 
-    def HwpLineType(self, line_type: Literal[
-        "None", "Solid", "Dash", "Dot", "DashDot", "DashDotDot", "LongDash", "Circle", "DoubleSlim", "SlimThick", "ThickSlim", "SlimThickSlim"] = "Solid"):
+    def HwpLineType(
+        self,
+        line_type: Literal[
+            "None",
+            "Solid",
+            "Dash",
+            "Dot",
+            "DashDot",
+            "DashDotDot",
+            "LongDash",
+            "Circle",
+            "DoubleSlim",
+            "SlimThick",
+            "ThickSlim",
+            "SlimThickSlim",
+        ] = "Solid",
+    ):
         """
         한/글에서 표나 개체의 선 타입을 결정하는 헬퍼메서드. 단순히 문자열을 정수로 변환한다.
 
@@ -145,8 +161,27 @@ class ParamHelpers:
         """
         return self.hwp.HwpLineType(LineType=line_type)
 
-    def HwpLineWidth(self, line_width: Literal[
-        "0.1mm", "0.12mm", "0.15mm", "0.2mm", "0.25mm", "0.3mm", "0.4mm", "0.5mm", "0.6mm", "0.7mm", "1.0mm", "1.5mm", "2.0mm", "3.0mm", "4.0mm", "5.0mm"] = "0.1mm") -> int:
+    def HwpLineWidth(
+        self,
+        line_width: Literal[
+            "0.1mm",
+            "0.12mm",
+            "0.15mm",
+            "0.2mm",
+            "0.25mm",
+            "0.3mm",
+            "0.4mm",
+            "0.5mm",
+            "0.6mm",
+            "0.7mm",
+            "1.0mm",
+            "1.5mm",
+            "2.0mm",
+            "3.0mm",
+            "4.0mm",
+            "5.0mm",
+        ] = "0.1mm",
+    ) -> int:
         """
         선 너비를 정해주는 헬퍼 메서드.
 
@@ -174,7 +209,7 @@ class ParamHelpers:
 
         Returns:
             hwp가 인식하는 선굵기 정수(0~15)
-            """
+        """
         return self.hwp.HwpLineWidth(LineWidth=line_width)
 
     def HwpOutlineStyle(self, hwp_outline_style):
@@ -202,8 +237,15 @@ class ParamHelpers:
         return self.hwp.LineWrapType(LineWrap=line_wrap)
 
     def LunarToSolar(self, l_year, l_month, l_day, l_leap, s_year, s_month, s_day):
-        return self.hwp.LunarToSolar(lYear=l_year, lMonth=l_month, lDay=l_day, lLeap=l_leap, sYear=s_year,
-                                     sMonth=s_month, sDay=s_day)
+        return self.hwp.LunarToSolar(
+            lYear=l_year,
+            lMonth=l_month,
+            lDay=l_day,
+            lLeap=l_leap,
+            sYear=s_year,
+            sMonth=s_month,
+            sDay=s_day,
+        )
 
     def LunarToSolarBySet(self, l_year, l_month, l_day, l_leap):
         return self.hwp.LunarToSolarBySet(lYear=l_year, lMonth=l_month, lLeap=l_leap)
@@ -221,7 +263,7 @@ class ParamHelpers:
         return self.hwp.MiliToHwpUnit(mili=mili)
 
     @staticmethod
-    def hwp_unit_to_mili(hwp_unit:int) -> float:
+    def hwp_unit_to_mili(hwp_unit: int) -> float:
         """
         HwpUnit 값을 밀리미터로 변환한 값을 리턴한다.
 
@@ -235,7 +277,7 @@ class ParamHelpers:
         else:
             return round(hwp_unit / 7200 * 25.4, 2)
 
-    def HwpUnitToMili(self, hwp_unit:int) -> float:
+    def HwpUnitToMili(self, hwp_unit: int) -> float:
         return self.hwp_unit_to_mili(hwp_unit)
 
     def NumberFormat(self, num_format):
@@ -244,8 +286,22 @@ class ParamHelpers:
     def Numbering(self, numbering):
         return self.hwp.Numbering(Numbering=numbering)
 
-    def PageNumPosition(self, pagenumpos: Literal[
-        "TopLeft", "TopCenter", "TopRight", "BottomLeft", "BottomCenter", "BottomRight", "InsideTop", "OutsideTop", "InsideBottom", "OutsideBottom", "None"] = "BottomCenter"):
+    def PageNumPosition(
+        self,
+        pagenumpos: Literal[
+            "TopLeft",
+            "TopCenter",
+            "TopRight",
+            "BottomLeft",
+            "BottomCenter",
+            "BottomRight",
+            "InsideTop",
+            "OutsideTop",
+            "InsideBottom",
+            "OutsideBottom",
+            "None",
+        ] = "BottomCenter",
+    ):
         return self.hwp.PageNumPosition(pagenumpos=pagenumpos)
 
     def PageType(self, page_type):
@@ -294,8 +350,15 @@ class ParamHelpers:
         return self.hwp.Slash(Slash=slash)
 
     def SolarToLunar(self, s_year, s_month, s_day, l_year, l_month, l_day, l_leap):
-        return self.hwp.SolarToLunar(sYear=s_year, sMonth=s_month, sDay=s_day, lYear=l_year, lMonth=l_month, lDay=l_day,
-                                     lLeap=l_leap)
+        return self.hwp.SolarToLunar(
+            sYear=s_year,
+            sMonth=s_month,
+            sDay=s_day,
+            lYear=l_year,
+            lMonth=l_month,
+            lDay=l_day,
+            lLeap=l_leap,
+        )
 
     def SolarToLunarBySet(self, s_year, s_month, s_day):
         return self.hwp.SolarToLunarBySet(sYear=s_year, sMonth=s_month, sDay=s_day)
