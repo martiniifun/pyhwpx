@@ -960,7 +960,7 @@ class Hwp(ParamHelpers, RunMethods):
         new: bool = False,
         visible: bool = True,
         register_module: bool = True,
-        quit: bool = False,
+        on_quit: bool = False,
     ):
         self.hwp = 0
         self.htf_fonts = fonts
@@ -996,7 +996,7 @@ class Hwp(ParamHelpers, RunMethods):
                 )
 
     def __del__(self):
-        if quit:
+        if self.on_quit:
             try:
                 self.quit(save=False)
             except:
