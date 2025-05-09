@@ -963,6 +963,7 @@ class Hwp(ParamHelpers, RunMethods):
         on_quit: bool = False,
     ):
         self.hwp = 0
+        self.on_quit = on_quit
         self.htf_fonts = fonts
         context = pythoncom.CreateBindCtx(0)
         pythoncom.CoInitialize()  # 이걸 꼭 실행해야 하는가? 왜 Pycharm이나 주피터에서는 괜찮고, vscode에서는 CoInitialize 오류가 나는지?
