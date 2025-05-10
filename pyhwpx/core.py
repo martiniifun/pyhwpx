@@ -7998,6 +7998,8 @@ class Hwp(ParamHelpers, RunMethods):
                 if i.startswith("Location: ")
             ][0]
             location = os.path.join(location, "pyhwpx")
+        except Exception:
+            pass # 가상 환경의 경우도 있음
         print("default dll :", os.path.join(location, dll_name))
         if not os.path.exists(os.path.join(location, dll_name)):
             print("위 폴더에서 보안모듈을 찾을 수 없음..")
