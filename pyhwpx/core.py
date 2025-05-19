@@ -8815,7 +8815,7 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.SetMessageBoxMode(Mode=mode)
 
     def SetMessageBoxMode(self, mode: int) -> int:
-        return self.set_field_view_option(mode)
+        return self.set_message_box_mode(mode)
 
     def set_pos(self, List: int, para: int, pos: int) -> bool:
         """
