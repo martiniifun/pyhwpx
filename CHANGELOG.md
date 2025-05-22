@@ -1,5 +1,12 @@
 # 📦 Changelog
 
+## [1.0.9] - 2025-05-23
+### minor
+- delete_style_by_name 메서드에 삭제하고 싶은 스타일리스트를 넣어 일괄삭제할 수 있게 수정
+- get_used_style_dict 메서드 추가(전체 스타일 중 문서에 실제 사용된 스타일 목록만 추출)
+- remove_unused_styles 메서드 추가(실제 사용되지 않은 스타일들은 문서에서 제거하는 기능)
+
+---
 ## [1.0.8] - 2025-05-19
 ### patch
 - SetMessageBoxMode 수정 : 급한 업데이트 중에 엉뚱한 함수가 들어가 있었음ㅜ 
