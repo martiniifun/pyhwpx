@@ -2149,39 +2149,36 @@ class Hwp(ParamHelpers, RunMethods):
         """현재 창 최소화"""
         win32gui.ShowWindow(self.XHwpWindows.Active_XHwpWindow.WindowHandle, 6)
 
-    def delete_style_by_name(self, src: int | str, dst: int | str) -> bool:
+    def delete_style_by_name(self, src: int | str | list[int | str], dst: int | str) -> bool:
         """
-        **주의사항**
-
-        매번 메서드를 호출할 때마다 문서를 저장함(구현 편의를 위해ㅜ)!!!
-        다소 번거롭더라도 StyleDelete 액션을 직접 실행하는 것을 추천함.
-
         특정 스타일을 이름 (또는 인덱스번호)로 삭제하고
         대체할 스타일 또한 이름 (또는 인덱스번호)로 지정해주는 메서드.
         """
         style_dict = self.get_style_dict(as_="dict")
-        pset = self.HParameterSet.HStyleDelete
-        self.HAction.GetDefault("StyleDelete", pset.HSet)
-        if type(src) == int:
-            pset.Target = src
-        elif src in [style_dict[i]["name"] for i in style_dict]:
-            pset.Target = [i for i in style_dict if style_dict[i]["name"] == src][0]
-        else:
-            raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
-        if type(dst) == int:
-            pset.Alternation = dst
-        elif dst in [style_dict[i]["name"] for i in style_dict]:
-            pset.Alternation = [i for i in style_dict if style_dict[i]["name"] == dst][
-                0
-            ]
-        else:
-            raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
-        return self.HAction.Execute("StyleDelete", pset.HSet)
+        if type(src) != list:
+            src = [src]
+
+        for idx, s in enumerate(src):
+            pset = self.HParameterSet.HStyleDelete
+            self.HAction.GetDefault("StyleDelete", pset.HSet)
+            if type(s) == int:
+                pset.Target = s
+            elif s in [style_dict[i]["name"] for i in style_dict]:
+                pset.Target = [i for i in style_dict if style_dict[i]["name"] == s][0]
+            else:
+                raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
+            if type(dst) == int:
+                pset.Alternation = dst
+            elif dst in [style_dict[i]["name"] for i in style_dict]:
+                pset.Alternation = [i for i in style_dict if style_dict[i]["name"] == dst][0]
+            else:
+                raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
+            self.HAction.Execute("StyleDelete", pset.HSet)
+        return True
 
     def get_style_dict(self, as_: Literal["list", "dict"] = "list") -> list | dict:
         """
         스타일 목록을 사전 데이터로 리턴하는 메서드.
-
         (도움 주신 kosohn님께 아주 큰 감사!!!)
         """
         cur_pos = self.get_pos()
@@ -2220,6 +2217,61 @@ class Hwp(ParamHelpers, RunMethods):
             )
         os.remove("temp.xml")
         return styles
+
+    def get_used_style_dict(self, as_: Literal["list", "dict"] = "list") -> list | dict:
+        """
+        현재 문서에서 사용된 스타일 목록만 list[dict] 또는 dict[dict] 데이터로 리턴하는 메서드.
+        """
+
+        cur_pos = self.get_pos()
+        if not self.MoveSelRight():
+            self.MoveSelLeft()
+        self.SelectAll()
+        self.save_block_as("temp.xml", format="HWPML2X")
+        self.Cancel()
+        self.set_pos(*cur_pos)
+
+        tree = ET.parse("temp.xml")
+        root = tree.getroot()
+        if as_ == "list":
+            styles = [
+                {
+                    "index": int(style.get("Id")),
+                    "type": style.get("Type"),
+                    "name": style.get("Name"),
+                    "engName": style.get("EngName"),
+                }
+                for style in root.findall(".//STYLE")
+            ]
+        elif as_ == "dict":
+            styles = {
+                int(style.get("Id")): {
+                    "type": style.get("Type"),
+                    "name": style.get("Name"),
+                    "engName": style.get("EngName"),
+                }
+                for style in root.findall(".//STYLE")
+            }
+        else:
+            raise TypeError(
+                "as_ 파라미터는 'list'또는 'dict' 중 하나로 설정해주세요. 기본값은 'list'입니다."
+            )
+        used_style_index = {int(p.get('Style')) for p in root.findall('.//P') if p.get('Style') is not None}
+        os.remove("temp.xml")
+        return [i for i in styles if i["index"] in used_style_index] \
+            if as_ == "list" else {i: styles[i] for i in styles if i in used_style_index}
+
+    def remove_unused_styles(self, alt=0):
+        """
+        문서 내에 정의만 되어 있고 실제 사용되지 않은 모든 스타일을 일괄제거하는 메서드.
+        사용에 주의할 것.
+        """
+        self.MoveDocBegin()
+        self.SelectAll()
+        used_styles = self.get_used_style_dict("dict").keys()
+        self.Cancel()
+        all_styles = self.get_style_dict("dict").keys()
+        return self.delete_style_by_name(list(all_styles - used_styles)[::-1], alt)
 
     def get_style(self) -> dict:
         """
