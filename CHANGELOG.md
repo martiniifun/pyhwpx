@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.0.14] - 2025-05-23
+### patch
+- hwp.get_selected_text()를 본문에서 사용 후 선택모드 해제(Cancel) 명령 추가
+
+---
 ## [1.0.13] - 2025-05-23
 ### patch
 - hwp.get_selected_text()를 본문에서 사용 후 선택모드 해제(Cancel) 명령 추가
