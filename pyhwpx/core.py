@@ -5258,9 +5258,12 @@ class Hwp(ParamHelpers, RunMethods):
     def get_selected_text(self, as_: Literal["list", "str"] = "str"):
         """
         한/글 문서 선택 구간의 텍스트를 리턴하는 메서드.
+        표 안에 있을 때는 셀의 문자열을, 본문일 때는 선택영역 또는 현재 단어를 리턴.
 
+        Args:
+            as_: 문자열 형태로 리턴할지("str"), 리스트 형태로 리턴할지("list") 결정.
         Returns:
-        선택한 문자열
+            선택한 문자열 또는 셀 문자열
         """
         if self.SelectionMode == 0:
             if self.is_cell():
@@ -5269,6 +5272,7 @@ class Hwp(ParamHelpers, RunMethods):
                 self.Select()
                 self.Select()
         if not self.hwp.InitScan(Range=0xFF):
+            self.Cancel()
             return ""
         if as_ == "list":
             result = []
@@ -5282,6 +5286,7 @@ class Hwp(ParamHelpers, RunMethods):
             else:
                 result += text
         self.hwp.ReleaseScan()
+        self.Cancel()
         return result if type(result) == str else result[:-1]
 
     def table_to_csv(
