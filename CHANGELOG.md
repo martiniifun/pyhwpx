@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.0.13] - 2025-05-23
+### patch
+- hwp.get_selected_text()를 본문에서 사용 후 선택모드 해제(Cancel) 명령 추가
+
+---
 ## [1.0.12] - 2025-05-23
 ### minor
 - delete_style_by_name 메서드에 삭제하고 싶은 스타일리스트를 넣어 일괄삭제할 수 있게 수정
