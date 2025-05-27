@@ -1,5 +1,12 @@
 # 📦 Changelog
 
+## [1.0.16] - 2025-05-28
+### minor
+- set_parashape 메서드 추가. set_font와 유사하게 문단의 모양을 단순한 메서드 방식으로 변경할 수 있다.
+
+- 위에 수반되는 get_parashape, get_parashape_as_dict 메서드도 추가했지만, 고급사용자 외에는 쓸 일이 없을 듯. 
+
+---
 ## [1.0.15] - 2025-05-27
 ### minor
 - set_parashape 메서드 추가. set_font와 유사하게 문단의 모양을 단순한 메서드 방식으로 변경할 수 있다.
