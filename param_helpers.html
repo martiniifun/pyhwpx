@@ -637,6 +637,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#pyhwpx.param_helpers.ParamHelpers.HeadType" class="md-nav__link">
+    <span class="md-ellipsis">
+      HeadType
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyhwpx.param_helpers.ParamHelpers.HwpLineType" class="md-nav__link">
     <span class="md-ellipsis">
       HwpLineType
@@ -746,6 +755,86 @@
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pyhwpx.param_helpers.ParamHelpers.HeadType" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">HeadType</span><span class="p">(</span><span class="n">heading_type</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>문단 종류를 결정할 때 사용하는 헬퍼함수</p>
+<p>현재 문단의 머리에 '개요 번호'나 '문단 번호', '그럼리표' 등을 넣어 문단 종류를 바꿀 것인지,
+'없음'을 선택해 보통 모양의 문단으로 놓아둘 것인지를 선택.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>heading_type</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;None&#39;, &#39;Outline&#39;, &#39;Number&#39;, &#39;Bullet&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>문단 종류</p>
+<ul>
+<li>"None": 없음(보통 모양의 문단)</li>
+<li>"Outline": 개요 문단</li>
+<li>"Number": 번호 문단</li>
+<li>"Bullet": 글머리표 문단</li>
+</ul>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>int</code></td>            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>옵션에 해당하는 정수를 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
