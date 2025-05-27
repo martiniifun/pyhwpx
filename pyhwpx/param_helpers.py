@@ -110,7 +110,24 @@ class ParamHelpers:
     def HatchStyle(self, hatch_style):
         return self.hwp.HatchStyle(HatchStyle=hatch_style)
 
-    def HeadType(self, heading_type):
+    def HeadType(self, heading_type: Literal["None", "Outline", "Number", "Bullet"]) -> int:
+        """
+        문단 종류를 결정할 때 사용하는 헬퍼함수
+
+        현재 문단의 머리에 '개요 번호'나 '문단 번호', '그럼리표' 등을 넣어 문단 종류를 바꿀 것인지,
+        '없음'을 선택해 보통 모양의 문단으로 놓아둘 것인지를 선택.
+
+        Args:
+            heading_type: 문단 종류
+
+                - "None": 없음(보통 모양의 문단)
+                - "Outline": 개요 문단
+                - "Number": 번호 문단
+                - "Bullet": 글머리표 문단
+
+        Returns:
+            int: 옵션에 해당하는 정수를 리턴
+        """
         return self.hwp.HeadType(HeadingType=heading_type)
 
     def HeightRel(self, height_rel):
