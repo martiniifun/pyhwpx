@@ -4259,11 +4259,12 @@ class Hwp(ParamHelpers, RunMethods):
 
     def get_parashape_as_dict(self):
         result_dict = {}
-        for key in self.HParameterSet.HParaShape._prop_map_get_.keys():
+        for key in self.hwp.HParameterSet.HParaShape._prop_map_get_.keys():
             result_dict[key] = self.ParaShape.Item(key)
         return result_dict
 
     def set_parashape(
+            self,
             AlignType: Optional[Literal["Justify", "Left", "Center", "Right", "Distribute", "DistributeSpace"]] = None,
             BreakNonLatinWord: Optional[Literal[0, 1]] = None,
             LineSpacing: Optional[int] = None,
@@ -4328,22 +4329,22 @@ class Hwp(ParamHelpers, RunMethods):
         Returns:
             주어진 파라미터 세트로 "ParagraphShape" 작업을 실행한 결과
         """
-        pset = hwp.HParameterSet.HParaShape
-        hwp.HAction.GetDefault("ParagraphShape", pset.HSet)
+        pset = self.hwp.HParameterSet.HParaShape
+        self.hwp.HAction.GetDefault("ParagraphShape", pset.HSet)
 
         setters = {
-            "AlignType": lambda v: setattr(pset, "AlignType", hwp.HAlign(v)),
+            "AlignType": lambda v: setattr(pset, "AlignType", self.HAlign(v)),
             "BreakNonLatinWord": lambda v: setattr(pset, "BreakNonLatinWord",
                                                    0 if v == -1 and 1 <= pset.AlignType <= 3 else (
                                                        1 if v == -1 else v)),
             "LineSpacing": lambda v: setattr(pset, "LineSpacing", v),
             "Condense": lambda v: setattr(pset, "Condense", 100 - v),
             "SnapToGrid": lambda v: setattr(pset, "SnapToGrid", v),
-            "NextSpacing": lambda v: setattr(pset, "NextSpacing", hwp.PointToHwpUnit(v * 2)),
-            "PrevSpacing": lambda v: setattr(pset, "PrevSpacing", hwp.PointToHwpUnit(v * 2)),
-            "Indentation": lambda v: setattr(pset, "Indentation", hwp.PointToHwpUnit(v * 2)),
-            "RightMargin": lambda v: setattr(pset, "RightMargin", hwp.PointToHwpUnit(v * 2)),
-            "LeftMargin": lambda v: setattr(pset, "LeftMargin", hwp.PointToHwpUnit(v * 2)),
+            "NextSpacing": lambda v: setattr(pset, "NextSpacing", self.PointToHwpUnit(v * 2)),
+            "PrevSpacing": lambda v: setattr(pset, "PrevSpacing", self.PointToHwpUnit(v * 2)),
+            "Indentation": lambda v: setattr(pset, "Indentation", self.PointToHwpUnit(v * 2)),
+            "RightMargin": lambda v: setattr(pset, "RightMargin", self.PointToHwpUnit(v * 2)),
+            "LeftMargin": lambda v: setattr(pset, "LeftMargin", self.PointToHwpUnit(v * 2)),
             "PagebreakBefore": lambda v: setattr(pset, "PagebreakBefore", v),
             "KeepLinesTogether": lambda v: setattr(pset, "KeepLinesTogether", v),
             "KeepWithNext": lambda v: setattr(pset, "KeepWithNext", v),
@@ -4354,14 +4355,11 @@ class Hwp(ParamHelpers, RunMethods):
             "FontLineHeight": lambda v: setattr(pset, "FontLineHeight", v),
             "TextAlignment": lambda v: setattr(pset, "TextAlignment", v),
         }
-
-        # locals()에서 값 꺼내서 None 아닌 것만 실행
         for name, setter in setters.items():
             val = locals()[name]
             if val is not None:
                 setter(val)
-
-        return hwp.HAction.Execute("ParagraphShape", pset.HSet)
+        return self.HAction.Execute("ParagraphShape", pset.HSet)
 
     def get_markpen_color(self):
         """
