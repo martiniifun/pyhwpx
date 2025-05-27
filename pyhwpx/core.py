@@ -7984,6 +7984,8 @@ class Hwp(ParamHelpers, RunMethods):
             self.clear()
         elif save:  # 빈 문서가 아닌 경우
             self.save()
+        else:
+            self.clear()
         self.hwp.Quit()
 
     def Quit(self, save: bool = False) -> None:
