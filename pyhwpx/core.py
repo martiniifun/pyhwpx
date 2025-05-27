@@ -19,7 +19,7 @@ from functools import wraps
 from collections import defaultdict
 from io import StringIO
 from time import sleep
-from typing import Literal, Union, Any
+from typing import Literal, Union, Any, Optional
 from urllib import request, parse
 from winreg import QueryValueEx
 
@@ -4237,6 +4237,117 @@ class Hwp(ParamHelpers, RunMethods):
         elif type(pset) == type(self.HParameterSet.HCharShape):
             new_pset = pset
         return self.hwp.HAction.Execute("CharShape", new_pset.HSet)
+
+    def get_parashape(self):
+        pset = self.hwp.HParameterSet.HParaShape
+        self.hwp.HAction.GetDefault("ParagraphShape", pset.HSet)
+        return pset
+
+    def get_parashape_as_dict(self):
+        result_dict = {}
+        for key in self.HParameterSet.HParaShape._prop_map_get_.keys():
+            result_dict[key] = self.ParaShape.Item(key)
+        return result_dict
+
+    def set_parashape(
+            AlignType: Optional[Literal["Justify", "Left", "Center", "Right", "Distribute", "DistributeSpace"]] = None,
+            BreakNonLatinWord: Optional[Literal[0, 1]] = None,
+            LineSpacing: Optional[int] = None,
+            Condense: Optional[int] = None,
+            SnapToGrid: Optional[Literal[0, 1]] = None,
+            NextSpacing: Optional[float] = None,
+            PrevSpacing: Optional[float] = None,
+            Indentation: Optional[float] = None,
+            RightMargin: Optional[float] = None,
+            LeftMargin: Optional[float] = None,
+            PagebreakBefore: Optional[Literal[0, 1]] = None,
+            KeepLinesTogether: Optional[Literal[0, 1]] = None,
+            KeepWithNext: Optional[Literal[0, 1]] = None,
+            WidowOrphan: Optional[Literal[0, 1]] = None,
+            AutoSpaceEAsianNum: Optional[Literal[0, 1]] = None,
+            AutoSpaceEAsianEng: Optional[Literal[0, 1]] = None,
+            LineWrap: Optional[Literal[0, 1]] = None,
+            FontLineHeight: Optional[Literal[0, 1]] = None,
+            TextAlignment: Optional[Literal[0, 1, 2, 3]] = None,
+    ):
+        """
+        문단 모양을 설정하는 메서드.
+
+        Args:
+            AlignType: 문단의 정렬 유형을 지정
+
+                - "Justify": 양쪽 정렬
+                - "Left": 왼쪽 정렬
+                - "Center": 가운데 정렬
+                - "Right": 오른쪽 정렬
+                - "Distribute": 배분 정렬
+                - "DistributeSpace": 나눔 정렬
+
+            BreakNonLatinWord: 한글 단위 줄 나눔 기준
+
+                - 0: 줄 끝에서 어절 단위로 나눔
+                - 1: 줄 끝에서 글자 단위로 나눔
+
+            LineSpacing: 단락 내 줄 간격 설정(0~500)
+            Condense: 줄 나눔 기준 최소 공백(25~100)
+            SnapToGrid: 편집 용지의 줄 격자 사용 여부.
+            NextSpacing: 문단 아래 간격(0.0~841.8포인트 범위)
+            PrevSpacing: 문단 위 간격(0.0~841.8포인트 범위)
+            Indentation: 첫 줄 들여쓰기/내어쓰기(여백 없는 A4용지 기준 -570.2~570.2포인트 범위)
+            RightMargin: 오른쪽 여백(포인트)
+            LeftMargin: 왼쪽 여백(포인트)
+            PagebreakBefore: 문단 앞에서 항상 쪽 나눔 여부(0~1)
+            KeepLinesTogether: 문단 보호 여부(0~1)
+            KeepWithNext: 다음 문단과 함께
+            WidowOrphan: 외톨이줄 보호(한 페이지에 최소 두 줄을 유지)여부
+            AutoSpaceEAsianNum: 한글과 숫자 간격 자동 조절 여부
+            AutoSpaceEAsianEng: 한글과 영어 간격 자동 조절 여부
+            LineWrap: 한 줄로 입력 여부
+            FontLineHeight: 글꼴에 어울리는 줄 높이 여부
+            TextAlignment: 세로 정렬 방식
+
+                - 0: 글꼴 기준
+                - 1: 위쪽 기준
+                - 2: 가운데 기준
+                - 3: 아래쪽 기준
+
+        Returns:
+            주어진 파라미터 세트로 "ParagraphShape" 작업을 실행한 결과
+        """
+        pset = hwp.HParameterSet.HParaShape
+        hwp.HAction.GetDefault("ParagraphShape", pset.HSet)
+
+        setters = {
+            "AlignType": lambda v: setattr(pset, "AlignType", hwp.HAlign(v)),
+            "BreakNonLatinWord": lambda v: setattr(pset, "BreakNonLatinWord",
+                                                   0 if v == -1 and 1 <= pset.AlignType <= 3 else (
+                                                       1 if v == -1 else v)),
+            "LineSpacing": lambda v: setattr(pset, "LineSpacing", v),
+            "Condense": lambda v: setattr(pset, "Condense", 100 - v),
+            "SnapToGrid": lambda v: setattr(pset, "SnapToGrid", v),
+            "NextSpacing": lambda v: setattr(pset, "NextSpacing", hwp.PointToHwpUnit(v * 2)),
+            "PrevSpacing": lambda v: setattr(pset, "PrevSpacing", hwp.PointToHwpUnit(v * 2)),
+            "Indentation": lambda v: setattr(pset, "Indentation", hwp.PointToHwpUnit(v * 2)),
+            "RightMargin": lambda v: setattr(pset, "RightMargin", hwp.PointToHwpUnit(v * 2)),
+            "LeftMargin": lambda v: setattr(pset, "LeftMargin", hwp.PointToHwpUnit(v * 2)),
+            "PagebreakBefore": lambda v: setattr(pset, "PagebreakBefore", v),
+            "KeepLinesTogether": lambda v: setattr(pset, "KeepLinesTogether", v),
+            "KeepWithNext": lambda v: setattr(pset, "KeepWithNext", v),
+            "WidowOrphan": lambda v: setattr(pset, "WidowOrphan", v),
+            "AutoSpaceEAsianNum": lambda v: setattr(pset, "AutoSpaceEAsianNum", v),
+            "AutoSpaceEAsianEng": lambda v: setattr(pset, "AutoSpaceEAsianEng", v),
+            "LineWrap": lambda v: setattr(pset, "LineWrap", v),
+            "FontLineHeight": lambda v: setattr(pset, "FontLineHeight", v),
+            "TextAlignment": lambda v: setattr(pset, "TextAlignment", v),
+        }
+
+        # locals()에서 값 꺼내서 None 아닌 것만 실행
+        for name, setter in setters.items():
+            val = locals()[name]
+            if val is not None:
+                setter(val)
+
+        return hwp.HAction.Execute("ParagraphShape", pset.HSet)
 
     def get_markpen_color(self):
         """
