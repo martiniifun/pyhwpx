@@ -1,5 +1,12 @@
 # 📦 Changelog
 
+## [1.1.2] - 2025-05-28
+### 🐛 Fixed
+- set_parashape 메서드에 self가 빠져있었던 부분 정정
+
+- HeadType 헬퍼메서드에 독스트링 추가 
+
+---
 ## [1.1.1] - 2025-05-28
 ### 🐛 Fixed
 - get_style_dict 메서드가 리턴하는 dict의 키 문자열을 HWPML2X와 일치시킴. 
