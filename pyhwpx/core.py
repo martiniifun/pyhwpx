@@ -19,7 +19,7 @@ from functools import wraps
 from collections import defaultdict
 from io import StringIO
 from time import sleep
-from typing import Literal, Union, Any
+from typing import Literal, Union, Any, Optional
 from urllib import request, parse
 from winreg import QueryValueEx
 
@@ -2149,39 +2149,36 @@ class Hwp(ParamHelpers, RunMethods):
         """현재 창 최소화"""
         win32gui.ShowWindow(self.XHwpWindows.Active_XHwpWindow.WindowHandle, 6)
 
-    def delete_style_by_name(self, src: int | str, dst: int | str) -> bool:
+    def delete_style_by_name(self, src: int | str | list[int | str], dst: int | str) -> bool:
         """
-        **주의사항**
-
-        매번 메서드를 호출할 때마다 문서를 저장함(구현 편의를 위해ㅜ)!!!
-        다소 번거롭더라도 StyleDelete 액션을 직접 실행하는 것을 추천함.
-
         특정 스타일을 이름 (또는 인덱스번호)로 삭제하고
         대체할 스타일 또한 이름 (또는 인덱스번호)로 지정해주는 메서드.
         """
         style_dict = self.get_style_dict(as_="dict")
-        pset = self.HParameterSet.HStyleDelete
-        self.HAction.GetDefault("StyleDelete", pset.HSet)
-        if type(src) == int:
-            pset.Target = src
-        elif src in [style_dict[i]["name"] for i in style_dict]:
-            pset.Target = [i for i in style_dict if style_dict[i]["name"] == src][0]
-        else:
-            raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
-        if type(dst) == int:
-            pset.Alternation = dst
-        elif dst in [style_dict[i]["name"] for i in style_dict]:
-            pset.Alternation = [i for i in style_dict if style_dict[i]["name"] == dst][
-                0
-            ]
-        else:
-            raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
-        return self.HAction.Execute("StyleDelete", pset.HSet)
+        if type(src) != list:
+            src = [src]
+
+        for idx, s in enumerate(src):
+            pset = self.HParameterSet.HStyleDelete
+            self.HAction.GetDefault("StyleDelete", pset.HSet)
+            if type(s) == int:
+                pset.Target = s
+            elif s in [style_dict[i]["name"] for i in style_dict]:
+                pset.Target = [i for i in style_dict if style_dict[i]["name"] == s][0]
+            else:
+                raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
+            if type(dst) == int:
+                pset.Alternation = dst
+            elif dst in [style_dict[i]["name"] for i in style_dict]:
+                pset.Alternation = [i for i in style_dict if style_dict[i]["name"] == dst][0]
+            else:
+                raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
+            self.HAction.Execute("StyleDelete", pset.HSet)
+        return True
 
     def get_style_dict(self, as_: Literal["list", "dict"] = "list") -> list | dict:
         """
         스타일 목록을 사전 데이터로 리턴하는 메서드.
-
         (도움 주신 kosohn님께 아주 큰 감사!!!)
         """
         cur_pos = self.get_pos()
@@ -2220,6 +2217,61 @@ class Hwp(ParamHelpers, RunMethods):
             )
         os.remove("temp.xml")
         return styles
+
+    def get_used_style_dict(self, as_: Literal["list", "dict"] = "list") -> list | dict:
+        """
+        현재 문서에서 사용된 스타일 목록만 list[dict] 또는 dict[dict] 데이터로 리턴하는 메서드.
+        """
+
+        cur_pos = self.get_pos()
+        if not self.MoveSelRight():
+            self.MoveSelLeft()
+        self.SelectAll()
+        self.save_block_as("temp.xml", format="HWPML2X")
+        self.Cancel()
+        self.set_pos(*cur_pos)
+
+        tree = ET.parse("temp.xml")
+        root = tree.getroot()
+        if as_ == "list":
+            styles = [
+                {
+                    "index": int(style.get("Id")),
+                    "type": style.get("Type"),
+                    "name": style.get("Name"),
+                    "engName": style.get("EngName"),
+                }
+                for style in root.findall(".//STYLE")
+            ]
+        elif as_ == "dict":
+            styles = {
+                int(style.get("Id")): {
+                    "type": style.get("Type"),
+                    "name": style.get("Name"),
+                    "engName": style.get("EngName"),
+                }
+                for style in root.findall(".//STYLE")
+            }
+        else:
+            raise TypeError(
+                "as_ 파라미터는 'list'또는 'dict' 중 하나로 설정해주세요. 기본값은 'list'입니다."
+            )
+        used_style_index = {int(p.get('Style')) for p in root.findall('.//P') if p.get('Style') is not None}
+        os.remove("temp.xml")
+        return [i for i in styles if i["index"] in used_style_index] \
+            if as_ == "list" else {i: styles[i] for i in styles if i in used_style_index}
+
+    def remove_unused_styles(self, alt=0):
+        """
+        문서 내에 정의만 되어 있고 실제 사용되지 않은 모든 스타일을 일괄제거하는 메서드.
+        사용에 주의할 것.
+        """
+        self.MoveDocBegin()
+        self.SelectAll()
+        used_styles = self.get_used_style_dict("dict").keys()
+        self.Cancel()
+        all_styles = self.get_style_dict("dict").keys()
+        return self.delete_style_by_name(list(all_styles - used_styles)[::-1], alt)
 
     def get_style(self) -> dict:
         """
@@ -4186,6 +4238,117 @@ class Hwp(ParamHelpers, RunMethods):
             new_pset = pset
         return self.hwp.HAction.Execute("CharShape", new_pset.HSet)
 
+    def get_parashape(self):
+        pset = self.hwp.HParameterSet.HParaShape
+        self.hwp.HAction.GetDefault("ParagraphShape", pset.HSet)
+        return pset
+
+    def get_parashape_as_dict(self):
+        result_dict = {}
+        for key in self.HParameterSet.HParaShape._prop_map_get_.keys():
+            result_dict[key] = self.ParaShape.Item(key)
+        return result_dict
+
+    def set_parashape(
+            AlignType: Optional[Literal["Justify", "Left", "Center", "Right", "Distribute", "DistributeSpace"]] = None,
+            BreakNonLatinWord: Optional[Literal[0, 1]] = None,
+            LineSpacing: Optional[int] = None,
+            Condense: Optional[int] = None,
+            SnapToGrid: Optional[Literal[0, 1]] = None,
+            NextSpacing: Optional[float] = None,
+            PrevSpacing: Optional[float] = None,
+            Indentation: Optional[float] = None,
+            RightMargin: Optional[float] = None,
+            LeftMargin: Optional[float] = None,
+            PagebreakBefore: Optional[Literal[0, 1]] = None,
+            KeepLinesTogether: Optional[Literal[0, 1]] = None,
+            KeepWithNext: Optional[Literal[0, 1]] = None,
+            WidowOrphan: Optional[Literal[0, 1]] = None,
+            AutoSpaceEAsianNum: Optional[Literal[0, 1]] = None,
+            AutoSpaceEAsianEng: Optional[Literal[0, 1]] = None,
+            LineWrap: Optional[Literal[0, 1]] = None,
+            FontLineHeight: Optional[Literal[0, 1]] = None,
+            TextAlignment: Optional[Literal[0, 1, 2, 3]] = None,
+    ):
+        """
+        문단 모양을 설정하는 메서드.
+
+        Args:
+            AlignType: 문단의 정렬 유형을 지정
+
+                - "Justify": 양쪽 정렬
+                - "Left": 왼쪽 정렬
+                - "Center": 가운데 정렬
+                - "Right": 오른쪽 정렬
+                - "Distribute": 배분 정렬
+                - "DistributeSpace": 나눔 정렬
+
+            BreakNonLatinWord: 한글 단위 줄 나눔 기준
+
+                - 0: 줄 끝에서 어절 단위로 나눔
+                - 1: 줄 끝에서 글자 단위로 나눔
+
+            LineSpacing: 단락 내 줄 간격 설정(0~500)
+            Condense: 줄 나눔 기준 최소 공백(25~100)
+            SnapToGrid: 편집 용지의 줄 격자 사용 여부.
+            NextSpacing: 문단 아래 간격(0.0~841.8포인트 범위)
+            PrevSpacing: 문단 위 간격(0.0~841.8포인트 범위)
+            Indentation: 첫 줄 들여쓰기/내어쓰기(여백 없는 A4용지 기준 -570.2~570.2포인트 범위)
+            RightMargin: 오른쪽 여백(포인트)
+            LeftMargin: 왼쪽 여백(포인트)
+            PagebreakBefore: 문단 앞에서 항상 쪽 나눔 여부(0~1)
+            KeepLinesTogether: 문단 보호 여부(0~1)
+            KeepWithNext: 다음 문단과 함께
+            WidowOrphan: 외톨이줄 보호(한 페이지에 최소 두 줄을 유지)여부
+            AutoSpaceEAsianNum: 한글과 숫자 간격 자동 조절 여부
+            AutoSpaceEAsianEng: 한글과 영어 간격 자동 조절 여부
+            LineWrap: 한 줄로 입력 여부
+            FontLineHeight: 글꼴에 어울리는 줄 높이 여부
+            TextAlignment: 세로 정렬 방식
+
+                - 0: 글꼴 기준
+                - 1: 위쪽 기준
+                - 2: 가운데 기준
+                - 3: 아래쪽 기준
+
+        Returns:
+            주어진 파라미터 세트로 "ParagraphShape" 작업을 실행한 결과
+        """
+        pset = hwp.HParameterSet.HParaShape
+        hwp.HAction.GetDefault("ParagraphShape", pset.HSet)
+
+        setters = {
+            "AlignType": lambda v: setattr(pset, "AlignType", hwp.HAlign(v)),
+            "BreakNonLatinWord": lambda v: setattr(pset, "BreakNonLatinWord",
+                                                   0 if v == -1 and 1 <= pset.AlignType <= 3 else (
+                                                       1 if v == -1 else v)),
+            "LineSpacing": lambda v: setattr(pset, "LineSpacing", v),
+            "Condense": lambda v: setattr(pset, "Condense", 100 - v),
+            "SnapToGrid": lambda v: setattr(pset, "SnapToGrid", v),
+            "NextSpacing": lambda v: setattr(pset, "NextSpacing", hwp.PointToHwpUnit(v * 2)),
+            "PrevSpacing": lambda v: setattr(pset, "PrevSpacing", hwp.PointToHwpUnit(v * 2)),
+            "Indentation": lambda v: setattr(pset, "Indentation", hwp.PointToHwpUnit(v * 2)),
+            "RightMargin": lambda v: setattr(pset, "RightMargin", hwp.PointToHwpUnit(v * 2)),
+            "LeftMargin": lambda v: setattr(pset, "LeftMargin", hwp.PointToHwpUnit(v * 2)),
+            "PagebreakBefore": lambda v: setattr(pset, "PagebreakBefore", v),
+            "KeepLinesTogether": lambda v: setattr(pset, "KeepLinesTogether", v),
+            "KeepWithNext": lambda v: setattr(pset, "KeepWithNext", v),
+            "WidowOrphan": lambda v: setattr(pset, "WidowOrphan", v),
+            "AutoSpaceEAsianNum": lambda v: setattr(pset, "AutoSpaceEAsianNum", v),
+            "AutoSpaceEAsianEng": lambda v: setattr(pset, "AutoSpaceEAsianEng", v),
+            "LineWrap": lambda v: setattr(pset, "LineWrap", v),
+            "FontLineHeight": lambda v: setattr(pset, "FontLineHeight", v),
+            "TextAlignment": lambda v: setattr(pset, "TextAlignment", v),
+        }
+
+        # locals()에서 값 꺼내서 None 아닌 것만 실행
+        for name, setter in setters.items():
+            val = locals()[name]
+            if val is not None:
+                setter(val)
+
+        return hwp.HAction.Execute("ParagraphShape", pset.HSet)
+
     def get_markpen_color(self):
         """
         현재 선택된 영역의 형광펜 색(RGB)을 튜플로 리턴하는 메서드
@@ -5206,9 +5369,12 @@ class Hwp(ParamHelpers, RunMethods):
     def get_selected_text(self, as_: Literal["list", "str"] = "str"):
         """
         한/글 문서 선택 구간의 텍스트를 리턴하는 메서드.
+        표 안에 있을 때는 셀의 문자열을, 본문일 때는 선택영역 또는 현재 단어를 리턴.
 
+        Args:
+            as_: 문자열 형태로 리턴할지("str"), 리스트 형태로 리턴할지("list") 결정.
         Returns:
-        선택한 문자열
+            선택한 문자열 또는 셀 문자열
         """
         if self.SelectionMode == 0:
             if self.is_cell():
@@ -5217,6 +5383,7 @@ class Hwp(ParamHelpers, RunMethods):
                 self.Select()
                 self.Select()
         if not self.hwp.InitScan(Range=0xFF):
+            self.Cancel()
             return ""
         if as_ == "list":
             result = []
@@ -5230,6 +5397,7 @@ class Hwp(ParamHelpers, RunMethods):
             else:
                 result += text
         self.hwp.ReleaseScan()
+        self.Cancel()
         return result if type(result) == str else result[:-1]
 
     def table_to_csv(
@@ -8817,7 +8985,7 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.SetMessageBoxMode(Mode=mode)
 
     def SetMessageBoxMode(self, mode: int) -> int:
-        return self.set_field_view_option(mode)
+        return self.set_message_box_mode(mode)
 
     def set_pos(self, List: int, para: int, pos: int) -> bool:
         """

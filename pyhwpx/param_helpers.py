@@ -280,7 +280,68 @@ class ParamHelpers:
     def HwpUnitToMili(self, hwp_unit: int) -> float:
         return self.hwp_unit_to_mili(hwp_unit)
 
-    def NumberFormat(self, num_format):
+    def NumberFormat(self, num_format: Literal[
+        "Digit",  # 123
+        "CircledDigit",  # ①
+        "RomanCapital",  # I
+        "RomanSmall",  # i
+        "LatinCapital",  # A
+        "LatinSmall",  # a
+        "CircledLatinCapital",  # Ⓐ
+        "CircledLatinSmall",  # ⓐ
+        "HangulSyllable",  # 가나다
+        "CircledHangulSyllable",  # ㉯
+        "HangulJamo",  # ㄱㄴㄷ
+        "CircledHangulJamo",  # ㉠
+        "HangulPhonetic",  # 일이삼
+        "Ideograph",  # 一
+        "CircledIdeograph",  # ㊀
+        "DecagonCircle",  # 갑을병
+        "DecagonCircleHanja",  # 甲
+    ]):
+        """
+        개요번호 사용자 정의를 위해 미리 정의된 포맷 모음
+        
+        Args:
+            num_format(str):
+                포맷 종류.
+
+                    - "Digit": 123
+                    - "CircledDigit": ①
+                    - "RomanCapital": I
+                    - "RomanSmall": i
+                    - "LatinCapital": A
+                    - "LatinSmall": a
+                    - "CircledLatinCapital": Ⓐ
+                    - "CircledLatinSmall": ⓐ
+                    - "HangulSyllable": 가나다
+                    - "CircledHangulSyllable": ㉯
+                    - "HangulJamo": ㄱㄴㄷ
+                    - "CircledHangulJamo": ㉠
+                    - "HangulPhonetic": 일이삼
+                    - "Ideograph": 一
+                    - "CircledIdeograph": ㊀
+                    - "DecagonCircle": 갑을병
+                    - "DecagonCircleHanja": 甲
+
+        Returns:
+            int: 해당 정수로 치환됨(Digit=0, CircledDigit=1, ... DecagonCircleHanja=16)
+
+        Examples:
+            >>> # 개요번호 사용자 정의
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp(new=True)
+            >>> pset = hwp.HParameterSet.HSecDef
+            >>> hwp.HAction.GetDefault("OutlineNumber", pset.HSet)
+            >>> pset.OutlineShape.StrFormatLevel0 = "^1."
+            >>> pset.OutlineShape.NumFormatLevel0 = hwp.NumberFormat("RomanCapital")  # <---
+            >>> pset.OutlineShape.StartNumber0 = 1
+            >>> pset.OutlineShape.NewList = 0
+            >>> pset.HSet.SetItem("ApplyClass", 24)  # 앞 구역의 개요 번호에 이어서
+            >>> pset.HSet.SetItem("ApplyTo", 3)  # 적용범위(2:현재구역, 3:문서 전체, 4:새 구역으로)
+            >>> hwp.HAction.Execute("OutlineNumber", pset.HSet)
+            True
+        """
         return self.hwp.NumberFormat(NumFormat=num_format)
 
     def Numbering(self, numbering):

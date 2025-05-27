@@ -1,5 +1,7 @@
 ## 🐍 pyhwpx: 파이썬-아래아한글 자동화 모듈
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/martiniifun/pyhwpx)
+
 ![introduction](https://raw.githubusercontent.com/martiniifun/pyhwpx/master/docs/assets/introduce.gif
 )
 

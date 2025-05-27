@@ -1,5 +1,55 @@
 # 📦 Changelog
 
+## [1.0.15] - 2025-05-27
+### minor
+- set_parashape 메서드 추가. set_font와 유사하게 문단의 모양을 단순한 메서드 방식으로 변경할 수 있다.
+
+- 위에 수반되는 get_parashape, get_parashape_as_dict 메서드도 추가했지만, 고급사용자 외에는 쓸 일이 없을 듯. 
+
+---
+## [1.0.14] - 2025-05-23
+### patch
+- hwp.get_selected_text()를 본문에서 사용 후 선택모드 해제(Cancel) 명령 추가
+
+---
+## [1.0.13] - 2025-05-23
+### patch
+- hwp.get_selected_text()를 본문에서 사용 후 선택모드 해제(Cancel) 명령 추가
+
+---
+## [1.0.12] - 2025-05-23
+### minor
+- delete_style_by_name 메서드에 삭제하고 싶은 스타일리스트를 넣어 일괄삭제할 수 있게 수정
+- get_used_style_dict 메서드 추가(전체 스타일 중 문서에 실제 사용된 스타일 목록만 추출)
+- remove_unused_styles 메서드 추가(실제 사용되지 않은 스타일들은 문서에서 제거하는 기능)
+
+---
+## [1.0.11] - 2025-05-23
+### minor
+- delete_style_by_name 메서드에 삭제하고 싶은 스타일리스트를 넣어 일괄삭제할 수 있게 수정
+- get_used_style_dict 메서드 추가(전체 스타일 중 문서에 실제 사용된 스타일 목록만 추출)
+- remove_unused_styles 메서드 추가(실제 사용되지 않은 스타일들은 문서에서 제거하는 기능)
+
+---
+## [1.0.10] - 2025-05-23
+### minor
+- delete_style_by_name 메서드에 삭제하고 싶은 스타일리스트를 넣어 일괄삭제할 수 있게 수정
+- get_used_style_dict 메서드 추가(전체 스타일 중 문서에 실제 사용된 스타일 목록만 추출)
+- remove_unused_styles 메서드 추가(실제 사용되지 않은 스타일들은 문서에서 제거하는 기능)
+
+---
+## [1.0.9] - 2025-05-23
+### minor
+- delete_style_by_name 메서드에 삭제하고 싶은 스타일리스트를 넣어 일괄삭제할 수 있게 수정
+- get_used_style_dict 메서드 추가(전체 스타일 중 문서에 실제 사용된 스타일 목록만 추출)
+- remove_unused_styles 메서드 추가(실제 사용되지 않은 스타일들은 문서에서 제거하는 기능)
+
+---
+## [1.0.8] - 2025-05-19
+### patch
+- SetMessageBoxMode 수정 : 급한 업데이트 중에 엉뚱한 함수가 들어가 있었음ㅜ 
+
+---
 ## [1.0.7] - 2025-05-09
 ### default
 - self.on_quit = on_quit 라인 추가ㅜ 
