@@ -1956,8 +1956,8 @@ class Hwp(ParamHelpers, RunMethods):
             style_idx = style + 1
         elif type(style) == str:
             style_dict = self.get_style_dict(as_="dict")
-            if style in [style_dict[i]["name"] for i in style_dict]:
-                style_idx = [i for i in style_dict if style_dict[i]["name"] == style][
+            if style in [style_dict[i]["Name"] for i in style_dict]:
+                style_idx = [i for i in style_dict if style_dict[i]["Name"] == style][
                     0
                 ] + 1
             else:
@@ -2154,7 +2154,7 @@ class Hwp(ParamHelpers, RunMethods):
         특정 스타일을 이름 (또는 인덱스번호)로 삭제하고
         대체할 스타일 또한 이름 (또는 인덱스번호)로 지정해주는 메서드.
         """
-        style_dict = self.get_style_dict(as_="dict")
+        style_dict: dict = self.get_style_dict(as_="dict")
         if type(src) != list:
             src = [src]
 
@@ -2163,14 +2163,14 @@ class Hwp(ParamHelpers, RunMethods):
             self.HAction.GetDefault("StyleDelete", pset.HSet)
             if type(s) == int:
                 pset.Target = s
-            elif s in [style_dict[i]["name"] for i in style_dict]:
-                pset.Target = [i for i in style_dict if style_dict[i]["name"] == s][0]
+            elif s in [style_dict[i]["Name"] for i in style_dict]:
+                pset.Target = [i for i in style_dict if style_dict[i]["Name"] == s][0]
             else:
                 raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
             if type(dst) == int:
                 pset.Alternation = dst
-            elif dst in [style_dict[i]["name"] for i in style_dict]:
-                pset.Alternation = [i for i in style_dict if style_dict[i]["name"] == dst][0]
+            elif dst in [style_dict[i]["Name"] for i in style_dict]:
+                pset.Alternation = [i for i in style_dict if style_dict[i]["Name"] == dst][0]
             else:
                 raise IndexError("해당 스타일이름을 찾을 수 없습니다.")
             self.HAction.Execute("StyleDelete", pset.HSet)
@@ -2195,19 +2195,30 @@ class Hwp(ParamHelpers, RunMethods):
         if as_ == "list":
             styles = [
                 {
-                    "index": int(style.get("Id")),
-                    "type": style.get("Type"),
-                    "name": style.get("Name"),
-                    "engName": style.get("EngName"),
+                    "CharShape": style.get("CharShape"),
+                    "EngName": style.get("EngName"),
+                    "Id": int(style.get("Id")),
+                    "LangId": style.get("LangId"),
+                    "LockForm": style.get("LockForm"),
+                    "Name": style.get("Name"),
+                    "NextStyle": style.get("NextStyle"),
+                    "ParaShape": style.get("ParaShape"),
+                    "Type": style.get("Type"),
                 }
                 for style in root.findall(".//STYLE")
             ]
         elif as_ == "dict":
             styles = {
                 int(style.get("Id")): {
-                    "type": style.get("Type"),
-                    "name": style.get("Name"),
-                    "engName": style.get("EngName"),
+                    "CharShape": style.get("CharShape"),
+                    "EngName": style.get("EngName"),
+                    "Id": int(style.get("Id")),
+                    "LangId": style.get("LangId"),
+                    "LockForm": style.get("LockForm"),
+                    "Name": style.get("Name"),
+                    "NextStyle": style.get("NextStyle"),
+                    "ParaShape": style.get("ParaShape"),
+                    "Type": style.get("Type"),
                 }
                 for style in root.findall(".//STYLE")
             }
@@ -2302,7 +2313,7 @@ class Hwp(ParamHelpers, RunMethods):
             style_dict = self.get_style_dict(as_="dict")
             key = None
             for key, value in style_dict.items():
-                if value.get("name") == style:
+                if value.get("Name") == style:
                     style = key
                     break
                 else:
