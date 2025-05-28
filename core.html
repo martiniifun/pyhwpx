@@ -1202,6 +1202,24 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pyhwpx.core.Hwp.get_charshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_charshape
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyhwpx.core.Hwp.get_charshape_as_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_charshape_as_dict
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyhwpx.core.Hwp.get_col_num" class="md-nav__link">
     <span class="md-ellipsis">
       get_col_num
@@ -1403,6 +1421,24 @@
   <a href="#pyhwpx.core.Hwp.get_pagedef_as_dict" class="md-nav__link">
     <span class="md-ellipsis">
       get_pagedef_as_dict
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyhwpx.core.Hwp.get_parashape" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_parashape
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyhwpx.core.Hwp.get_parashape_as_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_parashape_as_dict
     </span>
   </a>
   
@@ -2174,6 +2210,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pyhwpx.core.Hwp.set_charshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_charshape
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyhwpx.core.Hwp.set_col_width" class="md-nav__link">
     <span class="md-ellipsis">
       set_col_width
@@ -2231,6 +2276,15 @@
   <a href="#pyhwpx.core.Hwp.set_pagedef" class="md-nav__link">
     <span class="md-ellipsis">
       set_pagedef
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyhwpx.core.Hwp.set_para" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_para
     </span>
   </a>
   
@@ -7092,6 +7146,45 @@ API 사용시 발생하는 오류로 인해 현재는 한글 폰트만 지원하
 <div class="doc doc-object doc-function">
 
 
+<h4 id="pyhwpx.core.Hwp.get_charshape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_charshape</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>현재 캐럿의 글자모양 파라미터셋을 리턴하는 메서드.
+변수로 저장해 두고, set_charshape을 통해
+특정 선택영역에 이 글자모양을 적용할 수 있다.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.core.Hwp.get_charshape_as_dict" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_charshape_as_dict</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>현재 캐럿의 글자모양 파라미터셋을 (보기좋게) dict로 리턴하는 메서드.
+get_charshape와 동일하게 set_charshape에 이 dict를 사용할 수도 있다.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="pyhwpx.core.Hwp.get_col_num" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">get_col_num</span><span class="p">()</span></code>
 
@@ -8567,6 +8660,45 @@ set_pagedef 실행시 내부적으로 HWPUnit으로 자동변환하여 적용한
 <span class="n">FooterLen</span><span class="o">:</span><span class="w"> </span><span class="err">꼬리말</span>
 <span class="n">BottomMargin</span><span class="o">:</span><span class="w"> </span><span class="err">아래쪽</span>
 </code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.core.Hwp.get_parashape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_parashape</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>현재 캐럿이 위치한 문단모양 파라미터셋을 리턴하는 메서드.
+변수로 저장해 두고, set_parashape을 통해
+특정 선택영역에 이 문단모양을 적용할 수 있다.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.core.Hwp.get_parashape_as_dict" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_parashape_as_dict</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>현재 캐럿의 문단모양 파라미터셋을 (보기좋게) dict로 리턴하는 메서드.
+get_parashape와 동일하게 set_parashape에 이 dict를 사용할 수도 있다.</p>
 
 
     </div>
@@ -15275,6 +15407,55 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
 <div class="doc doc-object doc-function">
 
 
+<h4 id="pyhwpx.core.Hwp.set_charshape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">set_charshape</span><span class="p">(</span><span class="n">pset</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>get_charshape 또는 get_charshape_as_dict를 통해 저장된 파라미터셋을 통해
+캐럿위치 또는 특정 선택영역에 해당 글자모양을 적용할 수 있다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>pset</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>hwp.HParameterSet.HCharShape 파라미터셋 또는 get_charshape_as_dict 결과</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="pyhwpx.core.Hwp.set_col_width" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">set_col_width</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">as_</span><span class="o">=</span><span class="s1">&#39;ratio&#39;</span><span class="p">)</span></code>
 
@@ -16380,15 +16561,16 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 <div class="doc doc-object doc-function">
 
 
-<h4 id="pyhwpx.core.Hwp.set_parashape" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">set_parashape</span><span class="p">(</span><span class="n">AlignType</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">BreakNonLatinWord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">LineSpacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Condense</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">SnapToGrid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NextSpacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">PrevSpacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Indentation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">RightMargin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">LeftMargin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">PagebreakBefore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">KeepLinesTogether</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">KeepWithNext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">WidowOrphan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">AutoSpaceEAsianNum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">AutoSpaceEAsianEng</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">LineWrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">FontLineHeight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">TextAlignment</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<h4 id="pyhwpx.core.Hwp.set_para" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">set_para</span><span class="p">(</span><span class="n">AlignType</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">BreakNonLatinWord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">LineSpacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Condense</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">SnapToGrid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NextSpacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">PrevSpacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Indentation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">RightMargin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">LeftMargin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">PagebreakBefore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">KeepLinesTogether</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">KeepWithNext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">WidowOrphan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">AutoSpaceEAsianNum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">AutoSpaceEAsianEng</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">LineWrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">FontLineHeight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">TextAlignment</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h4>
 
 
     <div class="doc doc-contents ">
 
-        <p>문단 모양을 설정하는 메서드.</p>
+        <p>문단 모양을 설정하는 단축메서드. set_font와 유사하게 함수처럼 문단 모양을 설정할 수 있다.
+미리 정의된 별도의 파라미터셋을 통해 문단모양을 적용하고 싶다면 set_parashape 메서드를 사용한다.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -16748,6 +16930,25 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
           </tr>
       </tbody>
     </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.core.Hwp.set_parashape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">set_parashape</span><span class="p">(</span><span class="n">pset</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>get_parashape 또는 get_parashape_as_dict를 통해 저장된 파라미터셋을 통해
+캐럿이 포함된 문단 또는 블록선택한 문단 전체에 해당 문단모양을 적용할 수 있다.</p>
 
 
     </div>
