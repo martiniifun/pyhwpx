@@ -4230,17 +4230,33 @@ class Hwp(ParamHelpers, RunMethods):
         return list(set(result_list))
 
     def get_charshape(self):
+        """
+        현재 캐럿의 글자모양 파라미터셋을 리턴하는 메서드.
+        변수로 저장해 두고, set_charshape을 통해
+        특정 선택영역에 이 글자모양을 적용할 수 있다.
+        """
         pset = self.hwp.HParameterSet.HCharShape
         self.hwp.HAction.GetDefault("CharShape", pset.HSet)
         return pset
 
-    def get_charshape_as_dict(self):
+    def get_charshape_as_dict(self) -> dict:
+        """
+        현재 캐럿의 글자모양 파라미터셋을 (보기좋게) dict로 리턴하는 메서드.
+        get_charshape와 동일하게 set_charshape에 이 dict를 사용할 수도 있다.
+        """
         result_dict = {}
         for key in self.HParameterSet.HCharShape._prop_map_get_.keys():
             result_dict[key] = self.CharShape.Item(key)
         return result_dict
 
     def set_charshape(self, pset):
+        """
+        get_charshape 또는 get_charshape_as_dict를 통해 저장된 파라미터셋을 통해
+        캐럿위치 또는 특정 선택영역에 해당 글자모양을 적용할 수 있다.
+
+        Args:
+            pset: hwp.HParameterSet.HCharShape 파라미터셋 또는 get_charshape_as_dict 결과
+        """
         if isinstance(pset, dict):
             new_pset = self.hwp.HParameterSet.HCharShape
             for key in pset.keys():
@@ -4253,17 +4269,42 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.HAction.Execute("CharShape", new_pset.HSet)
 
     def get_parashape(self):
+        """
+        현재 캐럿이 위치한 문단모양 파라미터셋을 리턴하는 메서드.
+        변수로 저장해 두고, set_parashape을 통해
+        특정 선택영역에 이 문단모양을 적용할 수 있다.
+        """
         pset = self.hwp.HParameterSet.HParaShape
         self.hwp.HAction.GetDefault("ParagraphShape", pset.HSet)
         return pset
 
     def get_parashape_as_dict(self):
+        """
+        현재 캐럿의 문단모양 파라미터셋을 (보기좋게) dict로 리턴하는 메서드.
+        get_parashape와 동일하게 set_parashape에 이 dict를 사용할 수도 있다.
+        """
         result_dict = {}
         for key in self.hwp.HParameterSet.HParaShape._prop_map_get_.keys():
             result_dict[key] = self.ParaShape.Item(key)
         return result_dict
 
-    def set_parashape(
+    def set_parashape(self, pset):
+        """
+        get_parashape 또는 get_parashape_as_dict를 통해 저장된 파라미터셋을 통해
+        캐럿이 포함된 문단 또는 블록선택한 문단 전체에 해당 문단모양을 적용할 수 있다.
+        """
+        if isinstance(pset, dict):
+            new_pset = self.hwp.HParameterSet.HParaShape
+            for key in pset.keys():
+                try:
+                    new_pset.__setattr__(key, pset[key])
+                except pythoncom.com_error:
+                    print(key, pset[key])
+        elif type(pset) == type(self.HParameterSet.HParaShape):
+            new_pset = pset
+        return self.hwp.HAction.Execute("ParagraphShape", new_pset.HSet)
+
+    def set_para(
             self,
             AlignType: Optional[Literal["Justify", "Left", "Center", "Right", "Distribute", "DistributeSpace"]] = None,
             BreakNonLatinWord: Optional[Literal[0, 1]] = None,
@@ -4286,7 +4327,8 @@ class Hwp(ParamHelpers, RunMethods):
             TextAlignment: Optional[Literal[0, 1, 2, 3]] = None,
     ):
         """
-        문단 모양을 설정하는 메서드.
+        문단 모양을 설정하는 단축메서드. set_font와 유사하게 함수처럼 문단 모양을 설정할 수 있다.
+        미리 정의된 별도의 파라미터셋을 통해 문단모양을 적용하고 싶다면 set_parashape 메서드를 사용한다.
 
         Args:
             AlignType: 문단의 정렬 유형을 지정
