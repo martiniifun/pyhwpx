@@ -1,5 +1,11 @@
 # 📦 Changelog
 
+## [1.1.5] - 2025-06-01
+### 🐛 Fixed
+- switch_to 오류 수정(내부에서 사용하는 FindItem 메서드는 0-index가 아니고 1-index임!ㅜㅜ)
+
+
+---
 ## [1.1.4] - 2025-05-28
 ### 📝 Misc
 - 문단모양을 저장하거나 적용할 수 있는 get_parashape, get_parashape_as_dict, set_parashape 3종세트!
