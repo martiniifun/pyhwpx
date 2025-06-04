@@ -1,6 +1,5 @@
 from time import sleep
-from typing import Any, TYPE_CHECKING, Protocol
-
+from typing import Any, TYPE_CHECKING, Protocol, Tuple
 
 if TYPE_CHECKING:
     from .core import Hwp
@@ -9,10 +8,10 @@ if TYPE_CHECKING:
 class _InnerMethods(Protocol):
     hwp: Any
 
-    def get_cell_addr(self, str) -> tuple[int]:
+    def get_cell_addr(self, str) -> Tuple[int]:
         pass
 
-    def get_pos(self) -> tuple[int]:
+    def get_pos(self) -> Tuple[int]:
         pass
 
     def get_message_box_mode(self) -> int:

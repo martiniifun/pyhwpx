@@ -1,5 +1,54 @@
 # 📦 Changelog
 
+## [1.1.5] - 2025-06-01
+### 🐛 Fixed
+- switch_to 오류 수정(내부에서 사용하는 FindItem 메서드는 0-index가 아니고 1-index임!ㅜㅜ)
+
+
+---
+## [1.1.4] - 2025-05-28
+### 📝 Misc
+- 문단모양을 저장하거나 적용할 수 있는 get_parashape, get_parashape_as_dict, set_parashape 3종세트!
+
+- 그리고 만들어놓고 존재조차 까맣게 잊고 있었던 get_charshape, get_charshape_as_dict, set_charshape도 이번 용역을 통해.. 기억남ㅜ
+
+- **기존 함수방식의 문단모양 변경 메서드인 set_paragraph는 set_para로 이름을 변경함ㅜㅜㅜ**  
+
+---
+## [1.1.3] - 2025-05-28
+### 🐛 Fixed
+- quit 메서드 내부에서 clear 동작 추가 
+
+---
+## [1.1.2] - 2025-05-28
+### 🐛 Fixed
+- set_parashape 메서드에 self가 빠져있었던 부분 정정
+
+- HeadType 헬퍼메서드에 독스트링 추가 
+
+---
+## [1.1.1] - 2025-05-28
+### 🐛 Fixed
+- get_style_dict 메서드가 리턴하는 dict의 키 문자열을 HWPML2X와 일치시킴. 
+
+---
+## [1.1.0] - 2025-05-28
+### 🚀 Added
+- pyhwpx 설치 가능한 파이썬 최소버전을 3.10에서 3.9로 낮춤(버전 오기로 배포 재시도!ㅋ) 
+
+---
+## [1.0.17] - 2025-05-28
+### minor
+- pyhwpx 설치 가능한 파이썬 최소버전을 3.10에서 3.9로 낮춤 
+
+---
+## [1.0.16] - 2025-05-28
+### minor
+- set_parashape 메서드 추가. set_font와 유사하게 문단의 모양을 단순한 메서드 방식으로 변경할 수 있다.
+
+- 위에 수반되는 get_parashape, get_parashape_as_dict 메서드도 추가했지만, 고급사용자 외에는 쓸 일이 없을 듯. 
+
+---
 ## [1.0.15] - 2025-05-27
 ### minor
 - set_parashape 메서드 추가. set_font와 유사하게 문단의 모양을 단순한 메서드 방식으로 변경할 수 있다.

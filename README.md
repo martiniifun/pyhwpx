@@ -31,7 +31,7 @@ pip install pyhwpx
 
 > ⚠️ **주의:** pyhwpx는 **Windows** 환경에서 작동하며, **한/글이 설치되어 있어야** 합니다.  
 > 💡 `pywin32`가 필요하며, `pip install pywin32`로 별도로 설치할 수도 있습니다.
-> ✨ **Python 3.10 이상이 필요합니다.**
+> ✨ **Python 3.9 이상이 필요합니다.**
 
 설치가 완료되면 Python에서 `import`하여 사용할 수 있습니다.
 
