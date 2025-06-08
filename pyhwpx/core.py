@@ -3293,6 +3293,7 @@ class Hwp(ParamHelpers, RunMethods):
                 pset.HSet.SetItem("ShapeCellSize", 1)
                 pset.ShapeTableCell.Width = self.MiliToHwpUnit(i)
                 self.HAction.Execute("TablePropertyDialog", pset.HSet)
+                self.Cancel()
                 self.TableRightCell()
             return self.set_pos(*cur_pos)
 
