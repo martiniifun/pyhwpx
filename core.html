@@ -6418,7 +6418,7 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
 
 
 <h4 id="pyhwpx.core.Hwp.find" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">find</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;Forward&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MatchCase</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">SeveralWords</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">UseWildCards</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">WholeWordOnly</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">AutoSpell</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">HanjaFromHangul</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">AllWordForms</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ReplaceStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">FindJaso</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindType</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">find</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;Forward&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">TextColor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MatchCase</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">SeveralWords</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">UseWildCards</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">WholeWordOnly</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">AutoSpell</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">HanjaFromHangul</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">AllWordForms</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ReplaceStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">FindJaso</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindType</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
 
 </h4>
 
@@ -6454,7 +6454,7 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>&#39;&#39;</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -6495,6 +6495,22 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
           </tr>
           <tr class="doc-section-item">
             <td>
+                <code>TextColor</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>글자색(hwp.RGBColor)</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
                 <code>MatchCase</code>
             </td>
             <td>
@@ -6518,11 +6534,11 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
             </td>
             <td>
               <div class="doc-md-description">
-                <p>여러 단어 찾기</p>
+                <p>여러 단어 찾기(콤마로 구분하여 or연산 실시, 기본값 0)</p>
               </div>
             </td>
             <td>
-                  <code>1</code>
+                  <code>0</code>
             </td>
           </tr>
           <tr class="doc-section-item">
