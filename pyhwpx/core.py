@@ -6833,6 +6833,10 @@ class Hwp(ParamHelpers, RunMethods):
             >>> hwp = Hwp()
             >>> hwp.get_selected_pos()
             (True, 0, 0, 16, 0, 7, 16)
+            >>> marked_area = hwp.get_selected_pos()
+            >>> # 임의의 영역으로 이동 후, 저장한 구간을 선택하기
+            >>> hwp.select_text(marked_area)
+            True
         """
         return self.hwp.GetSelectedPos()
 
@@ -8934,17 +8938,28 @@ class Hwp(ParamHelpers, RunMethods):
     ) -> bool:
         """
         특정 범위의 텍스트를 블록선택한다.
-
-        epos가 가리키는 문자는 포함되지 않는다.
+        (epos가 가리키는 문자는 포함되지 않는다.)
+        hwp.get_selected_pos()를 통해 저장한 위치로 돌아가는 데에도 사용된다.
 
         Args:
-            spara: 블록 시작 위치의 문단 번호.
+            spara: 블록 시작 위치의 문단 번호. (또는 hwp.get_selected_pos() 리턴값)
             spos: 블록 시작 위치의 문단 중에서 문자의 위치.
             epara: 블록 끝 위치의 문단 번호.
             epos: 블록 끝 위치의 문단 중에서 문자의 위치.
 
         Returns:
             성공하면 True, 실패하면 False
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> # 본문의 세 번째 문단 전체 선택하기(기본 사용법)
+            >>> hwp.select_text(2, 0, 2, -1, 0)
+            True
+            >>> # 임의의 영역으로 이동 후 저장한 위치로 되돌아가기
+            >>> selected_range = hwp.get_selected_pos()
+            >>> hwp.select_text(selected_range)
+            True
         """
         if type(spara) in [list, tuple]:
             _, slist, spara, spos, elist, epara, epos = spara
