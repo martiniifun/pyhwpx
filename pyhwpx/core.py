@@ -4404,6 +4404,64 @@ class Hwp(ParamHelpers, RunMethods):
                 setter(val)
         return self.HAction.Execute("ParagraphShape", pset.HSet)
 
+    def apply_parashape(self, para_dict: dict) -> bool:
+        """
+        hwp.get_parashape_as_dict() 메서드를 통해 저장한 문단모양을 다른 문단에 적용할 수 있는 메서드.
+        아직은 모든 속성을 지원하지 않는다. 저장 및 적용 가능한 파라미터아이템은 아래 19가지이다.
+        특정 파라미터 아이템만 적용하고 싶은 경우 apply_parashape 메서드를 복사하여 커스텀해도 되지만,
+        가급적 set_para 메서드를 직접 사용하는 것을 추천한다.
+
+        "AlignType", "BreakNonLatinWord", "LineSpacing", "Condense", "SnapToGrid",
+        "NextSpacing", "PrevSpacing", "Indentation", "RightMargin", "LeftMargin",
+        "PagebreakBefore", "KeepLinesTogether", "KeepWithNext", "WidowOrphan",
+        "AutoSpaceEAsianNum", "AutoSpaceEAsianEng", "LineWrap", "FontLineHeight",
+        "TextAlignment"
+
+        Args:
+            para_dict: 미리 hwp.get_parashape_as_dict() 메서드로 추출해놓은 문단속성 딕셔너리.
+
+        Returns:
+            성공시 True, 실패시 False를 리턴(사실 모든 경우 True를 리턴하는 셈이다.)
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> # 모양을 복사하고자 하는 문단에서
+            >>> para_dict = hwp.get_parashape_as_dict()
+            >>> # 모양을 붙여넣기하려는 문단으로 이동 후
+            >>> hwp.apply_parashape(para_dict)
+            True
+            >>>
+            >>> # Border나 Heading 속성 등 모든 문단모양을 적용하기 위해서는
+            >>> # 아래와 같이 get_parashape과 set_parashape을 사용하면 된다.
+            >>>
+            >>> # 모양을 복사하고자 하는 문단에서
+            >>> parashape = hwp.get_parashape()
+            >>> # 모양을 붙여넣기하려는 문단으로 이동 후
+            >>> hwp.set_parashape(parashape)
+            True
+            >>>
+            >>> # 마지막으로, 특정 문단속성만 지정하여 변경하고자 할 때에는
+            >>> # hwp.set_para 메서드가 가장 간편하다. (파라미터셋의 아이템과 이름은 동일하다.)
+            >>> hwp.set_para(AlignType="Justify", LineSpacing=160, LeftMargin=0)
+            True
+        """
+        param_names = [
+            "AlignType", "BreakNonLatinWord", "LineSpacing", "Condense", "SnapToGrid",
+            "NextSpacing", "PrevSpacing", "Indentation", "RightMargin", "LeftMargin",
+            "PagebreakBefore", "KeepLinesTogether", "KeepWithNext", "WidowOrphan",
+            "AutoSpaceEAsianNum", "AutoSpaceEAsianEng", "LineWrap", "FontLineHeight",
+            "TextAlignment",
+        ]
+
+        kwargs = {
+            name: para_dict[name]
+            for name in param_names
+            if name in para_dict and isinstance(para_dict[name], (int, float))
+        }
+
+        return self.set_para(**kwargs)
+
     def get_markpen_color(self):
         """
         현재 선택된 영역의 형광펜 색(RGB)을 튜플로 리턴하는 메서드
