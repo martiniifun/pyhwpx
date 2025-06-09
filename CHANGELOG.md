@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.2.2] - 2025-06-10
+### 📝 Misc
+- hwp.get_selected_pos 메서드, hwp.select_text 메서드 독스트링 보완(특정 구간의 선택상태를 저장하고, 해당 저장블록을 재선택하는 데 쓸 수 있는 유용한 메서드니까!)
+
+---
 ## [1.2.1] - 2025-06-10
 ### 🐛 Fixed
 - hwp.find 메서드에 글자색(TextColor) 파라미터만 추가해봄(기본값은 "Black"이 아니라 None임). 적용방법은 hwp.find(TextColor=hwp.RGBColor("Blue"))
