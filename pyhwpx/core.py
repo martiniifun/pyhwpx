@@ -4376,7 +4376,7 @@ class Hwp(ParamHelpers, RunMethods):
         self.hwp.HAction.GetDefault("ParagraphShape", pset.HSet)
 
         setters = {
-            "AlignType": lambda v: setattr(pset, "AlignType", self.HAlign(v)),
+            "AlignType": lambda v: setattr(pset, "AlignType", self.HAlign(v) if isinstance(v, str) else v),
             "BreakNonLatinWord": lambda v: setattr(pset, "BreakNonLatinWord",
                                                    0 if v == -1 and 1 <= pset.AlignType <= 3 else (
                                                        1 if v == -1 else v)),
