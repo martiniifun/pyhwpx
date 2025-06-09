@@ -932,6 +932,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pyhwpx.core.Hwp.apply_parashape" class="md-nav__link">
+    <span class="md-ellipsis">
+      apply_parashape
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyhwpx.core.Hwp.auto_spacing" class="md-nav__link">
     <span class="md-ellipsis">
       auto_spacing
@@ -4899,6 +4908,111 @@ add_tab() 함수를 사용하면 백그라운드 작업이 보장된다.
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_into_nth_table</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">adjust_cellwidth</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+</code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.core.Hwp.apply_parashape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">apply_parashape</span><span class="p">(</span><span class="n">para_dict</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>hwp.get_parashape_as_dict() 메서드를 통해 저장한 문단모양을 다른 문단에 적용할 수 있는 메서드.
+아직은 모든 속성을 지원하지 않는다. 저장 및 적용 가능한 파라미터아이템은 아래 19가지이다.
+특정 파라미터 아이템만 적용하고 싶은 경우 apply_parashape 메서드를 복사하여 커스텀해도 되지만,
+가급적 set_para 메서드를 직접 사용하는 것을 추천한다.</p>
+<p>"AlignType", "BreakNonLatinWord", "LineSpacing", "Condense", "SnapToGrid",
+"NextSpacing", "PrevSpacing", "Indentation", "RightMargin", "LeftMargin",
+"PagebreakBefore", "KeepLinesTogether", "KeepWithNext", "WidowOrphan",
+"AutoSpaceEAsianNum", "AutoSpaceEAsianEng", "LineWrap", "FontLineHeight",
+"TextAlignment"</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>para_dict</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>미리 hwp.get_parashape_as_dict() 메서드로 추출해놓은 문단속성 딕셔너리.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴(사실 모든 경우 True를 리턴하는 셈이다.)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 모양을 복사하고자 하는 문단에서</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">para_dict</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">get_parashape_as_dict</span><span class="p">()</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 모양을 붙여넣기하려는 문단으로 이동 후</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">apply_parashape</span><span class="p">(</span><span class="n">para_dict</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="go">True</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Border나 Heading 속성 등 모든 문단모양을 적용하기 위해서는</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 아래와 같이 get_parashape과 set_parashape을 사용하면 된다.</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="gp">&gt;&gt;&gt;</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 모양을 복사하고자 하는 문단에서</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">parashape</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">get_parashape</span><span class="p">()</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 모양을 붙여넣기하려는 문단으로 이동 후</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_parashape</span><span class="p">(</span><span class="n">parashape</span><span class="p">)</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="go">True</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="gp">&gt;&gt;&gt;</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 마지막으로, 특정 문단속성만 지정하여 변경하고자 할 때에는</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># hwp.set_para 메서드가 가장 간편하다. (파라미터셋의 아이템과 이름은 동일하다.)</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">set_para</span><span class="p">(</span><span class="n">AlignType</span><span class="o">=</span><span class="s2">&quot;Justify&quot;</span><span class="p">,</span> <span class="n">LineSpacing</span><span class="o">=</span><span class="mi">160</span><span class="p">,</span> <span class="n">LeftMargin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="go">True</span>
 </code></pre></div>
 
 
