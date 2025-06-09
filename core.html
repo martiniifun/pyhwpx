@@ -9225,6 +9225,10 @@ get_parashape와 동일하게 set_parashape에 이 dict를 사용할 수도 있�
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_selected_pos</span><span class="p">()</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">(True, 0, 0, 16, 0, 7, 16)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">marked_area</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">get_selected_pos</span><span class="p">()</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 임의의 영역으로 이동 후, 저장한 구간을 선택하기</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">select_text</span><span class="p">(</span><span class="n">marked_area</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">True</span>
 </code></pre></div>
 
 
@@ -15186,8 +15190,9 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
 
     <div class="doc doc-contents ">
 
-        <p>특정 범위의 텍스트를 블록선택한다.</p>
-<p>epos가 가리키는 문자는 포함되지 않는다.</p>
+        <p>특정 범위의 텍스트를 블록선택한다.
+(epos가 가리키는 문자는 포함되지 않는다.)
+hwp.get_selected_pos()를 통해 저장한 위치로 돌아가는 데에도 사용된다.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -15210,7 +15215,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
             </td>
             <td>
               <div class="doc-md-description">
-                <p>블록 시작 위치의 문단 번호.</p>
+                <p>블록 시작 위치의 문단 번호. (또는 hwp.get_selected_pos() 리턴값)</p>
               </div>
             </td>
             <td>
@@ -15290,6 +15295,19 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
           </tr>
       </tbody>
     </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 본문의 세 번째 문단 전체 선택하기(기본 사용법)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">select_text</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="go">True</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 임의의 영역으로 이동 후 저장한 위치로 되돌아가기</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">selected_range</span> <span class="o">=</span> <span class="n">hwp</span><span class="o">.</span><span class="n">get_selected_pos</span><span class="p">()</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">select_text</span><span class="p">(</span><span class="n">selected_range</span><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="go">True</span>
+</code></pre></div>
 
 
     </div>
