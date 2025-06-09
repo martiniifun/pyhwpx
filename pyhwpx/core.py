@@ -4966,21 +4966,22 @@ class Hwp(ParamHelpers, RunMethods):
             self.SetMessageBoxMode(0xFFFFF)
 
     def find(
-        self,
-        src: str,
-        direction: Literal["Forward", "Backward", "AllDoc"] = "Forward",
-        regex: bool = False,
-        MatchCase: int = 1,
-        SeveralWords: int = 1,
-        UseWildCards: int = 1,
-        WholeWordOnly: int = 0,
-        AutoSpell: int = 1,
-        HanjaFromHangul: int = 1,
-        AllWordForms: int = 0,
-        FindStyle: str = "",
-        ReplaceStyle: str = "",
-        FindJaso: int = 0,
-        FindType: int = 1,
+            self,
+            src: str = "",
+            direction: Literal["Forward", "Backward", "AllDoc"] = "Forward",
+            regex: bool = False,
+            TextColor: Optional[int] = None,
+            MatchCase: int = 1,
+            SeveralWords: int = 0,
+            UseWildCards: int = 1,
+            WholeWordOnly: int = 0,
+            AutoSpell: int = 1,
+            HanjaFromHangul: int = 1,
+            AllWordForms: int = 0,
+            FindStyle: str = "",
+            ReplaceStyle: str = "",
+            FindJaso: int = 0,
+            FindType: int = 1,
     ) -> bool:
         """
         direction 방향으로 특정 단어를 찾아가는 메서드.
@@ -4998,8 +4999,9 @@ class Hwp(ParamHelpers, RunMethods):
                     - "AllDoc": 아래쪽 우선으로 찾고 문서끝 도달시 처음으로 돌아감.
 
             regex: 정규식 탐색(기본값 False)
+            TextColor: 글자색(hwp.RGBColor)
             MatchCase: 대소문자 구분(기본값 1)
-            SeveralWords: 여러 단어 찾기
+            SeveralWords: 여러 단어 찾기(콤마로 구분하여 or연산 실시, 기본값 0)
             UseWildCards: 아무개 문자(1),
             WholeWordOnly: 온전한 낱말(0),
             AutoSpell:
@@ -5016,6 +5018,9 @@ class Hwp(ParamHelpers, RunMethods):
         """
         self.SetMessageBoxMode(0x2FFF1)
         pset = self.hwp.HParameterSet.HFindReplace
+        self.hwp.HAction.GetDefault("FindDlg", pset.HSet)
+        self.hwp.HAction.Execute("FindDlg", pset.HSet)
+        pset = self.hwp.HParameterSet.HFindReplace
         pset.MatchCase = MatchCase
         pset.SeveralWords = SeveralWords
         pset.UseWildCards = UseWildCards
@@ -5031,6 +5036,8 @@ class Hwp(ParamHelpers, RunMethods):
         pset.ReplaceStyle = ReplaceStyle
         pset.FindRegExp = regex
         pset.FindType = FindType
+        if TextColor is not None:
+            pset.FindCharShape.TextColor = TextColor
         try:
             return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
         finally:
