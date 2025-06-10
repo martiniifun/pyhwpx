@@ -1,5 +1,12 @@
 # 📦 Changelog
 
+## [1.2.3] - 2025-06-10
+### 📝 Misc
+- hwp.auto_spacing 글자선택 취소되는 버그 개선
+
+- hwp.get_selected_text 메서드에 keep_select 파라미터 추가(기본값은 False로 선택해제임)
+
+---
 ## [1.2.2] - 2025-06-10
 ### 📝 Misc
 - hwp.get_selected_pos 메서드, hwp.select_text 메서드 독스트링 보완(특정 구간의 선택상태를 저장하고, 해당 저장블록을 재선택하는 데 쓸 수 있는 유용한 메서드니까!)
