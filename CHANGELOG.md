@@ -1,5 +1,45 @@
 # 📦 Changelog
 
+## [1.2.3] - 2025-06-10
+### 📝 Misc
+- hwp.auto_spacing 글자선택 취소되는 버그 개선
+
+- hwp.get_selected_text 메서드에 keep_select 파라미터 추가(기본값은 False로 선택해제임)
+
+---
+## [1.2.2] - 2025-06-10
+### 📝 Misc
+- hwp.get_selected_pos 메서드, hwp.select_text 메서드 독스트링 보완(특정 구간의 선택상태를 저장하고, 해당 저장블록을 재선택하는 데 쓸 수 있는 유용한 메서드니까!)
+
+---
+## [1.2.1] - 2025-06-10
+### 🐛 Fixed
+- hwp.find 메서드에 글자색(TextColor) 파라미터만 추가해봄(기본값은 "Black"이 아니라 None임). 적용방법은 hwp.find(TextColor=hwp.RGBColor("Blue"))
+
+- hwp.find 메서드의 SeveralWords(콤마로 or연산 검색) 파라미터 기본값을 1에서 0으로 변경.
+
+- hwp.find 메서드의 FindString(파라미터명은 src)를 필수파라미터에서, 빈 문자열("")로 기본값 추가. 특정 글자색 구간을 찾을 때 찾을 문자열을 비울 수 있게 함. 
+
+- hwp.find 반복실행시, 초기화를 위해 메서드 상단에 FindDlg 액션 (파라미터셋은 비우고) 실행
+
+---
+## [1.2.0] - 2025-06-09
+### 🚀 Added
+- apply_parashape 메서드 추가. hwp.get_parashape_as_dict 메서드로 저장한 문단속성 딕셔너리를 다른 문단에 간편하게 적용할 수 있는 메서드. para_dict의 일부 키를 삭제(pop)하여 문단모양 적용범위를 조절할 수 있다는 점에서 get_parashape / set_parashape과 차이가 있다. 
+
+---
+## [1.1.7] - 2025-06-09
+### 🐛 Fixed
+- set_para 메서드의 AlignType 파라미터에 문자열값이 아닌 정수 입력시, 헬퍼함수를 거치지 않고 바로 파라미터셋에 넣을 수 있도록 보완
+
+---
+## [1.1.6] - 2025-06-09
+### 🐛 Fixed
+- set_col_width에 self.Cancel() 추가(리스트로 칼럼별 비율 넣어 실행하는 경우 너비가 동일하게 조절되는 버그 조치)
+
+- 가끔 이런 버그가 생기면 현타가 올 때가 있다. 내가 꼼꼼하게 함수를 짜놔도, 한글 개발자들이 API실행방식을 바꾸면 pyhwpx는 버그덩어리가 된다. 예전엔 Execute 실행시 Cancel이 자동으로 실행되는 방식이어서 오류가 안 났던 것 같기도 하다. 사실 이런 버그가 자주 있는 일은 아니다. 한글 개발자들이 열일해서겠지.
+
+---
 ## [1.1.5] - 2025-06-01
 ### 🐛 Fixed
 - switch_to 오류 수정(내부에서 사용하는 FindItem 메서드는 0-index가 아니고 1-index임!ㅜㅜ)

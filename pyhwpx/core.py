@@ -3293,6 +3293,7 @@ class Hwp(ParamHelpers, RunMethods):
                 pset.HSet.SetItem("ShapeCellSize", 1)
                 pset.ShapeTableCell.Width = self.MiliToHwpUnit(i)
                 self.HAction.Execute("TablePropertyDialog", pset.HSet)
+                self.Cancel()
                 self.TableRightCell()
             return self.set_pos(*cur_pos)
 
@@ -3722,7 +3723,7 @@ class Hwp(ParamHelpers, RunMethods):
                 return 0, ""
             loc_info = self.key_indicator()
             start_line_no = loc_info[5]
-            string = f"{loc_info[3]}쪽 {loc_info[4]}단 {'' if self.get_pos()[0] == 0 else self.ParentCtrl.UserDesc}{start_line_no}줄({self.get_selected_text()})"
+            string = f"{loc_info[3]}쪽 {loc_info[4]}단 {'' if self.get_pos()[0] == 0 else self.ParentCtrl.UserDesc}{start_line_no}줄({self.get_selected_text(keep_select=True)})"
             if verbose:
                 print(string, end=" : ")
             min_val = init_spacing
@@ -4375,7 +4376,7 @@ class Hwp(ParamHelpers, RunMethods):
         self.hwp.HAction.GetDefault("ParagraphShape", pset.HSet)
 
         setters = {
-            "AlignType": lambda v: setattr(pset, "AlignType", self.HAlign(v)),
+            "AlignType": lambda v: setattr(pset, "AlignType", self.HAlign(v) if isinstance(v, str) else v),
             "BreakNonLatinWord": lambda v: setattr(pset, "BreakNonLatinWord",
                                                    0 if v == -1 and 1 <= pset.AlignType <= 3 else (
                                                        1 if v == -1 else v)),
@@ -4402,6 +4403,64 @@ class Hwp(ParamHelpers, RunMethods):
             if val is not None:
                 setter(val)
         return self.HAction.Execute("ParagraphShape", pset.HSet)
+
+    def apply_parashape(self, para_dict: dict) -> bool:
+        """
+        hwp.get_parashape_as_dict() 메서드를 통해 저장한 문단모양을 다른 문단에 적용할 수 있는 메서드.
+        아직은 모든 속성을 지원하지 않는다. 저장 및 적용 가능한 파라미터아이템은 아래 19가지이다.
+        특정 파라미터 아이템만 적용하고 싶은 경우 apply_parashape 메서드를 복사하여 커스텀해도 되지만,
+        가급적 set_para 메서드를 직접 사용하는 것을 추천한다.
+
+        "AlignType", "BreakNonLatinWord", "LineSpacing", "Condense", "SnapToGrid",
+        "NextSpacing", "PrevSpacing", "Indentation", "RightMargin", "LeftMargin",
+        "PagebreakBefore", "KeepLinesTogether", "KeepWithNext", "WidowOrphan",
+        "AutoSpaceEAsianNum", "AutoSpaceEAsianEng", "LineWrap", "FontLineHeight",
+        "TextAlignment"
+
+        Args:
+            para_dict: 미리 hwp.get_parashape_as_dict() 메서드로 추출해놓은 문단속성 딕셔너리.
+
+        Returns:
+            성공시 True, 실패시 False를 리턴(사실 모든 경우 True를 리턴하는 셈이다.)
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> # 모양을 복사하고자 하는 문단에서
+            >>> para_dict = hwp.get_parashape_as_dict()
+            >>> # 모양을 붙여넣기하려는 문단으로 이동 후
+            >>> hwp.apply_parashape(para_dict)
+            True
+            >>>
+            >>> # Border나 Heading 속성 등 모든 문단모양을 적용하기 위해서는
+            >>> # 아래와 같이 get_parashape과 set_parashape을 사용하면 된다.
+            >>>
+            >>> # 모양을 복사하고자 하는 문단에서
+            >>> parashape = hwp.get_parashape()
+            >>> # 모양을 붙여넣기하려는 문단으로 이동 후
+            >>> hwp.set_parashape(parashape)
+            True
+            >>>
+            >>> # 마지막으로, 특정 문단속성만 지정하여 변경하고자 할 때에는
+            >>> # hwp.set_para 메서드가 가장 간편하다. (파라미터셋의 아이템과 이름은 동일하다.)
+            >>> hwp.set_para(AlignType="Justify", LineSpacing=160, LeftMargin=0)
+            True
+        """
+        param_names = [
+            "AlignType", "BreakNonLatinWord", "LineSpacing", "Condense", "SnapToGrid",
+            "NextSpacing", "PrevSpacing", "Indentation", "RightMargin", "LeftMargin",
+            "PagebreakBefore", "KeepLinesTogether", "KeepWithNext", "WidowOrphan",
+            "AutoSpaceEAsianNum", "AutoSpaceEAsianEng", "LineWrap", "FontLineHeight",
+            "TextAlignment",
+        ]
+
+        kwargs = {
+            name: para_dict[name]
+            for name in param_names
+            if name in para_dict and isinstance(para_dict[name], (int, float))
+        }
+
+        return self.set_para(**kwargs)
 
     def get_markpen_color(self):
         """
@@ -4907,21 +4966,22 @@ class Hwp(ParamHelpers, RunMethods):
             self.SetMessageBoxMode(0xFFFFF)
 
     def find(
-        self,
-        src: str,
-        direction: Literal["Forward", "Backward", "AllDoc"] = "Forward",
-        regex: bool = False,
-        MatchCase: int = 1,
-        SeveralWords: int = 1,
-        UseWildCards: int = 1,
-        WholeWordOnly: int = 0,
-        AutoSpell: int = 1,
-        HanjaFromHangul: int = 1,
-        AllWordForms: int = 0,
-        FindStyle: str = "",
-        ReplaceStyle: str = "",
-        FindJaso: int = 0,
-        FindType: int = 1,
+            self,
+            src: str = "",
+            direction: Literal["Forward", "Backward", "AllDoc"] = "Forward",
+            regex: bool = False,
+            TextColor: Optional[int] = None,
+            MatchCase: int = 1,
+            SeveralWords: int = 0,
+            UseWildCards: int = 1,
+            WholeWordOnly: int = 0,
+            AutoSpell: int = 1,
+            HanjaFromHangul: int = 1,
+            AllWordForms: int = 0,
+            FindStyle: str = "",
+            ReplaceStyle: str = "",
+            FindJaso: int = 0,
+            FindType: int = 1,
     ) -> bool:
         """
         direction 방향으로 특정 단어를 찾아가는 메서드.
@@ -4939,8 +4999,9 @@ class Hwp(ParamHelpers, RunMethods):
                     - "AllDoc": 아래쪽 우선으로 찾고 문서끝 도달시 처음으로 돌아감.
 
             regex: 정규식 탐색(기본값 False)
+            TextColor: 글자색(hwp.RGBColor)
             MatchCase: 대소문자 구분(기본값 1)
-            SeveralWords: 여러 단어 찾기
+            SeveralWords: 여러 단어 찾기(콤마로 구분하여 or연산 실시, 기본값 0)
             UseWildCards: 아무개 문자(1),
             WholeWordOnly: 온전한 낱말(0),
             AutoSpell:
@@ -4957,6 +5018,9 @@ class Hwp(ParamHelpers, RunMethods):
         """
         self.SetMessageBoxMode(0x2FFF1)
         pset = self.hwp.HParameterSet.HFindReplace
+        self.hwp.HAction.GetDefault("FindDlg", pset.HSet)
+        self.hwp.HAction.Execute("FindDlg", pset.HSet)
+        pset = self.hwp.HParameterSet.HFindReplace
         pset.MatchCase = MatchCase
         pset.SeveralWords = SeveralWords
         pset.UseWildCards = UseWildCards
@@ -4972,6 +5036,8 @@ class Hwp(ParamHelpers, RunMethods):
         pset.ReplaceStyle = ReplaceStyle
         pset.FindRegExp = regex
         pset.FindType = FindType
+        if TextColor is not None:
+            pset.FindCharShape.TextColor = TextColor
         try:
             return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
         finally:
@@ -5420,7 +5486,7 @@ class Hwp(ParamHelpers, RunMethods):
                 pset.ShapeTableCell.Header = header
                 self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
-    def get_selected_text(self, as_: Literal["list", "str"] = "str"):
+    def get_selected_text(self, as_: Literal["list", "str"] = "str", keep_select: bool = False):
         """
         한/글 문서 선택 구간의 텍스트를 리턴하는 메서드.
         표 안에 있을 때는 셀의 문자열을, 본문일 때는 선택영역 또는 현재 단어를 리턴.
@@ -5451,7 +5517,8 @@ class Hwp(ParamHelpers, RunMethods):
             else:
                 result += text
         self.hwp.ReleaseScan()
-        self.Cancel()
+        if not keep_select:
+            self.Cancel()
         return result if type(result) == str else result[:-1]
 
     def table_to_csv(
@@ -6767,6 +6834,10 @@ class Hwp(ParamHelpers, RunMethods):
             >>> hwp = Hwp()
             >>> hwp.get_selected_pos()
             (True, 0, 0, 16, 0, 7, 16)
+            >>> marked_area = hwp.get_selected_pos()
+            >>> # 임의의 영역으로 이동 후, 저장한 구간을 선택하기
+            >>> hwp.select_text(marked_area)
+            True
         """
         return self.hwp.GetSelectedPos()
 
@@ -8870,17 +8941,28 @@ class Hwp(ParamHelpers, RunMethods):
     ) -> bool:
         """
         특정 범위의 텍스트를 블록선택한다.
-
-        epos가 가리키는 문자는 포함되지 않는다.
+        (epos가 가리키는 문자는 포함되지 않는다.)
+        hwp.get_selected_pos()를 통해 저장한 위치로 돌아가는 데에도 사용된다.
 
         Args:
-            spara: 블록 시작 위치의 문단 번호.
+            spara: 블록 시작 위치의 문단 번호. (또는 hwp.get_selected_pos() 리턴값)
             spos: 블록 시작 위치의 문단 중에서 문자의 위치.
             epara: 블록 끝 위치의 문단 번호.
             epos: 블록 끝 위치의 문단 중에서 문자의 위치.
 
         Returns:
             성공하면 True, 실패하면 False
+
+        Examples:
+            >>> from pyhwpx import Hwp
+            >>> hwp = Hwp()
+            >>> # 본문의 세 번째 문단 전체 선택하기(기본 사용법)
+            >>> hwp.select_text(2, 0, 2, -1, 0)
+            True
+            >>> # 임의의 영역으로 이동 후 저장한 위치로 되돌아가기
+            >>> selected_range = hwp.get_selected_pos()
+            >>> hwp.select_text(selected_range)
+            True
         """
         if type(spara) in [list, tuple]:
             _, slist, spara, spos, elist, epara, epos = spara
