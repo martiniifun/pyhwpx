@@ -3723,7 +3723,7 @@ class Hwp(ParamHelpers, RunMethods):
                 return 0, ""
             loc_info = self.key_indicator()
             start_line_no = loc_info[5]
-            string = f"{loc_info[3]}쪽 {loc_info[4]}단 {'' if self.get_pos()[0] == 0 else self.ParentCtrl.UserDesc}{start_line_no}줄({self.get_selected_text()})"
+            string = f"{loc_info[3]}쪽 {loc_info[4]}단 {'' if self.get_pos()[0] == 0 else self.ParentCtrl.UserDesc}{start_line_no}줄({self.get_selected_text(keep_select=True)})"
             if verbose:
                 print(string, end=" : ")
             min_val = init_spacing
@@ -5486,7 +5486,7 @@ class Hwp(ParamHelpers, RunMethods):
                 pset.ShapeTableCell.Header = header
                 self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
-    def get_selected_text(self, as_: Literal["list", "str"] = "str"):
+    def get_selected_text(self, as_: Literal["list", "str"] = "str", keep_select: bool = False):
         """
         한/글 문서 선택 구간의 텍스트를 리턴하는 메서드.
         표 안에 있을 때는 셀의 문자열을, 본문일 때는 선택영역 또는 현재 단어를 리턴.
@@ -5517,7 +5517,8 @@ class Hwp(ParamHelpers, RunMethods):
             else:
                 result += text
         self.hwp.ReleaseScan()
-        self.Cancel()
+        if not keep_select:
+            self.Cancel()
         return result if type(result) == str else result[:-1]
 
     def table_to_csv(
