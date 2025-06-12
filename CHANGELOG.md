@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.2.6] - 2025-06-12
+### 🐛 Fixed
+- set_field_by_bracket 수정(get_selected_text 변경으로 인한 버그 제거)
+
+---
 ## [1.2.5] - 2025-06-12
 ### 🐛 Fixed
 - is_empty_para 메서드 보완(로직 변경)
