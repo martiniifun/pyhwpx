@@ -13,3 +13,11 @@
 
 from .core import *
 from .version import __version__
+
+
+def tuple_to_addr():
+    return None
+
+
+def addr_to_tuple():
+    return None

@@ -1746,13 +1746,13 @@ class Hwp(ParamHelpers, RunMethods):
         빈 문단일 경우 제자리에서 True, 비어있지 않은 경우 False를 리턴
 
         """
-        self.MoveSelNextChar()
-        if self.get_pos()[2] == 0:  # 빈 문단이면?
-            self.Cancel()
-            self.MovePrevParaEnd()
+        before_pos = self.get_pos()
+        self.MoveRight()
+        after_pos = self.get_pos()
+        self.set_pos(*before_pos)
+        if before_pos[2] == after_pos[2] == 0 and before_pos[0] == after_pos[0]:
             return True
         else:
-            self.MoveParaBegin()
             return False
 
     def goto_addr(
