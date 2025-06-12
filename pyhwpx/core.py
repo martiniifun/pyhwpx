@@ -5590,20 +5590,20 @@ class Hwp(ParamHelpers, RunMethods):
                 )
             self.hwp.FindCtrl()
             self.ShapeObjTableSelCell()
-        data = [self.get_selected_text()]
+        data = [self.get_selected_text(keep_select=True)]
         col_count = 1
         start = False
         while self.TableRightCell():
             if not startrow:
                 if re.match(r"\([A-Z]+1\)", self.hwp.KeyIndicator()[-1]):
                     col_count += 1
-                data.append(self.get_selected_text())
+                data.append(self.get_selected_text(keep_select=True))
             else:
                 if re.match(rf"\([A-Z]+{1 + startrow}\)", self.hwp.KeyIndicator()[-1]):
                     col_count += 1
                     start = True
                 if start:
-                    data.append(self.get_selected_text())
+                    data.append(self.get_selected_text(keep_select=True))
 
         array = np.array(data).reshape(-1, col_count)
         df = pd.DataFrame(array[1:], columns=array[0])
@@ -5697,7 +5697,7 @@ class Hwp(ParamHelpers, RunMethods):
         # rows = int(re.sub(r"[A-Z]+", "", self.get_cell_addr()))
         rows = int(re.sub(r"[A-Z]+", "", self.get_cell_addr())) - startrow
 
-        arr = np.array(self.get_selected_text(as_="list"), dtype=object).reshape(
+        arr = np.array(self.get_selected_text(as_="list", keep_select=True), dtype=object).reshape(
             rows, -1
         )
         # if startrow:
