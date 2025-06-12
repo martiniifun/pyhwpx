@@ -4918,6 +4918,9 @@ class Hwp(ParamHelpers, RunMethods):
         Returns:
             단어를 찾으면 찾아가서 선택한 후 True를 리턴, 단어가 더이상 없으면 False를 리턴
         """
+        pset = self.hwp.HParameterSet.HFindReplace
+        self.hwp.HAction.GetDefault("FindDlg", pset.HSet)
+        self.hwp.HAction.Execute("FindDlg", pset.HSet)
         self.SetMessageBoxMode(0x2FFF1)
         init_pos = str(self.KeyIndicator())
         pset = self.hwp.HParameterSet.HFindReplace
@@ -4948,6 +4951,9 @@ class Hwp(ParamHelpers, RunMethods):
         Returns:
             단어를 찾으면 찾아가서 선택한 후 True를 리턴, 단어가 더이상 없으면 False를 리턴
         """
+        pset = self.hwp.HParameterSet.HFindReplace
+        self.hwp.HAction.GetDefault("FindDlg", pset.HSet)
+        self.hwp.HAction.Execute("FindDlg", pset.HSet)
         self.SetMessageBoxMode(0x2FFF1)
         init_pos = str(self.KeyIndicator())
         pset = self.hwp.HParameterSet.HFindReplace
@@ -5134,6 +5140,9 @@ class Hwp(ParamHelpers, RunMethods):
         파이썬의 re.sub 함수를 실행한다.
         """
         self.SetMessageBoxMode(0x2FFF1)
+        pset = self.hwp.HParameterSet.HFindReplace
+        self.hwp.HAction.GetDefault("FindDlg", pset.HSet)
+        self.hwp.HAction.Execute("FindDlg", pset.HSet)
         if regex:
             whole_text = self.get_text_file()
             src_list = [i.group() for i in re.finditer(src, whole_text)]
@@ -5217,6 +5226,9 @@ class Hwp(ParamHelpers, RunMethods):
         파이썬의 re.sub 함수를 실행한다.
         """
         self.SetMessageBoxMode(0x2FFF1)
+        pset = self.hwp.HParameterSet.HFindReplace
+        self.hwp.HAction.GetDefault("FindDlg", pset.HSet)
+        self.hwp.HAction.Execute("FindDlg", pset.HSet)
         if regex:
             whole_text = self.get_text_file()
             src_list = [i.group() for i in re.finditer(src, whole_text)]
