@@ -4971,6 +4971,7 @@ class Hwp(ParamHelpers, RunMethods):
             direction: Literal["Forward", "Backward", "AllDoc"] = "Forward",
             regex: bool = False,
             TextColor: Optional[int] = None,
+            Height: Optional[int|float] = None,
             MatchCase: int = 1,
             SeveralWords: int = 0,
             UseWildCards: int = 1,
@@ -5000,6 +5001,7 @@ class Hwp(ParamHelpers, RunMethods):
 
             regex: 정규식 탐색(기본값 False)
             TextColor: 글자색(hwp.RGBColor)
+            Height: 글자크기(hwp.PointToHwpUnit)
             MatchCase: 대소문자 구분(기본값 1)
             SeveralWords: 여러 단어 찾기(콤마로 구분하여 or연산 실시, 기본값 0)
             UseWildCards: 아무개 문자(1),
@@ -5038,6 +5040,8 @@ class Hwp(ParamHelpers, RunMethods):
         pset.FindType = FindType
         if TextColor is not None:
             pset.FindCharShape.TextColor = TextColor
+        if Height is not None:
+            pset.FindCharShape.Height = self.PointToHwpUnit(Height)
         try:
             return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
         finally:
