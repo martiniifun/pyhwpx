@@ -5064,43 +5064,38 @@ class Hwp(ParamHelpers, RunMethods):
 
         Returns:
         """
+        cur_loc = self.get_pos()
         self.MoveDocBegin()
-        while self.find("{{"):
-            while True:
-                self.hwp.HAction.Run("MoveSelRight")
-                if self.get_selected_text().endswith("}}"):
-                    field_name = self.get_selected_text()[2:-2]
-                    if ":" in field_name:
-                        field_name, direction = field_name.split(":", maxsplit=1)
-                        if ":" in direction:
-                            direction, memo = direction.split(":", maxsplit=1)
-                        else:
-                            memo = ""
-                    else:
-                        direction = memo = ""
-                    break
-                if self.get_selected_text().endswith("\r\n"):
-                    raise Exception("필드를 닫는 중괄호가 없습니다.")
+        while self.find(r"\{\{[^(\}\})]+\}\}", regex=True):
+            field_name = self.get_selected_text(keep_select=True)[2:-2]
+            if ":" in field_name:
+                field_name, direction = field_name.split(":", maxsplit=1)
+                if ":" in direction:
+                    direction, memo = direction.split(":", maxsplit=1)
+                else:
+                    memo = ""
+            else:
+                direction = field_name
+                memo = ""
+            if self.get_selected_text(keep_select=True).endswith("\r\n"):
+                raise Exception("필드를 닫는 중괄호가 없습니다.")
             self.hwp.HAction.Run("Delete")
             self.create_field(field_name, direction, memo)
 
         self.MoveDocBegin()
-        while self.find("[["):
-            while True:
-                self.hwp.HAction.Run("MoveSelRight")
-                if self.get_selected_text().endswith("]]"):
-                    field_name = self.get_selected_text()[2:-2]
-                    if ":" in field_name:
-                        field_name, direction = field_name.split(":", maxsplit=1)
-                        if ":" in direction:
-                            direction, memo = direction.split(":", maxsplit=1)
-                        else:
-                            memo = ""
-                    else:
-                        direction = memo = ""
-                    break
-                if self.get_selected_text().endswith("\r\n"):
-                    raise Exception("필드를 닫는 중괄호가 없습니다.")
+        while self.find(r"\[\[[^\]\]]+\]\]", regex=True):
+            field_name = self.get_selected_text(keep_select=True)[2:-2]
+            if ":" in field_name:
+                field_name, direction = field_name.split(":", maxsplit=1)
+                if ":" in direction:
+                    direction, memo = direction.split(":", maxsplit=1)
+                else:
+                    memo = ""
+            else:
+                direction = field_name
+                memo = ""
+            if self.get_selected_text(keep_select=True).endswith("\r\n"):
+                raise Exception("필드를 닫는 중괄호가 없습니다.")
             self.hwp.HAction.Run("Delete")
             if self.is_cell():
                 self.set_cur_field_name(
@@ -5108,6 +5103,7 @@ class Hwp(ParamHelpers, RunMethods):
                 )
             else:
                 pass
+        self.set_pos(*cur_loc)
 
     def find_replace(
         self,
@@ -7978,7 +7974,7 @@ class Hwp(ParamHelpers, RunMethods):
 
         if type(field) in [pd.Series]:  # 필드명 리스트를 파라미터로 넣은 경우
             if not text:  # text 파라미터가 입력되지 않았다면
-                text_str = "\x02".join([field[i] for i in field.index])
+                text_str = "\x02".join([str(field[i]) for i in field.index])
                 field_str = "\x02".join([str(i) for i in field.index])  # \x02로 병합
                 self.hwp.PutFieldText(Field=field_str, Text=text_str)
                 return
