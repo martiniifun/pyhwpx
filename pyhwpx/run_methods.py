@@ -174,6 +174,10 @@ class RunMethods(_InnerMethods):
         """
         return self.hwp.HAction.Run("AutoSpellSelect16")
 
+    def BookmarkEditDialog(self) -> bool:
+        """북마크 편집 대화상자 호출 액션 - 책갈피 작업창 에서 편집 대화상자를 호출하기 위한 액션"""
+        return self.hwp.HAction.Run("BookmarkEditDialog")
+
     def BottomTabFrameClose(self) -> bool:
         """아래쪽 작업창 감추기"""
         return self.hwp.HAction.Run("BottomTabFrameClose")
@@ -459,9 +463,9 @@ class RunMethods(_InnerMethods):
         """
         return self.hwp.HAction.Run("CharShapeTextColorYellow")
 
-    def CharShapTypeface(self) -> bool:
-        """글자 모양 (실행 안됨)"""
-        return self.hwp.HAction.Run("CharShapTypeface")
+    def CharShapeTypeface(self) -> bool:
+        """글꼴 이름(글자 모양 대화상자에서 Focus이동용 으로 사용)"""
+        return self.hwp.HAction.Run("CharShapeTypeface")
 
     def CharShapeUnderline(self) -> bool:
         """
@@ -652,6 +656,20 @@ class RunMethods(_InnerMethods):
         """
         return self.hwp.HAction.Run("DeletePage")
 
+    def DeletePrivateInfoMark(self) -> bool:
+        """
+        개인 정보 감추기한 정보 다시보기.
+        (개인 정보 보호 암호를 설정해야 함)
+        """
+        return self.hwp.HAction.Run("DeletePrivateInfoMark")
+
+    def DeletePrivateInfoMarkAtCurrentPos(self) -> bool:
+        """
+        현재 캐럿 위치의 감추기한 개인 정보 다시 보기
+        (개인 정보 보호 암호를 설정해야 함)
+        """
+        return self.hwp.HAction.Run("DeletePrivateInfoMarkAtCurrentPos")
+
     def DrawObjCancelOneStep(self) -> bool:
         """
         다각형(곡선) 그리는 중 이전 선 지우기.
@@ -718,6 +736,18 @@ class RunMethods(_InnerMethods):
             성공시 True, 실패시 False를 리턴
         """
         return self.hwp.HAction.Run("EditFieldMemo")
+
+    def EditParaDown(self) -> bool:
+        """
+        현재 캐럿이 위치한 문단 또는 선택한 문단 전체를, 하단에 위치한 문단 아래로 옮긴다.
+        """
+        return self.hwp.HAction.Run("EditParaDown")
+
+    def EditParaUp(self) -> bool:
+        """
+        현재 캐럿이 위치한 문단 또는 선택한 문단 전체를, 상단에 위치한 문단의 위로 옮긴다.
+        """
+        return self.hwp.HAction.Run("EditParaUp")
 
     def Erase(self) -> bool:
         """
@@ -842,6 +872,10 @@ class RunMethods(_InnerMethods):
         """배포용 문서로 저장하기"""
         return self.hwp.HAction.Run("FileSaveAsDRM")
 
+    def FileSaveOptionDlg(self) -> bool:
+        """저장 옵션창 열기"""
+        return self.hwp.HAction.Run("FileSaveOptionDlg")
+
     def FileVersionDiffChangeAlign(self) -> bool:
         """버전 비교 : 비교화면 배열 변경 (좌우↔상하)"""
         return self.hwp.HAction.Run("FileVersionDiffChangeAlign")
@@ -945,6 +979,10 @@ class RunMethods(_InnerMethods):
         """양식 개체 에디트 박스 넣기"""
         return self.hwp.HAction.Run("FormObjCreatorEdit")
 
+    def FormObjCreatorListBox(self) -> bool:
+        """양식 개체 리스트 박스 넣기"""
+        return self.hwp.HAction.Run("FormObjCreatorListBox")
+
     def FormObjCreatorPushButton(self) -> bool:
         """양식 개체 푸쉬 버튼 넣기"""
         return self.hwp.HAction.Run("FormObjCreatorPushButton")
@@ -952,6 +990,10 @@ class RunMethods(_InnerMethods):
     def FormObjCreatorRadioButton(self) -> bool:
         """양식 개체 라디오 버튼 넣기"""
         return self.hwp.HAction.Run("FormObjCreatorRadioButton")
+
+    def FormObjCreatorScrollBar(self) -> bool:
+        """양식 개체 스크롤바 넣기"""
+        return self.hwp.HAction.Run("FormObjCreatorScrollBar")
 
     def FormObjRadioGroup(self) -> bool:
         """양식 개체 라디오 버튼 그룹 묶기"""
@@ -1249,6 +1291,14 @@ class RunMethods(_InnerMethods):
         """
         return self.hwp.HAction.Run("ImageFindPath")
 
+    def ImportCharactersFromPiuctre(self) -> bool:
+        """
+        그림에서 글자 가져오기(OCR). (성능은 차차 좋아질 것...)
+        문서에 포함된 그림이 아니라, 로컬의 파일을 선택해야 하고,
+        추출된 텍스트는 클립보드에 저장되므로 사용시 주의.
+        """
+        return self.hwp.HAction.Run("ImportCharactersFromPicture")
+
     def InputCodeChange(self) -> bool:
         """
         문자/코드 변환
@@ -1339,6 +1389,12 @@ class RunMethods(_InnerMethods):
 
         """
         return self.hwp.HAction.Run("InsertEndnote")
+
+    def InsertFieldCitation(self) -> bool:
+        """
+        인용(citation) 삽입
+        """
+        return self.hwp.HAction.Run("InsertFieldCitation")
 
     def InsertFieldDateTime(self) -> bool:
         """
@@ -1617,6 +1673,10 @@ class RunMethods(_InnerMethods):
         """형광펜 색"""
         return self.hwp.HAction.Run("MarkPenColor")
 
+    def MarkPenDelete(self) -> bool:
+        """형광펜 삭제"""
+        return self.hwp.HAction.Run("MarkPenDelete")
+
     def MarkPenNext(self) -> bool:
         """
         다음 형광펜 삽입 위치로 이동한다.
@@ -1628,6 +1688,14 @@ class RunMethods(_InnerMethods):
         이전 형광펜 삽입 위치로 이동한다.
         """
         return self.hwp.HAction.Run("MarkPenPrev")
+
+    def MemoToNext(self) -> bool:
+        """메모 편집 상태에서 다음 메모로 이동"""
+        return self.hwp.HAction.Run("MemoToNext")
+
+    def MemoToPrev(self) -> bool:
+        """메모 편집 상태에서 이전 메모로 이동"""
+        return self.hwp.HAction.Run("MemoToNext")
 
     def MetatagExist(self, tag):
         """특정 이름의 메타태그가 존재하는지?"""
@@ -2856,6 +2924,10 @@ class RunMethods(_InnerMethods):
         """
         return self.hwp.HAction.Run("MPSectionToPrevious")
 
+    def MPShowMarginBorder(self) -> bool:
+        """바탕쪽 편집 상태에서 여백 보기 토글"""
+        return self.hwp.HAction.Run("MPShowMarginBorder")
+
     def NextTextBoxLinked(self):
         """
         연결된 글상자의 다음 글상자로 이동
@@ -3048,9 +3120,14 @@ class RunMethods(_InnerMethods):
     def ParagraphShapeProtect(self):
         """
         문단 보호
-
         """
         return self.hwp.HAction.Run("ParagraphShapeProtect")
+
+    def ParagraphShapeSingleRow(self) -> bool:
+        """
+        문단 한 줄로 입력 토글
+        """
+        return self.hwp.HAction.Run("ParagraphShapeSingleRow")
 
     def ParagraphShapeWithNext(self):
         """
@@ -3223,35 +3300,30 @@ class RunMethods(_InnerMethods):
     def QuickCorrect(self):
         """
         빠른 교정 (실질적인 동작 Action)
-
         """
         return self.hwp.HAction.Run("QuickCorrect")
 
     def QuickCorrectRun(self):
         """
         빠른 교정 ― 내용 편집
-
         """
         return self.hwp.HAction.Run("QuickCorrect Run")
 
     def QuickCorrectSound(self):
         """
         빠른 교정 ― 메뉴에서 효과음 On/Off
-
         """
         return self.hwp.HAction.Run("QuickCorrect Sound")
 
     def QuickMarkInsert0(self):
         """
         쉬운 책갈피0 - 삽입
-
         """
         return self.hwp.HAction.Run("QuickMarkInsert0")
 
     def QuickMarkInsert1(self):
         """
         쉬운 책갈피1 - 삽입
-
         """
         return self.hwp.HAction.Run("QuickMarkInsert1")
 
@@ -3412,28 +3484,39 @@ class RunMethods(_InnerMethods):
         """
         return self.hwp.HAction.Run("Redo")
 
+    def ReplacePrivateInfoDlg(self) -> bool:
+        """
+        개인정보 바꾸기 창 열고, 기타 바꾸기(문자열 치환)에 포커스
+        """
+        return self.hwp.HAction.Run("ReplacePrivateInfoDlg")
+
+    def ReplyMemo(self) -> bool:
+        """
+        메모 회신(한/글2022부터 지원)
+        """
+        try:
+            return self.hwp.HAction.Run("ReplyMemo")
+        except:
+            print("이 기능은 한/글2022부터 지원합니다.")
+            return False
+
     def returnKeyInField(self):
         """
         캐럿이 필드 안에 위치한 상태에서 return Key에 대한 액션 분기
-
         첫 글자 r은 오타인 것으로 추정.
-
         """
         return self.hwp.HAction.Run("returnKeyInField")
 
     def ReturnKeyInField(self):
         """
         캐럿이 필드 안에 위치한 상태에서 return Key에 대한 액션 분기
-
         """
         return self.hwp.HAction.Run("returnKeyInField")
 
     def returnPrevPos(self):
         """
         직전위치로 돌아가기
-
         첫 글자 r은 오타인 것으로 추정.
-
         """
         return self.hwp.HAction.Run("returnPrevPos")
 
@@ -3454,6 +3537,12 @@ class RunMethods(_InnerMethods):
     def RunUserKeyLayout(self):
         """사용자 글자판 제작 툴"""
         return self.hwp.HAction.Run("RunUserKeyLayout")
+
+    def ScanHFTFonts(self) -> bool:
+        """
+        한/글 글꼴 검색
+        """
+        return self.hwp.HAction.Run("ScanHFTFonts")
 
     def ScrMacroPause(self):
         """
@@ -3549,6 +3638,12 @@ class RunMethods(_InnerMethods):
 
         """
         return self.hwp.HAction.Run("ScrMacroStop")
+
+    def SearchPrivateInfo(self) -> bool:
+        """
+        개인정보 보호하기 창 열기(개인 정보 찾아 감추기-암호화?)
+        """
+        return self.hwp.HAction.Run("SearchPrivateInfo")
 
     def Select(self):
         """
@@ -3751,6 +3846,12 @@ class RunMethods(_InnerMethods):
         """
         return self.hwp.HAction.Run("ShapeObjGroup")
 
+    def ShapeObjGuideLine(self) -> bool:
+        """
+        개체이동 안내선 설정창 열기
+        """
+        return self.hwp.HAction.Run("ShapeObjGuideLine")
+
     def ShapeObjHorzFlip(self):
         """
         그리기 개체 좌우 뒤집기
@@ -3778,6 +3879,18 @@ class RunMethods(_InnerMethods):
 
         """
         return self.hwp.HAction.Run("ShapeObjLineProperty")
+
+    def ShapeObjLineStyleOther(self):
+        """
+        개체속성 - 선 탭 열기(다른 선 종류)
+        """
+        return self.hwp.HAction.Run("ShapeObjLineStyleOhter")
+
+    def ShapeObjLineWidthOther(self):
+        """
+        개체속성 - 선 탭 열기(다른 선 굵기)
+        """
+        return self.hwp.HAction.Run("ShapeObjLineWidthOhter")
 
     def ShapeObjLock(self):
         """
@@ -3909,6 +4022,23 @@ class RunMethods(_InnerMethods):
         """
         return self.hwp.HAction.Run("ShapeObjSendToBack")
 
+    def ShapeObjShowGuideLine(self) -> bool:
+        """
+        그리기 개체 안내선 보기 토글
+        """
+        return self.hwp.HAction.Run("ShapeObjShowGuideLine")
+
+
+    def ShapeObjShowGuideLineBase(self) -> bool:
+        """
+        그리기 안내선(한/글2024부터 지원)
+        """
+        try:
+            return self.hwp.HAction.Run("ShapeObjShowGuideLineBase")
+        except:
+            print("이 기능은 한/글2024부터 지원합니다.")
+            return False
+
     def ShapeObjTableSelCell(self):
         """
         표의 첫 번째 셀 선택
@@ -3928,6 +4058,12 @@ class RunMethods(_InnerMethods):
 
         """
         return self.hwp.HAction.Run("ShapeObjTextBoxEdit")
+
+    def ShapeObjToggleTextBox(self) -> bool:
+        """
+        도형을 글 상자로 만들기 토글
+        """
+        return self.hwp.HAction.Run("ShapeObjToggleTextBox")
 
     def ShapeObjUngroup(self):
         """
@@ -4402,24 +4538,33 @@ class RunMethods(_InnerMethods):
         finally:
             self.set_message_box_mode(0xF000)
 
+    def TableDeleteComma(self) -> bool:
+        """
+        표 안에 천단위구분콤마 빼기
+        """
+        return self.hwp.HAction.Run("TableDeleteComma")
+
+    def TableInsertComma(self) -> bool:
+        """
+        표 안에 천단위구분콤마 넣기
+        """
+        return self.hwp.HAction.Run("TableInsertComma")
+
     def TableDistributeCellHeight(self):
         """
         표 안에서 셀 높이를 같게
-
         """
         return self.hwp.HAction.Run("TableDistributeCellHeight")
 
     def TableDistributeCellWidth(self):
         """
         표 안에서 셀 너비를 같게
-
         """
         return self.hwp.HAction.Run("TableDistributeCellWidth")
 
     def TableDrawPen(self):
         """
         표 그리기
-
         """
         return self.hwp.HAction.Run("TableDrawPen")
 
@@ -4434,84 +4579,72 @@ class RunMethods(_InnerMethods):
     def TableEraser(self):
         """
         표 지우개
-
         """
         return self.hwp.HAction.Run("TableEraser")
 
     def TableFormulaAvgAuto(self):
         """
         표 안에 블록 평균 수식 삽입
-
         """
         return self.hwp.HAction.Run("TableFormulaAvgAuto")
 
     def TableFormulaAvgHor(self):
         """
         표 안에 가로 평균 수식 삽입
-
         """
         return self.hwp.HAction.Run("TableFormulaAvgHor")
 
     def TableFormulaAvgVer(self):
         """
         표 안에 세로 평균 수식 삽입
-
         """
         return self.hwp.HAction.Run("TableFormulaAvgVer")
 
     def TableFormulaProAuto(self):
         """
         표 안에 블록 자동곱 수식 삽입
-
         """
         return self.hwp.HAction.Run("TableFormulaProAuto")
 
     def TableFormulaProHor(self):
         """
         표 안에 가로 곱 수식 삽입
-
         """
         return self.hwp.HAction.Run("TableFormulaProHor")
 
     def TableFormulaProVer(self):
         """
         표 안에 세로 곱 수식 삽입
-
         """
         return self.hwp.HAction.Run("TableFormulaProVer")
 
     def TableFormulaSumAuto(self):
         """
         표 안에 블록 합계 수식 삽입
-
         """
         return self.hwp.HAction.Run("TableFormulaSumAuto")
 
     def TableFormulaSumHor(self):
         """
         표 안에 가로 합계 수식 삽입
-
         """
         return self.hwp.HAction.Run("TableFormulaSumHor")
 
     def TableFormulaSumVer(self):
         """
         표 안에 세로 합계 수식 삽입
-
         """
         return self.hwp.HAction.Run("TableFormulaSumVer")
 
     def TableLeftCell(self):
         """
         셀 이동: 셀 왼쪽
-
         """
         return self.hwp.HAction.Run("TableLeftCell")
 
     def TableLowerCell(self):
         """
         셀 이동: 셀 아래
-
         """
         return self.hwp.HAction.Run("TableLowerCell")
 
@@ -4526,7 +4659,6 @@ class RunMethods(_InnerMethods):
     def TableMergeTable(self):
         """
         표와 표 붙이기
-
         """
         self.Cancel()
         result = self.hwp.HAction.Run("TableMergeTable")
@@ -4541,35 +4673,30 @@ class RunMethods(_InnerMethods):
     def TableResizeCellDown(self):
         """
         셀 크기 변경: 셀 아래
-
         """
         return self.hwp.HAction.Run("TableResizeCellDown")
 
     def TableResizeCellLeft(self):
         """
         셀 크기 변경: 셀 왼쪽
-
         """
         return self.hwp.HAction.Run("TableResizeCellLeft")
 
     def TableResizeCellRight(self):
         """
         셀 크기 변경: 셀 오른쪽
-
         """
         return self.hwp.HAction.Run("TableResizeCellRight")
 
     def TableResizeCellUp(self):
         """
         셀 크기 변경: 셀 위
-
         """
         return self.hwp.HAction.Run("TableResizeCellUp")
 
     def TableResizeDown(self):
         """
         셀 크기 변경: 셀 아래
-
         """
         return self.hwp.HAction.Run("TableResizeDown")
 
@@ -4597,7 +4724,6 @@ class RunMethods(_InnerMethods):
         셀 크기 변경: 셀 오른쪽.
 
         TableResizeRight와 다른 점은 셀 블록 상태가 아니어도 동작한다는 점이다.
-
         """
         return self.hwp.HAction.Run("TableResizeExRight")
 
@@ -4606,63 +4732,54 @@ class RunMethods(_InnerMethods):
         셀 크기 변경: 셀 위쪽.
 
         TableResizeUp과 다른 점은 셀 블록 상태가 아니어도 동작한다는 점이다.
-
         """
         return self.hwp.HAction.Run("TableResizeExUp")
 
     def TableResizeLeft(self):
         """
         셀 크기 변경: 왼쪽
-
         """
         return self.hwp.HAction.Run("TableResizeLeft")
 
     def TableResizeLineDown(self):
         """
         셀 크기 변경: 선아래
-
         """
         return self.hwp.HAction.Run("TableResizeLineDown")
 
     def TableResizeLineLeft(self):
         """
         셀 크기 변경: 선 왼쪽
-
         """
         return self.hwp.HAction.Run("TableResizeLineLeft")
 
     def TableResizeLineRight(self):
         """
         셀 크기 변경: 선 오른쪽
-
         """
         return self.hwp.HAction.Run("TableResizeLineRight")
 
     def TableResizeLineUp(self):
         """
         셀 크기 변경: 선 위
-
         """
         return self.hwp.HAction.Run("TableResizeLineUp")
 
     def TableResizeRight(self):
         """
         셀 크기 변경: 우측으로
-
         """
         return self.hwp.HAction.Run("TableResizeRight")
 
     def TableResizeUp(self):
         """
         셀 크기 변경: 위로
-
         """
         return self.hwp.HAction.Run("TableResizeUp")
 
     def TableRightCell(self):
         """
         셀 이동: 셀 오른쪽
-
         """
         return self.hwp.HAction.Run("TableRightCell")
 
@@ -4688,12 +4805,12 @@ class RunMethods(_InnerMethods):
             DistributeHeight: 줄 높이를 같게 나누기(0 or 1)
             Merge: 셀을 합친 후 나누기(0 or 1)
         """
-        pset = self.HParameterSet.HTableSplitCell
+        pset = self.hwp.HParameterSet.HTableSplitCell
         pset.Rows = Rows
         pset.Cols = Cols
         pset.DistributeHeight = DistributeHeight
         pset.Merge = Merge
-        return self.HAction.Execute("TableSplitCell", pset.HSet)
+        return self.hwp.HAction.Execute("TableSplitCell", pset.HSet)
 
     def TableSplitTable(self):
         """
@@ -4711,7 +4828,6 @@ class RunMethods(_InnerMethods):
     def TableUpperCell(self):
         """
         셀 이동: 셀 위로
-
         """
         return self.hwp.HAction.Run("TableUpperCell")
 
@@ -4746,6 +4862,94 @@ class RunMethods(_InnerMethods):
     def TopTabFrameClose(self):
         """위쪽 작업창 감추기"""
         return self.hwp.HAction.Run("TopTabFrameClose")
+
+    def TrackChangeApply(self):
+        """변경추적: 변경내용 적용"""
+        return self.hwp.HAction.Run("TrackChangeApply")
+
+    def TrackChangeApplyAll(self):
+        """변경추적: 문서에서 변경내용 모두 적용"""
+        return self.hwp.HAction.Run("TrackChangeApplyAll")
+
+    def TrackChangeApplyNext(self):
+        """변경추적: 적용 후 다음으로 이동"""
+        return self.hwp.HAction.Run("TrackChangeApplyNext")
+
+    def TrackChangeApplyPrev(self):
+        """변경추적: 적용 후 이전으로 이동"""
+        return self.hwp.HAction.Run("TrackChangeApplyPrev")
+
+    def TrackChangeApplyViewAll(self):
+        """변경추적: 표시된 변경내용 모두 적용"""
+        return self.hwp.HAction.Run("TrackChangeApplyViewAll")
+
+    def TrackChangeAuthor(self):
+        """변경추적: 사용자 이름 변경"""
+        return self.hwp.HAction.Run("TrackChangeAuthor")
+
+    def TrackChangeCancel(self):
+        """변경추적: 변경내용 취소"""
+        return self.hwp.HAction.Run("TrackChangeCancel")
+
+    def TrackChangeCancelAll(self):
+        """변경추적: 문서에서 변경내용 모두 취소"""
+        return self.hwp.HAction.Run("TrackChangeCancelAll")
+
+    def TrackChangeCancelNext(self):
+        """변경추적: 취소 후 다음으로 이동"""
+        return self.hwp.HAction.Run("TrackChangeCancelNext")
+
+    def TrackChangeCancelPrev(self):
+        """변경추적: 취소 후 이전으로 이동"""
+        return self.hwp.HAction.Run("TrackChangeCancelPrev")
+
+    def TrackChangeCancelViewAll(self):
+        """변경추적: 표시된 변경내용 모두 취소"""
+        return self.hwp.HAction.Run("TrackZChangeCancelViewAll")
+
+    def TrackChangeNext(self):
+        """변경추적: 다음 변경내용"""
+        return self.hwp.HAction.Run("TrackChangeNext")
+
+    def TrackChangePrev(self):
+        """변경추적: 이전 변경내용"""
+        return self.hwp.HAction.Run("TrackChangePrev")
+
+    def ViewOptionTrackChange(self):
+        """변경추적 보기"""
+        return self.hwp.HAction.Run("ViewOptionTrackChange")
+
+    def ViewOptionTrackChangeFinal(self):
+        """변경추적 보기: 최종본 보기"""
+        return self.hwp.HAction.Run("ViewOptionTrackChangeFinal")
+
+    def ViewOptionTrackChangeFinalMemo(self):
+        """변경추적 보기: 메모 및 변경 내용 최종본"""
+        return self.hwp.HAction.Run("ViewOptionTrackChangeFinalMemo")
+
+    def ViewOptionTrackChangeInline(self):
+        """변경추적 보기: 안내문에 표시"""
+        return self.hwp.HAction.Run("ViewOptionTrackChangeInline")
+
+    def ViewOptionTrackChangeInsertDelete(self):
+        """변경추적 보기: 삽입 및 삭제"""
+        return self.hwp.HAction.Run("ViewOptionTrackChangeInsertDelete")
+
+    def ViewOptionTrackChangeOriginal(self):
+        """변경추적 보기: 원본 보기"""
+        return self.hwp.HAction.Run("ViewOptionTrackChangeOriginal")
+
+    def ViewOptionTrackChangeOriginalMemo(self):
+        """변경추적 보기: 메모 및 변경 내용 원본"""
+        return self.hwp.HAction.Run("ViewOptionTrackChangeOriginalMemo")
+
+    def ViewOptionTrackChangeShape(self):
+        """변경추적 보기: 서식"""
+        return self.hwp.HAction.Run("ViewOptionTrackChangeShape")
+
+    def ViewOptionTrackChnageInfo(self):
+        """변경추적 보기: 변경 내용 보기"""
+        return self.hwp.HAction.Run("ViewOptionTrackChnageInfo")
 
     def Undo(self):
         """
