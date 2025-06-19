@@ -643,7 +643,6 @@ class RunMethods(_InnerMethods):
     def DeleteFieldMemo(self) -> bool:
         """
         메모 지우기. 누름틀 지우기와 유사하다. 메모 누름틀에 붙어있거나, 메모 안에 들어가 있는 경우 위 액션 실행시 해당 메모가 삭제된다.
-
         """
         return self.hwp.HAction.Run("DeleteFieldMemo")
 
@@ -651,8 +650,7 @@ class RunMethods(_InnerMethods):
         """
         쪽 지우기
 
-        한글2014 이하의 버전에서는 사용할 수 없다.
-
+        한글2018 미만의 버전에서는 사용할 수 없다.
         """
         return self.hwp.HAction.Run("DeletePage")
 
@@ -675,7 +673,6 @@ class RunMethods(_InnerMethods):
         다각형(곡선) 그리는 중 이전 선 지우기.
 
         현재 사용 안함(?)
-
         """
         return self.hwp.HAction.Run("DrawObjCancelOneStep")
 
@@ -684,7 +681,6 @@ class RunMethods(_InnerMethods):
         그리기 개체 중 다각형 점편집 액션.
 
         다각형이 선택된 상태에서만 실행가능.
-
         """
         return self.hwp.HAction.Run("DrawObjEditDetail")
 

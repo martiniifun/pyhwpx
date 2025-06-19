@@ -405,7 +405,9 @@ class Ctrl:
         self._com_obj = com_obj  # 원래 COM 객체
 
     def __repr__(self):
-        return f"<CtrlCode: CtrlID={self.CtrlID}, CtrlCH={self.CtrlCh}, UserDesc={self.UserDesc}>"
+        if hasattr(self, "_com_obj"):
+            return f"<CtrlCode: CtrlID={self.CtrlID!r}, CtrlCH={self.CtrlCh!r}, UserDesc={self.UserDesc!r}>"
+        return None
 
     def GetCtrlInstID(self) -> str:
         """
@@ -591,7 +593,7 @@ class Ctrl:
         return self._com_obj.HasList
 
     @property
-    def Next(self) -> "Ctrl":
+    def Next(self) -> Optional[Ctrl]:
         """
         다음 컨트롤.
 
@@ -606,10 +608,14 @@ class Ctrl:
             >>> print(hwp.HeadCtrl.Next.Next.UserDesc)
             표
         """
-        return Ctrl(self._com_obj.Next)
+        try:
+            next_ctrl = self._com_obj.Next
+        except AttributeError:
+            return None
+        return Ctrl(next_ctrl) if next_ctrl is not None else None
 
     @property
-    def Prev(self) -> "Ctrl":
+    def Prev(self) -> Optional[Ctrl]:
         """
         앞 컨트롤.
 
@@ -624,7 +630,11 @@ class Ctrl:
             >>> print(hwp.LastCtrl.Prev.UserDesc)
             표
         """
-        return Ctrl(self._com_obj.Prev)
+        try:
+            prev_ctrl = self._com_obj.Prev
+        except AttributeError:
+            return None
+        return Ctrl(prev_ctrl) if prev_ctrl is not None else None
 
     @property
     def Properties(self):
