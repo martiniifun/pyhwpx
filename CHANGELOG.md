@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.3.3] - 2025-06-19
+### 🐛 Fixed
+- switch_to 메서드의 입력정수 검증방법을 기존방법인 Count로 변경함
+
+---
 ## [1.3.2] - 2025-06-19
 ### 🐛 Fixed
 - Ctrl 클래스의 __repr__ 및 Next / Prev 속성 수정(ctrl = hwp.HeadCtrl.Prev 시에 오류 없이 None 리턴)
