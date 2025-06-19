@@ -5347,7 +5347,7 @@ class Hwp(ParamHelpers, RunMethods):
     def doc_list(self) -> List[XHwpDocument]:
         return self.XHwpDocuments
 
-    def switch_to(self, num: int) -> Union[XHwpDocument, None]:
+    def switch_to(self, num: int) -> Optional[XHwpDocument]:
         """
         여러 개의 hwp인스턴스가 열려 있는 경우 해당 인덱스의 문서창 인스턴스를 활성화한다.
 
@@ -5364,11 +5364,11 @@ class Hwp(ParamHelpers, RunMethods):
             >>> hwp.add_tab()
             >>> hwp.switch_to(0)
         """
-        if self.XHwpDocuments.FindItem(num+1):
+        if num < hwp.XHwpDocuments.Count:
             self.hwp.XHwpDocuments[num].SetActive_XHwpDocument()
             return XHwpDocument(self.XHwpDocuments[num])
         else:
-            return None
+            return False
 
     def add_tab(self) -> XHwpDocument:
         """
