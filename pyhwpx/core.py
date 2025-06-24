@@ -5364,7 +5364,7 @@ class Hwp(ParamHelpers, RunMethods):
             >>> hwp.add_tab()
             >>> hwp.switch_to(0)
         """
-        if num < hwp.XHwpDocuments.Count:
+        if num < self.hwp.XHwpDocuments.Count:
             self.hwp.XHwpDocuments[num].SetActive_XHwpDocument()
             return XHwpDocument(self.XHwpDocuments[num])
         else:
