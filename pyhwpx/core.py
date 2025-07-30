@@ -3667,6 +3667,46 @@ class Hwp(ParamHelpers, RunMethods):
         """
         self.hwp.XHwpWindows.Active_XHwpWindow.Visible = visible
 
+    def set_viewstate(self, flag: Literal[0, 1, 2, 3, 4, 5, 6]) -> bool:
+        """
+        조판부호 보기, 줄바꿈 기호 보기 등 보기옵션을 변경할 수 있다.
+
+        Args:
+            flag: 대표적으로 줄바꿈 기호만 보기는 4, 조판부호 보기는 6으로 설정한다.
+
+        Returns:
+            성공시 True를 리턴한다..
+        """
+        prop = self.ViewProperties
+        prop.SetItem("OptionFlag", flag)
+        self.ViewProperties = prop
+        return True
+
+    def set_viewstate(self, flag: Literal[0, 1, 2, 3, 4, 5, 6]) -> bool:
+        """
+        조판부호 보기, 줄바꿈 기호 보기 등 보기옵션을 변경할 수 있다.
+
+        Args:
+            flag: 대표적으로 줄바꿈 기호만 보기는 4, 조판부호 보기는 6으로 설정한다.
+
+        Returns:
+            성공시 True를 리턴한다..
+        """
+        prop = self.ViewProperties
+        prop.SetItem("OptionFlag", flag)
+        self.ViewProperties = prop
+        return True
+
+    def get_viewstate(self) -> int:
+        """
+        현재 ViewProperties의 값을 리턴하는 메서드. set_viewstate 실행 전에 현 상태의 ViewProperties를 저장하기 위함.
+
+        Returns:
+            현재 ViewProperties의 값을 int로 리턴한다.
+        """
+        prop = self.ViewProperties
+        return prop.Item("OptionFlag")
+
     def auto_spacing(
         self,
         init_spacing=0,
