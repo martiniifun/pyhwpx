@@ -593,7 +593,7 @@ class Ctrl:
         return self._com_obj.HasList
 
     @property
-    def Next(self) -> Optional[Ctrl]:
+    def Next(self) -> Ctrl:
         """
         다음 컨트롤.
 
@@ -615,7 +615,7 @@ class Ctrl:
         return Ctrl(next_ctrl) if next_ctrl is not None else None
 
     @property
-    def Prev(self) -> Optional[Ctrl]:
+    def Prev(self) -> Ctrl:
         """
         앞 컨트롤.
 
@@ -6258,7 +6258,7 @@ class Hwp(ParamHelpers, RunMethods):
             ...
             True
         """
-        return self.hwp.DeleteCtrl(ctrl=ctrl)
+        return self.hwp.DeleteCtrl(ctrl=ctrl._com_obj)
 
     def DeleteCtrl(self, ctrl: Ctrl) -> bool:
         return self.delete_ctrl(ctrl)
