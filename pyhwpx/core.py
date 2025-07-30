@@ -65,7 +65,6 @@ except FileNotFoundError as e:
 # Type Library 파일 재생성
 win32.gencache.EnsureModule("{7D2B6F3C-1D95-4E0C-BF5A-5EE564186FBC}", 0, 1, 0)
 
-
 __all__ = ["Hwp", "com_initialized"]
 
 
@@ -298,7 +297,7 @@ def crop_data_from_selection(data, selection) -> List[str]:
     # 범위 추출
     result = []
     for row in range(min_row, max_row + 1):
-        result.append(data[row][min_col : max_col + 1])
+        result.append(data[row][min_col: max_col + 1])
 
     return result
 
@@ -966,11 +965,11 @@ class Hwp(ParamHelpers, RunMethods):
         return f'<Hwp: DocumentID={self.XHwpDocuments.Active_XHwpDocument.DocumentID}, Title="{self.get_title()}", FullName="{self.XHwpDocuments.Active_XHwpDocument.FullName or None}">'
 
     def __init__(
-        self,
-        new: bool = False,
-        visible: bool = True,
-        register_module: bool = True,
-        on_quit: bool = False,
+            self,
+            new: bool = False,
+            visible: bool = True,
+            register_module: bool = True,
+            on_quit: bool = False,
     ):
         self.hwp = 0
         self.on_quit = on_quit
@@ -1579,7 +1578,7 @@ class Hwp(ParamHelpers, RunMethods):
             현재 쪽번호
         """
         return (
-            self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPage + 1
+                self.hwp.XHwpDocuments.Active_XHwpDocument.XHwpDocumentInfo.CurrentPage + 1
         )
 
     @property
@@ -1611,8 +1610,28 @@ class Hwp(ParamHelpers, RunMethods):
                     return key
 
     # 커스텀 메서드
+    def get_ctrl_by_ctrl_id(self, ctrl_id: Literal[
+        "fn", "en", "tbl", "eqed", "gso", "atno", "nwno", "pgct", "pghd", "pgnp", "head", "foot", "%dte", "%ddt", "pat", "%bmk", "%mmg", "%xrf", "%clk", "%smr", "%usr", "%hlk", "bokm", "idxm", "tdut", "tcmt"
+    ]) -> list:
+        """
+        특정 CtrlID의 컨트롤 리스트를 리턴한다. 예를 들어 그림 컨트롤만 모으고 싶으면 `hwp.get_ctrl_by_ctrl_id("gso")`라고 실행한다.
+
+        Args:
+            ctrl_id: 특정 컨트롤아이디를 입력하면, 해당 종류의 컨트롤만 리턴.
+
+        Returns:
+            해당 컨트롤만 추출한 리스트. 없는 경우에는 빈 리스트를 리턴한다.
+        """
+        ctrl_list = []
+        ctrl = self.HeadCtrl.Next.Next
+        while ctrl:
+            if ctrl.UserDesc == ctrl_id:
+                ctrl_list.append(ctrl)
+            ctrl = ctrl.Next
+        return ctrl_list
+
     def get_ctrl_pos(
-        self, ctrl: Any = None, option: Literal[0, 1] = 0, as_tuple: bool = True
+            self, ctrl: Any = None, option: Literal[0, 1] = 0, as_tuple: bool = True
     ) -> Tuple[int, int, int]:
         """
         특정 컨트롤의 앵커(빨간 조판부호) 좌표를 리턴하는 메서드. 한글2024 미만의 버전에서, 컨트롤의 정확한 위치를 파악하기 위함
@@ -1663,7 +1682,7 @@ class Hwp(ParamHelpers, RunMethods):
             return ctrl.GetAnchorPos(option)
 
     def get_linespacing(
-        self, method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent"
+            self, method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent"
     ) -> Union[int, float]:
         """
         현재 캐럿 위치의 줄간격(%) 리턴.
@@ -1706,9 +1725,9 @@ class Hwp(ParamHelpers, RunMethods):
             )  # 이상하게 1/2 곱해야 맞다.
 
     def set_linespacing(
-        self,
-        value: Union[int, float] = 160,
-        method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent",
+            self,
+            value: Union[int, float] = 160,
+            method: Literal["Fixed", "Percent", "BetweenLines", "AtLeast"] = "Percent",
     ) -> bool:
         """
         현재 캐럿 위치의 문단 또는 선택 블록의 줄간격(%) 설정
@@ -1766,7 +1785,7 @@ class Hwp(ParamHelpers, RunMethods):
             return False
 
     def goto_addr(
-        self, addr: Union[str, int] = "A1", col: int = 0, select_cell: bool = False
+            self, addr: Union[str, int] = "A1", col: int = 0, select_cell: bool = False
     ) -> bool:
         """
         셀 주소를 문자열로 입력받아 해당 주소로 이동하는 메서드.
@@ -1785,7 +1804,7 @@ class Hwp(ParamHelpers, RunMethods):
         cur_pos = self.get_pos()
 
         if (
-            type(addr) == int and col
+                type(addr) == int and col
         ):  # "A1" 대신 (1, 1) 처럼 tuple[int, int] 방식일 경우
             addr = tuple_to_addr(addr, col)  # 문자열 "A1" 방식으로 우선 변환
 
@@ -1968,8 +1987,8 @@ class Hwp(ParamHelpers, RunMethods):
             style_dict = self.get_style_dict(as_="dict")
             if style in [style_dict[i]["Name"] for i in style_dict]:
                 style_idx = [i for i in style_dict if style_dict[i]["Name"] == style][
-                    0
-                ] + 1
+                                0
+                            ] + 1
             else:
                 return False
         pset = self.hwp.HParameterSet.HGotoE
@@ -2007,12 +2026,12 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.HAction.Execute("Goto", pset.HSet)
 
     def shape_copy_paste(
-        self,
-        Type: Literal["font", "para", "both"] = "both",
-        cell_attr: bool = False,
-        cell_border: bool = False,
-        cell_fill: bool = False,
-        cell_only: int = 0,
+            self,
+            Type: Literal["font", "para", "both"] = "both",
+            cell_attr: bool = False,
+            cell_border: bool = False,
+            cell_fill: bool = False,
+            cell_only: int = 0,
     ) -> bool:
         """
         모양복사 메서드
@@ -2373,10 +2392,10 @@ class Hwp(ParamHelpers, RunMethods):
             self.set_cur_field_name("")
 
     def resize_image(
-        self,
-        width: int = None,
-        height: int = None,
-        unit: Literal["mm", "hwpunit"] = "mm",
+            self,
+            width: int = None,
+            height: int = None,
+            unit: Literal["mm", "hwpunit"] = "mm",
     ):
         """
         이미지 또는 그리기 개체의 크기를 조절하는 메서드.
@@ -2428,11 +2447,11 @@ class Hwp(ParamHelpers, RunMethods):
             print(f"image saved to {path}")
 
     def new_number_modify(
-        self,
-        new_number: int,
-        num_type: Literal[
-            "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
-        ] = "Page",
+            self,
+            new_number: int,
+            num_type: Literal[
+                "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
+            ] = "Page",
     ) -> bool:
         """
         새 번호 조판을 수정할 수 있는 메서드.
@@ -2474,11 +2493,11 @@ class Hwp(ParamHelpers, RunMethods):
         return self.HAction.Execute("NewNumberModify", pset.HSet)
 
     def NewNumberModify(
-        self,
-        new_number: int,
-        num_type: Literal[
-            "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
-        ] = "Page",
+            self,
+            new_number: int,
+            num_type: Literal[
+                "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
+            ] = "Page",
     ) -> bool:
         current_pos = self.GetPos()
         current_page = self.PageCount
@@ -2493,11 +2512,11 @@ class Hwp(ParamHelpers, RunMethods):
         return self.HAction.Execute("NewNumberModify", pset.HSet)
 
     def new_number(
-        self,
-        new_number: int,
-        num_type: Literal[
-            "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
-        ] = "Page",
+            self,
+            new_number: int,
+            num_type: Literal[
+                "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
+            ] = "Page",
     ) -> bool:
         """
         새 번호를 매길 수 있는 메서드.
@@ -2539,11 +2558,11 @@ class Hwp(ParamHelpers, RunMethods):
         return self.HAction.Execute("NewNumber", pset.HSet)
 
     def NewNumber(
-        self,
-        new_number: int,
-        num_type: Literal[
-            "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
-        ] = "Page",
+            self,
+            new_number: int,
+            num_type: Literal[
+                "Page", "Figure", "Footnote", "Table", "Endnote", "Equation"
+            ] = "Page",
     ) -> bool:
         pset = self.HParameterSet.HAutoNum
         self.HAction.GetDefault("NewNumber", pset.HSet)
@@ -2552,33 +2571,33 @@ class Hwp(ParamHelpers, RunMethods):
         return self.HAction.Execute("NewNumber", pset.HSet)
 
     def page_num_pos(
-        self,
-        global_start: int = 1,
-        position: Literal[
-            "TopLeft",
-            "TopCenter",
-            "TopRight",
-            "BottomLeft",
-            "BottomCenter",
-            "BottomRight",
-            "InsideTop",
-            "OutsideTop",
-            "InsideBottom",
-            "OutsideBottom",
-            "None",
-        ] = "BottomCenter",
-        number_format: Literal[
-            "Digit",
-            "CircledDigit",
-            "RomanCapital",
-            "RomanSmall",
-            "LatinCapital",
-            "HangulSyllable",
-            "Ideograph",
-            "DecagonCircle",
-            "DecagonCircleHanja",
-        ] = "Digit",
-        side_char: bool = True,
+            self,
+            global_start: int = 1,
+            position: Literal[
+                "TopLeft",
+                "TopCenter",
+                "TopRight",
+                "BottomLeft",
+                "BottomCenter",
+                "BottomRight",
+                "InsideTop",
+                "OutsideTop",
+                "InsideBottom",
+                "OutsideBottom",
+                "None",
+            ] = "BottomCenter",
+            number_format: Literal[
+                "Digit",
+                "CircledDigit",
+                "RomanCapital",
+                "RomanSmall",
+                "LatinCapital",
+                "HangulSyllable",
+                "Ideograph",
+                "DecagonCircle",
+                "DecagonCircleHanja",
+            ] = "Digit",
+            side_char: bool = True,
     ) -> bool:
         """
         문서 전체에 쪽번호를 삽입하는 메서드.
@@ -2633,33 +2652,33 @@ class Hwp(ParamHelpers, RunMethods):
         return self.HAction.Execute("PageNumPos", pset.HSet)
 
     def PageNumPos(
-        self,
-        global_start: int = 1,
-        position: Literal[
-            "TopLeft",
-            "TopCenter",
-            "TopRight",
-            "BottomLeft",
-            "BottomCenter",
-            "BottomRight",
-            "InsideTop",
-            "OutsideTop",
-            "InsideBottom",
-            "OutsideBottom",
-            "None",
-        ] = "BottomCenter",
-        number_format: Literal[
-            "Digit",
-            "CircledDigit",
-            "RomanCapital",
-            "RomanSmall",
-            "LatinCapital",
-            "HangulSyllable",
-            "Ideograph",
-            "DecagonCircle",
-            "DecagonCircleHanja",
-        ] = "Digit",
-        side_char: bool = True,
+            self,
+            global_start: int = 1,
+            position: Literal[
+                "TopLeft",
+                "TopCenter",
+                "TopRight",
+                "BottomLeft",
+                "BottomCenter",
+                "BottomRight",
+                "InsideTop",
+                "OutsideTop",
+                "InsideBottom",
+                "OutsideBottom",
+                "None",
+            ] = "BottomCenter",
+            number_format: Literal[
+                "Digit",
+                "CircledDigit",
+                "RomanCapital",
+                "RomanSmall",
+                "LatinCapital",
+                "HangulSyllable",
+                "Ideograph",
+                "DecagonCircle",
+                "DecagonCircleHanja",
+            ] = "Digit",
+            side_char: bool = True,
     ) -> bool:
         pset = self.HParameterSet.HPageNumPos
         self.HAction.GetDefault("PageNumPos", pset.HSet)
@@ -2699,12 +2718,12 @@ class Hwp(ParamHelpers, RunMethods):
             self.SelectCtrlFront()
 
     def set_cell_margin(
-        self,
-        left: float = 1.8,
-        right: float = 1.8,
-        top: float = 0.5,
-        bottom: float = 0.5,
-        as_: Literal["mm", "hwpunit"] = "mm",
+            self,
+            left: float = 1.8,
+            right: float = 1.8,
+            top: float = 0.5,
+            bottom: float = 0.5,
+            as_: Literal["mm", "hwpunit"] = "mm",
     ) -> bool:
         """
         표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 지정하는 메서드.
@@ -2742,7 +2761,7 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
     def get_cell_margin(
-        self, as_: Literal["mm", "hwpunit"] = "mm"
+            self, as_: Literal["mm", "hwpunit"] = "mm"
     ) -> Union[None, Dict[str, int], Dict[str, float], bool]:
         """
         표 중 커서가 위치한 셀 또는 다중선택한 모든 셀의 안 여백을 조회하는 메서드.
@@ -2777,12 +2796,12 @@ class Hwp(ParamHelpers, RunMethods):
             return False
 
     def set_table_inside_margin(
-        self,
-        left: float = 1.8,
-        right: float = 1.8,
-        top: float = 0.5,
-        bottom: float = 0.5,
-        as_: Literal["mm", "hwpunit"] = "mm",
+            self,
+            left: float = 1.8,
+            right: float = 1.8,
+            top: float = 0.5,
+            bottom: float = 0.5,
+            as_: Literal["mm", "hwpunit"] = "mm",
     ) -> bool:
         """
         표 내부 모든 셀의 안여백을 일괄설정하는 메서드.
@@ -2814,7 +2833,7 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.HAction.Execute("TablePropertyDialog", pset.HSet)
 
     def get_table_inside_margin(
-        self, as_: Literal["mm", "hwpunit"] = "mm"
+            self, as_: Literal["mm", "hwpunit"] = "mm"
     ) -> Union[None, Dict[str, int], bool, Dict[str, float]]:
         if not self.is_cell():
             return False
@@ -2844,7 +2863,7 @@ class Hwp(ParamHelpers, RunMethods):
             return False
 
     def get_table_outside_margin(
-        self, as_: Literal["mm", "hwpunit"] = "mm"
+            self, as_: Literal["mm", "hwpunit"] = "mm"
     ) -> Union[None, Dict[str, int], bool, Dict[str, float]]:
         """
         표의 바깥 여백을 딕셔너리로 한 번에 리턴하는 메서드
@@ -2892,7 +2911,7 @@ class Hwp(ParamHelpers, RunMethods):
             }
 
     def get_table_outside_margin_left(
-        self, as_: Literal["mm", "hwpunit"] = "mm"
+            self, as_: Literal["mm", "hwpunit"] = "mm"
     ) -> bool:
         """
         표의 바깥 왼쪽 여백값을 리턴하는 메서드
@@ -2925,7 +2944,7 @@ class Hwp(ParamHelpers, RunMethods):
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
     def get_table_outside_margin_right(
-        self, as_: Literal["mm", "hwpunit"] = "mm"
+            self, as_: Literal["mm", "hwpunit"] = "mm"
     ) -> bool:
         """
         표의 바깥 오른쪽 여백값을 리턴하는 메서드
@@ -2959,7 +2978,7 @@ class Hwp(ParamHelpers, RunMethods):
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
     def get_table_outside_margin_top(
-        self, as_: Literal["mm", "hwpunit"] = "mm"
+            self, as_: Literal["mm", "hwpunit"] = "mm"
     ) -> bool:
         """
         표의 바깥 상단 여백값을 리턴하는 메서드
@@ -2992,7 +3011,7 @@ class Hwp(ParamHelpers, RunMethods):
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
     def get_table_outside_margin_bottom(
-        self, as_: Literal["mm", "hwpunit"] = "mm"
+            self, as_: Literal["mm", "hwpunit"] = "mm"
     ) -> Union[int, float, bool]:
         """
         표의 바깥 하단 여백값을 리턴하는 메서드
@@ -3025,12 +3044,12 @@ class Hwp(ParamHelpers, RunMethods):
         return round(self.hwp_unit_to_mili(margin), 2) if as_ == "mm" else margin
 
     def set_table_outside_margin(
-        self,
-        left: float = -1.0,
-        right: float = -1.0,
-        top: float = -1.0,
-        bottom: float = -1.0,
-        as_: Literal["mm", "hwpunit"] = "mm",
+            self,
+            left: float = -1.0,
+            right: float = -1.0,
+            top: float = -1.0,
+            bottom: float = -1.0,
+            as_: Literal["mm", "hwpunit"] = "mm",
     ) -> bool:
         """
         표의 바깥여백을 변경하는 메서드.
@@ -3106,7 +3125,7 @@ class Hwp(ParamHelpers, RunMethods):
         return self.set_pos(*cur_pos)
 
     def set_table_outside_margin_bottom(
-        self, val, as_: Literal["mm", "hwpunit"] = "mm"
+            self, val, as_: Literal["mm", "hwpunit"] = "mm"
     ):
         cur_pos = self.get_pos()
         self.SelectCtrlFront()
@@ -3158,7 +3177,7 @@ class Hwp(ParamHelpers, RunMethods):
         return row_count
 
     def get_row_height(
-        self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"
+            self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"
     ) -> Union[float, int]:
         """
         표 안에서 캐럿이 들어있는 행(row)의 높이를 리턴함.
@@ -3206,7 +3225,7 @@ class Hwp(ParamHelpers, RunMethods):
         return col_count
 
     def get_col_width(
-        self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"
+            self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"
     ) -> Union[int, float]:
         """
         현재 캐럿이 위치한 셀(칼럼)의 너비를 리턴하는 메서드.
@@ -3237,7 +3256,7 @@ class Hwp(ParamHelpers, RunMethods):
             )
 
     def set_col_width(
-        self, width: Union[int, float, list, tuple], as_: Literal["mm", "ratio"] = "ratio"
+            self, width: Union[int, float, list, tuple], as_: Literal["mm", "ratio"] = "ratio"
     ) -> bool:
         """
         칼럼의 너비를 변경하는 메서드.
@@ -3308,7 +3327,7 @@ class Hwp(ParamHelpers, RunMethods):
             return self.set_pos(*cur_pos)
 
     def adjust_cellwidth(
-        self, width: Union[int, float, list, tuple], as_: Literal["mm", "ratio"] = "ratio"
+            self, width: Union[int, float, list, tuple], as_: Literal["mm", "ratio"] = "ratio"
     ) -> bool:
         """
         칼럼의 너비를 변경할 수 있는 메서드.
@@ -3375,7 +3394,7 @@ class Hwp(ParamHelpers, RunMethods):
             return self.set_pos(*cur_pos)
 
     def get_table_width(
-        self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"
+            self, as_: Literal["mm", "hwpunit", "point", "inch"] = "mm"
     ) -> float:
         """
         현재 캐럿이 속한 표의 너비(mm)를 리턴함.
@@ -3401,7 +3420,7 @@ class Hwp(ParamHelpers, RunMethods):
             )
 
     def set_table_width(
-        self, width: int = 0, as_: Literal["mm", "hwpunit", "hu"] = "mm"
+            self, width: int = 0, as_: Literal["mm", "hwpunit", "hu"] = "mm"
     ) -> bool:
         """
         표 전체의 너비를 원래 열들의 비율을 유지하면서 조정하는 메서드.
@@ -3430,21 +3449,21 @@ class Hwp(ParamHelpers, RunMethods):
             self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
             if sec_def.PageDef.Landscape == 0:
                 width = (
-                    sec_def.PageDef.PaperWidth
-                    - sec_def.PageDef.LeftMargin
-                    - sec_def.PageDef.RightMargin
-                    - sec_def.PageDef.GutterLen
-                    - self.get_table_outside_margin_left(as_="hwpunit")
-                    - self.get_table_outside_margin_right(as_="hwpunit")
+                        sec_def.PageDef.PaperWidth
+                        - sec_def.PageDef.LeftMargin
+                        - sec_def.PageDef.RightMargin
+                        - sec_def.PageDef.GutterLen
+                        - self.get_table_outside_margin_left(as_="hwpunit")
+                        - self.get_table_outside_margin_right(as_="hwpunit")
                 )
             elif sec_def.PageDef.Landscape == 1:
                 width = (
-                    sec_def.PageDef.PaperHeight
-                    - sec_def.PageDef.LeftMargin
-                    - sec_def.PageDef.RightMargin
-                    - sec_def.PageDef.GutterLen
-                    - self.get_table_outside_margin_left(as_="hwpunit")
-                    - self.get_table_outside_margin_right(as_="hwpunit")
+                        sec_def.PageDef.PaperHeight
+                        - sec_def.PageDef.LeftMargin
+                        - sec_def.PageDef.RightMargin
+                        - sec_def.PageDef.GutterLen
+                        - self.get_table_outside_margin_left(as_="hwpunit")
+                        - self.get_table_outside_margin_right(as_="hwpunit")
                 )
         elif as_ == "mm":
             width = self.mili_to_hwp_unit(width)
@@ -3607,7 +3626,7 @@ class Hwp(ParamHelpers, RunMethods):
             )
 
     def select_ctrl(
-        self, ctrl: Ctrl, anchor_type: Literal[0, 1, 2] = 0, option: int = 1
+            self, ctrl: Ctrl, anchor_type: Literal[0, 1, 2] = 0, option: int = 1
     ) -> bool:
         """
         인수로 넣은 컨트롤 오브젝트를 선택하는 pyhwpx 전용 메서드.
@@ -3708,12 +3727,12 @@ class Hwp(ParamHelpers, RunMethods):
         return prop.Item("OptionFlag")
 
     def auto_spacing(
-        self,
-        init_spacing=0,
-        init_ratio=100,
-        max_spacing=40,
-        min_spacing=40,
-        verbose=True,
+            self,
+            init_spacing=0,
+            init_ratio=100,
+            max_spacing=40,
+            min_spacing=40,
+            verbose=True,
     ):
         """
         자동 자간조정 메서드(beta)
@@ -3832,46 +3851,46 @@ class Hwp(ParamHelpers, RunMethods):
         return True
 
     def set_font(
-        self,
-        Bold: Union[str, bool] = "",  # 진하게(True/False)
-        DiacSymMark: Union[str, int] = "",  # 강조점(0~12)
-        Emboss: Union[str, bool] = "",  # 양각(True/False)
-        Engrave: Union[str, bool] = "",  # 음각(True/False)
-        FaceName: str = "",  # 서체
-        FontType: int = 1,  # 1(TTF), 2(HTF)
-        Height: Union[str, float] = "",  # 글자크기(pt, 0.1 ~ 4096)
-        Italic: Union[str, bool] = "",  # 이탤릭(True/False)
-        Offset: Union[str, int] = "",  # 글자위치-상하오프셋(-100 ~ 100)
-        OutLineType: Union[str, int] = "",  # 외곽선타입(0~6)
-        Ratio: Union[str, int] = "",  # 장평(50~200)
-        ShadeColor: (
-            Union[str, int]
-        ) = "",  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-        ShadowColor: (
-            Union[str, int]
-        ) = "",  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-        ShadowOffsetX: Union[str, int] = "",  # 그림자 X오프셋(-100 ~ 100)
-        ShadowOffsetY: Union[str, int] = "",  # 그림자 Y오프셋(-100 ~ 100)
-        ShadowType: Union[str, int] = "",  # 그림자 유형(0: 없음, 1: 비연속, 2:연속)
-        Size: Union[str, int] = "",  # 글자크기 축소확대%(10~250)
-        SmallCaps: Union[str, bool] = "",  # 강조점
-        Spacing: Union[str, int] = "",  # 자간(-50 ~ 50)
-        StrikeOutColor: Union[str, int] = "",
-        # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
-        StrikeOutShape: Union[str, int] = "",  # 취소선 모양(0~12, 0이 일반 취소선)
-        StrikeOutType: Union[str, bool] = "",  # 취소선 유무(True/False)
-        SubScript: Union[str, bool] = "",  # 아래첨자(True/False)
-        SuperScript: Union[str, bool] = "",  # 위첨자(True/False)
-        TextColor: (
-            Union[str, int]
-        ) = "",  # 글자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
-        UnderlineColor: (
-            Union[str, int]
-        ) = "",  # 밑줄색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
-        UnderlineShape: Union[str, int] = "",  # 밑줄형태(0~12)
-        UnderlineType: Union[str, int] = "",  # 밑줄위치(0:없음, 1:하단, 3:상단)
-        UseFontSpace: Union[str, bool] = "",  # 글꼴에 어울리는 빈칸(True/False)
-        UseKerning: Union[str, bool] = "",  # 커닝 적용(True/False) : 차이가 없다?
+            self,
+            Bold: Union[str, bool] = "",  # 진하게(True/False)
+            DiacSymMark: Union[str, int] = "",  # 강조점(0~12)
+            Emboss: Union[str, bool] = "",  # 양각(True/False)
+            Engrave: Union[str, bool] = "",  # 음각(True/False)
+            FaceName: str = "",  # 서체
+            FontType: int = 1,  # 1(TTF), 2(HTF)
+            Height: Union[str, float] = "",  # 글자크기(pt, 0.1 ~ 4096)
+            Italic: Union[str, bool] = "",  # 이탤릭(True/False)
+            Offset: Union[str, int] = "",  # 글자위치-상하오프셋(-100 ~ 100)
+            OutLineType: Union[str, int] = "",  # 외곽선타입(0~6)
+            Ratio: Union[str, int] = "",  # 장평(50~200)
+            ShadeColor: (
+                    Union[str, int]
+            ) = "",  # 음영색(RGB, 0x000000 ~ 0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+            ShadowColor: (
+                    Union[str, int]
+            ) = "",  # 그림자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+            ShadowOffsetX: Union[str, int] = "",  # 그림자 X오프셋(-100 ~ 100)
+            ShadowOffsetY: Union[str, int] = "",  # 그림자 Y오프셋(-100 ~ 100)
+            ShadowType: Union[str, int] = "",  # 그림자 유형(0: 없음, 1: 비연속, 2:연속)
+            Size: Union[str, int] = "",  # 글자크기 축소확대%(10~250)
+            SmallCaps: Union[str, bool] = "",  # 강조점
+            Spacing: Union[str, int] = "",  # 자간(-50 ~ 50)
+            StrikeOutColor: Union[str, int] = "",
+            # 취소선 색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 취소는 0xffffffff(4294967295)
+            StrikeOutShape: Union[str, int] = "",  # 취소선 모양(0~12, 0이 일반 취소선)
+            StrikeOutType: Union[str, bool] = "",  # 취소선 유무(True/False)
+            SubScript: Union[str, bool] = "",  # 아래첨자(True/False)
+            SuperScript: Union[str, bool] = "",  # 위첨자(True/False)
+            TextColor: (
+                    Union[str, int]
+            ) = "",  # 글자색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+            UnderlineColor: (
+                    Union[str, int]
+            ) = "",  # 밑줄색(RGB, 0x0~0xffffff) ~= hwp.rgb_color(255,255,255), 기본값은 0xffffffff(4294967295)
+            UnderlineShape: Union[str, int] = "",  # 밑줄형태(0~12)
+            UnderlineType: Union[str, int] = "",  # 밑줄위치(0:없음, 1:하단, 3:상단)
+            UseFontSpace: Union[str, bool] = "",  # 글꼴에 어울리는 빈칸(True/False)
+            UseKerning: Union[str, bool] = "",  # 커닝 적용(True/False) : 차이가 없다?
     ) -> bool:
         """
         글자모양을 메서드 형태로 수정할 수 있는 메서드.
@@ -4104,7 +4123,7 @@ class Hwp(ParamHelpers, RunMethods):
         return False  # raise IndexError(f"해당 인덱스의 표가 존재하지 않습니다."  #                  f"현재 문서에는 표가 {abs(int(idx + 0.1))}개 존재합니다.")
 
     def set_row_height(
-        self, height: Union[int, float], as_: Literal["mm", "hwpunit"] = "mm"
+            self, height: Union[int, float], as_: Literal["mm", "hwpunit"] = "mm"
     ) -> bool:
         """
         캐럿이 표 안에 있는 경우
@@ -4143,18 +4162,18 @@ class Hwp(ParamHelpers, RunMethods):
         self.insert_background_picture("", border_type="SelectedCellDelete")
 
     def gradation_on_cell(
-        self,
-        color_list: Union[List[Tuple[int, int, int]], List[str]] = [
-            (0, 0, 0),
-            (255, 255, 255),
-        ],
-        grad_type: Literal["Linear", "Radial", "Conical", "Square"] = "Linear",
-        angle: int = 0,
-        xc: int = 0,
-        yc: int = 0,
-        pos_list: List[int] = None,
-        step_center: int = 50,
-        step: int = 255,
+            self,
+            color_list: Union[List[Tuple[int, int, int]], List[str]] = [
+                (0, 0, 0),
+                (255, 255, 255),
+            ],
+            grad_type: Literal["Linear", "Radial", "Conical", "Square"] = "Linear",
+            angle: int = 0,
+            xc: int = 0,
+            yc: int = 0,
+            pos_list: List[int] = None,
+            step_center: int = 50,
+            step: int = 255,
     ) -> bool:
         """
         셀에 그라데이션을 적용하는 메서드
@@ -4629,7 +4648,7 @@ class Hwp(ParamHelpers, RunMethods):
         return result_dict
 
     def set_pagedef(
-        self, pset: Any, apply: Literal["cur", "all", "new"] = "cur"
+            self, pset: Any, apply: Literal["cur", "all", "new"] = "cur"
     ) -> bool:
         """
         get_pagedef 또는 get_pagedef_as_dict를 통해 얻은 용지정보를 현재구역에 적용하는 메서드
@@ -4751,15 +4770,15 @@ class Hwp(ParamHelpers, RunMethods):
         return self.current_printpage, self.current_page
 
     def table_from_data(
-        self,
-        data: Union[pd.DataFrame, dict, list, str],
-        transpose: bool = False,
-        header0: str = "",
-        treat_as_char: bool = False,
-        header: bool = True,
-        index: bool = True,
-        cell_fill: Union[bool, Tuple[int, int, int]] = False,
-        header_bold: bool = True,
+            self,
+            data: Union[pd.DataFrame, dict, list, str],
+            transpose: bool = False,
+            header0: str = "",
+            treat_as_char: bool = False,
+            header: bool = True,
+            index: bool = True,
+            cell_fill: Union[bool, Tuple[int, int, int]] = False,
+            header_bold: bool = True,
     ) -> None:
         """
         dict, list 또는 csv나 xls, xlsx 및 json처럼 2차원 스프레드시트로 표현 가능한 데이터에 대해서,
@@ -4898,13 +4917,13 @@ class Hwp(ParamHelpers, RunMethods):
         return msgbox.Result
 
     def insert_file(
-        self,
-        filename,
-        keep_section=1,
-        keep_charshape=1,
-        keep_parashape=1,
-        keep_style=1,
-        move_doc_end=False,
+            self,
+            filename,
+            keep_section=1,
+            keep_charshape=1,
+            keep_parashape=1,
+            keep_style=1,
+            move_doc_end=False,
     ):
         if filename.lower()[1] != ":":
             filename = os.path.join(os.getcwd(), filename)
@@ -4922,7 +4941,7 @@ class Hwp(ParamHelpers, RunMethods):
                 self.MoveDocEnd()
 
     def insert_memo(
-        self, text: str = "", memo_type: Literal["revision", "memo"] = "memo"
+            self, text: str = "", memo_type: Literal["revision", "memo"] = "memo"
     ) -> None:
         """
         선택한 단어 범위에 메모고침표를 삽입하는 코드.
@@ -5027,7 +5046,7 @@ class Hwp(ParamHelpers, RunMethods):
             direction: Literal["Forward", "Backward", "AllDoc"] = "Forward",
             regex: bool = False,
             TextColor: Optional[int] = None,
-            Height: Optional[int|float] = None,
+            Height: Optional[int | float] = None,
             MatchCase: int = 1,
             SeveralWords: int = 0,
             UseWildCards: int = 1,
@@ -5162,25 +5181,25 @@ class Hwp(ParamHelpers, RunMethods):
         self.set_pos(*cur_loc)
 
     def find_replace(
-        self,
-        src,
-        dst,
-        regex=False,
-        direction: Literal["Backward", "Forward", "AllDoc"] = "Forward",
-        MatchCase=1,
-        AllWordForms=0,
-        SeveralWords=1,
-        UseWildCards=1,
-        WholeWordOnly=0,
-        AutoSpell=1,
-        IgnoreFindString=0,
-        IgnoreReplaceString=0,
-        ReplaceMode=1,
-        HanjaFromHangul=1,
-        FindJaso=0,
-        FindStyle="",
-        ReplaceStyle="",
-        FindType=1,
+            self,
+            src,
+            dst,
+            regex=False,
+            direction: Literal["Backward", "Forward", "AllDoc"] = "Forward",
+            MatchCase=1,
+            AllWordForms=0,
+            SeveralWords=1,
+            UseWildCards=1,
+            WholeWordOnly=0,
+            AutoSpell=1,
+            IgnoreFindString=0,
+            IgnoreReplaceString=0,
+            ReplaceMode=1,
+            HanjaFromHangul=1,
+            FindJaso=0,
+            FindStyle="",
+            ReplaceStyle="",
+            FindType=1,
     ):
         """
         아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,
@@ -5249,24 +5268,24 @@ class Hwp(ParamHelpers, RunMethods):
                 self.SetMessageBoxMode(0xFFFFF)
 
     def find_replace_all(
-        self,
-        src,
-        dst,
-        regex=False,
-        MatchCase=1,
-        AllWordForms=0,
-        SeveralWords=1,
-        UseWildCards=1,
-        WholeWordOnly=0,
-        AutoSpell=1,
-        IgnoreFindString=0,
-        IgnoreReplaceString=0,
-        ReplaceMode=1,
-        HanjaFromHangul=1,
-        FindJaso=0,
-        FindStyle="",
-        ReplaceStyle="",
-        FindType=1,
+            self,
+            src,
+            dst,
+            regex=False,
+            MatchCase=1,
+            AllWordForms=0,
+            SeveralWords=1,
+            UseWildCards=1,
+            WholeWordOnly=0,
+            AutoSpell=1,
+            IgnoreFindString=0,
+            IgnoreReplaceString=0,
+            ReplaceMode=1,
+            HanjaFromHangul=1,
+            FindJaso=0,
+            FindStyle="",
+            ReplaceStyle="",
+            FindType=1,
     ):
         """
         아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,
@@ -5352,24 +5371,24 @@ class Hwp(ParamHelpers, RunMethods):
                 .replace("        ", f"    {pset_name}")
             )
             result = (
-                f"def script_macro():\r\n    pset = {pset_name}\r\n    "
-                + text.replace("    ", "")
-                .split("with")[0]
-                .replace(pset_name, "pset")
-                .replace("\r\n", "\r\n    ")
-                + inner_param.replace(pset_name, "pset.")
-                .replace("    ", "")
-                .replace("}\r\n", "")
-                .replace("..", ".")
-                .replace("\r\n", "\r\n    ")
+                    f"def script_macro():\r\n    pset = {pset_name}\r\n    "
+                    + text.replace("    ", "")
+                    .split("with")[0]
+                    .replace(pset_name, "pset")
+                    .replace("\r\n", "\r\n    ")
+                    + inner_param.replace(pset_name, "pset.")
+                    .replace("    ", "")
+                    .replace("}\r\n", "")
+                    .replace("..", ".")
+                    .replace("\r\n", "\r\n    ")
             )
         else:
             pset_name = text.split(", ")[1].split(".HSet")[0]
             result = (
-                f"def script_macro():\r\n    pset = {pset_name}\r\n    "
-                + text.replace("    ", "")
-                .replace(pset_name, "pset")
-                .replace("\r\n", "\r\n    ")
+                    f"def script_macro():\r\n    pset = {pset_name}\r\n    "
+                    + text.replace("    ", "")
+                    .replace(pset_name, "pset")
+                    .replace("\r\n", "\r\n    ")
             )
         result = result.replace("HAction.", "hwp.HAction.").replace(
             "HParameterSet.", "hwp.HParameterSet."
@@ -5437,14 +5456,14 @@ class Hwp(ParamHelpers, RunMethods):
         return XHwpDocument(self.hwp.XHwpDocuments.Add(0))  # 0은 새 창, 1은 새 탭
 
     def create_table(
-        self,
-        rows: int = 1,
-        cols: int = 1,
-        treat_as_char: bool = True,
-        width_type: int = 0,
-        height_type: int = 0,
-        header: bool = True,
-        height: int = 0,
+            self,
+            rows: int = 1,
+            cols: int = 1,
+            treat_as_char: bool = True,
+            width_type: int = 0,
+            height_type: int = 0,
+            header: bool = True,
+            height: int = 0,
     ) -> bool:
         """
         표를 생성하는 메서드.
@@ -5485,23 +5504,23 @@ class Hwp(ParamHelpers, RunMethods):
         sec_def = self.hwp.HParameterSet.HSecDef
         self.hwp.HAction.GetDefault("PageSetup", sec_def.HSet)
         total_width = (
-            sec_def.PageDef.PaperWidth
-            - sec_def.PageDef.LeftMargin
-            - sec_def.PageDef.RightMargin
-            - sec_def.PageDef.GutterLen
-            - self.mili_to_hwp_unit(2)
+                sec_def.PageDef.PaperWidth
+                - sec_def.PageDef.LeftMargin
+                - sec_def.PageDef.RightMargin
+                - sec_def.PageDef.GutterLen
+                - self.mili_to_hwp_unit(2)
         )
 
         pset.WidthValue = total_width  # 표 너비(근데 영향이 없는 듯)
         if height and height_type == 1:  # 표높이가 정의되어 있으면
             # 페이지 최대 높이 계산
             total_height = (
-                sec_def.PageDef.PaperHeight
-                - sec_def.PageDef.TopMargin
-                - sec_def.PageDef.BottomMargin
-                - sec_def.PageDef.HeaderLen
-                - sec_def.PageDef.FooterLen
-                - self.mili_to_hwp_unit(2)
+                    sec_def.PageDef.PaperHeight
+                    - sec_def.PageDef.TopMargin
+                    - sec_def.PageDef.BottomMargin
+                    - sec_def.PageDef.HeaderLen
+                    - sec_def.PageDef.FooterLen
+                    - self.mili_to_hwp_unit(2)
             )
             pset.HeightValue = min(
                 self.hwp.MiliToHwpUnit(height), total_height
@@ -5509,8 +5528,8 @@ class Hwp(ParamHelpers, RunMethods):
             pset.CreateItemArray("RowHeight", rows)  # 행 m개 생성
             each_row_height = min(
                 (
-                    self.mili_to_hwp_unit(height)
-                    - self.mili_to_hwp_unit((0.5 + 0.5) * rows)
+                        self.mili_to_hwp_unit(height)
+                        - self.mili_to_hwp_unit((0.5 + 0.5) * rows)
                 )
                 // rows,
                 (total_height - self.mili_to_hwp_unit((0.5 + 0.5) * rows)) // rows,
@@ -5584,7 +5603,7 @@ class Hwp(ParamHelpers, RunMethods):
         return result if type(result) == str else result[:-1]
 
     def table_to_csv(
-        self, n="", filename="result.csv", encoding="utf-8", startrow=0
+            self, n="", filename="result.csv", encoding="utf-8", startrow=0
     ) -> None:
         """
         한/글 문서의 idx번째 표를 현재 폴더에 filename으로 csv포맷으로 저장한다.
@@ -5676,7 +5695,7 @@ class Hwp(ParamHelpers, RunMethods):
         return None
 
     def table_to_df_q(
-        self, n: str = "", startrow: int = 0, columns: list = []
+            self, n: str = "", startrow: int = 0, columns: list = []
     ) -> pd.DataFrame:
         """
         (2024. 3. 14. for문 추출 구조에서, 한 번에 추출하는 방식으로 변경->속도개선)
@@ -5774,7 +5793,7 @@ class Hwp(ParamHelpers, RunMethods):
         return df
 
     def table_to_df(
-        self, n="", cols=0, selected_range=None, start_pos=None
+            self, n="", cols=0, selected_range=None, start_pos=None
     ) -> pd.DataFrame:
         """
         (2025. 3. 3. RowSpan이랑 ColSpan을 이용해서, 중복되는 값은 그냥 모든 셀에 넣어버림
@@ -5899,7 +5918,7 @@ class Hwp(ParamHelpers, RunMethods):
         # DataFrame 생성: cols가 int면 해당 인덱스 행을 header로 사용
         if type(cols) == int:
             columns = result[cols]
-            data = result[cols + 1 :]
+            data = result[cols + 1:]
             df = pd.DataFrame(data, columns=columns)
         elif type(cols) in (list, tuple):
             df = pd.DataFrame(result, columns=cols)
@@ -5986,11 +6005,11 @@ class Hwp(ParamHelpers, RunMethods):
         return self.insert_text(response_text)
 
     def move_all_caption(
-        self,
-        location: Literal["Top", "Bottom", "Left", "Right"] = "Bottom",
-        align: Literal[
-            "Left", "Center", "Right", "Distribute", "Division", "Justify"
-        ] = "Justify",
+            self,
+            location: Literal["Top", "Bottom", "Left", "Right"] = "Bottom",
+            align: Literal[
+                "Left", "Center", "Right", "Distribute", "Division", "Justify"
+            ] = "Justify",
     ):
         """
         한/글 문서 내 모든 표, 그림의 주석 위치를 일괄 변경하는 메서드.
@@ -6162,12 +6181,12 @@ class Hwp(ParamHelpers, RunMethods):
         return self.create_mode(creation_mode)
 
     def create_page_image(
-        self,
-        path: str,
-        pgno: int = -1,
-        resolution: int = 300,
-        depth: int = 24,
-        format: str = "bmp",
+            self,
+            path: str,
+            pgno: int = -1,
+            resolution: int = 300,
+            depth: int = 24,
+            format: str = "bmp",
     ) -> bool:
         """
         ``pgno``로 지정한 페이지를 ``path`` 라는 파일명으로 저장한다.
@@ -6245,12 +6264,12 @@ class Hwp(ParamHelpers, RunMethods):
             return True
 
     def CreatePageImage(
-        self,
-        path: str,
-        pgno: int = -1,
-        resolution: int = 300,
-        depth: int = 24,
-        format: str = "bmp",
+            self,
+            path: str,
+            pgno: int = -1,
+            resolution: int = 300,
+            depth: int = 24,
+            format: str = "bmp",
     ) -> bool:
         return self.create_page_image(path, pgno, resolution, depth, format)
 
@@ -6702,7 +6721,7 @@ class Hwp(ParamHelpers, RunMethods):
         return self.get_metatag_name_text(tag)
 
     def get_mouse_pos(
-        self, x_rel_to: int = 1, y_rel_to: int = 1
+            self, x_rel_to: int = 1, y_rel_to: int = 1
     ) -> "Hwp.HParameterSet":
         """
         마우스의 현재 위치를 얻어온다.
@@ -6935,7 +6954,7 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.GetSelectedPosBySet(sset=sset, eset=eset)
 
     def GetSelectedPosBySet(
-        self, sset: "Hwp.HParameterSet", eset: "Hwp.HParameterSet"
+            self, sset: "Hwp.HParameterSet", eset: "Hwp.HParameterSet"
     ) -> bool:
         return self.get_selected_pos_by_set(sset, eset)
 
@@ -6989,9 +7008,9 @@ class Hwp(ParamHelpers, RunMethods):
         return self.get_text()
 
     def get_text_file(
-        self,
-        format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "UNICODE",
-        option: str = "saveblock:true",
+            self,
+            format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "UNICODE",
+            option: str = "saveblock:true",
     ) -> str:
         """
         현재 열린 문서 전체 또는 선택한 범위를 문자열로 리턴한다.
@@ -7032,9 +7051,9 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.GetTextFile(Format=format, option=option)
 
     def GetTextFile(
-        self,
-        format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "UNICODE",
-        option: str = "saveblock:true",
+            self,
+            format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "UNICODE",
+            option: str = "saveblock:true",
     ) -> str:
         return self.get_text_file(format, option)
 
@@ -7071,13 +7090,13 @@ class Hwp(ParamHelpers, RunMethods):
         return self.init_hparameterset()
 
     def init_scan(
-        self,
-        option: int = 0x07,
-        range: int = 0x77,
-        spara: int = 0,
-        spos: int = 0,
-        epara: int = -1,
-        epos: int = -1,
+            self,
+            option: int = 0x07,
+            range: int = 0x77,
+            spara: int = 0,
+            spos: int = 0,
+            epara: int = -1,
+            epos: int = -1,
     ) -> bool:
         """
         문서의 내용을 검색하기 위해 초기설정을 한다.
@@ -7143,18 +7162,18 @@ class Hwp(ParamHelpers, RunMethods):
         )
 
     def InitScan(
-        self,
-        option: int = 0x07,
-        range: int = 0x77,
-        spara: int = 0,
-        spos: int = 0,
-        epara: int = -1,
-        epos: int = -1,
+            self,
+            option: int = 0x07,
+            range: int = 0x77,
+            spara: int = 0,
+            spos: int = 0,
+            epara: int = -1,
+            epos: int = -1,
     ) -> bool:
         return self.init_scan(option, range, spara, spos, epara, epos)
 
     def insert(
-        self, path: str, format: str = "", arg: str = "", move_doc_end: bool = False
+            self, path: str, format: str = "", arg: str = "", move_doc_end: bool = False
     ) -> bool:
         """
         현재 캐럿 위치에 문서파일을 삽입한다.
@@ -7245,20 +7264,20 @@ class Hwp(ParamHelpers, RunMethods):
                 self.MoveDocEnd()
 
     def Insert(
-        self, path: str, format: str = "", arg: str = "", move_doc_end: bool = False
+            self, path: str, format: str = "", arg: str = "", move_doc_end: bool = False
     ) -> bool:
         return self.insert(path, format, arg, move_doc_end)
 
     def insert_background_picture(
-        self,
-        path: str,
-        border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
-        embedded: bool = True,
-        filloption: int = 5,
-        effect: int = 0,
-        watermark: bool = False,
-        brightness: int = 0,
-        contrast: int = 0,
+            self,
+            path: str,
+            border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
+            embedded: bool = True,
+            filloption: int = 5,
+            effect: int = 0,
+            watermark: bool = False,
+            brightness: int = 0,
+            contrast: int = 0,
     ) -> bool:
         """
         **셀**에 배경이미지를 삽입한다.
@@ -7340,15 +7359,15 @@ class Hwp(ParamHelpers, RunMethods):
                 os.remove(path)
 
     def InsertBackgroundPicture(
-        self,
-        path: str,
-        border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
-        embedded: bool = True,
-        filloption: int = 5,
-        effect: int = 0,
-        watermark: bool = False,
-        brightness: int = 0,
-        contrast: int = 0,
+            self,
+            path: str,
+            border_type: Literal["SelectedCell", "SelectedCellDelete"] = "SelectedCell",
+            embedded: bool = True,
+            filloption: int = 5,
+            effect: int = 0,
+            watermark: bool = False,
+            brightness: int = 0,
+            contrast: int = 0,
     ) -> bool:
         return self.insert_background_picture(
             path,
@@ -7408,16 +7427,16 @@ class Hwp(ParamHelpers, RunMethods):
         return self.insert_ctrl(ctrl_id, initparam)
 
     def insert_picture(
-        self,
-        path: str,
-        treat_as_char: bool = True,
-        embedded: bool = True,
-        sizeoption: int = 0,
-        reverse: bool = False,
-        watermark: bool = False,
-        effect: int = 0,
-        width: int = 0,
-        height: int = 0,
+            self,
+            path: str,
+            treat_as_char: bool = True,
+            embedded: bool = True,
+            sizeoption: int = 0,
+            reverse: bool = False,
+            watermark: bool = False,
+            effect: int = 0,
+            width: int = 0,
+            height: int = 0,
     ) -> Ctrl:
         """
         현재 캐럿의 위치에 그림을 삽입한다.
@@ -7509,7 +7528,7 @@ class Hwp(ParamHelpers, RunMethods):
 
                 cell_width = pset.ShapeTableCell.Width - margin
                 dst_height = (
-                    pic_prop.Item("Height") / pic_prop.Item("Width") * cell_width
+                        pic_prop.Item("Height") / pic_prop.Item("Width") * cell_width
                 )
                 pic_prop.SetItem("Width", cell_width)
                 pic_prop.SetItem("Height", round(dst_height))
@@ -7517,17 +7536,17 @@ class Hwp(ParamHelpers, RunMethods):
                 sec_def = self.HParameterSet.HSecDef
                 self.HAction.GetDefault("PageSetup", sec_def.HSet)
                 page_width = (
-                    sec_def.PageDef.PaperWidth
-                    - sec_def.PageDef.LeftMargin
-                    - sec_def.PageDef.RightMargin
-                    - sec_def.PageDef.GutterLen
+                        sec_def.PageDef.PaperWidth
+                        - sec_def.PageDef.LeftMargin
+                        - sec_def.PageDef.RightMargin
+                        - sec_def.PageDef.GutterLen
                 )
                 page_height = (
-                    sec_def.PageDef.PaperHeight
-                    - sec_def.PageDef.TopMargin
-                    - sec_def.PageDef.BottomMargin
-                    - sec_def.PageDef.HeaderLen
-                    - sec_def.PageDef.FooterLen
+                        sec_def.PageDef.PaperHeight
+                        - sec_def.PageDef.TopMargin
+                        - sec_def.PageDef.BottomMargin
+                        - sec_def.PageDef.HeaderLen
+                        - sec_def.PageDef.FooterLen
                 )
                 pic_width = pic_prop.Item("Width")
                 pic_height = pic_prop.Item("Height")
@@ -7548,16 +7567,16 @@ class Hwp(ParamHelpers, RunMethods):
                 os.remove(path)
 
     def InsertPicture(
-        self,
-        path: str,
-        treat_as_char: bool = True,
-        embedded: bool = True,
-        sizeoption: int = 0,
-        reverse: bool = False,
-        watermark: bool = False,
-        effect: int = 0,
-        width: int = 0,
-        height: int = 0,
+            self,
+            path: str,
+            treat_as_char: bool = True,
+            embedded: bool = True,
+            sizeoption: int = 0,
+            reverse: bool = False,
+            watermark: bool = False,
+            effect: int = 0,
+            width: int = 0,
+            height: int = 0,
     ) -> Ctrl:
         return self.insert_picture(
             path,
@@ -7749,12 +7768,12 @@ class Hwp(ParamHelpers, RunMethods):
         return self.move_pos(move_id, para, pos)
 
     def move_to_field(
-        self,
-        field: str,
-        idx: int = 0,
-        text: bool = True,
-        start: bool = True,
-        select: bool = False,
+            self,
+            field: str,
+            idx: int = 0,
+            text: bool = True,
+            start: bool = True,
+            select: bool = False,
     ) -> bool:
         """
         지정한 필드로 캐럿을 이동한다.
@@ -7779,12 +7798,12 @@ class Hwp(ParamHelpers, RunMethods):
             )
 
     def MoveToField(
-        self,
-        field: str,
-        idx: int = 0,
-        text: bool = True,
-        start: bool = True,
-        select: bool = False,
+            self,
+            field: str,
+            idx: int = 0,
+            text: bool = True,
+            start: bool = True,
+            select: bool = False,
     ) -> bool:
         return self.move_to_field(field, idx, text, start, select)
 
@@ -7897,7 +7916,7 @@ class Hwp(ParamHelpers, RunMethods):
             request.urlretrieve(filename, os.path.join(os.getcwd(), hwp_name))
             filename = os.path.join(os.getcwd(), hwp_name)
         elif filename.lower()[1] != ":" and os.path.exists(
-            os.path.join(os.getcwd(), filename)
+                os.path.join(os.getcwd(), filename)
         ):
             filename = os.path.join(os.getcwd(), filename)
         return self.hwp.Open(filename=filename, Format=format, arg=arg)
@@ -7948,7 +7967,7 @@ class Hwp(ParamHelpers, RunMethods):
         return self.inch_to_hwp_unit(inch)
 
     def protect_private_info(
-        self, protecting_char: str, private_pattern_type: int
+            self, protecting_char: str, private_pattern_type: int
     ) -> bool:
         """
         개인정보를 보호한다.
@@ -7972,12 +7991,12 @@ class Hwp(ParamHelpers, RunMethods):
         )
 
     def ProtectPrivateInfo(
-        self, protecting_char: str, private_pattern_type: int
+            self, protecting_char: str, private_pattern_type: int
     ) -> bool:
         return self.protect_private_info(protecting_char, private_pattern_type)
 
     def put_field_text(
-        self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None
+            self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None
     ) -> None:
         """
         지정한 필드의 내용을 채운다.
@@ -8003,7 +8022,7 @@ class Hwp(ParamHelpers, RunMethods):
             >>> hwp.put_field_text("zxcv", "Hello world!")
         """
         if isinstance(field, str) and (
-            field.endswith(".xlsx") or field.endswith(".xls")
+                field.endswith(".xlsx") or field.endswith(".xls")
         ):
             field = pd.read_excel(field)
 
@@ -8053,10 +8072,10 @@ class Hwp(ParamHelpers, RunMethods):
 
             # field와 text가 [[field0:str, list[text:str]], [field1:str, list[text:str]]] 타입인 경우
             if (
-                not text
-                and isinstance(field[0][0], (str, int, float))
-                and not isinstance(field[0][1], (str, int))
-                and len(field[0][1]) >= 1
+                    not text
+                    and isinstance(field[0][0], (str, int, float))
+                    and not isinstance(field[0][1], (str, int))
+                    and len(field[0][1]) >= 1
             ):
                 text_str = ""
                 field_str = "\x02".join(
@@ -8068,8 +8087,8 @@ class Hwp(ParamHelpers, RunMethods):
                 )
                 for i in range(len(field[0][1])):
                     text_str += (
-                        "\x02".join([str(field[j][1][i]) for j in range(len(field))])
-                        + "\x02"
+                            "\x02".join([str(field[j][1][i]) for j in range(len(field))])
+                            + "\x02"
                     )
                 return self.hwp.PutFieldText(Field=field_str, Text=text_str)
 
@@ -8131,7 +8150,7 @@ class Hwp(ParamHelpers, RunMethods):
             return self.hwp.PutFieldText(Field=field, Text=text)
 
     def PutFieldText(
-        self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None
+            self, field: Any = "", text: Union[str, list, tuple, pd.Series] = "", idx=None
     ) -> None:
         return self.put_field_text(field, text, idx)
 
@@ -8167,7 +8186,7 @@ class Hwp(ParamHelpers, RunMethods):
         return self.quit(save)
 
     def rgb_color(
-        self, red_or_colorname: Union[str, tuple, int], green: int = 255, blue: int = 255
+            self, red_or_colorname: Union[str, tuple, int], green: int = 255, blue: int = 255
     ) -> int:
         """
         RGB값을 한/글이 인식하는 정수 형태로 변환해주는 헬퍼 메서드.
@@ -8252,14 +8271,14 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.RGBColor(red=red_or_colorname, green=green, blue=blue)
 
     def RGBColor(
-        self, red_or_colorname: Union[str, tuple, int], green: int = 255, blue: int = 255
+            self, red_or_colorname: Union[str, tuple, int], green: int = 255, blue: int = 255
     ) -> int:
         return self.rgb_color(red_or_colorname, green, blue)
 
     def register_module(
-        self,
-        module_type: str = "FilePathCheckDLL",
-        module_data: str = "FilePathCheckerModule",
+            self,
+            module_type: str = "FilePathCheckDLL",
+            module_data: str = "FilePathCheckerModule",
     ) -> bool:
         """
         (인스턴스 생성시 자동으로 실행된다.)
@@ -8292,9 +8311,9 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.RegisterModule(ModuleType=module_type, ModuleData=module_data)
 
     def RegisterModule(
-        self,
-        module_type: str = "FilePathCheckDLL",
-        module_data: str = "FilePathCheckerModule",
+            self,
+            module_type: str = "FilePathCheckDLL",
+            module_data: str = "FilePathCheckerModule",
     ) -> bool:
         return self.register_module(module_type, module_data)
 
@@ -8417,9 +8436,9 @@ class Hwp(ParamHelpers, RunMethods):
                         )
                     )
                     if not os.path.exists(
-                        os.path.join(
-                            os.environ["USERPROFILE"], "FilePathCheckerModule.dll"
-                        )
+                            os.path.join(
+                                os.environ["USERPROFILE"], "FilePathCheckerModule.dll"
+                            )
                     ):
                         os.rename(
                             os.path.join(
@@ -8458,7 +8477,7 @@ class Hwp(ParamHelpers, RunMethods):
         CloseKey(key)
 
     def register_private_info_pattern(
-        self, private_type: int, private_pattern: str
+            self, private_type: int, private_pattern: str
     ) -> bool:
         """
         개인정보의 패턴을 등록한다.
@@ -8501,7 +8520,7 @@ class Hwp(ParamHelpers, RunMethods):
         )
 
     def RegisterPrivateInfoPattern(
-        self, private_type: int, private_pattern: int
+            self, private_type: int, private_pattern: int
     ) -> bool:
         return self.register_private_info_pattern(private_type, private_pattern)
 
@@ -8594,7 +8613,7 @@ class Hwp(ParamHelpers, RunMethods):
         return self.replace_action(old_action_id, new_action_id)
 
     def replace_font(
-        self, langid, des_font_name, des_font_type, new_font_name, new_font_type
+            self, langid, des_font_name, des_font_type, new_font_name, new_font_type
     ):
         return self.hwp.ReplaceFont(
             langid=langid,
@@ -8605,7 +8624,7 @@ class Hwp(ParamHelpers, RunMethods):
         )
 
     def ReplaceFont(
-        self, langid, des_font_name, des_font_type, new_font_name, new_font_type
+            self, langid, des_font_name, des_font_type, new_font_name, new_font_type
     ):
         return self.replace_font(
             langid, des_font_name, des_font_type, new_font_name, new_font_type
@@ -8634,12 +8653,12 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.HAction.Run(act_id)
 
     def compose_chars(
-        self,
-        Chars: Union[str, int] = "",
-        CharSize: int = -3,
-        CheckCompose: int = 0,
-        CircleType: int = 0,
-        **kwargs,
+            self,
+            Chars: Union[str, int] = "",
+            CharSize: int = -3,
+            CheckCompose: int = 0,
+            CircleType: int = 0,
+            **kwargs,
     ) -> bool:
         """
         글자 겹치기 메서드(원문자 만들기)
@@ -8667,12 +8686,12 @@ class Hwp(ParamHelpers, RunMethods):
         return self.HAction.Execute("ComposeChars", pset.HSet)
 
     def ComposeChars(
-        self,
-        Chars: Union[str, int] = "",
-        CharSize: int = -3,
-        CheckCompose: int = 0,
-        CircleType: int = 0,
-        **kwargs,
+            self,
+            Chars: Union[str, int] = "",
+            CharSize: int = -3,
+            CheckCompose: int = 0,
+            CircleType: int = 0,
+            **kwargs,
     ) -> bool:
         return self.compose_chars(Chars, CharSize, CheckCompose, CircleType, **kwargs)
 
@@ -8700,7 +8719,7 @@ class Hwp(ParamHelpers, RunMethods):
         self.hwp.HAction.Execute("Paste", pset.HSet)
 
     def run_script_macro(
-        self, function_name: str, u_macro_type: int = 0, u_script_type: int = 0
+            self, function_name: str, u_macro_type: int = 0, u_script_type: int = 0
     ) -> bool:
         """
         한/글 문서 내에 존재하는 매크로를 실행한다.
@@ -8740,7 +8759,7 @@ class Hwp(ParamHelpers, RunMethods):
         )
 
     def RunScriptMacro(
-        self, function_name: str, u_macro_type: int = 0, u_script_type: int = 0
+            self, function_name: str, u_macro_type: int = 0, u_script_type: int = 0
     ) -> bool:
         return self.run_script_macro(function_name, u_macro_type, u_script_type)
 
@@ -8765,7 +8784,7 @@ class Hwp(ParamHelpers, RunMethods):
         return self.save(save_if_dirty)
 
     def save_as(
-        self, path: str, format: str = "HWP", arg: str = "", split_page: bool = False
+            self, path: str, format: str = "HWP", arg: str = "", split_page: bool = False
     ) -> bool:
         """
         현재 편집중인 문서를 지정한 이름으로 저장한다.
@@ -8994,12 +9013,12 @@ class Hwp(ParamHelpers, RunMethods):
         )
 
     def select_text(
-        self,
-        spara: Union[int, list, tuple] = 0,
-        spos: int = 0,
-        epara: int = 0,
-        epos: int = 0,
-        slist: int = 0,
+            self,
+            spara: Union[int, list, tuple] = 0,
+            spos: int = 0,
+            epara: int = 0,
+            epos: int = 0,
+            slist: int = 0,
     ) -> bool:
         """
         특정 범위의 텍스트를 블록선택한다.
@@ -9036,17 +9055,17 @@ class Hwp(ParamHelpers, RunMethods):
             return self.hwp.SelectText(spara=spara, spos=spos, epara=epara, epos=epos)
 
     def SelectText(
-        self,
-        spara: Union[int, list, tuple] = 0,
-        spos: int = 0,
-        epara: int = 0,
-        epos: int = 0,
-        slist: int = 0,
+            self,
+            spara: Union[int, list, tuple] = 0,
+            spos: int = 0,
+            epara: int = 0,
+            epos: int = 0,
+            slist: int = 0,
     ) -> bool:
         return self.select_text(spara, spos, epara, epos, slist)
 
     def set_cur_field_name(
-        self, field: str = "", direction: str = "", memo: str = "", option: int = 0
+            self, field: str = "", direction: str = "", memo: str = "", option: int = 0
     ) -> bool:
         """
         표 안에서 현재 캐럿이 위치하는 셀, 또는 블록선택한 셀들의 필드이름을 설정한다.
@@ -9096,7 +9115,7 @@ class Hwp(ParamHelpers, RunMethods):
             )
 
     def SetCurFieldName(
-        self, field: str = "", direction: str = "", memo: str = "", option: int = 0
+            self, field: str = "", direction: str = "", memo: str = "", option: int = 0
     ) -> bool:
         return self.set_cur_field_name(field, direction, memo, option)
 
@@ -9257,10 +9276,10 @@ class Hwp(ParamHelpers, RunMethods):
         return self.set_private_info_password(password)
 
     def set_text_file(
-        self,
-        data: str,
-        format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
-        option: str = "insertfile",
+            self,
+            data: str,
+            format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
+            option: str = "insertfile",
     ) -> int:
         """
         GetTextFile로 저장한 문자열 정보를 문서에 삽입
@@ -9283,10 +9302,10 @@ class Hwp(ParamHelpers, RunMethods):
         return self.hwp.SetTextFile(data=data, Format=format, option=option)
 
     def SetTextFile(
-        self,
-        data: str,
-        format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
-        option: str = "insertfile",
+            self,
+            data: str,
+            format: Literal["HWP", "HWPML2X", "HTML", "UNICODE", "TEXT"] = "HWPML2X",
+            option: str = "insertfile",
     ) -> int:
         return self.set_text_file(data, format, option)
 
