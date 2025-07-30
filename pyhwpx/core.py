@@ -6779,7 +6779,7 @@ class Hwp(ParamHelpers, RunMethods):
     def GetPageText(self, pgno: int = 0, option: hex = 0xFFFFFFFF) -> str:
         return self.get_page_text(pgno, option)
 
-    def get_pos(self) -> Tuple[int]:
+    def get_pos(self) -> Tuple[int, int, int]:
         """
         캐럿의 위치를 얻어온다.
 
