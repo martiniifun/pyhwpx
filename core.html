@@ -1247,6 +1247,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pyhwpx.core.Hwp.get_ctrl_by_ctrl_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_ctrl_by_ctrl_id
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyhwpx.core.Hwp.get_ctrl_pos" class="md-nav__link">
     <span class="md-ellipsis">
       get_ctrl_pos
@@ -7428,6 +7437,78 @@ get_charshape와 동일하게 set_charshape에 이 dict를 사용할 수도 있�
             <td>
               <div class="doc-md-description">
                 <p>현재 칼럼의 너비(기본단위는 mm)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.core.Hwp.get_ctrl_by_ctrl_id" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_ctrl_by_ctrl_id</span><span class="p">(</span><span class="n">ctrl_id</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>특정 CtrlID의 컨트롤 리스트를 리턴한다. 예를 들어 그림 컨트롤만 모으고 싶으면 <code>hwp.get_ctrl_by_ctrl_id("gso")</code>라고 실행한다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>ctrl_id</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;fn&#39;, &#39;en&#39;, &#39;tbl&#39;, &#39;eqed&#39;, &#39;gso&#39;, &#39;atno&#39;, &#39;nwno&#39;, &#39;pgct&#39;, &#39;pghd&#39;, &#39;pgnp&#39;, &#39;head&#39;, &#39;foot&#39;, &#39;%dte&#39;, &#39;%ddt&#39;, &#39;pat&#39;, &#39;%bmk&#39;, &#39;%mmg&#39;, &#39;%xrf&#39;, &#39;%clk&#39;, &#39;%smr&#39;, &#39;%usr&#39;, &#39;%hlk&#39;, &#39;bokm&#39;, &#39;idxm&#39;, &#39;tdut&#39;, &#39;tcmt&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>특정 컨트롤아이디를 입력하면, 해당 종류의 컨트롤만 리턴.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>해당 컨트롤만 추출한 리스트. 없는 경우에는 빈 리스트를 리턴한다.</p>
               </div>
             </td>
           </tr>
