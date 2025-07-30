@@ -1652,6 +1652,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pyhwpx.core.Hwp.get_viewstate" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_viewstate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyhwpx.core.Hwp.goto_addr" class="md-nav__link">
     <span class="md-ellipsis">
       goto_addr
@@ -2384,6 +2393,15 @@
   <a href="#pyhwpx.core.Hwp.set_title" class="md-nav__link">
     <span class="md-ellipsis">
       set_title
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyhwpx.core.Hwp.set_viewstate" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_viewstate
     </span>
   </a>
   
@@ -10234,6 +10252,47 @@ disk를 접근할 수 있다면, Save나 SaveBlockAction을 사용할 것.
 <div class="doc doc-object doc-function">
 
 
+<h4 id="pyhwpx.core.Hwp.get_viewstate" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_viewstate</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>현재 ViewProperties의 값을 리턴하는 메서드. set_viewstate 실행 전에 현 상태의 ViewProperties를 저장하기 위함.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>현재 ViewProperties의 값을 int로 리턴한다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="pyhwpx.core.Hwp.goto_addr" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">goto_addr</span><span class="p">(</span><span class="n">addr</span><span class="o">=</span><span class="s1">&#39;A1&#39;</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">select_cell</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
@@ -18015,6 +18074,78 @@ MB_OK형태의 메시지박스에서 OK버튼이 눌린 효과를 낸다.</p>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">get_title</span><span class="p">()</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">😘 - 한글</span>
 </code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.core.Hwp.set_viewstate" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">set_viewstate</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>조판부호 보기, 줄바꿈 기호 보기 등 보기옵션을 변경할 수 있다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>flag</code>
+            </td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[0, 1, 2, 3, 4, 5, 6]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>대표적으로 줄바꿈 기호만 보기는 4, 조판부호 보기는 6으로 설정한다.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True를 리턴한다..</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
