@@ -5356,46 +5356,70 @@ class Hwp(ParamHelpers, RunMethods):
     def clipboard_to_pyfunc(self):
         """
         한/글 프로그램에서 스크립트매크로 녹화 코드를 클립보드에 복사하고
-
         clipboard_to_pyfunc()을 실행하면, 클립보드의 매크로가 파이썬 함수로 변경된다.
         곧 정규식으로 업데이트 예정(2023. 11. 30)
         """
+        # 클립보드에서 텍스트를 가져와서 기본적인 문자 변환 수행
         text = cb.paste()
+        # 탭을 공백 4개로 변경하고, 세미콜론 제거 (한글 스크립트 문법 -> 파이썬 문법 변환)
         text = text.replace("\t", "    ").replace(";", "")
+
+        # 함수 블록의 시작과 끝을 제거 (JavaScript 스타일의 중괄호 제거)
+        # "{\r\n"로 시작하는 부분을 분리하고, 마지막 5글자("}") 제거
         text = text.split("{\r\n", maxsplit=1)[1][:-5]
+
+        # "with" 구문이 있는 경우와 없는 경우로 분기 처리
         if "with" in text:
+            # with 구문에서 파라미터셋 이름 추출 (예: HParameterSet.HShapeObject)
             pset_name = text.split("with (")[1].split(")")[0]
+
+            # with 블록 내부의 코드 추출 및 들여쓰기 조정
             inner_param = (
-                text.split("{\r\n")[1]
-                .split("\r\n}")[0]
-                .replace("        ", f"    {pset_name}")
+                text.split("{\r\n")[1]  # with 블록 내부 코드 추출
+                .split("\r\n}")[0]  # with 블록 끝 제거
+                .replace("        ", f"    {pset_name}")  # 들여쓰기를 pset_name 접두사로 변경
             )
+
+            # 최종 파이썬 함수 형태로 변환
             result = (
-                    f"def script_macro():\r\n    pset = {pset_name}\r\n    "
-                    + text.replace("    ", "")
-                    .split("with")[0]
-                    .replace(pset_name, "pset")
-                    .replace("\r\n", "\r\n    ")
-                    + inner_param.replace(pset_name, "pset.")
-                    .replace("    ", "")
-                    .replace("}\r\n", "")
-                    .replace("..", ".")
-                    .replace("\r\n", "\r\n    ")
+                    f"def script_macro():\r\n    pset = {pset_name}\r\n    "  # 함수 정의와 pset 변수 선언
+                    + text.replace("    ", "")  # 기존 들여쓰기 제거
+                    .split("with")[0]  # with 구문 이전 부분만 추출
+                    .replace(pset_name, "pset")  # 파라미터셋 이름을 pset 변수로 변경
+                    .replace("\r\n", "\r\n    ")  # 함수 내부 들여쓰기 추가
+                    + inner_param.replace(pset_name, "pset.")  # with 블록 내부 코드 처리
+                    .replace("    ", "")  # 불필요한 공백 제거
+                    .replace("}\r\n", "")  # 중괄호 제거
+                    .replace("..", ".")  # 중복 점 제거
+                    .replace("\r\n", "\r\n    ")  # 들여쓰기 추가
             )
         else:
+            # with 구문이 없는 경우의 처리
+            # 파라미터셋 이름을 ".HSet" 앞의 부분에서 추출
             pset_name = text.split(", ")[1].split(".HSet")[0]
+
+            # 간단한 형태의 파이썬 함수로 변환
             result = (
-                    f"def script_macro():\r\n    pset = {pset_name}\r\n    "
-                    + text.replace("    ", "")
-                    .replace(pset_name, "pset")
-                    .replace("\r\n", "\r\n    ")
+                    f"def script_macro():\r\n    pset = {pset_name}\r\n    "  # 함수 정의와 pset 변수 선언
+                    + text.replace("    ", "")  # 기존 들여쓰기 제거
+                    .replace(pset_name, "pset")  # 파라미터셋 이름을 pset 변수로 변경
+                    .replace("\r\n", "\r\n    ")  # 함수 내부 들여쓰기 추가
             )
+
+        # 한글 API 호출을 hwp 객체를 통한 호출로 변경
         result = result.replace("HAction.", "hwp.HAction.").replace(
             "HParameterSet.", "hwp.HParameterSet."
         )
-        result = re.sub(r"= (?!hwp\.)(\D)(-)", r"= hwp.\g<1>", result)
+
+        # 정규식을 사용하여 hwp 접두사가 없는 함수명/클래스명에 hwp. 접두사 추가
+        # 예: = PicEffect(...) -> = hwp.PicEffect(...)
+        # 음수나 숫자는 제외하고 대문자로 시작하는 식별자만 매치
+        result = re.sub(r"= (?!hwp\.)(?!-?\d)([A-Z][a-zA-Z]*)", r"= hwp.\g<1>", result)
+
+        # 잘못된 변환 수정 및 특별한 경우 처리
         result = result.replace('hwp."', '"').replace("FindCtrl()", "hwp.FindCtrl()")
 
+        # 변환된 결과를 출력하고 클립보드에 복사
         print(result)
         cb.copy(result)
 
