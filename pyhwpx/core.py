@@ -5393,7 +5393,7 @@ class Hwp(ParamHelpers, RunMethods):
         result = result.replace("HAction.", "hwp.HAction.").replace(
             "HParameterSet.", "hwp.HParameterSet."
         )
-        result = re.sub(r"= (?!hwp\.)(\D)", r"= hwp.\g<1>", result)
+        result = re.sub(r"= (?!hwp\.)(\D)(-)", r"= hwp.\g<1>", result)
         result = result.replace('hwp."', '"').replace("FindCtrl()", "hwp.FindCtrl()")
 
         print(result)
