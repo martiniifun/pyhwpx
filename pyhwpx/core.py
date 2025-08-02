@@ -5394,7 +5394,8 @@ class Hwp(ParamHelpers, RunMethods):
             "HParameterSet.", "hwp.HParameterSet."
         )
         result = re.sub(r"= (?!hwp\.)(\D)", r"= hwp.\g<1>", result)
-        result = result.replace('hwp."', '"')
+        result = result.replace('hwp."', '"').replace("FindCtrl()", "hwp.FindCtrl()")
+
         print(result)
         cb.copy(result)
 
