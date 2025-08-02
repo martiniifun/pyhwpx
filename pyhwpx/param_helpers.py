@@ -388,7 +388,20 @@ class ParamHelpers:
     def ParaHeadAlign(self, para_head_align):
         return self.hwp.ParaHeadAlign(ParaHeadAlign=para_head_align)
 
-    def PicEffect(self, pic_effect):
+    def PicEffect(self, pic_effect: Literal["RealPic", "GrayScale", "BlackWhite"] = "RealPic") -> int:
+        """
+        그림에 효과를 적용할 때 사용하는 헬퍼함수
+
+        Args:
+            pic_effect: 효과 종류
+
+                - "RealPic": 효과없음
+                - "GrayScale": 회색조
+                - "BlackWhite": 흑백
+
+        Returns:
+            int: 옵션에 해당하는 정수를 리턴
+        """
         return self.hwp.PicEffect(PicEffect=pic_effect)
 
     def PlacementType(self, restart):
