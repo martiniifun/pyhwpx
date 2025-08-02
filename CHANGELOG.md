@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.4.11] - 2025-08-03
+### 📝 Misc
+- hwp.clipboard_to_pyfunc 메서드 경미한 정규식 오류 정정
+
+---
 ## [1.4.10] - 2025-08-03
 ### 📝 Misc
 - hwp.clipboard_to_pyfunc 메서드 경미한 수정(FindCtrl() 메서드 앞에 `hwp.` 추가)
