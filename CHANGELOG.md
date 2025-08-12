@@ -1,5 +1,13 @@
 # 📦 Changelog
 
+## [1.5.0] - 2025-08-12
+### 🚀 Added
+- hwp.insert_hyperlink 메서드 추가(현재 선택한 문자열 구간에 하이퍼링크를 삽입할 수 있음)
+
+### 🐛 Fixed
+- hwp.ctrl_list의 " 끝" 컨트롤 삭제시 com_error 발생 대신 예외처리함 
+
+---
 ## [1.4.11] - 2025-08-03
 ### 📝 Misc
 - hwp.clipboard_to_pyfunc 메서드 경미한 정규식 오류 정정
