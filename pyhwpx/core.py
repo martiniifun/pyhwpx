@@ -6358,7 +6358,12 @@ class Hwp(ParamHelpers, RunMethods):
             ...
             True
         """
-        return self.hwp.DeleteCtrl(ctrl=ctrl._com_obj)
+        if ctrl.UserDesc == " 끝":
+            return False
+        try:
+            return self.hwp.DeleteCtrl(ctrl=ctrl._com_obj)
+        except pythoncom.com_error as e:
+            print(e)
 
     def DeleteCtrl(self, ctrl: Ctrl) -> bool:
         return self.delete_ctrl(ctrl)
