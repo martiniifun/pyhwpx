@@ -4940,6 +4940,22 @@ class Hwp(ParamHelpers, RunMethods):
             if move_doc_end:
                 self.MoveDocEnd()
 
+    def insert_hyperlink(self, hypertext: str, description: str = "") -> bool:
+        """
+        선택한 문자열에 책갈피 하이퍼링크를 삽입하는 메서드.
+
+        Args:
+            hypertext: 이동할 책갈피 문자열(책갈피 이름)
+            description: 설명할 문자열(본문에 마우스를 올렸을 때 툴팁으로도 나타남)
+
+        Returns:
+            성공시 True, 실패시 False를 리턴
+        """
+        pset = self.hwp.HParameterSet.HHyperLink
+        self.hwp.HAction.GetDefault("InsertHyperlink", pset.HSet)
+        pset.Command = f"?{hypertext}|{description};0;0;0;"
+        return self.hwp.HAction.Execute("InsertHyperlink", pset.HSet)
+
     def insert_memo(
             self, text: str = "", memo_type: Literal["revision", "memo"] = "memo"
     ) -> None:
