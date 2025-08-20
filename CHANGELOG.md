@@ -1,5 +1,11 @@
 # 📦 Changelog
 
+## [1.5.3] - 2025-08-21
+### 🐛 Fixed
+- hwp.SelectCtrl 및 hwp.select_ctrl 메서드 실행시 한글2024 이후 버전의 경우 다중선택 또는 선택추가 가능
+- 기존 컨트롤인스턴스 아이디(digit문자열)를 입력하는 방식 대신 Ctrl 인스턴스나 List[Ctrl]를 넣어도 작동하도록 변경
+
+---
 ## [1.5.2] - 2025-08-21
 ### 📝 Misc
 - hwp.ShapeObjGroup 메서드 실행시 뜨는 팝업 무시(항상 "예" 선택)
