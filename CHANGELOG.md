@@ -1,5 +1,11 @@
 # 📦 Changelog
 
+## [1.5.1] - 2025-08-20
+### 📝 Misc
+- hwp.find_replace_all 안의 get_text_file의 option에서 saveblock:true 제거
+
+
+---
 ## [1.5.0] - 2025-08-12
 ### 🚀 Added
 - hwp.insert_hyperlink 메서드 추가(현재 선택한 문자열 구간에 하이퍼링크를 삽입할 수 있음)
