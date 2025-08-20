@@ -3594,7 +3594,7 @@ class Hwp(ParamHelpers, RunMethods):
         shutil.rmtree("./temp")
         return True
 
-    def SelectCtrl(self, ctrllist: Union[str, int], option: Literal[0, 1] = 1) -> bool:
+    def SelectCtrl(self, ctrllist: Union[str, Ctrl, List[Ctrl]], option: Literal[0, 1] = 1) -> bool:
         """
         한글2024 이상의 버전에서 사용 가능한 API 기반의 신규 메서드.
 
@@ -3619,6 +3619,16 @@ class Hwp(ParamHelpers, RunMethods):
 
         """
         if int(self.Version[0]) >= 13:  # 한/글2024 이상이면
+            if type(ctrllist) in [list, tuple] and set(type(x) for x in ctrllist) != {str}:
+                ctrllist = "\x02".join([i.GetCtrlInstID() for i in ctrllist])
+            elif isinstance(ctrllist, Ctrl):
+                ctrllist = ctrllist.GetCtrlInstID()
+            elif type(ctrllist) == str and ctrllist.isdigit():
+                pass
+            else:
+                raise ValueError(
+                    "입력한 파라미터의 타입이 올바르지 않습니다. docstring을 참고하세요."
+                )
             return self.hwp.SelectCtrl(ctrllist=ctrllist, option=option)
         else:
             raise NotImplementedError(
@@ -3626,10 +3636,10 @@ class Hwp(ParamHelpers, RunMethods):
             )
 
     def select_ctrl(
-            self, ctrl: Ctrl, anchor_type: Literal[0, 1, 2] = 0, option: int = 1
+            self, ctrl: Union[str, Ctrl, List[Ctrl]], anchor_type: Literal[0, 1, 2] = 0, option: int = 1
     ) -> bool:
         """
-        인수로 넣은 컨트롤 오브젝트를 선택하는 pyhwpx 전용 메서드.
+        인수로 넣은 컨트롤 오브젝트를 선택하는 pyhwpx 전용 메서드. 한글2024에서는 여러 개체를 동시에 선택하거나 추가선택 명령 가능.
 
         Args:
             ctrl: 선택하고자 하는 컨트롤
@@ -3639,12 +3649,18 @@ class Hwp(ParamHelpers, RunMethods):
                     - 0: 바로 상위 리스트에서의 좌표(기본값)
                     - 1: 탑레벨 리스트에서의 좌표
                     - 2: 루트 리스트에서의 좌표
+            option:
+                기존에 다른 컨트롤이 선택되어 있는 경우 선택을 추가할지, 바꿀지 결정할 수 있음(한글2024 이후 버전)
+
+                    - 0: 추가선택
+                    - 1: 기존 선택해제 후 컨트롤 선택
+
 
         Returns:
             성공시 True
         """
         if int(self.Version[0]) >= 13:  # 한/글2024 이상이면
-            self.hwp.SelectCtrl(ctrl.GetCtrlInstID(), option=option)
+            self.SelectCtrl(ctrllist=ctrl, option=option)
         else:  # 이하 버전이면
             cur_view_state = self.ViewProperties.Item("OptionFlag")
             if cur_view_state not in (2, 6):
