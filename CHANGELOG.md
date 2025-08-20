@@ -1,5 +1,11 @@
 # 📦 Changelog
 
+## [1.5.2] - 2025-08-21
+### 📝 Misc
+- hwp.ShapeObjGroup 메서드 실행시 뜨는 팝업 무시(항상 "예" 선택)
+
+
+---
 ## [1.5.1] - 2025-08-20
 ### 📝 Misc
 - hwp.find_replace_all 안의 get_text_file의 option에서 saveblock:true 제거
