@@ -5315,7 +5315,7 @@ class Hwp(ParamHelpers, RunMethods):
         self.hwp.HAction.GetDefault("FindDlg", pset.HSet)
         self.hwp.HAction.Execute("FindDlg", pset.HSet)
         if regex:
-            whole_text = self.get_text_file()
+            whole_text = self.get_text_file(option="")
             src_list = [i.group() for i in re.finditer(src, whole_text)]
             dst_list = [re.sub(src, dst, i) for i in src_list]
             for i, j in zip(src_list, dst_list):
