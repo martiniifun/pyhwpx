@@ -4733,7 +4733,7 @@ ctrl_list에서 제외했다.
                 <code>ctrllist</code>
             </td>
             <td>
-                  <code><span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="int">int</span>]</code>
+                  <code><span title="typing.Union">Union</span>[<span title="str">str</span>, <a class="autorefs autorefs-internal" title="Ctrl (pyhwpx.core.Ctrl)" href="#pyhwpx.core.Ctrl">Ctrl</a>, <span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="Ctrl (pyhwpx.core.Ctrl)" href="#pyhwpx.core.Ctrl">Ctrl</a>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -15351,7 +15351,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
 
     <div class="doc doc-contents ">
 
-        <p>인수로 넣은 컨트롤 오브젝트를 선택하는 pyhwpx 전용 메서드.</p>
+        <p>인수로 넣은 컨트롤 오브젝트를 선택하는 pyhwpx 전용 메서드. 한글2024에서는 여러 개체를 동시에 선택하거나 추가선택 명령 가능.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -15370,7 +15370,7 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
                 <code>ctrl</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="Ctrl (pyhwpx.core.Ctrl)" href="#pyhwpx.core.Ctrl">Ctrl</a></code>
+                  <code><span title="typing.Union">Union</span>[<span title="str">str</span>, <a class="autorefs autorefs-internal" title="Ctrl (pyhwpx.core.Ctrl)" href="#pyhwpx.core.Ctrl">Ctrl</a>, <span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="Ctrl (pyhwpx.core.Ctrl)" href="#pyhwpx.core.Ctrl">Ctrl</a>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -15399,6 +15399,25 @@ False를 지정하면 변경여부와 상관없이 무조건 저장한다.
             </td>
             <td>
                   <code>0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>option</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>기존에 다른 컨트롤이 선택되어 있는 경우 선택을 추가할지, 바꿀지 결정할 수 있음(한글2024 이후 버전)</p>
+<div class="codehilite"><pre><span></span><code>- 0: 추가선택
+- 1: 기존 선택해제 후 컨트롤 선택
+</code></pre></div>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
             </td>
           </tr>
       </tbody>
