@@ -3838,9 +3838,12 @@ class RunMethods(_InnerMethods):
     def ShapeObjGroup(self):
         """
         틀 묶기
-
         """
-        return self.hwp.HAction.Run("ShapeObjGroup")
+        self.set_message_box_mode(0x10000)
+        try:
+            return self.hwp.HAction.Run("ShapeObjGroup")
+        finally:
+            self.set_message_box_mode(0xF0000)
 
     def ShapeObjGuideLine(self) -> bool:
         """
