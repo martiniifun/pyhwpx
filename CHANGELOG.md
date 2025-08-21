@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.5.5] - 2025-08-22
+### 📝 Misc
+- hwp.ShapeObjUngroup 으로 메서드 이름 수정(G -> g)
+
+---
 ## [1.5.4] - 2025-08-22
 ### 📝 Misc
 - hwp.ShapeObjUnGroup 메서드 추가(개체 묶기 해제)
