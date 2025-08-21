@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.5.4] - 2025-08-22
+### 📝 Misc
+- hwp.ShapeObjUnGroup 메서드 추가(개체 묶기 해제)
+
+---
 ## [1.5.3] - 2025-08-21
 ### 🐛 Fixed
 - hwp.SelectCtrl 및 hwp.select_ctrl 메서드 실행시 한글2024 이후 버전의 경우 다중선택 또는 선택추가 가능
