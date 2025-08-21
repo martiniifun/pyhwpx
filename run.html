@@ -5177,6 +5177,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pyhwpx.run_methods.RunMethods.ShapeObjUnGroup" class="md-nav__link">
+    <span class="md-ellipsis">
+      ShapeObjUnGroup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyhwpx.run_methods.RunMethods.ShapeObjUngroup" class="md-nav__link">
     <span class="md-ellipsis">
       ShapeObjUngroup
@@ -15846,18 +15855,90 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
 
 
 <h3 id="pyhwpx.run_methods.RunMethods.ShapeObjAttachCaption" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">ShapeObjAttachCaption</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">ShapeObjAttachCaption</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">add_num</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>역방향으로 가장 가까운 컨트롤에 캡션 추가</p>
+        <p>현재 선택중인 컨트롤(컨트롤 미선택시 인접한 컨트롤)에 캡션 추가.
+캐럿 좌우로 두 개의 컨트롤이 나란히 붙어있는 경우에는 캐럿 우측 컨트롤이 우선이며,
+캐럿 위아래 문단에 두 개의 컨트롤이 있는 경우에는 상단 컨트롤이 우선이다.</p>
 <p>캐럿 위쪽의 표, 이미지 등에 캡션을 생성한다.
-실행 후에는 캡션 안에 캐럿이 있으므로
-직접 insert_text 등으로 입력하고 CloseEx로 빠져나오면 된다.</p>
-<p>위쪽 컨트롤에 캡션이 있을 때에는 캡션 시작부분으로 진입한다.</p>
+text 파라미터 미입력 실행시에는 빈 캡션을 생성하고 캐럿이 캡션 안에 있는 상태가 된다.
+그 경우에는 직접  hwp.insert_text 등으로 후속작업을 마친 후 hwp.CloseEx()로 빠져나오면 된다.
+컨트롤에 캡션이 있을 때에는 캡션 시작부분으로 진입한다. (캡션번호보다 왼쪽)</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>text</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>캡션에 삽입할 텍스트. 입력하지 않는 경우 캡션으로 진입한 상태가 된다.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>add_num</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>캡션 머리에 캡션번호 삽입 여부. 기본값은 True로, 캡션번호가 생긴다.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>성공시 True, 실패시 False를 리턴한다.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -16021,7 +16102,7 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
 
     <div class="doc doc-contents ">
 
-        <p>틀 묶기</p>
+        <p>선택한 개체들을 그룹화하는 메서드</p>
 
 
     </div>
@@ -16585,6 +16666,24 @@ MoveNextPosEx는 캐럿이 컨트롤을 만나는 시점에 글상자 안으로 
     <div class="doc doc-contents ">
 
         <p>도형을 글 상자로 만들기 토글</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pyhwpx.run_methods.RunMethods.ShapeObjUnGroup" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ShapeObjUnGroup</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>그룹화한 개체를 분해(UnGroup)하는 메서드</p>
 
 
     </div>
