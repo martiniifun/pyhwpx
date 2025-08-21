@@ -3765,17 +3765,36 @@ class RunMethods(_InnerMethods):
         """
         return self.hwp.HAction.Run("ShapeObjAlignWidth")
 
-    def ShapeObjAttachCaption(self):
+    def ShapeObjAttachCaption(self, text: str = "", add_num: bool = True) -> bool:
         """
-        역방향으로 가장 가까운 컨트롤에 캡션 추가
+        현재 선택중인 컨트롤(컨트롤 미선택시 인접한 컨트롤)에 캡션 추가.
+        캐럿 좌우로 두 개의 컨트롤이 나란히 붙어있는 경우에는 캐럿 우측 컨트롤이 우선이며,
+        캐럿 위아래 문단에 두 개의 컨트롤이 있는 경우에는 상단 컨트롤이 우선이다.
 
         캐럿 위쪽의 표, 이미지 등에 캡션을 생성한다.
-        실행 후에는 캡션 안에 캐럿이 있으므로
-        직접 insert_text 등으로 입력하고 CloseEx로 빠져나오면 된다.
+        text 파라미터 미입력 실행시에는 빈 캡션을 생성하고 캐럿이 캡션 안에 있는 상태가 된다.
+        그 경우에는 직접  hwp.insert_text 등으로 후속작업을 마친 후 hwp.CloseEx()로 빠져나오면 된다.
+        컨트롤에 캡션이 있을 때에는 캡션 시작부분으로 진입한다. (캡션번호보다 왼쪽)
 
-        위쪽 컨트롤에 캡션이 있을 때에는 캡션 시작부분으로 진입한다.
+        Args:
+            text: 캡션에 삽입할 텍스트. 입력하지 않는 경우 캡션으로 진입한 상태가 된다.
+            add_num: 캡션 머리에 캡션번호 삽입 여부. 기본값은 True로, 캡션번호가 생긴다.
+
+        Returns:
+            성공시 True, 실패시 False를 리턴한다.
         """
-        return self.hwp.HAction.Run("ShapeObjAttachCaption")
+        self.hwp.HAction.Run("ShapeObjAttachCaption")
+        if not text:
+            return True
+        self.SelectAll()
+        self.Delete()
+        if add_num:
+            self.ShapeObjInsertCaptionNum()
+        try:
+            return self.insert_text(text)
+        finally:
+            self.CloseEx()
+
 
     def ShapeObjAttachTextBox(self):
         """
@@ -3837,13 +3856,20 @@ class RunMethods(_InnerMethods):
 
     def ShapeObjGroup(self):
         """
-        틀 묶기
+        선택한 개체들을 그룹화하는 메서드
         """
         self.set_message_box_mode(0x10000)
         try:
             return self.hwp.HAction.Run("ShapeObjGroup")
         finally:
             self.set_message_box_mode(0xF0000)
+
+    def ShapeObjUnGroup(self):
+        """
+        그룹화한 개체를 분해(UnGroup)하는 메서드
+        """
+        return self.hwp.HAction.Run("ShapeObjUnGroup")
+
 
     def ShapeObjGuideLine(self) -> bool:
         """
@@ -3854,28 +3880,24 @@ class RunMethods(_InnerMethods):
     def ShapeObjHorzFlip(self):
         """
         그리기 개체 좌우 뒤집기
-
         """
         return self.hwp.HAction.Run("ShapeObjHorzFlip")
 
     def ShapeObjHorzFlipOrgState(self):
         """
         그리기 개체 좌우 뒤집기를 원상태로 되돌리기
-
         """
         return self.hwp.HAction.Run("ShapeObjHorzFlipOrgState")
 
     def ShapeObjInsertCaptionNum(self):
         """
         캡션 번호 넣기
-
         """
         return self.hwp.HAction.Run("ShapeObjInsertCaptionNum")
 
     def ShapeObjLineProperty(self):
         """
         고치기 대화상자중 line tab
-
         """
         return self.hwp.HAction.Run("ShapeObjLineProperty")
 
@@ -3894,91 +3916,78 @@ class RunMethods(_InnerMethods):
     def ShapeObjLock(self):
         """
         개체 Lock
-
         """
         return self.hwp.HAction.Run("ShapeObjLock")
 
     def ShapeObjMoveDown(self):
         """
         키로 움직이기(아래)
-
         """
         return self.hwp.HAction.Run("ShapeObjMoveDown")
 
     def ShapeObjMoveLeft(self):
         """
         키로 움직이기(왼쪽)
-
         """
         return self.hwp.HAction.Run("ShapeObjMoveLeft")
 
     def ShapeObjMoveRight(self):
         """
         키로 움직이기(오른쪽)
-
         """
         return self.hwp.HAction.Run("ShapeObjMoveRight")
 
     def ShapeObjMoveUp(self):
         """
         키로 움직이기(위)
-
         """
         return self.hwp.HAction.Run("ShapeObjMoveUp")
 
     def ShapeObjNextObject(self):
         """
         이후 개체로 이동(tab키)
-
         """
         return self.hwp.HAction.Run("ShapeObjNextObject")
 
     def ShapeObjNorm(self):
         """
         기본 도형 설정
-
         """
         return self.hwp.HAction.Run("ShapeObjNorm")
 
     def ShapeObjPrevObject(self):
         """
         이전 개체로 이동(shift + tab키)
-
         """
         return self.hwp.HAction.Run("ShapeObjPrevObject")
 
     def ShapeObjResizeDown(self):
         """
         키로 크기 조절(shift + 아래)
-
         """
         return self.hwp.HAction.Run("ShapeObjResizeDown")
 
     def ShapeObjResizeLeft(self):
         """
         키로 크기 조절(shift + 왼쪽)
-
         """
         return self.hwp.HAction.Run("ShapeObjResizeLeft")
 
     def ShapeObjResizeRight(self):
         """
         키로 크기 조절(shift + 오른쪽)
-
         """
         return self.hwp.HAction.Run("ShapeObjResizeRight")
 
     def ShapeObjResizeUp(self):
         """
         키로 크기 조절(shift + 위)
-
         """
         return self.hwp.HAction.Run("ShapeObjResizeUp")
 
     def ShapeObjRightAngleRotater(self):
         """
         90도 시계방향 회전
-
         """
         return self.hwp.HAction.Run("ShapeObjRightAngleRotater")
 
@@ -3991,21 +4000,18 @@ class RunMethods(_InnerMethods):
     def ShapeObjRotater(self):
         """
         자유각 회전(회전중심 고정)
-
         """
         return self.hwp.HAction.Run("ShapeObjRotater")
 
     def ShapeObjSaveAsPicture(self):
         """
         개체를 그림으로 저장하기
-
         """
         return self.hwp.HAction.Run("ShapeObjSaveAsPicture")
 
     def ShapeObjSelect(self):
         """
         틀 선택 도구
-
         """
         return self.hwp.HAction.Run("ShapeObjSelect")
 
@@ -4026,7 +4032,6 @@ class RunMethods(_InnerMethods):
         그리기 개체 안내선 보기 토글
         """
         return self.hwp.HAction.Run("ShapeObjShowGuideLine")
-
 
     def ShapeObjShowGuideLineBase(self) -> bool:
         """
@@ -4067,42 +4072,36 @@ class RunMethods(_InnerMethods):
     def ShapeObjUngroup(self):
         """
         틀 풀기(그룹해제)
-
         """
         return self.hwp.HAction.Run("ShapeObjUngroup")
 
     def ShapeObjUnlockAll(self):
         """
         개체 잠금해제(Unlock All)
-
         """
         return self.hwp.HAction.Run("ShapeObjUnlockAll")
 
     def ShapeObjVertFlip(self):
         """
         그리기 개체 상하 뒤집기
-
         """
         return self.hwp.HAction.Run("ShapeObjVertFlip")
 
     def ShapeObjVertFlipOrgState(self):
         """
         그리기 개체 상하 뒤집기 원상태로 되돌리기
-
         """
         return self.hwp.HAction.Run("ShapeObjVertFlipOrgState")
 
     def ShapeObjWrapSquare(self):
         """
         직사각형
-
         """
         return self.hwp.HAction.Run("ShapeObjWrapSquare")
 
     def ShapeObjWrapTopAndBottom(self):
         """
         자리 차지
-
         """
         return self.hwp.HAction.Run("ShapeObjWrapTopAndBottom")
 
@@ -4137,14 +4136,12 @@ class RunMethods(_InnerMethods):
     def SoftKeyboard(self):
         """
         소프트키보드 보기 토글
-
         """
         return self.hwp.HAction.Run("Soft Keyboard")
 
     def SpellingCheck(self):
         """
         맞춤법
-
         """
         return self.hwp.HAction.Run("SpellingCheck")
 
@@ -4167,14 +4164,12 @@ class RunMethods(_InnerMethods):
     def SplitMemoClose(self):
         """
         메모창 닫기
-
         """
         return self.hwp.HAction.Run("SplitMemoClose")
 
     def SplitMemoOpen(self):
         """
         메모창 열기
-
         """
         return self.hwp.HAction.Run("SplitMemoOpen")
 
@@ -4185,7 +4180,6 @@ class RunMethods(_InnerMethods):
     def StyleClearCharStyle(self):
         """
         글자 스타일 해제
-
         """
         return self.hwp.HAction.Run("StyleClearCharStyle")
 
