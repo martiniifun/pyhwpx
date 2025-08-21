@@ -3864,11 +3864,11 @@ class RunMethods(_InnerMethods):
         finally:
             self.set_message_box_mode(0xF0000)
 
-    def ShapeObjUnGroup(self):
+    def ShapeObjUngroup(self):
         """
-        그룹화한 개체를 분해(UnGroup)하는 메서드
+        그룹화한 개체를 분해(Ungroup)하는 메서드
         """
-        return self.hwp.HAction.Run("ShapeObjUnGroup")
+        return self.hwp.HAction.Run("ShapeObjUngroup")
 
 
     def ShapeObjGuideLine(self) -> bool:
