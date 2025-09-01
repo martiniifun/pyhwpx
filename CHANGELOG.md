@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.5.6] - 2025-09-01
+### 📝 Misc
+- hwp.find_replace 메서드 내부 get_text_file에 `option=""` 추가
+
+---
 ## [1.5.5] - 2025-08-22
 ### 📝 Misc
 - hwp.ShapeObjUngroup 으로 메서드 이름 수정(G -> g)
