@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.6.4] - 2025-09-16
+### 🐛 Fixed
+- hwp.is_empty_page 내부, get_text_file 실패시 Undo 추가
+
+---
 ## [1.6.3] - 2025-09-16
 ### 📝 Misc
 - hwp.is_empty_page 메서드 내부에서 GetTextFile 실패시 True 바로 리턴
