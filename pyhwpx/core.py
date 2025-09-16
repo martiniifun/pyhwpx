@@ -1786,6 +1786,8 @@ class Hwp(ParamHelpers, RunMethods):
                 undo_count += 1
         content = self.get_text_file("HWPML2X", )
         if content is None:
+            for _ in range(undo_count):
+                self.Undo()
             return True
         for _ in range(undo_count):
             self.Undo()
