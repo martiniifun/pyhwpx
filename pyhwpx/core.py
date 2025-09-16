@@ -1769,6 +1769,7 @@ class Hwp(ParamHelpers, RunMethods):
         """
         <테스트중> 비어있는 페이지인지 확인하는 메서드. 보완이 필요할 듯. (오류발생시 제보 바람)
         """
+        undo_count = 0
         if pgno != -1:
             self.goto_page(pgno)
         init_pos = self.get_pos()
@@ -1778,13 +1779,13 @@ class Hwp(ParamHelpers, RunMethods):
         s_pos = self.get_pos()
         self.select_text_by_get_pos(s_pos, e_pos)
         if ignore_space:
-            self.find_replace_all(" ", "")
+            if self.find_replace_all(" ", ""):
+                undo_count += 1
         if ignore_fwspace:
-            self.find_replace_all("^s", "")
+            if self.find_replace_all("^s", ""):
+                undo_count += 1
         content = self.get_text_file("HWPML2X", )
-        if ignore_space:
-            self.Undo()
-        if ignore_fwspace:
+        for _ in range(undo_count):
             self.Undo()
         self.set_pos(*init_pos)
         if "<CHAR>" in content or "<SHAPEOBJECT" in content:
