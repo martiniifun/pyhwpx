@@ -1765,7 +1765,7 @@ class Hwp(ParamHelpers, RunMethods):
             pset.LineSpacing = value * 200  # HwpUnit 단위로 변환 후
         return self.hwp.HAction.Execute(act, pset.HSet)
 
-    def is_empty_page(self, pgno: int = -1, ignore_space: bool = True, ignore_fwspace: bool = False):
+    def is_empty_page(self, pgno: int = -1, ignore_space: bool = True, ignore_fwspace: bool = True):
         """
         <테스트중> 비어있는 페이지인지 확인하는 메서드. 보완이 필요할 듯. (오류발생시 제보 바람)
         """
