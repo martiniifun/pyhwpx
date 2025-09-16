@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.6.0] - 2025-09-16
+### 🚀 Added
+- hwp.is_empty_page 메서드 추가(보완 필요. 사용 중 오류 발생시 제보 바람)
+
+---
 ## [1.5.6] - 2025-09-01
 ### 📝 Misc
 - hwp.find_replace 메서드 내부 get_text_file에 `option=""` 추가
