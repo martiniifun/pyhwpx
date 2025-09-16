@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.6.2] - 2025-09-16
+### 📝 Misc
+- hwp.is_empty_page 메서드의 ignore_fwspace(고정폭빈칸 무시)도 True로 변경
+
+---
 ## [1.6.1] - 2025-09-16
 ### 🐛 Fixed
 - hwp.is_empty_page 내부 Undo 로직 변경
