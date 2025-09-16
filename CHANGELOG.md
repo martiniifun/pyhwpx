@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.6.3] - 2025-09-16
+### 📝 Misc
+- hwp.is_empty_page 메서드 내부에서 GetTextFile 실패시 True 바로 리턴
+
+---
 ## [1.6.2] - 2025-09-16
 ### 📝 Misc
 - hwp.is_empty_page 메서드의 ignore_fwspace(고정폭빈칸 무시)도 True로 변경
