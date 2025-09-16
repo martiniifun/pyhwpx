@@ -1785,6 +1785,8 @@ class Hwp(ParamHelpers, RunMethods):
             if self.find_replace_all("^s", ""):
                 undo_count += 1
         content = self.get_text_file("HWPML2X", )
+        if content is None:
+            return True
         for _ in range(undo_count):
             self.Undo()
         self.set_pos(*init_pos)
