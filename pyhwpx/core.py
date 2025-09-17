@@ -7013,7 +7013,11 @@ class Hwp(ParamHelpers, RunMethods):
             >>> hwp.select_text(marked_area)
             True
         """
-        return self.hwp.GetSelectedPos()
+        spos = self.hwp.CreateSet("ListParaPos")
+        epos = self.hwp.CreateSet("ListParaPos")
+        ret = self.hwp.GetSelectedPosBySet(spos, epos)
+        return (ret, spos.Item("List"), spos.Item("Para"), spos.Item("Pos"),
+                epos.Item("List"), epos.Item("Para"), epos.Item("Pos"))
 
     def GetSelectedPos(self) -> Tuple[bool, str, str, int, str, str, int]:
         return self.get_selected_pos()
