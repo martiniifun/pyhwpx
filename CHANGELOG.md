@@ -1,5 +1,10 @@
 # 📦 Changelog
 
+## [1.6.5] - 2025-09-17
+### 🐛 Fixed
+- hwp.get_selected_pos() 메서드 실행시 낮은 버전에서도 안정적으로 실행되게 하기 위해, 내부적으로 BySet 메서드로 대체함
+
+---
 ## [1.6.4] - 2025-09-16
 ### 🐛 Fixed
 - hwp.is_empty_page 내부, get_text_file 실패시 Undo 추가
