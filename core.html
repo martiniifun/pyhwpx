@@ -6463,7 +6463,7 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
 
 
 <h4 id="pyhwpx.core.Hwp.find" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">find</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;Forward&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">TextColor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MatchCase</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">SeveralWords</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">UseWildCards</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">WholeWordOnly</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">AutoSpell</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">HanjaFromHangul</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">AllWordForms</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ReplaceStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">FindJaso</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindType</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">find</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;Forward&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">TextColor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MatchCase</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">SeveralWords</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">UseWildCards</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">WholeWordOnly</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">AutoSpell</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">HanjaFromHangul</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">AllWordForms</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ReplaceStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">FindJaso</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindType</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
 
 </h4>
 
@@ -6563,7 +6563,7 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
             </td>
             <td>
               <div class="doc-md-description">
-                <p>글자크기(hwp.PointToHwpUnit)</p>
+                <p>글자크기(내부에서 hwp.PointToHwpUnit이 적용되므로, 포인트단위로 입력하기)</p>
               </div>
             </td>
             <td>
@@ -6579,7 +6579,7 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
             </td>
             <td>
               <div class="doc-md-description">
-                <p>대소문자 구분(기본값 1)</p>
+                <p>대소문자 구별(기본값 1)</p>
               </div>
             </td>
             <td>
@@ -6611,11 +6611,11 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
             </td>
             <td>
               <div class="doc-md-description">
-                <p>아무개 문자(1),</p>
+                <p>아무개 문자(0),</p>
               </div>
             </td>
             <td>
-                  <code>1</code>
+                  <code>0</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -6643,7 +6643,7 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>토씨(조사) 자동 교정(1)</p>
               </div>
             </td>
             <td>
@@ -6675,7 +6675,7 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>문자열 결합=띄어쓰기 무시(1)</p>
               </div>
             </td>
             <td>
@@ -6739,7 +6739,7 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>다시 찾기를 할 때 마지막으로 실행한 찾기[True]를 할 것인가, 찾아가기[False]를 할 것인가의 여부(1)</p>
               </div>
             </td>
             <td>
@@ -7070,15 +7070,15 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
 
 
 <h4 id="pyhwpx.core.Hwp.find_replace" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">find_replace</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;Forward&#39;</span><span class="p">,</span> <span class="n">MatchCase</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">AllWordForms</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">SeveralWords</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">UseWildCards</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">WholeWordOnly</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">AutoSpell</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">IgnoreFindString</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">IgnoreReplaceString</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ReplaceMode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">HanjaFromHangul</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">FindJaso</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ReplaceStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">FindType</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">find_replace</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;Forward&#39;</span><span class="p">,</span> <span class="n">MatchCase</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">AllWordForms</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">SeveralWords</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">UseWildCards</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">WholeWordOnly</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">AutoSpell</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">IgnoreFindString</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">IgnoreReplaceString</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ReplaceMode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">HanjaFromHangul</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">FindJaso</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ReplaceStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">FindType</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
 
 </h4>
 
 
     <div class="doc doc-contents ">
 
-        <p>아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,</p>
-<p>re=True로 설정하고 실행하면,
+        <p>아래아한글의 찾아바꾸기와 동일한 액션을 수행하지만,</p>
+<p>regex=True로 설정하고 실행하면,
 문단별로 잘라서 문서 전체를 순회하며
 파이썬의 re.sub 함수를 실행한다.</p>
 
@@ -7091,7 +7091,7 @@ ParameterSet으로 변환하여 넘겨주기도 한다.
 
 
 <h4 id="pyhwpx.core.Hwp.find_replace_all" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">find_replace_all</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MatchCase</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">AllWordForms</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">SeveralWords</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">UseWildCards</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">WholeWordOnly</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">AutoSpell</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">IgnoreFindString</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">IgnoreReplaceString</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ReplaceMode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">HanjaFromHangul</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">FindJaso</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ReplaceStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">FindType</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">find_replace_all</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MatchCase</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">AllWordForms</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">SeveralWords</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">UseWildCards</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">WholeWordOnly</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">AutoSpell</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">IgnoreFindString</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">IgnoreReplaceString</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ReplaceMode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">HanjaFromHangul</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">FindJaso</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FindStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ReplaceStyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">FindType</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
 
 </h4>
 
