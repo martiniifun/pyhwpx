@@ -5112,7 +5112,7 @@ class Hwp(ParamHelpers, RunMethods):
             Height: Optional[int | float] = None,
             MatchCase: int = 1,
             SeveralWords: int = 0,
-            UseWildCards: int = 1,
+            UseWildCards: int = 0,
             WholeWordOnly: int = 0,
             AutoSpell: int = 1,
             HanjaFromHangul: int = 1,
@@ -5139,18 +5139,18 @@ class Hwp(ParamHelpers, RunMethods):
 
             regex: 정규식 탐색(기본값 False)
             TextColor: 글자색(hwp.RGBColor)
-            Height: 글자크기(hwp.PointToHwpUnit)
-            MatchCase: 대소문자 구분(기본값 1)
+            Height: 글자크기(내부에서 hwp.PointToHwpUnit이 적용되므로, 포인트단위로 입력하기)
+            MatchCase: 대소문자 구별(기본값 1)
             SeveralWords: 여러 단어 찾기(콤마로 구분하여 or연산 실시, 기본값 0)
-            UseWildCards: 아무개 문자(1),
+            UseWildCards: 아무개 문자(0),
             WholeWordOnly: 온전한 낱말(0),
-            AutoSpell:
+            AutoSpell: 토씨(조사) 자동 교정(1)
             HanjaFromHangul: 한글로 한자 찾기(1),
-            AllWordForms:
+            AllWordForms: 문자열 결합=띄어쓰기 무시(1)
             FindStyle: 찾을 글자모양
             ReplaceStyle: 바꿀 글자모양
             FindJaso: 자소 단위 찾기(0),
-            FindType:
+            FindType: 다시 찾기를 할 때 마지막으로 실행한 찾기[True]를 할 것인가, 찾아가기[False]를 할 것인가의 여부(1)
 
         Returns:
             단어를 찾으면 찾아가서 선택한 후 True를 리턴,
@@ -5252,7 +5252,7 @@ class Hwp(ParamHelpers, RunMethods):
             MatchCase=1,
             AllWordForms=0,
             SeveralWords=1,
-            UseWildCards=1,
+            UseWildCards=0,
             WholeWordOnly=0,
             AutoSpell=1,
             IgnoreFindString=0,
@@ -5265,9 +5265,9 @@ class Hwp(ParamHelpers, RunMethods):
             FindType=1,
     ):
         """
-        아래아한글의 찾아바꾸기와 동일한 액션을 수항해지만,
+        아래아한글의 찾아바꾸기와 동일한 액션을 수행하지만,
 
-        re=True로 설정하고 실행하면,
+        regex=True로 설정하고 실행하면,
         문단별로 잘라서 문서 전체를 순회하며
         파이썬의 re.sub 함수를 실행한다.
         """
@@ -5338,7 +5338,7 @@ class Hwp(ParamHelpers, RunMethods):
             MatchCase=1,
             AllWordForms=0,
             SeveralWords=1,
-            UseWildCards=1,
+            UseWildCards=0,
             WholeWordOnly=0,
             AutoSpell=1,
             IgnoreFindString=0,
