@@ -1212,7 +1212,10 @@ class Hwp(ParamHelpers, RunMethods):
             >>> ctrl.Properties = prop  # 파라미터셋 속성을 표 오브젝트 컨트롤에 적용
             >>> hwp.Cancel()  # 적용을 마쳤으면 표선택 해제(권장)
         """
-        return Ctrl(self.hwp.CurSelectedCtrl)
+        try:
+            return Ctrl(self.hwp.CurSelectedCtrl)
+        except AttributeError:
+            return None
 
     @property
     def EditMode(self) -> int:
@@ -1807,6 +1810,8 @@ class Hwp(ParamHelpers, RunMethods):
 
         """
         before_pos = self.get_pos()
+        if before_pos == (0, 0, 16):
+            before_pos = (0, 0, 0)
         self.MoveRight()
         after_pos = self.get_pos()
         self.set_pos(*before_pos)
@@ -5121,6 +5126,7 @@ class Hwp(ParamHelpers, RunMethods):
             ReplaceStyle: str = "",
             FindJaso: int = 0,
             FindType: int = 1,
+            **kwargs,
     ) -> bool:
         """
         direction 방향으로 특정 단어를 찾아가는 메서드.
@@ -5180,6 +5186,8 @@ class Hwp(ParamHelpers, RunMethods):
             pset.FindCharShape.TextColor = TextColor
         if Height is not None:
             pset.FindCharShape.Height = self.PointToHwpUnit(Height)
+        for key, value in kwargs.items():
+            setattr(pset, key, value)
         try:
             return self.hwp.HAction.Execute("RepeatFind", pset.HSet)
         finally:
