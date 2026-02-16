@@ -5115,6 +5115,7 @@ class Hwp(ParamHelpers, RunMethods):
             regex: bool = False,
             TextColor: Optional[int] = None,
             Height: Optional[int | float] = None,
+            FaceName: Optional[str] = None,
             MatchCase: int = 1,
             SeveralWords: int = 0,
             UseWildCards: int = 0,
@@ -5146,6 +5147,7 @@ class Hwp(ParamHelpers, RunMethods):
             regex: 정규식 탐색(기본값 False)
             TextColor: 글자색(hwp.RGBColor)
             Height: 글자크기(내부에서 hwp.PointToHwpUnit이 적용되므로, 포인트단위로 입력하기)
+            FaceName: 글꼴이름(FaceNameHangul)
             MatchCase: 대소문자 구별(기본값 1)
             SeveralWords: 여러 단어 찾기(콤마로 구분하여 or연산 실시, 기본값 0)
             UseWildCards: 아무개 문자(0),
@@ -5186,6 +5188,8 @@ class Hwp(ParamHelpers, RunMethods):
             pset.FindCharShape.TextColor = TextColor
         if Height is not None:
             pset.FindCharShape.Height = self.PointToHwpUnit(Height)
+        if FaceName is not None:
+            pset.FindCharShape.FaceNameHangul = FaceName
         for key, value in kwargs.items():
             setattr(pset, key, value)
         try:
