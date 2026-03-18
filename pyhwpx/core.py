@@ -3,6 +3,7 @@ from .param_helpers import ParamHelpers
 from .run_methods import RunMethods
 from .fonts import fonts
 from importlib.resources import files
+import copy
 import ctypes
 import json
 import os
@@ -15,7 +16,6 @@ import urllib.error
 import xml.etree.ElementTree as ET
 import zipfile
 from functools import wraps
-
 from collections import defaultdict
 from io import StringIO
 from time import sleep
@@ -1613,6 +1613,193 @@ class Hwp(ParamHelpers, RunMethods):
                     return key
 
     # 커스텀 메서드
+    def modify_style(self,
+            src_style_name: str,
+            Name: Optional[str] = None,
+            EngName: Optional[str] = None,
+            Height: Optional[Union[str, int]] = None,
+            TextColor: Optional[Union[str, int]] = None,
+            Ratio: Optional[Union[str, int]] = None,
+            Spacing: Optional[Union[str, int]] = None,
+            Bold: Optional[bool] = None,
+            Italic: Optional[bool] = None,
+            Underline: Optional[bool] = None,
+            FaceName: Optional[str] = None,
+            Align: Optional[Literal["Left", "Right", "Center", "Justify", "Distribute"]] = None,
+            LineSpacing: Optional[Union[str, int]] = None
+    ) -> bool:
+        """기존 스타일의 부분 서식(로컬 서식)을 보존하면서 원하는 속성만 안전하게 덧입혀주는 함수입니다.
+
+        아래아한글 XML(HWPML) 문서에서 특정 스타일을 찾아 속성을 수정합니다.
+        동일한 스타일이 적용된 문단 내에 존재하는 개별적인 글자 모양(예: 특정 단어만 빨간색 등)을
+        초기화하지 않고, 수정 요청된 속성(예: 볼드, 이탤릭 등)만 병합(Merge)하여 보존합니다.
+
+        Args:
+            src_style_name (str): 수정을 가할 대상 한글 스타일 이름 (예: "개요 1", "본문").
+            Name (Optional[str], optional): 변경할 새로운 스타일 이름.
+            EngName (Optional[str], optional): 변경할 새로운 스타일 영문 이름
+            Height (Optional[Union[str, int]], optional): 글자 크기 (예: 1200 -> 12pt)
+            TextColor (Optional[Union[str, int]], optional): 글자 색상 코드 (예: "255"는 빨강)
+            Ratio (Optional[Union[str, int]], optional): 글자 장평 백분율 (예: 100)
+            Spacing (Optional[Union[str, int]], optional): 글자 자간 백분율 (예: -5)
+            Bold (Optional[bool], optional): 굵은 글씨 적용 여부
+            Italic (Optional[bool], optional): 기울임꼴 적용 여부
+            Underline (Optional[bool], optional): 밑줄 적용 여부
+            FaceName (Optional[str], optional): 글꼴 이름 (예: "맑은 고딕"). 지정 시 FONTFACE 리스트에 자동 등록됨
+            Align (Optional[Literal["Left", "Right", "Center", "Justify", "Distribute"]], optional): 문단 정렬 방식
+            LineSpacing (Optional[Union[str, int]], optional): 문단 줄간격 백분율 (예: 160)
+
+        Returns:
+            bool: 스타일 수정 성공시 True 리턴
+        """
+        path = self.Path
+        xml_file_path = path.replace(".hwp", "_temp.hwp")
+        file_format = self.XHwpDocuments.Active_XHwpDocument.Format
+        self.save()
+        self.save_as(xml_file_path, format="HWPML2X")
+        self.FileClose()
+
+        local_args = locals()
+        exclude_keys = ['src_style_name']
+        kwargs = {k: v for k, v in local_args.items() if k not in exclude_keys and v is not None}
+
+        try:
+            tree = ET.parse(xml_file_path)
+            root = tree.getroot()
+        except Exception as e:
+            return f"파일 로드 오류: {e}"
+
+        # 1. 타겟 스타일 찾기
+        target_style = None
+        for style in root.iter('STYLE'):
+            if style.get('Name') == src_style_name:
+                target_style = style
+                break
+
+        if target_style is None:
+            return f"오류: '{src_style_name}' 스타일을 찾을 수 없습니다."
+
+        style_id = target_style.get('Id')
+        orig_base_char_id = target_style.get('CharShape')
+        orig_base_para_id = target_style.get('ParaShape')
+
+        # 스타일 메타데이터 수정
+        if 'Name' in kwargs: target_style.set('Name', str(kwargs['Name']))
+        if 'EngName' in kwargs: target_style.set('EngName', str(kwargs['EngName']))
+
+        char_list = root.find('.//CHARSHAPELIST')
+        para_list = root.find('.//PARASHAPELIST')
+
+        def apply_char_kwargs(cs_node):
+            """헬퍼 함수: 특정 CharShape XML 노드에 kwargs 속성을 덧입히는 함수"""
+            if 'Height' in kwargs: cs_node.set('Height', str(kwargs['Height']))
+            if 'TextColor' in kwargs: cs_node.set('TextColor', str(kwargs['TextColor']))
+
+            lang_list = ["Hangul", "Hanja", "Japanese", "Latin", "Other", "Symbol", "User"]
+            if 'Ratio' in kwargs:
+                ratio_tag = cs_node.find('RATIO')
+                if ratio_tag is None: ratio_tag = ET.SubElement(cs_node, 'RATIO')
+                for lang in lang_list: ratio_tag.set(lang, str(kwargs['Ratio']))
+
+            if 'Spacing' in kwargs:
+                spacing_tag = cs_node.find('CHARSPACING')
+                if spacing_tag is None: spacing_tag = ET.SubElement(cs_node, 'CHARSPACING')
+                for lang in lang_list: spacing_tag.set(lang, str(kwargs['Spacing']))
+
+            def toggle_tag(parent, tag_name, state, default_attrs=None):
+                tag = parent.find(tag_name)
+                if state and tag is None:
+                    new_tag = ET.SubElement(parent, tag_name)
+                    if default_attrs:
+                        for k, v in default_attrs.items(): new_tag.set(k, v)
+                elif not state and tag is not None:
+                    parent.remove(tag)
+
+            if 'Bold' in kwargs: toggle_tag(cs_node, 'BOLD', kwargs['Bold'])
+            if 'Italic' in kwargs: toggle_tag(cs_node, 'ITALIC', kwargs['Italic'])
+            if 'Underline' in kwargs: toggle_tag(cs_node, 'UNDERLINE', kwargs['Underline'],
+                                                 {"Type": "Bottom", "Shape": "Solid", "Color": "0"})
+
+            if 'FaceName' in kwargs:
+                new_font_name = kwargs['FaceName']
+                font_id_tag = cs_node.find('FONTID')
+                if font_id_tag is None: font_id_tag = ET.SubElement(cs_node, 'FONTID')
+
+                for fontface in root.iter('FONTFACE'):
+                    lang = fontface.get('Lang')
+                    matched_id = None
+                    for font in fontface.iter('FONT'):
+                        if font.get('Name') == new_font_name:
+                            matched_id = font.get('Id')
+                            break
+                    if matched_id is None:
+                        matched_id = str(len(list(fontface.iter('FONT'))))
+                        ET.SubElement(fontface, 'FONT', {"Id": matched_id, "Name": new_font_name, "Type": "ttf"})
+                        fontface.set('Count', str(int(fontface.get('Count', 0)) + 1))
+                    font_id_tag.set(lang, matched_id)
+
+        char_map = {}
+        needs_char_update = any(
+            k in ['Height', 'TextColor', 'Ratio', 'Spacing', 'Bold', 'Italic', 'Underline', 'FaceName'] for k in kwargs)
+
+        new_para_id = None
+        needs_para_update = any(k in ['Align', 'LineSpacing'] for k in kwargs)
+
+        if needs_para_update and orig_base_para_id:
+            orig_para = para_list.find(f"PARASHAPE[@Id='{orig_base_para_id}']")
+            if orig_para is not None:
+                new_para = copy.deepcopy(orig_para)
+                new_para_id = str(len(list(para_list.findall('PARASHAPE'))))
+                new_para.set('Id', new_para_id)
+                if 'Align' in kwargs: new_para.set('Align', str(kwargs['Align']))
+                if 'LineSpacing' in kwargs:
+                    margin = new_para.find('PARAMARGIN')
+                    if margin is None: margin = ET.SubElement(new_para, 'PARAMARGIN')
+                    margin.set('LineSpacing', str(kwargs['LineSpacing']))
+                para_list.append(new_para)
+                para_list.set('Count', str(len(list(para_list.findall('PARASHAPE')))))
+
+        for p_tag in root.iter('P'):
+            if p_tag.get('Style') == style_id:
+
+                if new_para_id:
+                    p_tag.set('ParaShape', new_para_id)
+
+                if needs_char_update:
+                    for text_tag in p_tag.iter('TEXT'):
+                        curr_c_id = text_tag.get('CharShape')
+                        if not curr_c_id: continue
+
+                        if curr_c_id in char_map:
+                            text_tag.set('CharShape', char_map[curr_c_id])
+                        else:
+                            orig_c_node = char_list.find(f"CHARSHAPE[@Id='{curr_c_id}']")
+                            if orig_c_node is not None:
+                                new_c_node = copy.deepcopy(orig_c_node)
+                                new_c_id = str(len(list(char_list.findall('CHARSHAPE'))))
+                                new_c_node.set('Id', new_c_id)
+
+                                apply_char_kwargs(new_c_node)
+
+                                char_list.append(new_c_node)
+                                char_map[curr_c_id] = new_c_id
+                                text_tag.set('CharShape', new_c_id)
+                                char_list.set('Count', str(len(list(char_list.findall('CHARSHAPE')))))
+
+        # 스타일 메타데이터의 기본 CharShape, ParaShape ID 교체
+        if new_para_id:
+            target_style.set('ParaShape', new_para_id)
+        if needs_char_update and orig_base_char_id in char_map:
+            target_style.set('CharShape', char_map[orig_base_char_id])
+
+        # 원래 파일 덮어씌우고 임시파일 삭제
+        tree.write(xml_file_path, encoding="UTF-8", xml_declaration=True)
+        print(f"완료: '{src_style_name}' 스타일이 적용되었습니다.")
+        self.open(xml_file_path)
+        self.save_as(path, format=file_format)
+        os.remove(xml_file_path)
+        return True
+
     def get_ctrl_by_ctrl_id(self, ctrl_id: Literal[
         "fn", "en", "tbl", "eqed", "gso", "atno", "nwno", "pgct", "pghd", "pgnp", "head", "foot", "%dte", "%ddt", "pat", "%bmk", "%mmg", "%xrf", "%clk", "%smr", "%usr", "%hlk", "bokm", "idxm", "tdut", "tcmt"
     ]) -> list:
