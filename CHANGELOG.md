@@ -1,5 +1,13 @@
 # 📦 Changelog
 
+## [1.7.1] - 2026-03-19
+### 🐛 Fixed
+- hwp.modify_style 메서드 수정 : 글머리 크기를 Height에 맞추기 여부 파라미터 삽입(keep_heading_size)
+- hwp.modify_style 메서드 수정 : 문단 정렬 유형 추가(DistributeSpace)
+- Height 파라미터에 HwpUnit 대신 pt 단위로 삽입 방식 수정(12.5 입력 -> 12.5pt)
+- docstring 추가
+
+---
 ## [1.7.0] - 2026-03-19
 ### 🚀 Added
 - hwp.modify_style 메서드 추가 : 스타일 수정(HML 포맷으로 임시저장한 후 XML 직접수정하는 방식)
