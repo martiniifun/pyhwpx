@@ -1931,6 +1931,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pyhwpx.core.Hwp.modify_style" class="md-nav__link">
+    <span class="md-ellipsis">
+      modify_style
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyhwpx.core.Hwp.move_all_caption" class="md-nav__link">
     <span class="md-ellipsis">
       move_all_caption
@@ -12725,6 +12734,273 @@ Examples:
     <div class="doc doc-contents ">
 
         <p>현재 창 최소화</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pyhwpx.core.Hwp.modify_style" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">modify_style</span><span class="p">(</span><span class="n">src_style_name</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">EngName</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">TextColor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Ratio</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Spacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Bold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Italic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Underline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">FaceName</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Align</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">LineSpacing</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>기존 스타일의 부분 서식(로컬 서식)을 보존하면서 원하는 속성만 안전하게 덧입혀주는 함수입니다.</p>
+<p>아래아한글 XML(HWPML) 문서에서 특정 스타일을 찾아 속성을 수정합니다.
+동일한 스타일이 적용된 문단 내에 존재하는 개별적인 글자 모양(예: 특정 단어만 빨간색 등)을
+초기화하지 않고, 수정 요청된 속성(예: 볼드, 이탤릭 등)만 병합(Merge)하여 보존합니다.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>src_style_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>수정을 가할 대상 한글 스타일 이름 (예: "개요 1", "본문").</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>Name</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>변경할 새로운 스타일 이름.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>EngName</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>변경할 새로운 스타일 영문 이름</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>Height</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="int">int</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>글자 크기 (예: 1200 -&gt; 12pt)</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>TextColor</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="int">int</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>글자 색상 코드 (예: "255"는 빨강)</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>Ratio</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="int">int</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>글자 장평 백분율 (예: 100)</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>Spacing</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="int">int</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>글자 자간 백분율 (예: -5)</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>Bold</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="bool">bool</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>굵은 글씨 적용 여부</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>Italic</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="bool">bool</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>기울임꼴 적용 여부</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>Underline</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="bool">bool</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>밑줄 적용 여부</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>FaceName</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>글꼴 이름 (예: "맑은 고딕"). 지정 시 FONTFACE 리스트에 자동 등록됨</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>Align</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Literal">Literal</span>[&#39;Left&#39;, &#39;Right&#39;, &#39;Center&#39;, &#39;Justify&#39;, &#39;Distribute&#39;]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>문단 정렬 방식</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>LineSpacing</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="int">int</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>문단 줄간격 백분율 (예: 160)</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>bool</code></td>            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>스타일 수정 성공시 True 리턴</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
