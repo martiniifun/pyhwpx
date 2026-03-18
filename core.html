@@ -12744,17 +12744,16 @@ Examples:
 
 
 <h4 id="pyhwpx.core.Hwp.modify_style" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">modify_style</span><span class="p">(</span><span class="n">src_style_name</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">EngName</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">TextColor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Ratio</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Spacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Bold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Italic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Underline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">FaceName</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Align</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">LineSpacing</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">modify_style</span><span class="p">(</span><span class="n">src_style_name</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">EngName</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">TextColor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Ratio</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Spacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Bold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Italic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Underline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">FaceName</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Align</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">LineSpacing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_heading_size</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h4>
 
 
     <div class="doc doc-contents ">
 
-        <p>기존 스타일의 부분 서식(로컬 서식)을 보존하면서 원하는 속성만 안전하게 덧입혀주는 함수입니다.</p>
-<p>아래아한글 XML(HWPML) 문서에서 특정 스타일을 찾아 속성을 수정합니다.
-동일한 스타일이 적용된 문단 내에 존재하는 개별적인 글자 모양(예: 특정 단어만 빨간색 등)을
-초기화하지 않고, 수정 요청된 속성(예: 볼드, 이탤릭 등)만 병합(Merge)하여 보존합니다.</p>
+        <p>아래아한글 XML(HWPML2X) 문서에서 특정 스타일을 찾아 속성을 수정합니다.
+파일변환 후 XML을 직접 수정하는 방식이므로 파일을 한 번 저장하고 닫았다가 여는 과정이 포함되어 있습니다.
+이 때문에 사용에 유의하셔야 합니다.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -12821,11 +12820,11 @@ Examples:
                 <code>Height</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="int">int</span>]]</code>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="int">int</span>, <span title="float">float</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>글자 크기 (예: 1200 -&gt; 12pt)</p>
+                <p>글자 크기 (예: 12 또는 12.5 -&gt; 자동으로 1200, 1250으로 변환됨)</p>
               </div>
             </td>
             <td>
@@ -12841,7 +12840,7 @@ Examples:
             </td>
             <td>
               <div class="doc-md-description">
-                <p>글자 색상 코드 (예: "255"는 빨강)</p>
+                <p>글자 색상 코드 (예: "255"는 빨강, <code>hwp.RGBColor(255, 0, 0)</code> 방식으로 입력할 수 있음)</p>
               </div>
             </td>
             <td>
@@ -12937,7 +12936,7 @@ Examples:
             </td>
             <td>
               <div class="doc-md-description">
-                <p>글꼴 이름 (예: "맑은 고딕"). 지정 시 FONTFACE 리스트에 자동 등록됨</p>
+                <p>글꼴 이름 (예: "맑은 고딕")</p>
               </div>
             </td>
             <td>
@@ -12949,11 +12948,19 @@ Examples:
                 <code>Align</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Literal">Literal</span>[&#39;Left&#39;, &#39;Right&#39;, &#39;Center&#39;, &#39;Justify&#39;, &#39;Distribute&#39;]]</code>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Literal">Literal</span>[&#39;Left&#39;, &#39;Right&#39;, &#39;Center&#39;, &#39;Justify&#39;, &#39;Distribute&#39;, &#39;DistributeSpace&#39;]]</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>문단 정렬 방식</p>
+<ul>
+<li>"Justify": 양쪽 정렬</li>
+<li>"Left": 왼쪽 정렬</li>
+<li>"Center": 가운데 정렬</li>
+<li>"Right": 오른쪽 정렬</li>
+<li>"Distribute": 배분 정렬</li>
+<li>"DistributeSpace": 나눔 정렬</li>
+</ul>
               </div>
             </td>
             <td>
@@ -12974,6 +12981,22 @@ Examples:
             </td>
             <td>
                   <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>keep_heading_size</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>True일 경우 개요/글머리 기호의 서식(Height)은 변경하지 않고 유지함. 기본값은 False.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
             </td>
           </tr>
       </tbody>
@@ -13001,6 +13024,31 @@ Examples:
           </tr>
       </tbody>
     </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyhwpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hwp</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span> <span class="o">=</span> <span class="n">Hwp</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 스타일 이름 변경</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">modify_style</span><span class="p">(</span><span class="s2">&quot;개요 1&quot;</span><span class="p">,</span> <span class="s2">&quot;수준 1&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">True</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 스타일 이름 한글, 영문 모두 변경</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">modify_style</span><span class="p">(</span><span class="s2">&quot;개요 1&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;제목 1&quot;</span><span class="p">,</span> <span class="n">EngName</span><span class="o">=</span><span class="s2">&quot;Heading 1&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="go">True</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># &quot;개요 1&quot; 스타일의 글자 크기를 12.5pt로, 볼드체로 변경</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">modify_style</span><span class="p">(</span><span class="s2">&quot;개요 1&quot;</span><span class="p">,</span> <span class="n">Height</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">Bold</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="go">True</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 여러 속성 동시 변경: 글꼴, 크기, 정렬, 줄간격 설정</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">modify_style</span><span class="p">(</span><span class="s2">&quot;개요 1&quot;</span><span class="p">,</span> <span class="n">FaceName</span><span class="o">=</span><span class="s2">&quot;맑은 고딕&quot;</span><span class="p">,</span> <span class="n">Height</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">Align</span><span class="o">=</span><span class="s2">&quot;Center&quot;</span><span class="p">,</span> <span class="n">LineSpacing</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="go">True</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 글자 색상 변경 (RGB 색상 코드 사용)</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">modify_style</span><span class="p">(</span><span class="s2">&quot;제목&quot;</span><span class="p">,</span> <span class="n">TextColor</span><span class="o">=</span><span class="n">hwp</span><span class="o">.</span><span class="n">RGBColor</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="go">True</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 장평과 자간 조정</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">hwp</span><span class="o">.</span><span class="n">modify_style</span><span class="p">(</span><span class="s2">&quot;본문&quot;</span><span class="p">,</span> <span class="n">Ratio</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span> <span class="n">Spacing</span><span class="o">=-</span><span class="mi">5</span><span class="p">)</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="go">True</span>
+</code></pre></div>
 
 
     </div>
