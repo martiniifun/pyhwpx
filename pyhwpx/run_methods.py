@@ -1691,7 +1691,7 @@ class RunMethods(_InnerMethods):
 
     def MemoToPrev(self) -> bool:
         """메모 편집 상태에서 이전 메모로 이동"""
-        return self.hwp.HAction.Run("MemoToNext")
+        return self.hwp.HAction.Run("MemoToPrev")
 
     def MetatagExist(self, tag):
         """특정 이름의 메타태그가 존재하는지?"""
