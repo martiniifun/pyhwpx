@@ -8728,7 +8728,7 @@ class Hwp(ParamHelpers, RunMethods):
             location = [
                 i.split(": ")[1]
                 for i in subprocess.check_output(
-                    ["pip", "show", "pyhwpx"], stderr=subprocess.DEVNULL
+                    [sys.executable, "-m", "pip", "show", "pyhwpx"], stderr=subprocess.DEVNULL
                 )
                 .decode(encoding="cp949")
                 .split("\r\n")
@@ -8739,7 +8739,7 @@ class Hwp(ParamHelpers, RunMethods):
             location = [
                 i.split(": ")[1]
                 for i in subprocess.check_output(
-                    ["pip", "show", "pyhwpx"], stderr=subprocess.DEVNULL
+                    [sys.executable, "-m", "pip", "show", "pyhwpx"], stderr=subprocess.DEVNULL
                 )
                 .decode()
                 .split("\r\n")
